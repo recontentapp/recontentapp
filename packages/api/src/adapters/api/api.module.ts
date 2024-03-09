@@ -1,11 +1,14 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
+import { EventEmitterModule } from '@nestjs/event-emitter'
 import { ServeStaticModule } from '@nestjs/serve-static'
 import { join } from 'path'
 import { HealthModule } from 'src/modules/health/health.module'
 import { MyLogger } from 'src/utils/logger'
 import { LoggerMiddleware } from 'src/utils/logger.middleware'
 import { RequestIdMiddleware } from 'src/utils/request-id.middleware'
+import { PrismaService } from 'src/utils/prisma.service'
+import { AuthModule } from 'src/modules/auth/auth.module'
 
 import { ApiController } from './private-api.controller'
 import { PublicApiController } from './public-api.controller'
@@ -15,6 +18,7 @@ import { PublicApiController } from './public-api.controller'
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    EventEmitterModule.forRoot(),
     HealthModule,
     ...(process.env.SERVE_STATIC_FILES === 'true'
       ? [
@@ -24,9 +28,10 @@ import { PublicApiController } from './public-api.controller'
           }),
         ]
       : []),
+    AuthModule,
   ],
   controllers: [ApiController, PublicApiController],
-  providers: [MyLogger],
+  providers: [MyLogger, PrismaService],
 })
 export class ApiModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

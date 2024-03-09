@@ -1,0 +1,145 @@
+openapi: 3.0.3
+info:
+  title: Private API
+  version: 1.0.0
+paths:
+  /SignUp:
+    post:
+      operationId: signUp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - email
+                - password
+      responses:
+        '201':
+          description: OK
+  /ConfirmSignUp:
+    post:
+      operationId: confirmSignUp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                confirmationCode:
+                  type: string
+              required:
+                - email
+                - password
+                - confirmationCode
+      responses:
+        '201':
+          description: OK
+  /LogIn:
+    post:
+      operationId: logIn
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  accessToken:
+                    type: string
+                required:
+                  - accessToken
+  /GetCurrentUser:
+    get:
+      operationId: getCurrentUser
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrentUser'
+  /UpdateCurrentUser:
+    post:
+      operationId: updateCurrentUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+              required:
+                - firstName
+                - lastName
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrentUser'
+components:
+  schemas:
+    Pagination:
+      type: object
+      additionalProperties: false
+      required:
+        - page
+        - pageSize
+        - pagesCount
+        - itemsCount
+      properties:
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        pagesCount:
+          type: integer
+        itemsCount:
+          type: integer
+    CurrentUser:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+      required:
+        - id
+        - firstName
+        - lastName

@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:16.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=recontentapp
+    ports:
+      - '6033:5432'
+    volumes:
+      - db:/var/lib/postgresql/data
+  maildev:
+    image: maildev/maildev
+    ports:
+      - '1080:1080'
+      - '1025:1025'
+volumes:
+  db:
+    driver: local

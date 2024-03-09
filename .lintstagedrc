@@ -1,9 +1,7 @@
 {
   "**/*.d.ts": ["prettier --write"],
-  "**/!(*.d).{ts,tsx}": [
-    "eslint --fix",
-    "prettier --write"
-  ],
+  "**/!(*.d).{ts,tsx}": ["eslint --fix", "prettier --write"],
   "**/jest.config.js": ["prettier --write"],
-  "**/*.{json,css,mdx}": ["prettier --write"]
+  "**/*.{json,css,mdx}": ["prettier --write"],
+  "openapi/*.yml": ["yarn openapi:format"]
 }
