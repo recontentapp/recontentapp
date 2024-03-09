@@ -1,5 +1,4 @@
 import { FC, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 
 import { Logo } from '../../../components/Logo'
 import {
@@ -32,7 +31,6 @@ export const ForgotPassword: FC = () => {
     verificationCode: '',
     newPassword: '',
   })
-  const navigate = useNavigate()
 
   const canRequestBeSubmitted = requestState.email.length > 0
   const canResponseBeSubmitted =
