@@ -1,0 +1,8 @@
+{
+  "short_name": "Recontent.app",
+  "name": "Recontent.app",
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#501A48",
+  "background_color": "#ffffff"
+}
