@@ -1,0 +1,36 @@
+name: Continuous integration
+
+on: push
+
+jobs:
+  continuous_integration:
+    name: Continuous integration
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: '.tool-versions'
+      - name: Install dependencies
+        run: yarn install
+      - name: Autogenerate files
+        run: yarn openapi:generate
+      - name: Typecheck api
+        run: yarn workspace api typecheck
+      - name: Build api
+        run: yarn workspace api build
+      - name: Typecheck app
+        run: yarn workspace app typecheck
+      - name: Build app
+        run: yarn workspace app build
