@@ -13,9 +13,19 @@ import { AuthModule } from 'src/modules/auth/auth.module'
 import { ApiController } from './private-api.controller'
 import { PublicApiController } from './public-api.controller'
 import { NotificationsModule } from 'src/modules/notifications/notifications.module'
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
+import { APP_GUARD } from '@nestjs/core'
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot([
+      // 100 requests per 5 seconds
+      {
+        name: 'default',
+        ttl: 5000,
+        limit: 100,
+      },
+    ]),
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -35,7 +45,14 @@ import { NotificationsModule } from 'src/modules/notifications/notifications.mod
     NotificationsModule,
   ],
   controllers: [ApiController, PublicApiController],
-  providers: [MyLogger, PrismaService],
+  providers: [
+    MyLogger,
+    PrismaService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class ApiModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

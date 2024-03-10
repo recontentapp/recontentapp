@@ -10,6 +10,7 @@ import { Paths } from 'src/generated/typeDefinitions'
 import { AuthService } from 'src/modules/auth/auth.service'
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard'
 import { Public } from 'src/utils/is-public.decorator'
+import { Throttle } from '@nestjs/throttler'
 import { PrismaService } from 'src/utils/prisma.service'
 import { AuthenticatedRequester, Requester } from 'src/utils/requester'
 import {
@@ -27,6 +28,7 @@ export class ApiController {
     private readonly prismaService: PrismaService,
   ) {}
 
+  @Throttle({ default: { limit: 1, ttl: 1000 } })
   @Post('/Login')
   @Public()
   async login(
@@ -36,6 +38,7 @@ export class ApiController {
     return { accessToken }
   }
 
+  @Throttle({ default: { limit: 1, ttl: 5000 } })
   @Post('/SignUp')
   @Public()
   async signUp(
