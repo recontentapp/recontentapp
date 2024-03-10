@@ -1,0 +1,113 @@
+<mjml>
+  <mj-head>
+    <mj-title>Welcome to Recontent.app</mj-title>
+    <mj-attributes>
+      <mj-all font-family="Helvetica, sans-serif"></mj-all>
+      <mj-text
+        font-weight="400"
+        font-size="16px"
+        color="#616161"
+        line-height="24px"
+      ></mj-text>
+      <mj-section padding="0px"></mj-section>
+    </mj-attributes>
+  </mj-head>
+
+  <mj-body background-color="#fdfdfc">
+    <mj-section padding-top="50px">
+      <mj-column width="100%">
+        <mj-image
+          align="left"
+          src="https://cdn.recontent.app/emails/logo.png"
+          width="140px"
+        ></mj-image>
+      </mj-column>
+    </mj-section>
+    <mj-section padding-top="30px">
+      <mj-column width="100%">
+        <mj-text
+          color="#353431"
+          font-weight="600"
+          line-height="20px"
+          font-size="32px"
+        >
+          Welcome to
+        </mj-text>
+        <mj-text
+          color="#501A48"
+          font-weight="600"
+          line-height="20px"
+          font-size="32px"
+        >
+          Recontent.app 🚀
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section padding-top="30px">
+      <mj-column width="100%">
+        <mj-text color="#706f6c">
+          Thanks for being one of Recontent.app earliest supporters. My goal is
+          simple: helping you localise & distribute your product's content.
+        </mj-text>
+
+        <mj-text color="#706f6c">
+          In 2022, you should not have to ask developers (or get asked) to
+          update hardcoded strings or pay hundreds of bucks per month to
+          collaborate with your team on localisation.
+        </mj-text>
+
+        <mj-text color="#706f6c" padding-bottom="0px">
+          With Recontent.app, the objective is clear:
+        </mj-text>
+
+        <mj-text color="#706f6c" padding-top="0px">
+          <ul>
+            <li>⚡️ Unlimited everything, pay-as-you-go pricing</li>
+            <li>🚀 Projects, tasks, experimentations to iterate quickly</li>
+            <li>🔌 Open platform, in & out with your tools</li>
+            <li>🌱 And more based on your needs!</li>
+          </ul>
+        </mj-text>
+
+        <mj-text color="#706f6c">
+          Please don't hesitate to reply to this email with your expectations &
+          experiences with other tools.
+        </mj-text>
+        <mj-text color="#706f6c">
+          Until the next one, have a wonderful day,
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section padding-top="20px">
+      <mj-column width="11%">
+        <mj-image
+          padding-right="0px"
+          padding-left="25px"
+          border-radius="50%"
+          align="left"
+          width="70px"
+          src="https://cdn.recontent.app/emails/gregoire-mielle-avatar.jpeg"
+        ></mj-image>
+      </mj-column>
+      <mj-column width="89%" padding-left="12px" padding-top="3px">
+        <mj-text padding="0" color="#706f6c" line-height="8px">
+          <p>Grégoire Mielle</p>
+          <p style="font-size: 14px">
+            <a
+              style="color: #501a48; text-decoration: none"
+              href="https://recontent.app"
+              >Recontent.app</a
+            >
+            founder
+          </p>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section padding-top="10px">
+      <mj-column width="100%">
+        <mj-divider border-width="1px" border-color="#E0E0E0"></mj-divider>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

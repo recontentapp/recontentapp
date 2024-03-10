@@ -1,5 +1,6 @@
-import { FC, useState } from 'react'
+import { FC, useRef, useState } from 'react'
 
+import { useAuth } from '../../../auth'
 import { Logo } from '../../../components/Logo'
 import {
   Box,
@@ -11,8 +12,10 @@ import {
   Stack,
   Text,
   TextField,
+  toast,
 } from '../../../components/primitives'
 import { toForgotPassword, toSignUp } from '../routes'
+import { HTTPRequestError, getAPIClient } from '../../../generated/apiClient'
 
 interface State {
   email: string
@@ -24,8 +27,14 @@ interface State {
 type Step = 'signin' | 'newPassword' | 'confirmationCode'
 
 export const SignIn: FC = () => {
+  const apiClient = useRef(
+    getAPIClient({
+      baseUrl: import.meta.env.VITE_APP_API_URL,
+    }),
+  )
   const [step, setStep] = useState<Step>('signin')
   const [isLoading, setIsLoading] = useState(false)
+  const { signIn } = useAuth()
   const [state, setState] = useState<State>({
     email: '',
     password: '',
@@ -44,18 +53,101 @@ export const SignIn: FC = () => {
     if (isLoading) {
       return
     }
+
+    setIsLoading(true)
+    apiClient.current
+      .confirmSignUp({
+        body: {
+          email: state.email,
+          password: state.password,
+          confirmationCode: state.confirmationCode,
+        },
+      })
+      .then(res => {
+        if (!res.ok) {
+          toast('error', {
+            title: 'Could not confirm your account',
+          })
+          return
+        }
+
+        return apiClient.current.logIn({
+          body: {
+            email: state.email,
+            password: state.password,
+          },
+        })
+      })
+      .then(res => {
+        if (!res) {
+          return
+        }
+
+        if (!res.ok) {
+          toast('error', {
+            title: 'Could not sign in',
+          })
+          return
+        }
+
+        signIn(res.data.accessToken)
+        return
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
   }
 
   const onSignInSubmit = () => {
     if (isLoading) {
       return
     }
+
+    setIsLoading(true)
+
+    apiClient.current
+      .logIn({
+        body: {
+          email: state.email,
+          password: state.password,
+        },
+      })
+      .then(res => {
+        if (!res.ok) {
+          if (
+            res.error instanceof HTTPRequestError &&
+            res.error.statusCode === 400
+          ) {
+            setStep('confirmationCode')
+            return
+          }
+
+          toast('error', {
+            title: 'Could not sign in',
+          })
+          return
+        }
+
+        signIn(res.data.accessToken)
+      })
+      .finally(() => setIsLoading(false))
   }
 
   const onNewPasswordSubmit = () => {
     if (isLoading) {
       return
     }
+
+    setIsLoading(true)
+    // completeNewPasswordChallenge({
+    //   password: state.newPassword,
+    // }).catch(err => {
+    //   console.log(err)
+    //   setIsLoading(false)
+    //   toast('error', {
+    //     title: 'Could not confirm your account',
+    //   })
+    // })
   }
 
   const canBeSubmitted: Record<Step, boolean> = {
@@ -183,8 +275,6 @@ export const SignIn: FC = () => {
                 >
                   Sign in with email
                 </Button>
-
-                {/* <GoogleButton onAction={signInWithGoogle} /> */}
               </Stack>
             </Stack>
 

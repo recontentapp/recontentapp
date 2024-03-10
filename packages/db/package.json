@@ -1,0 +1,19 @@
+{
+  "name": "db",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "deploy": "prisma migrate deploy",
+    "migrate": "prisma migrate dev --create-only",
+    "reset": "prisma migrate reset",
+    "studio": "prisma studio",
+    "generate": "prisma generate"
+  },
+  "dependencies": {
+    "@prisma/client": "5.10.2",
+    "prisma": "5.10.2"
+  },
+  "devDependencies": {
+    "typescript": "5.1.3"
+  }
+}

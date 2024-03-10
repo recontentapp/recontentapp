@@ -1,6 +1,7 @@
 import { FC, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { passwordConfig } from '../../../auth/config'
 import { Logo } from '../../../components/Logo'
 import {
   Box,
@@ -12,8 +13,10 @@ import {
   Stack,
   Text,
   TextField,
+  toast,
 } from '../../../components/primitives'
 import { toSignIn } from '../routes'
+import { getAPIClient } from '../../../generated/apiClient'
 
 interface State {
   email: string
@@ -29,10 +32,40 @@ export const SignUp: FC = () => {
   })
 
   const canSignUpBeSubmitted =
-    state.email.length > 0 && state.password.length > 0
+    state.email.length > 0 &&
+    state.password.length > 0 &&
+    passwordConfig.validate(state.password)
 
   const onSignUpSubmit = () => {
     setLoading(true)
+    const apiClient = getAPIClient({
+      baseUrl: import.meta.env.VITE_APP_API_URL,
+    })
+
+    apiClient
+      .signUp({
+        body: {
+          email: state.email,
+          password: state.password,
+        },
+      })
+      .then(res => {
+        if (!res.ok) {
+          toast('error', {
+            title: 'Could not create an account',
+          })
+          return
+        }
+
+        toast('success', {
+          title: 'Account created',
+          description: 'Check your inbox to connect to your account',
+        })
+        navigate(toSignIn())
+      })
+      .finally(() => {
+        setLoading(false)
+      })
   }
 
   return (
@@ -90,8 +123,6 @@ export const SignUp: FC = () => {
                 >
                   Sign up with email
                 </Button>
-
-                {/* <GoogleButton onAction={signInWithGoogle} /> */}
               </Stack>
             </Stack>
 

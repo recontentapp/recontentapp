@@ -1,0 +1,29 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                String  @id @default(uuid()) @db.VarChar()
+  firstName         String  @db.VarChar()
+  lastName          String  @db.VarChar()
+  email             String  @db.VarChar()
+  encryptedPassword String? @db.VarChar()
+  providerName      String  @default("email") @db.VarChar()
+  providerId        String  @db.VarChar()
+  confirmationCode  String? @db.VarChar()
+  resetPasswordCode String? @db.VarChar()
+
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  blockedAt           DateTime?
+  confirmedAt         DateTime?
+  resetPasswordSentAt DateTime?
+
+  @@unique([providerName, providerId])
+  @@map("users")
+}

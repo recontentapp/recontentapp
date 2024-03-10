@@ -7,17 +7,20 @@ import { App } from './App'
 import { GlobalStyles, Toast } from './components/primitives'
 import reportWebVitals from './reportWebVitals'
 import './theme/fonts/index.css'
+import { AuthProvider } from './auth'
 
 document.body.innerHTML = '<div id="app"></div>'
 const root = createRoot(document.getElementById('app')!)
 
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <GlobalStyles />
-      <Toast />
-      <App />
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <GlobalStyles />
+        <Toast />
+        <App />
+      </BrowserRouter>
+    </AuthProvider>
   </React.StrictMode>,
 )
 

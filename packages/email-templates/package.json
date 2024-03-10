@@ -1,0 +1,13 @@
+{
+  "name": "email-templates",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "build": "tsx ./scripts/generate.ts"
+  },
+  "dependencies": {
+    "mjml": "4.13.0",
+    "tsx": "4.7.0",
+    "typescript": "5.3.3"
+  }
+}
