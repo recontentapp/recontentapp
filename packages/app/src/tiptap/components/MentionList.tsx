@@ -3,7 +3,6 @@ import { ReactRenderer } from '@tiptap/react'
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
 import tippy from 'tippy.js'
 
-import { Member } from '../../api'
 import { styled } from '../../theme'
 
 type MentionListProps = MentionOptions['suggestion']
@@ -55,7 +54,7 @@ const NoResult = styled('span', {
 })
 
 export const getSuggestions = (
-  members: Member[],
+  members: any[],
 ): MentionOptions['suggestion'] => ({
   items: ({ query }) => {
     return members

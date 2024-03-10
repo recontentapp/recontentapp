@@ -19,7 +19,7 @@ const getInitials = (value?: string): string => {
   return parts
     .map(part => (typeof part === 'string' ? part.charAt(0).toUpperCase() : ''))
     .filter(
-      (letter, i, arr) => i === 0 || (arr.length > 0 && i === arr.length - 1),
+      (_letter, i, arr) => i === 0 || (arr.length > 0 && i === arr.length - 1),
     )
     .join('')
 }

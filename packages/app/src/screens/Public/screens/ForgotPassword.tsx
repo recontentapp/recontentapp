@@ -23,7 +23,7 @@ interface ResponseState {
 }
 
 export const ForgotPassword: FC = () => {
-  const [step, setStep] = useState<'request' | 'response'>('request')
+  const [step] = useState<'request' | 'response'>('request')
   const [requestState, setRequestState] = useState<RequestState>({
     email: '',
   })

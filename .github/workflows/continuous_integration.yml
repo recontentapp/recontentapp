@@ -11,13 +11,13 @@ jobs:
       - name: Cache node modules
         uses: actions/cache@v2
         env:
-          cache-name: cache-node-modules
+          cache-name: node-modules
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('yarn.lock') }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
+            ${{ runner.os }}-${{ env.cache-name }}-
+            ${{ runner.os }}-
             ${{ runner.os }}-
       - uses: actions/setup-node@v3
         with:
@@ -28,9 +28,13 @@ jobs:
         run: yarn openapi:generate
       - name: Typecheck api
         run: yarn workspace api typecheck
+      - name: Lint api
+        run: yarn workspace api lint
       - name: Build api
         run: yarn workspace api build
       - name: Typecheck app
         run: yarn workspace app typecheck
+      - name: Lint app
+        run: yarn workspace app lint
       - name: Build app
         run: yarn workspace app build
