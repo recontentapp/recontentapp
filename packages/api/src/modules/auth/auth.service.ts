@@ -11,6 +11,7 @@ import { hashPassword, isPasswordValid } from 'src/utils/security'
 
 import { TokenContent } from './types'
 import { UserCreatedEvent } from './events/user-created.event'
+import { Prisma } from '@prisma/client'
 
 interface CreateUserParams {
   firstName: string
@@ -58,18 +59,28 @@ export class AuthService {
   async createUser({ firstName, lastName, email, password }: CreateUserParams) {
     const encryptedPassword = await hashPassword(password)
 
-    const user = await this.prisma.user.create({
-      data: {
-        firstName,
-        lastName,
-        confirmationCode: this.generateConfirmationCode(),
-        email,
-        encryptedPassword,
-        providerName: 'email',
-        providerId: email,
-      },
-    })
-    this.eventEmitter.emit('user.created', new UserCreatedEvent(user.id))
+    try {
+      const user = await this.prisma.user.create({
+        data: {
+          firstName,
+          lastName,
+          confirmationCode: this.generateConfirmationCode(),
+          email,
+          encryptedPassword,
+          providerName: 'email',
+          providerId: email,
+        },
+      })
+      this.eventEmitter.emit('user.created', new UserCreatedEvent(user.id))
+    } catch (e) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === 'P2002'
+      ) {
+        throw new BadRequestException('User already exists')
+      }
+      throw e
+    }
   }
 
   async updateUser({ id, firstName, lastName }: UpdateUserParams) {

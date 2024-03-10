@@ -12,13 +12,16 @@ import { AuthModule } from 'src/modules/auth/auth.module'
 
 import { ApiController } from './private-api.controller'
 import { PublicApiController } from './public-api.controller'
+import { NotificationsModule } from 'src/modules/notifications/notifications.module'
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    EventEmitterModule.forRoot(),
+    EventEmitterModule.forRoot({
+      ignoreErrors: true,
+    }),
     HealthModule,
     ...(process.env.SERVE_STATIC_FILES === 'true'
       ? [
@@ -29,6 +32,7 @@ import { PublicApiController } from './public-api.controller'
         ]
       : []),
     AuthModule,
+    NotificationsModule,
   ],
   controllers: [ApiController, PublicApiController],
   providers: [MyLogger, PrismaService],
