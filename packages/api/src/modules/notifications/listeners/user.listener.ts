@@ -7,7 +7,7 @@ import { PrismaService } from 'src/utils/prisma.service'
 import { MyLogger } from 'src/utils/logger'
 
 @Injectable()
-export class UserCreatedListener {
+export class UserListener {
   private readonly logger = new MyLogger()
 
   constructor(
@@ -16,7 +16,7 @@ export class UserCreatedListener {
   ) {}
 
   @OnEvent('user.created')
-  async handleUserCreatedEvent(event: UserCreatedEvent) {
+  async onUserCreated(event: UserCreatedEvent) {
     const user = await this.prismaService.user.findFirst({
       where: {
         id: event.id,

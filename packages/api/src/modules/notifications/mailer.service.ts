@@ -23,7 +23,16 @@ interface ConfirmationCodeTemplateOptions extends TemplateOptions {
   }
 }
 
-type Params = ConfirmationCodeTemplateOptions
+interface InvitationTemplateOptions extends TemplateOptions {
+  name: 'invitation'
+  data: {
+    invitationCode: string
+    inviterName: string
+    inviterEmail: string
+  }
+}
+
+type Params = ConfirmationCodeTemplateOptions | InvitationTemplateOptions
 
 @Injectable()
 export class MailerService {
