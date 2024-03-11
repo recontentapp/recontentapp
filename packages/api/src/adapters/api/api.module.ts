@@ -15,6 +15,7 @@ import { PublicApiController } from './public-api.controller'
 import { NotificationsModule } from 'src/modules/notifications/notifications.module'
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
 import { APP_GUARD } from '@nestjs/core'
+import { WorkspaceModule } from 'src/modules/workspace/workspace.module'
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { APP_GUARD } from '@nestjs/core'
       : []),
     AuthModule,
     NotificationsModule,
+    WorkspaceModule,
   ],
   controllers: [ApiController, PublicApiController],
   providers: [

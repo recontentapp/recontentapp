@@ -1,16 +1,33 @@
 import { QueryClientProvider } from '@tanstack/react-query'
 import { useMemo } from 'react'
 
-import { useAuth } from './auth'
+import { useAuth, useCurrentUser } from './auth'
 import { FullpageSpinner } from './components/FullpageSpinner'
 import { APIClientProvider } from './generated/reactQuery'
 import { Public } from './screens/Public'
 import { normalize } from './theme'
 import { HTTPRequestError } from './generated/apiClient'
 import { queryClient } from './queryClient'
+import { Onboarding } from './screens/Onboarding'
+import {
+  CurrentWorkspaceProvider,
+  useLooseCurrentWorkspace,
+} from './hooks/workspace'
+import { SelectWorkspace } from './screens/SelectWorkspace'
 
 const AuthenticatedApp = () => {
-  return <div>Authenticated</div>
+  const currentUser = useCurrentUser()
+  const { currentWorkspace } = useLooseCurrentWorkspace()
+
+  if (currentUser.accounts.length === 0) {
+    return <Onboarding />
+  }
+
+  if (currentWorkspace === null) {
+    return <SelectWorkspace />
+  }
+
+  return <div>Hello World</div>
 }
 
 export const App = () => {
@@ -47,7 +64,9 @@ export const App = () => {
         }}
       >
         <QueryClientProvider client={queryClient}>
-          <AuthenticatedApp />
+          <CurrentWorkspaceProvider>
+            <AuthenticatedApp />
+          </CurrentWorkspaceProvider>
         </QueryClientProvider>
       </APIClientProvider>
     )
