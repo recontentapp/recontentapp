@@ -42,7 +42,7 @@ export class LoggerMiddleware implements NestMiddleware {
         requestId: getRequestIdFromRequest(req),
         ...(requester && {
           requesterType: requester.type,
-          ...(requester.type === 'user'
+          ...(requester.type === 'human'
             ? {
                 userId: requester.userId,
                 userEmail: requester.userEmail,

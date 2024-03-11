@@ -3,7 +3,7 @@ import { randomBytes } from 'node:crypto'
 
 const roundsOfHashing = 10
 
-export const generateAPIKey = async () => {
+export const generateAPIKey = () => {
   const buffer = randomBytes(32)
   const apiKey = buffer.toString('utf-8')
 

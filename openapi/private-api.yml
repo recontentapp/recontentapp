@@ -110,6 +110,169 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CurrentUser'
+  /GetWorkspaceAvailability:
+    get:
+      operationId: getWorkspaceAvailability
+      parameters:
+        - name: key
+          in: query
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  isAvailable:
+                    type: boolean
+                required:
+                  - isAvailable
+  /CreateWorkspace:
+    post:
+      operationId: createWorkspace
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                key:
+                  type: string
+              required:
+                - name
+                - key
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Workspace'
+  /GetWorkspace:
+    get:
+      operationId: getWorkspace
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Workspace'
+  /InviteToWorkspace:
+    post:
+      operationId: inviteToWorkspace
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                workspaceId:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                role:
+                  $ref: '#/components/schemas/WorkspaceAccountRole'
+              required:
+                - workspaceId
+                - email
+                - role
+      responses:
+        '201':
+          description: OK
+  /JoinWorkspace:
+    post:
+      operationId: joinWorkspace
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                invitationCode:
+                  type: string
+              required:
+                - invitationCode
+      responses:
+        '201':
+          description: OK
+  /ListWorkspaceAccounts:
+    get:
+      operationId: listWorkspaceAccounts
+      parameters:
+        - name: workspaceId
+          in: query
+          schema:
+            type: string
+          required: true
+        - name: page
+          in: query
+          schema:
+            type: integer
+          required: false
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+          required: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/WorkspaceAccount'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                required:
+                  - items
+                  - pagination
+  /CreateWorkspaceServiceAccount:
+    post:
+      operationId: createWorkspaceServiceAccount
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                workspaceId:
+                  type: string
+                name:
+                  type: string
+                role:
+                  $ref: '#/components/schemas/WorkspaceAccountRole'
+              required:
+                - workspaceId
+                - name
+                - role
+      responses:
+        '201':
+          description: OK
 components:
   schemas:
     Pagination:
@@ -139,7 +302,131 @@ components:
           type: string
         lastName:
           type: string
+        email:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        accounts:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+              - id
+              - role
+              - workspace
+            properties:
+              id:
+                type: string
+              role:
+                $ref: '#/components/schemas/WorkspaceAccountRole'
+              workspace:
+                $ref: '#/components/schemas/Workspace'
       required:
         - id
         - firstName
         - lastName
+        - email
+        - accounts
+        - createdAt
+        - updatedAt
+    Workspace:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        key:
+          type: string
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+        updatedBy:
+          type: string
+          nullable: true
+      required:
+        - id
+        - key
+        - name
+        - createdAt
+        - updatedAt
+        - createdBy
+        - updatedBy
+    WorkspaceAccount:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        role:
+          $ref: '#/components/schemas/WorkspaceAccountRole'
+        type:
+          $ref: '#/components/schemas/WorkspaceAccountType'
+        service:
+          type: object
+          nullable: true
+          additionalProperties: false
+          required:
+            - id
+            - name
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+        user:
+          type: object
+          nullable: true
+          additionalProperties: false
+          required:
+            - id
+            - firstName
+            - lastName
+          properties:
+            id:
+              type: string
+            firstName:
+              type: string
+            lastName:
+              type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        invitedBy:
+          type: string
+          nullable: true
+      required:
+        - id
+        - role
+        - type
+        - user
+        - service
+        - createdAt
+        - updatedAt
+        - invitedBy
+    WorkspaceAccountRole:
+      type: string
+      enum:
+        - owner
+        - biller
+        - member
+        - guest
+    WorkspaceAccountType:
+      type: string
+      enum:
+        - human
+        - service
