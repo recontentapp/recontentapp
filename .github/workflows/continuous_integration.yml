@@ -24,6 +24,8 @@ jobs:
           node-version-file: '.tool-versions'
       - name: Install dependencies
         run: yarn install
+      - name: Install Prisma Client
+        run: yarn workspace db generate
       - name: Autogenerate files
         run: yarn openapi:generate
       - name: Typecheck api

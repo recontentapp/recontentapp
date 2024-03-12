@@ -5,6 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common'
 import { PrismaService } from 'src/utils/prisma.service'
+import { RequestUser } from 'src/utils/requester'
 
 @Injectable()
 export class APIKeyGuard implements CanActivate {
@@ -24,21 +25,20 @@ export class APIKeyGuard implements CanActivate {
     }
 
     const value = matches[2]
-    // const serviceAccount = await this.prismaService.account.findFirst({
-    //   where: { apiKey: value },
-    // })
-    // if (!serviceAccount) {
-    //   throw new UnauthorizedException()
-    // }
+    const serviceAccount = await this.prismaService.workspaceAccount.findFirst({
+      where: { apiKey: value },
+    })
+    if (!serviceAccount) {
+      throw new UnauthorizedException()
+    }
 
-    // const user: RequestUser = {
-    //   type: 'service',
-    //   account: serviceAccount,
-    // }
+    const user: RequestUser = {
+      type: 'service',
+      account: serviceAccount,
+    }
 
-    // request.user = user
+    request.user = user
 
-    // return true
-    throw new UnauthorizedException()
+    return true
   }
 }

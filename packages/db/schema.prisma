@@ -7,16 +7,29 @@ generator client {
   provider = "prisma-client-js"
 }
 
+enum WorkspaceAccountRole {
+  owner  @map("owner")
+  biller @map("biller")
+  member @map("member")
+  guest  @map("guest")
+}
+
+enum WorkspaceAccountType {
+  human   @map("human")
+  service @map("service")
+}
+
 model User {
-  id                String  @id @default(uuid()) @db.VarChar()
-  firstName         String  @db.VarChar()
-  lastName          String  @db.VarChar()
-  email             String  @db.VarChar()
-  encryptedPassword String? @db.VarChar()
-  providerName      String  @default("email") @db.VarChar()
-  providerId        String  @db.VarChar()
-  confirmationCode  String? @db.VarChar()
-  resetPasswordCode String? @db.VarChar()
+  id                String             @id @default(uuid()) @db.VarChar()
+  firstName         String             @db.VarChar()
+  lastName          String             @db.VarChar()
+  email             String             @db.VarChar()
+  encryptedPassword String?            @db.VarChar()
+  providerName      String             @default("email") @db.VarChar()
+  providerId        String             @db.VarChar()
+  confirmationCode  String?            @db.VarChar()
+  resetPasswordCode String?            @db.VarChar()
+  accounts          WorkspaceAccount[]
 
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
@@ -26,4 +39,68 @@ model User {
 
   @@unique([providerName, providerId])
   @@map("users")
+}
+
+model Service {
+  id   String @id @default(uuid()) @db.VarChar()
+  name String @db.VarChar()
+
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  accounts  WorkspaceAccount[]
+
+  @@map("services")
+}
+
+model Workspace {
+  id          String                @id @default(uuid()) @db.VarChar()
+  key         String                @db.VarChar()
+  name        String                @db.VarChar()
+  invitations WorkspaceInvitation[]
+  accounts    WorkspaceAccount[]
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+  createdBy   String                @db.VarChar()
+  updatedBy   String?               @db.VarChar()
+
+  @@unique([key])
+  @@map("workspaces")
+}
+
+model WorkspaceAccount {
+  id          String               @id @default(uuid()) @db.VarChar()
+  workspaceId String               @db.VarChar()
+  type        WorkspaceAccountType
+  role        WorkspaceAccountRole
+  userId      String?              @db.VarChar()
+  serviceId   String?              @db.VarChar()
+  apiKey      String?              @db.VarChar()
+  user        User?                @relation(fields: [userId], references: [id])
+  service     Service?             @relation(fields: [serviceId], references: [id])
+  workspace   Workspace            @relation(fields: [workspaceId], references: [id])
+
+  invitedBy String?  @db.VarChar()
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, workspaceId])
+  @@unique([apiKey])
+  @@map("workspace_accounts")
+}
+
+model WorkspaceInvitation {
+  id             String               @id @default(uuid()) @db.VarChar()
+  workspaceId    String               @db.VarChar()
+  role           WorkspaceAccountRole
+  email          String               @db.VarChar()
+  invitationCode String               @db.VarChar()
+  workspace      Workspace            @relation(fields: [workspaceId], references: [id])
+
+  createdBy  String    @db.VarChar()
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  expiredAt  DateTime
+  acceptedAt DateTime?
+
+  @@map("workspace_invitations")
 }
