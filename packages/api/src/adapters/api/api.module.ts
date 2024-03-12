@@ -37,7 +37,7 @@ import { WorkspaceModule } from 'src/modules/workspace/workspace.module'
     ...(process.env.SERVE_STATIC_FILES === 'true'
       ? [
           ServeStaticModule.forRoot({
-            rootPath: join(__dirname, '..', '..', 'app', 'dist'),
+            rootPath: join(__dirname, '..', '..', '..', '..', 'app', 'dist'),
             exclude: ['/private-api/(.*)', '/public-api/(.*)'],
           }),
         ]
