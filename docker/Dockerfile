@@ -30,6 +30,7 @@ COPY --chown=node:node --from=development /usr/src/app/node_modules ./node_modul
 
 COPY --chown=node:node . .
 
+RUN yarn openapi:generate
 RUN yarn workspace api build
 RUN yarn workspace app build
 RUN yarn workspace email-templates build
