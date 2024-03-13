@@ -22,6 +22,8 @@ FROM node:18-alpine As build
 
 WORKDIR /usr/src/app
 
+ENV VITE_APP_API_URL /private-api
+
 COPY --chown=node:node package.json yarn.lock ./
 
 COPY --chown=node:node --from=development /usr/src/app/node_modules ./node_modules
@@ -33,7 +35,6 @@ RUN yarn workspace app build
 RUN yarn workspace email-templates build
 
 USER node
-
 
 # Production
 FROM node:18-alpine As production

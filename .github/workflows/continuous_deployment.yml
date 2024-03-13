@@ -2,12 +2,12 @@ name: Continuous deployment
 
 on:
   push:
-    branches:
-      - 'main'
+    tags:        
+      - '*'
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: recontentapp/recontentapp
 
 jobs:
   docker:
