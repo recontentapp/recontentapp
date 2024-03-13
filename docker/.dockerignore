@@ -1,0 +1,9 @@
+openapi
+.tool-versions
+.prettierrc
+.prettierignore
+.lintstagedrc
+.vscode
+.husky
+.env
+.env.example
