@@ -27,6 +27,10 @@ ENV VITE_APP_API_URL /private-api
 COPY --chown=node:node package.json yarn.lock ./
 
 COPY --chown=node:node --from=development /usr/src/app/node_modules ./node_modules
+COPY --chown=node:node --from=development /usr/src/app/packages/app/node_modules ./packages/app/node_modules
+COPY --chown=node:node --from=development /usr/src/app/packages/api/node_modules ./packages/api/node_modules
+COPY --chown=node:node --from=development /usr/src/app/packages/email-templates/node_modules ./packages/email-templates/node_modules
+COPY --chown=node:node --from=development /usr/src/app/packages/db/node_modules ./packages/db/node_modules
 
 COPY --chown=node:node . .
 
