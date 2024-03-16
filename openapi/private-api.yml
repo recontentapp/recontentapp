@@ -222,6 +222,15 @@ paths:
           schema:
             type: string
           required: true
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum:
+              - human
+              - service
+              - all
+          required: true
         - name: page
           in: query
           schema:
@@ -424,12 +433,17 @@ paths:
   /DeleteProject:
     delete:
       operationId: deleteProject
-      parameters:
-        - name: id
-          in: query
-          schema:
-            type: string
-          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                projectId:
+                  type: string
+              required:
+                - projectId
       responses:
         '204':
           description: OK
@@ -632,12 +646,15 @@ components:
             - id
             - firstName
             - lastName
+            - email
           properties:
             id:
               type: string
             firstName:
               type: string
             lastName:
+              type: string
+            email:
               type: string
         createdAt:
           type: string

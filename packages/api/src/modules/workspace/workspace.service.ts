@@ -49,6 +49,7 @@ interface JoinWorkspaceParams {
 interface ListWorkspaceAccountsParams {
   pagination: PaginationParams
   requester: Requester
+  type: 'human' | 'service' | 'all'
   workspaceId: string
 }
 
@@ -253,6 +254,7 @@ export class WorkspaceService {
 
   async listWorkspaceAccounts({
     workspaceId,
+    type,
     requester,
     pagination,
   }: ListWorkspaceAccountsParams) {
@@ -265,6 +267,11 @@ export class WorkspaceService {
       this.prismaService.workspaceAccount.findMany({
         where: {
           workspaceId,
+          ...(type === 'human'
+            ? { userId: { not: null } }
+            : type === 'service'
+            ? { serviceId: { not: null } }
+            : {}),
         },
         include: {
           user: true,
@@ -276,6 +283,11 @@ export class WorkspaceService {
       this.prismaService.workspaceAccount.count({
         where: {
           workspaceId,
+          ...(type === 'human'
+            ? { userId: { not: null } }
+            : type === 'service'
+            ? { serviceId: { not: null } }
+            : {}),
         },
       }),
     ])
@@ -306,6 +318,7 @@ export class WorkspaceService {
                 id: user.id,
                 firstName: user.firstName,
                 lastName: user.lastName,
+                email: user.email,
               }
             : null,
           createdAt: createdAt.toISOString(),

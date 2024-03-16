@@ -304,13 +304,19 @@ export class ApiController {
   @Get('/ListWorkspaceAccounts')
   async listWorkspaceAccounts(
     @Query('workspaceId') workspaceId: string,
+    @Query('type') type: string,
     @Pagination() pagination: PaginationParams,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.ListWorkspaceAccounts.Responses.$200> {
+    if (type !== 'human' && type !== 'service' && type !== 'all') {
+      throw new BadRequestException('Invalid type')
+    }
+
     const result = await this.workspaceService.listWorkspaceAccounts({
       workspaceId,
       requester,
       pagination,
+      type,
     })
 
     return result
