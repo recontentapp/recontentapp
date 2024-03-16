@@ -273,6 +273,245 @@ paths:
       responses:
         '201':
           description: OK
+  /ListWorkspaceLanguages:
+    get:
+      operationId: listWorkspaceLanguages
+      parameters:
+        - name: workspaceId
+          in: query
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Language'
+  /AddLanguagesToWorkspace:
+    post:
+      operationId: addLanguagesToWorkspace
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                workspaceId:
+                  type: string
+                languages:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    required:
+                      - locale
+                      - name
+                    properties:
+                      locale:
+                        type: string
+                      name:
+                        type: string
+              required:
+                - workspaceId
+                - languages
+      responses:
+        '201':
+          description: OK
+  /CreateProject:
+    post:
+      operationId: createProject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                workspaceId:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                languageIds:
+                  type: array
+                  items:
+                    type: string
+              required:
+                - workspaceId
+                - name
+                - description
+                - languageIds
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+  /UpdateProject:
+    post:
+      operationId: updateProject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+              required:
+                - id
+                - name
+                - description
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+  /GetProject:
+    get:
+      operationId: getProject
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+  /AddLanguagesToProject:
+    post:
+      operationId: addLanguagesToProject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                projectId:
+                  type: string
+                languageIds:
+                  type: array
+                  items:
+                    type: string
+              required:
+                - projectId
+                - languageIds
+      responses:
+        '201':
+          description: OK
+  /DeleteProject:
+    delete:
+      operationId: deleteProject
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: string
+          required: true
+      responses:
+        '204':
+          description: OK
+  /ListProjects:
+    get:
+      operationId: listProjects
+      parameters:
+        - name: workspaceId
+          in: query
+          schema:
+            type: string
+          required: true
+        - name: page
+          in: query
+          schema:
+            type: integer
+          required: false
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+          required: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Project'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                required:
+                  - items
+                  - pagination
+  /ListProjectRevisions:
+    get:
+      operationId: listProjectRevisions
+      parameters:
+        - name: projectId
+          in: query
+          schema:
+            type: string
+          required: true
+        - name: state
+          in: query
+          schema:
+            $ref: '#/components/schemas/ProjectRevisionState'
+          required: false
+        - name: page
+          in: query
+          schema:
+            type: integer
+          required: false
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+          required: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProjectRevision'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                required:
+                  - items
+                  - pagination
 components:
   schemas:
     Pagination:
@@ -430,3 +669,123 @@ components:
       enum:
         - human
         - service
+    ProjectRevisionState:
+      type: string
+      enum:
+        - open
+        - closed
+    Project:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        workspaceId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        languages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Language'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+        updatedBy:
+          type: string
+          nullable: true
+      required:
+        - id
+        - workspaceId
+        - name
+        - description
+        - languages
+        - createdAt
+        - updatedAt
+        - createdBy
+        - updatedBy
+    ProjectRevision:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        workspaceId:
+          type: string
+        projectId:
+          type: string
+        isMaster:
+          type: boolean
+        name:
+          type: string
+        state:
+          $ref: '#/components/schemas/ProjectRevisionState'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        mergedAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdBy:
+          type: string
+        updatedBy:
+          type: string
+          nullable: true
+        mergedBy:
+          type: string
+          nullable: true
+      required:
+        - id
+        - workspaceId
+        - projectId
+        - isMaster
+        - name
+        - state
+        - createdAt
+        - updatedAt
+        - createdBy
+        - updatedBy
+    Language:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        workspaceId:
+          type: string
+        locale:
+          type: string
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+        updatedBy:
+          type: string
+          nullable: true
+      required:
+        - id
+        - workspaceId
+        - locale
+        - name
+        - createdAt
+        - updatedAt
+        - createdBy
+        - updatedBy

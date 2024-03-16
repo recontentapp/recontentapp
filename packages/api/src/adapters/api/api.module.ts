@@ -16,6 +16,7 @@ import { NotificationsModule } from 'src/modules/notifications/notifications.mod
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
 import { APP_GUARD } from '@nestjs/core'
 import { WorkspaceModule } from 'src/modules/workspace/workspace.module'
+import { ProjectModule } from 'src/modules/project/project.module'
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { WorkspaceModule } from 'src/modules/workspace/workspace.module'
     AuthModule,
     NotificationsModule,
     WorkspaceModule,
+    ProjectModule,
   ],
   controllers: [ApiController, PublicApiController],
   providers: [

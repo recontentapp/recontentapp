@@ -1,5 +1,16 @@
 import { WorkspaceAccountRole } from '@prisma/client'
-import { IsEmail, IsEnum, IsNotEmpty, IsString, Matches } from 'class-validator'
+import {
+  IsArray,
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsString,
+  Matches,
+  Validate,
+  ValidateNested,
+} from 'class-validator'
+import { LanguageLocale } from 'src/modules/workspace/locale'
+import { LanguageLocaleValidator } from 'src/modules/workspace/locale.dto'
 
 export class CreateWorkspaceDto {
   @IsString()
@@ -46,4 +57,25 @@ export class CreateWorkspaceServiceAccountDto {
   @IsNotEmpty()
   @IsEnum(WorkspaceAccountRole)
   role: WorkspaceAccountRole
+}
+
+class Language {
+  @IsString()
+  @IsNotEmpty()
+  name: string
+
+  @Validate(LanguageLocaleValidator)
+  @IsNotEmpty()
+  locale: LanguageLocale
+}
+
+export class AddLanguagesToWorkspaceDto {
+  @IsString()
+  @IsNotEmpty()
+  workspaceId: string
+
+  @IsNotEmpty()
+  @IsArray()
+  @ValidateNested({ each: true })
+  languages: Language[]
 }

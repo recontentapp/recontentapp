@@ -5,6 +5,7 @@ import * as bodyParser from 'body-parser'
 
 import { ApiModule } from './adapters/api/api.module'
 import { MyLogger } from './utils/logger'
+import { PrismaExceptionFilter } from './utils/prisma-exception.filter'
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(ApiModule, {
@@ -25,6 +26,7 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({ disableErrorMessages: true, transform: true }),
   )
+  app.useGlobalFilters(new PrismaExceptionFilter())
   await app.listen(process.env.PORT ?? 3000)
 }
 

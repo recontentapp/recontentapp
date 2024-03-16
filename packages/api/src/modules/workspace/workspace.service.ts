@@ -12,6 +12,7 @@ import { HumanRequester, Requester } from 'src/utils/requester'
 import { WorkspaceInvitationCreatedEvent } from './events/invitation-created.event'
 import { PaginationParams } from 'src/utils/pagination'
 import { generateAPIKey } from 'src/utils/security'
+import { LanguageLocale } from './locale'
 
 interface CreateWorkspaceParams {
   key: string
@@ -56,6 +57,20 @@ interface CreateWorkspaceServiceAccountParams {
   name: string
   role: WorkspaceAccountRole
   requester: HumanRequester
+}
+
+interface AddLanguagesToWorkspaceParams {
+  workspaceId: string
+  languages: Array<{
+    name: string
+    locale: LanguageLocale
+  }>
+  requester: HumanRequester
+}
+
+interface ListWorkspaceLanguagesParams {
+  workspaceId: string
+  requester: Requester
 }
 
 @Injectable()
@@ -335,5 +350,59 @@ export class WorkspaceService {
         },
       })
     })
+  }
+
+  async addLanguagesToWorkspace({
+    workspaceId,
+    languages,
+    requester,
+  }: AddLanguagesToWorkspaceParams) {
+    if (!requester.canAdminWorkspace(workspaceId)) {
+      throw new UnauthorizedException('User is not part of this workspace')
+    }
+
+    const existingLanguages = await this.prismaService.language.findMany({
+      where: {
+        workspaceId,
+      },
+    })
+
+    const newLanguagesLocales = languages.map(l => l.locale)
+    const existingLanguagesLocales = existingLanguages.map(
+      l => l.locale as LanguageLocale,
+    )
+    const localeAlreadyUsed = existingLanguagesLocales.some(locale =>
+      newLanguagesLocales.includes(locale),
+    )
+
+    if (localeAlreadyUsed) {
+      throw new BadRequestException('Locale is already used in workspace')
+    }
+
+    await this.prismaService.language.createMany({
+      data: languages.map(l => ({
+        workspaceId,
+        locale: l.locale,
+        name: l.name,
+        createdBy: requester.getAccountIDForWorkspace(workspaceId)!,
+      })),
+    })
+  }
+
+  async listWorkspaceLanguages({
+    workspaceId,
+    requester,
+  }: ListWorkspaceLanguagesParams) {
+    if (!requester.canAccessWorkspace(workspaceId)) {
+      throw new UnauthorizedException('User is not part of this workspace')
+    }
+
+    const languages = await this.prismaService.language.findMany({
+      where: {
+        workspaceId,
+      },
+    })
+
+    return languages
   }
 }
