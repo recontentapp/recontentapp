@@ -4,12 +4,16 @@ import {
   Injectable,
 } from '@nestjs/common'
 import { EventEmitter2 } from '@nestjs/event-emitter'
+import { Prisma } from '@prisma/client'
 import { PaginationParams } from 'src/utils/pagination'
 import { PrismaService } from 'src/utils/prisma.service'
 import { HumanRequester } from 'src/utils/requester'
 
 interface ListPhrasesParams {
   revisionId: string
+  key?: string
+  translated?: string
+  untranslated?: string
   pagination: PaginationParams
   requester: HumanRequester
 }
@@ -52,7 +56,14 @@ export class PhraseService {
     private eventEmitter: EventEmitter2,
   ) {}
 
-  async listPhrases({ revisionId, pagination, requester }: ListPhrasesParams) {
+  async listPhrases({
+    revisionId,
+    pagination,
+    requester,
+    key,
+    translated,
+    untranslated,
+  }: ListPhrasesParams) {
     const revision = await this.prismaService.projectRevision.findUniqueOrThrow(
       {
         where: { id: revisionId },
@@ -63,12 +74,33 @@ export class PhraseService {
       throw new ForbiddenException('User is not part of this workspace')
     }
 
+    const where: Prisma.PhraseWhereInput = {
+      revisionId,
+      ...(key && {
+        key: {
+          contains: key,
+        },
+      }),
+      ...(translated && {
+        translations: {
+          some: {
+            languageId: translated,
+          },
+        },
+      }),
+      ...(untranslated && {
+        translations: {
+          none: {
+            languageId: untranslated,
+          },
+        },
+      }),
+    }
+
     const { limit, offset, pageSize, page } = pagination
     const [phrases, count] = await Promise.all([
       this.prismaService.phrase.findMany({
-        where: {
-          revisionId,
-        },
+        where,
         orderBy: {
           createdAt: 'desc',
         },
@@ -76,9 +108,7 @@ export class PhraseService {
         skip: offset,
       }),
       this.prismaService.phrase.count({
-        where: {
-          revisionId,
-        },
+        where,
       }),
     ])
 

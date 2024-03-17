@@ -1841,6 +1841,34 @@
   resolved "https://registry.yarnpkg.com/@stitches/react/-/react-1.2.8.tgz#954f8008be8d9c65c4e58efa0937f32388ce3a38"
   integrity sha512-9g9dWI4gsSVe8bNLlb+lMkBYsnIKCZTmvqvDG+Avnn69XfmHZKiaMrx7cgTaddq7aTPPmXiTsbFcUy0xgI4+wA==
 
+"@stoplight/ordered-object-literal@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@stoplight/ordered-object-literal/-/ordered-object-literal-1.0.5.tgz#06689095a4f1a53e9d9a5f0055f707c387af966a"
+  integrity sha512-COTiuCU5bgMUtbIFBuyyh2/yVVzlr5Om0v5utQDgBCuQUOPgU1DwoffkTfg4UBQOvByi5foF4w4T+H9CoRe5wg==
+
+"@stoplight/types@^14.1.1":
+  version "14.1.1"
+  resolved "https://registry.yarnpkg.com/@stoplight/types/-/types-14.1.1.tgz#0dd5761aac25673a951955e984c724c138368b7a"
+  integrity sha512-/kjtr+0t0tjKr+heVfviO9FrU/uGLc+QNX3fHJc19xsCNYqU7lVhaXxDmEID9BZTjG+/r9pK9xP/xU02XGg65g==
+  dependencies:
+    "@types/json-schema" "^7.0.4"
+    utility-types "^3.10.0"
+
+"@stoplight/yaml-ast-parser@0.0.50":
+  version "0.0.50"
+  resolved "https://registry.yarnpkg.com/@stoplight/yaml-ast-parser/-/yaml-ast-parser-0.0.50.tgz#ed625a1d9ae63eb61980446e058fa745386ab61e"
+  integrity sha512-Pb6M8TDO9DtSVla9yXSTAxmo9GVEouq5P40DWXdOie69bXogZTkgvopCq+yEvTMA0F6PEvdJmbtTV3ccIp11VQ==
+
+"@stoplight/yaml@^4.3.0":
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/@stoplight/yaml/-/yaml-4.3.0.tgz#ca403157472509812ccec6f277185e7e65d7bd7d"
+  integrity sha512-JZlVFE6/dYpP9tQmV0/ADfn32L9uFarHWxfcRhReKUnljz1ZiUM5zpX+PH8h5CJs6lao3TuFqnPm9IJJCEkE2w==
+  dependencies:
+    "@stoplight/ordered-object-literal" "^1.0.5"
+    "@stoplight/types" "^14.1.1"
+    "@stoplight/yaml-ast-parser" "0.0.50"
+    tslib "^2.2.0"
+
 "@swc/cli@0.1.62":
   version "0.1.62"
   resolved "https://registry.yarnpkg.com/@swc/cli/-/cli-0.1.62.tgz#6442fde2fcf75175a300fb4fcf30f8c60bbb3ab3"
@@ -2368,7 +2396,7 @@
     expect "^29.0.0"
     pretty-format "^29.0.0"
 
-"@types/json-schema@*", "@types/json-schema@^7.0.12", "@types/json-schema@^7.0.13", "@types/json-schema@^7.0.8", "@types/json-schema@^7.0.9":
+"@types/json-schema@*", "@types/json-schema@^7.0.12", "@types/json-schema@^7.0.13", "@types/json-schema@^7.0.4", "@types/json-schema@^7.0.8", "@types/json-schema@^7.0.9":
   version "7.0.15"
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.15.tgz#596a1747233694d50f6ad8a7869fcb6f56cf5841"
   integrity sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==
@@ -3712,6 +3740,11 @@ capture-exit@^2.0.0:
   integrity sha512-PiT/hQmTonHhl/HFGN+Lx3JJUznrVYJ3+AQsnthneZbvW7x+f08Tk7yLJTLEOUvBTbduLeeBkxEaYXUOUrRq6g==
   dependencies:
     rsvp "^4.8.4"
+
+case-anything@2.1.10:
+  version "2.1.10"
+  resolved "https://registry.yarnpkg.com/case-anything/-/case-anything-2.1.10.tgz#d18a6ca968d54ec3421df71e3e190f3bced23410"
+  integrity sha512-JczJwVrCP0jPKh05McyVsuOg6AYosrB9XWZKbQzXeDAm2ClE/PJE/BcrrQrVyGYH7Jg8V/LDupmyL4kFlVsVFQ==
 
 cfb@~1.2.1:
   version "1.2.2"
@@ -8823,6 +8856,16 @@ onetime@^6.0.0:
   dependencies:
     mimic-fn "^4.0.0"
 
+openapi-format@1.16.1:
+  version "1.16.1"
+  resolved "https://registry.yarnpkg.com/openapi-format/-/openapi-format-1.16.1.tgz#8465f687a4471dede01ac035de2b7d046193449c"
+  integrity sha512-6Hns62oDlXKJU7BocQhkI+BaYUy2BuMg0oFyi77dvOd8R3oi959FwuPSaOIMjTHbJ3opjANAGivFSQ952g7IDA==
+  dependencies:
+    "@stoplight/yaml" "^4.3.0"
+    case-anything "2.1.10"
+    commander "^7.1.0"
+    traverse "^0.6.8"
+
 openapi-kit@0.5.1:
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/openapi-kit/-/openapi-kit-0.5.1.tgz#ec05236fe32584bf526eea3a787b34c6df8e50a3"
@@ -10827,6 +10870,11 @@ tr46@~0.0.3:
   resolved "https://registry.yarnpkg.com/tr46/-/tr46-0.0.3.tgz#8184fd347dac9cdc185992f3a6622e14b9d9ab6a"
   integrity sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==
 
+traverse@^0.6.8:
+  version "0.6.8"
+  resolved "https://registry.yarnpkg.com/traverse/-/traverse-0.6.8.tgz#5e5e0c41878b57e4b73ad2f3d1e36a715ea4ab15"
+  integrity sha512-aXJDbk6SnumuaZSANd21XAo15ucCDE38H4fkqiGsc3MhCK+wOlZvLP9cB/TvpHT0mOyWgC4Z8EwRlzqYSUzdsA==
+
 tree-kill@1.2.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/tree-kill/-/tree-kill-1.2.2.tgz#4ca09a9092c88b73a7cdc5e8a01b507b0790a0cc"
@@ -11153,6 +11201,11 @@ util-deprecate@^1.0.1, util-deprecate@~1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/util-deprecate/-/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf"
   integrity sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==
+
+utility-types@^3.10.0:
+  version "3.11.0"
+  resolved "https://registry.yarnpkg.com/utility-types/-/utility-types-3.11.0.tgz#607c40edb4f258915e901ea7995607fdf319424c"
+  integrity sha512-6Z7Ma2aVEWisaL6TvBCy7P8rm2LQoPv6dJ7ecIaIixHcwfbJ0x7mWdbcwlIM5IGQxPZSFYeqRCqlOOeKoJYMkw==
 
 utils-merge@1.0.1, utils-merge@^1.0.1:
   version "1.0.1"

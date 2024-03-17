@@ -11,12 +11,12 @@ paths:
           application/json:
             schema:
               type: object
-              additionalProperties: false
               properties:
                 email:
                   type: string
                 password:
                   type: string
+              additionalProperties: false
               required:
                 - email
                 - password
@@ -31,7 +31,6 @@ paths:
           application/json:
             schema:
               type: object
-              additionalProperties: false
               properties:
                 email:
                   type: string
@@ -39,6 +38,7 @@ paths:
                   type: string
                 confirmationCode:
                   type: string
+              additionalProperties: false
               required:
                 - email
                 - password
@@ -54,12 +54,12 @@ paths:
           application/json:
             schema:
               type: object
-              additionalProperties: false
               properties:
                 email:
                   type: string
                 password:
                   type: string
+              additionalProperties: false
               required:
                 - email
                 - password
@@ -70,10 +70,10 @@ paths:
             application/json:
               schema:
                 type: object
-                additionalProperties: false
                 properties:
                   accessToken:
                     type: string
+                additionalProperties: false
                 required:
                   - accessToken
   /GetCurrentUser:
@@ -94,12 +94,12 @@ paths:
           application/json:
             schema:
               type: object
-              additionalProperties: false
               properties:
                 firstName:
                   type: string
                 lastName:
                   type: string
+              additionalProperties: false
               required:
                 - firstName
                 - lastName
@@ -116,9 +116,9 @@ paths:
       parameters:
         - name: key
           in: query
+          required: true
           schema:
             type: string
-          required: true
       responses:
         '200':
           description: OK
@@ -126,10 +126,10 @@ paths:
             application/json:
               schema:
                 type: object
-                additionalProperties: false
                 properties:
                   isAvailable:
                     type: boolean
+                additionalProperties: false
                 required:
                   - isAvailable
   /CreateWorkspace:
@@ -140,12 +140,12 @@ paths:
           application/json:
             schema:
               type: object
-              additionalProperties: false
               properties:
                 name:
                   type: string
                 key:
                   type: string
+              additionalProperties: false
               required:
                 - name
                 - key
@@ -162,9 +162,9 @@ paths:
       parameters:
         - name: id
           in: query
+          required: true
           schema:
             type: string
-          required: true
       responses:
         '200':
           description: OK
@@ -180,7 +180,6 @@ paths:
           application/json:
             schema:
               type: object
-              additionalProperties: false
               properties:
                 workspaceId:
                   type: string
@@ -189,6 +188,7 @@ paths:
                   format: email
                 role:
                   $ref: '#/components/schemas/WorkspaceAccountRole'
+              additionalProperties: false
               required:
                 - workspaceId
                 - email
@@ -204,10 +204,10 @@ paths:
           application/json:
             schema:
               type: object
-              additionalProperties: false
               properties:
                 invitationCode:
                   type: string
+              additionalProperties: false
               required:
                 - invitationCode
       responses:
@@ -219,28 +219,28 @@ paths:
       parameters:
         - name: workspaceId
           in: query
+          required: true
           schema:
             type: string
-          required: true
         - name: type
           in: query
+          required: true
           schema:
             type: string
             enum:
               - human
               - service
               - all
-          required: true
         - name: page
           in: query
+          required: false
           schema:
             type: integer
-          required: false
         - name: pageSize
           in: query
+          required: false
           schema:
             type: integer
-          required: false
       responses:
         '200':
           description: OK
@@ -248,7 +248,6 @@ paths:
             application/json:
               schema:
                 type: object
-                additionalProperties: false
                 properties:
                   items:
                     type: array
@@ -256,6 +255,7 @@ paths:
                       $ref: '#/components/schemas/WorkspaceAccount'
                   pagination:
                     $ref: '#/components/schemas/Pagination'
+                additionalProperties: false
                 required:
                   - items
                   - pagination
@@ -267,7 +267,6 @@ paths:
           application/json:
             schema:
               type: object
-              additionalProperties: false
               properties:
                 workspaceId:
                   type: string
@@ -275,6 +274,7 @@ paths:
                   type: string
                 role:
                   $ref: '#/components/schemas/WorkspaceAccountRole'
+              additionalProperties: false
               required:
                 - workspaceId
                 - name
@@ -288,9 +288,9 @@ paths:
       parameters:
         - name: workspaceId
           in: query
+          required: true
           schema:
             type: string
-          required: true
       responses:
         '200':
           description: OK
@@ -308,7 +308,6 @@ paths:
           application/json:
             schema:
               type: object
-              additionalProperties: false
               properties:
                 workspaceId:
                   type: string
@@ -325,6 +324,7 @@ paths:
                         type: string
                       name:
                         type: string
+              additionalProperties: false
               required:
                 - workspaceId
                 - languages
@@ -339,7 +339,6 @@ paths:
           application/json:
             schema:
               type: object
-              additionalProperties: false
               properties:
                 workspaceId:
                   type: string
@@ -352,6 +351,7 @@ paths:
                   type: array
                   items:
                     type: string
+              additionalProperties: false
               required:
                 - workspaceId
                 - name
@@ -372,7 +372,6 @@ paths:
           application/json:
             schema:
               type: object
-              additionalProperties: false
               properties:
                 id:
                   type: string
@@ -381,6 +380,7 @@ paths:
                 description:
                   type: string
                   nullable: true
+              additionalProperties: false
               required:
                 - id
                 - name
@@ -398,9 +398,9 @@ paths:
       parameters:
         - name: id
           in: query
+          required: true
           schema:
             type: string
-          required: true
       responses:
         '200':
           description: OK
@@ -416,7 +416,6 @@ paths:
           application/json:
             schema:
               type: object
-              additionalProperties: false
               properties:
                 projectId:
                   type: string
@@ -424,6 +423,7 @@ paths:
                   type: array
                   items:
                     type: string
+              additionalProperties: false
               required:
                 - projectId
                 - languageIds
@@ -438,10 +438,10 @@ paths:
           application/json:
             schema:
               type: object
-              additionalProperties: false
               properties:
                 projectId:
                   type: string
+              additionalProperties: false
               required:
                 - projectId
       responses:
@@ -453,19 +453,19 @@ paths:
       parameters:
         - name: workspaceId
           in: query
+          required: true
           schema:
             type: string
-          required: true
         - name: page
           in: query
+          required: false
           schema:
             type: integer
-          required: false
         - name: pageSize
           in: query
+          required: false
           schema:
             type: integer
-          required: false
       responses:
         '200':
           description: OK
@@ -473,7 +473,6 @@ paths:
             application/json:
               schema:
                 type: object
-                additionalProperties: false
                 properties:
                   items:
                     type: array
@@ -481,6 +480,7 @@ paths:
                       $ref: '#/components/schemas/Project'
                   pagination:
                     $ref: '#/components/schemas/Pagination'
+                additionalProperties: false
                 required:
                   - items
                   - pagination
@@ -490,24 +490,24 @@ paths:
       parameters:
         - name: projectId
           in: query
+          required: true
           schema:
             type: string
-          required: true
         - name: state
           in: query
+          required: false
           schema:
             $ref: '#/components/schemas/ProjectRevisionState'
-          required: false
         - name: page
           in: query
+          required: false
           schema:
             type: integer
-          required: false
         - name: pageSize
           in: query
+          required: false
           schema:
             type: integer
-          required: false
       responses:
         '200':
           description: OK
@@ -515,7 +515,6 @@ paths:
             application/json:
               schema:
                 type: object
-                additionalProperties: false
                 properties:
                   items:
                     type: array
@@ -523,18 +522,35 @@ paths:
                       $ref: '#/components/schemas/ProjectRevision'
                   pagination:
                     $ref: '#/components/schemas/Pagination'
+                additionalProperties: false
                 required:
                   - items
                   - pagination
+  /GetProjectRevision:
+    get:
+      operationId: getProjectRevision
+      parameters:
+        - name: revisionId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectRevision'
   /GetReferenceableAccounts:
     get:
       operationId: getReferenceableAccounts
       parameters:
         - name: workspaceId
           in: query
+          required: true
           schema:
             type: string
-          required: true
       responses:
         '200':
           description: OK
@@ -542,33 +558,48 @@ paths:
             application/json:
               schema:
                 type: object
-                additionalProperties: false
-                required:
-                  - accounts
                 properties:
                   accounts:
                     type: object
                     additionalProperties:
                       type: string
+                additionalProperties: false
+                required:
+                  - accounts
   /ListPhrases:
     get:
       operationId: listPhrases
       parameters:
         - name: revisionId
           in: query
+          required: true
           schema:
             type: string
-          required: true
+        - name: key
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: translated
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: untranslated
+          in: query
+          required: false
+          schema:
+            type: string
         - name: page
           in: query
+          required: false
           schema:
             type: integer
-          required: false
         - name: pageSize
           in: query
+          required: false
           schema:
             type: integer
-          required: false
       responses:
         '200':
           description: OK
@@ -576,7 +607,6 @@ paths:
             application/json:
               schema:
                 type: object
-                additionalProperties: false
                 properties:
                   items:
                     type: array
@@ -584,6 +614,7 @@ paths:
                       $ref: '#/components/schemas/PhraseItem'
                   pagination:
                     $ref: '#/components/schemas/Pagination'
+                additionalProperties: false
                 required:
                   - items
                   - pagination
@@ -595,12 +626,12 @@ paths:
           application/json:
             schema:
               type: object
-              additionalProperties: false
               properties:
                 revisionId:
                   type: string
                 key:
                   type: string
+              additionalProperties: false
               required:
                 - revisionId
                 - key
@@ -617,9 +648,9 @@ paths:
       parameters:
         - name: phraseId
           in: query
+          required: true
           schema:
             type: string
-          required: true
       responses:
         '200':
           description: OK
@@ -635,12 +666,12 @@ paths:
           application/json:
             schema:
               type: object
-              additionalProperties: false
               properties:
                 phraseId:
                   type: string
                 key:
                   type: string
+              additionalProperties: false
               required:
                 - phraseId
                 - key
@@ -659,7 +690,6 @@ paths:
           application/json:
             schema:
               type: object
-              additionalProperties: false
               properties:
                 phraseId:
                   type: string
@@ -676,6 +706,7 @@ paths:
                         type: string
                       content:
                         type: string
+              additionalProperties: false
               required:
                 - phraseId
                 - translations
@@ -694,26 +725,19 @@ paths:
           application/json:
             schema:
               type: object
-              additionalProperties: false
               properties:
                 phraseId:
                   type: string
+              additionalProperties: false
               required:
                 - phraseId
       responses:
         '204':
           description: OK
-
 components:
   schemas:
     Pagination:
       type: object
-      additionalProperties: false
-      required:
-        - page
-        - pageSize
-        - pagesCount
-        - itemsCount
       properties:
         page:
           type: integer
@@ -723,9 +747,14 @@ components:
           type: integer
         itemsCount:
           type: integer
+      additionalProperties: false
+      required:
+        - page
+        - pageSize
+        - pagesCount
+        - itemsCount
     CurrentUser:
       type: object
-      additionalProperties: false
       properties:
         id:
           type: string
@@ -757,6 +786,7 @@ components:
                 $ref: '#/components/schemas/WorkspaceAccountRole'
               workspace:
                 $ref: '#/components/schemas/Workspace'
+      additionalProperties: false
       required:
         - id
         - firstName
@@ -767,7 +797,6 @@ components:
         - updatedAt
     Workspace:
       type: object
-      additionalProperties: false
       properties:
         id:
           type: string
@@ -786,6 +815,7 @@ components:
         updatedBy:
           type: string
           nullable: true
+      additionalProperties: false
       required:
         - id
         - key
@@ -796,7 +826,6 @@ components:
         - updatedBy
     WorkspaceAccount:
       type: object
-      additionalProperties: false
       properties:
         id:
           type: string
@@ -806,25 +835,20 @@ components:
           $ref: '#/components/schemas/WorkspaceAccountType'
         service:
           type: object
-          nullable: true
           additionalProperties: false
-          required:
-            - id
-            - name
+          nullable: true
           properties:
             id:
               type: string
             name:
               type: string
-        user:
-          type: object
-          nullable: true
-          additionalProperties: false
           required:
             - id
-            - firstName
-            - lastName
-            - email
+            - name
+        user:
+          type: object
+          additionalProperties: false
+          nullable: true
           properties:
             id:
               type: string
@@ -834,6 +858,11 @@ components:
               type: string
             email:
               type: string
+          required:
+            - id
+            - firstName
+            - lastName
+            - email
         createdAt:
           type: string
           format: date-time
@@ -843,6 +872,7 @@ components:
         invitedBy:
           type: string
           nullable: true
+      additionalProperties: false
       required:
         - id
         - role
@@ -871,7 +901,6 @@ components:
         - closed
     Project:
       type: object
-      additionalProperties: false
       properties:
         id:
           type: string
@@ -882,6 +911,8 @@ components:
         description:
           type: string
           nullable: true
+        masterRevisionId:
+          type: string
         languages:
           type: array
           items:
@@ -897,9 +928,11 @@ components:
         updatedBy:
           type: string
           nullable: true
+      additionalProperties: false
       required:
         - id
         - workspaceId
+        - masterRevisionId
         - name
         - description
         - languages
@@ -909,7 +942,6 @@ components:
         - updatedBy
     ProjectRevision:
       type: object
-      additionalProperties: false
       properties:
         id:
           type: string
@@ -941,6 +973,7 @@ components:
         mergedBy:
           type: string
           nullable: true
+      additionalProperties: false
       required:
         - id
         - workspaceId
@@ -954,7 +987,6 @@ components:
         - updatedBy
     Language:
       type: object
-      additionalProperties: false
       properties:
         id:
           type: string
@@ -975,6 +1007,7 @@ components:
         updatedBy:
           type: string
           nullable: true
+      additionalProperties: false
       required:
         - id
         - workspaceId
@@ -986,7 +1019,6 @@ components:
         - updatedBy
     PhraseItem:
       type: object
-      additionalProperties: false
       properties:
         id:
           type: string
@@ -1009,6 +1041,7 @@ components:
         updatedBy:
           type: string
           nullable: true
+      additionalProperties: false
       required:
         - id
         - key
@@ -1021,7 +1054,6 @@ components:
         - updatedBy
     Phrase:
       type: object
-      additionalProperties: false
       properties:
         id:
           type: string
@@ -1074,6 +1106,7 @@ components:
         updatedBy:
           type: string
           nullable: true
+      additionalProperties: false
       required:
         - id
         - key

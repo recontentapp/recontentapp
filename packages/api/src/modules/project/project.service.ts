@@ -59,6 +59,11 @@ interface GetProjectMasterRevisionParams {
   requester: HumanRequester
 }
 
+interface GetProjectRevisionParams {
+  revisionId: string
+  requester: HumanRequester
+}
+
 @Injectable()
 export class ProjectService {
   constructor(
@@ -73,6 +78,11 @@ export class ProjectService {
       },
       include: {
         languages: true,
+        revisions: {
+          where: {
+            isMaster: true,
+          },
+        },
       },
     })
 
@@ -120,9 +130,6 @@ export class ProjectService {
             })),
           },
         },
-        include: {
-          languages: true,
-        },
       })
 
       await t.projectRevision.create({
@@ -136,7 +143,19 @@ export class ProjectService {
         },
       })
 
-      return project
+      return t.project.findFirstOrThrow({
+        where: {
+          id: project.id,
+        },
+        include: {
+          languages: true,
+          revisions: {
+            where: {
+              isMaster: true,
+            },
+          },
+        },
+      })
     })
 
     this.eventEmitter.emit(
@@ -166,7 +185,7 @@ export class ProjectService {
       throw new ForbiddenException('User is not part of this workspace')
     }
 
-    await this.prismaService.project.update({
+    return this.prismaService.project.update({
       where: {
         id,
       },
@@ -175,9 +194,15 @@ export class ProjectService {
         description,
         updatedBy: requester.getAccountIDForWorkspace(project.workspaceId)!,
       },
+      include: {
+        revisions: {
+          where: {
+            isMaster: true,
+          },
+        },
+        languages: true,
+      },
     })
-
-    return project
   }
 
   async addLanguagesToProject({
@@ -322,6 +347,11 @@ export class ProjectService {
         },
         include: {
           languages: true,
+          revisions: {
+            where: {
+              isMaster: true,
+            },
+          },
         },
         take: limit,
         skip: offset,
@@ -342,6 +372,25 @@ export class ProjectService {
         itemsCount: count,
       },
     }
+  }
+
+  async getProjectRevision({
+    revisionId,
+    requester,
+  }: GetProjectRevisionParams) {
+    const revision = await this.prismaService.projectRevision.findUniqueOrThrow(
+      {
+        where: {
+          id: revisionId,
+        },
+      },
+    )
+
+    if (!requester.canAccessWorkspace(revision.workspaceId)) {
+      throw new ForbiddenException('User is not part of this workspace')
+    }
+
+    return revision
   }
 
   async listProjectRevisions({

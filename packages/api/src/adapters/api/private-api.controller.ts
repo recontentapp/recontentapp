@@ -54,6 +54,7 @@ import {
   TranslatePhraseDto,
   UpdatePhraseKeyDto,
 } from './dto/phrase.dto'
+import { RequiredQuery } from 'src/utils/required-query'
 
 @Controller('private-api')
 @UseGuards(JwtAuthGuard)
@@ -157,11 +158,13 @@ export class PrivateApiController {
   }
 
   private static formatProject(
-    project: Project & { languages: Language[] },
+    project: Project & { languages: Language[]; revisions: ProjectRevision[] },
   ): Components.Schemas.Project {
     return {
       id: project.id,
       workspaceId: project.workspaceId,
+      // TODO: How to enforce presence?
+      masterRevisionId: project.revisions.find(r => r.isMaster)?.id ?? '',
       name: project.name,
       description: project.description,
       createdAt: project.createdAt.toISOString(),
@@ -280,7 +283,7 @@ export class PrivateApiController {
 
   @Get('/GetWorkspaceAvailability')
   async getWorkspaceAvailability(
-    @Query('key') key: string,
+    @RequiredQuery('key') key: string,
   ): Promise<Paths.GetWorkspaceAvailability.Responses.$200> {
     const isAvailable = await this.workspaceService.isWorkspaceKeyAvailable(key)
     return {
@@ -309,7 +312,7 @@ export class PrivateApiController {
 
   @Get('/GetWorkspace')
   async getWorkspace(
-    @Query('id') id: string,
+    @RequiredQuery('id') id: string,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.GetWorkspace.Responses.$200> {
     const workspace = await this.workspaceService.getWorkspace({
@@ -354,8 +357,8 @@ export class PrivateApiController {
 
   @Get('/ListWorkspaceAccounts')
   async listWorkspaceAccounts(
-    @Query('workspaceId') workspaceId: string,
-    @Query('type') type: string,
+    @RequiredQuery('workspaceId') workspaceId: string,
+    @RequiredQuery('type') type: string,
     @Pagination() pagination: PaginationParams,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.ListWorkspaceAccounts.Responses.$200> {
@@ -394,7 +397,7 @@ export class PrivateApiController {
 
   @Get('/ListWorkspaceLanguages')
   async listWorkspaceLanguages(
-    @Query('workspaceId') workspaceId: string,
+    @RequiredQuery('workspaceId') workspaceId: string,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.ListWorkspaceLanguages.Responses.$200> {
     const languages = await this.workspaceService.listWorkspaceLanguages({
@@ -464,7 +467,7 @@ export class PrivateApiController {
 
   @Get('/GetProject')
   async getProject(
-    @Query('id') id: string,
+    @RequiredQuery('id') id: string,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.GetProject.Responses.$200> {
     if (requester.type !== 'human') {
@@ -516,7 +519,7 @@ export class PrivateApiController {
 
   @Get('/ListProjects')
   async listProjects(
-    @Query('workspaceId') workspaceId: string,
+    @RequiredQuery('workspaceId') workspaceId: string,
     @AuthenticatedRequester() requester: Requester,
     @Pagination() pagination: PaginationParams,
   ): Promise<Paths.ListProjects.Responses.$200> {
@@ -538,8 +541,8 @@ export class PrivateApiController {
 
   @Get('/ListProjectRevisions')
   async listProjectRevisions(
-    @Query('projectId') projectId: string,
-    @Query('state') state: string,
+    @RequiredQuery('projectId') projectId: string,
+    @RequiredQuery('state') state: string,
     @AuthenticatedRequester() requester: Requester,
     @Pagination() pagination: PaginationParams,
   ): Promise<Paths.ListProjectRevisions.Responses.$200> {
@@ -564,9 +567,26 @@ export class PrivateApiController {
     }
   }
 
+  @Get('/GetProjectRevision')
+  async getProjectRevision(
+    @RequiredQuery('revisionId') revisionId: string,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.GetProjectRevision.Responses.$200> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    const revision = await this.projectService.getProjectRevision({
+      revisionId,
+      requester,
+    })
+
+    return PrivateApiController.formatProjectRevision(revision)
+  }
+
   @Get('/GetReferenceableAccounts')
   async getReferenceableAccounts(
-    @Query('workspaceId') workspaceId: string,
+    @RequiredQuery('workspaceId') workspaceId: string,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.GetReferenceableAccounts.Responses.$200> {
     const accounts = await this.workspaceService.getReferenceableAccounts({
@@ -579,9 +599,12 @@ export class PrivateApiController {
 
   @Get('/ListPhrases')
   async listPhrases(
-    @Query('revisionId') revisionId: string,
+    @RequiredQuery('revisionId') revisionId: string,
     @AuthenticatedRequester() requester: Requester,
     @Pagination() pagination: PaginationParams,
+    @Query('key') key?: string,
+    @Query('translated') translated?: string,
+    @Query('untranslated') untranslated?: string,
   ): Promise<Paths.ListPhrases.Responses.$200> {
     if (requester.type !== 'human') {
       throw new BadRequestException('Invalid requester')
@@ -589,6 +612,9 @@ export class PrivateApiController {
 
     const result = await this.phraseService.listPhrases({
       revisionId,
+      key,
+      translated,
+      untranslated,
       requester,
       pagination,
     })
@@ -619,7 +645,7 @@ export class PrivateApiController {
 
   @Get('/GetPhrase')
   async getPhrase(
-    @Query('phraseId') phraseId: string,
+    @RequiredQuery('phraseId') phraseId: string,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.GetPhrase.Responses.$200> {
     if (requester.type !== 'human') {
