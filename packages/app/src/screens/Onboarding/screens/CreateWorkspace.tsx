@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import slugify from 'slugify'
 
 import {
@@ -33,7 +33,6 @@ const StyledLink = styled('span', {
 
 export const CreateWorkspace = () => {
   const { refetchUser } = useAuth()
-  const navigate = useNavigate()
   const apiClient = useAPIClient()
   const { mutateAsync: createWorkspace, isPending: isCreatingWorkspace } =
     useCreateWorkspace()
