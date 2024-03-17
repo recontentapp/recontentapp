@@ -19,6 +19,11 @@ enum WorkspaceAccountType {
   service @map("service")
 }
 
+enum ProjectRevisionState {
+  open   @map("open")
+  closed @map("closed")
+}
+
 model User {
   id                String             @id @default(uuid()) @db.VarChar()
   firstName         String             @db.VarChar()
@@ -58,6 +63,9 @@ model Workspace {
   name        String                @db.VarChar()
   invitations WorkspaceInvitation[]
   accounts    WorkspaceAccount[]
+  revisions   ProjectRevision[]
+  languages   Language[]
+  projects    Project[]
   createdAt   DateTime              @default(now())
   updatedAt   DateTime              @updatedAt
   createdBy   String                @db.VarChar()
@@ -85,6 +93,7 @@ model WorkspaceAccount {
 
   @@unique([userId, workspaceId])
   @@unique([apiKey])
+  @@index([workspaceId])
   @@map("workspace_accounts")
 }
 
@@ -102,5 +111,64 @@ model WorkspaceInvitation {
   expiredAt  DateTime
   acceptedAt DateTime?
 
+  @@index([workspaceId])
   @@map("workspace_invitations")
+}
+
+model Language {
+  id          String    @id @default(uuid()) @db.VarChar()
+  workspaceId String    @db.VarChar()
+  locale      String    @db.VarChar()
+  name        String    @db.VarChar()
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  projects    Project[] @relation("projects_languages")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String   @db.VarChar()
+  updatedBy String?  @db.VarChar()
+
+  @@unique([workspaceId, locale])
+  @@index([workspaceId])
+  @@map("languages")
+}
+
+model Project {
+  id          String            @id @default(uuid()) @db.VarChar()
+  workspaceId String            @db.VarChar()
+  name        String            @db.VarChar()
+  description String?           @db.VarChar()
+  workspace   Workspace         @relation(fields: [workspaceId], references: [id])
+  languages   Language[]        @relation("projects_languages")
+  revisions   ProjectRevision[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String   @db.VarChar()
+  updatedBy String?  @db.VarChar()
+
+  @@unique([workspaceId, name])
+  @@index([workspaceId])
+  @@map("projects")
+}
+
+model ProjectRevision {
+  id          String               @id @default(uuid()) @db.VarChar()
+  workspaceId String               @db.VarChar()
+  projectId   String               @db.VarChar()
+  isMaster    Boolean              @default(false)
+  name        String               @db.VarChar()
+  state       ProjectRevisionState
+  project     Project              @relation(fields: [projectId], references: [id])
+  workspace   Workspace            @relation(fields: [workspaceId], references: [id])
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  mergedAt  DateTime?
+  createdBy String    @db.VarChar()
+  updatedBy String?   @db.VarChar()
+  mergedBy  String?   @db.VarChar()
+
+  @@index([workspaceId])
+  @@map("project_revisions")
 }

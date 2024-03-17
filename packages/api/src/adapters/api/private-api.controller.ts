@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   Post,
   Query,
@@ -21,14 +22,29 @@ import {
   UpdateCurrentUserDto,
 } from './dto/authentication.dto'
 import {
+  AddLanguagesToWorkspaceDto,
   CreateWorkspaceDto,
   CreateWorkspaceServiceAccountDto,
   InviteToWorkspaceDto,
   JoinWorkspaceDto,
 } from './dto/workspace.dto'
 import { WorkspaceService } from 'src/modules/workspace/workspace.service'
-import { User, Workspace, WorkspaceAccount } from '@prisma/client'
+import {
+  Language,
+  Project,
+  ProjectRevision,
+  User,
+  Workspace,
+  WorkspaceAccount,
+} from '@prisma/client'
 import { Pagination, PaginationParams } from 'src/utils/pagination'
+import {
+  AddLanguagesToProjectDto,
+  CreateProjectDto,
+  DeleteProjectDto,
+  UpdateProjectDto,
+} from './dto/project.dto'
+import { ProjectService } from 'src/modules/project/project.service'
 
 @Controller('private-api')
 @UseGuards(JwtAuthGuard)
@@ -36,6 +52,7 @@ export class ApiController {
   constructor(
     private readonly authService: AuthService,
     private readonly workspaceService: WorkspaceService,
+    private readonly projectService: ProjectService,
     private readonly prismaService: PrismaService,
   ) {}
 
@@ -73,8 +90,56 @@ export class ApiController {
     }
   }
 
+  private static formatLanguage(
+    language: Language,
+  ): Components.Schemas.Language {
+    return {
+      id: language.id,
+      workspaceId: language.workspaceId,
+      locale: language.locale,
+      name: language.name,
+      createdAt: language.createdAt.toISOString(),
+      updatedAt: language.updatedAt.toISOString(),
+      createdBy: language.createdBy,
+      updatedBy: language.updatedBy,
+    }
+  }
+
+  private static formatProject(
+    project: Project & { languages: Language[] },
+  ): Components.Schemas.Project {
+    return {
+      id: project.id,
+      workspaceId: project.workspaceId,
+      name: project.name,
+      description: project.description,
+      createdAt: project.createdAt.toISOString(),
+      updatedAt: project.updatedAt.toISOString(),
+      createdBy: project.createdBy,
+      updatedBy: project.updatedBy,
+      languages: project.languages.map(ApiController.formatLanguage),
+    }
+  }
+
+  private static formatProjectRevision(
+    revision: ProjectRevision,
+  ): Components.Schemas.ProjectRevision {
+    return {
+      id: revision.id,
+      projectId: revision.projectId,
+      workspaceId: revision.workspaceId,
+      isMaster: revision.isMaster,
+      name: revision.name,
+      state: revision.state,
+      createdAt: revision.createdAt.toISOString(),
+      updatedAt: revision.updatedAt.toISOString(),
+      createdBy: revision.createdBy,
+      updatedBy: revision.updatedBy,
+    }
+  }
+
   @Throttle({ default: { limit: 1, ttl: 1000 } })
-  @Post('/Login')
+  @Post('/LogIn')
   @Public()
   async login(
     @Body() { email, password }: LoginDto,
@@ -239,13 +304,19 @@ export class ApiController {
   @Get('/ListWorkspaceAccounts')
   async listWorkspaceAccounts(
     @Query('workspaceId') workspaceId: string,
+    @Query('type') type: string,
     @Pagination() pagination: PaginationParams,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.ListWorkspaceAccounts.Responses.$200> {
+    if (type !== 'human' && type !== 'service' && type !== 'all') {
+      throw new BadRequestException('Invalid type')
+    }
+
     const result = await this.workspaceService.listWorkspaceAccounts({
       workspaceId,
       requester,
       pagination,
+      type,
     })
 
     return result
@@ -268,5 +339,190 @@ export class ApiController {
     })
 
     return {}
+  }
+
+  @Get('/ListWorkspaceLanguages')
+  async listWorkspaceLanguages(
+    @Query('workspaceId') workspaceId: string,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.ListWorkspaceLanguages.Responses.$200> {
+    const languages = await this.workspaceService.listWorkspaceLanguages({
+      workspaceId,
+      requester,
+    })
+
+    return languages.map(ApiController.formatLanguage)
+  }
+
+  @Post('/AddLanguagesToWorkspace')
+  async addLanguagesToWorkspace(
+    @Body() { workspaceId, languages }: AddLanguagesToWorkspaceDto,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.AddLanguagesToWorkspace.Responses.$201> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    await this.workspaceService.addLanguagesToWorkspace({
+      workspaceId,
+      requester,
+      languages,
+    })
+
+    return {}
+  }
+
+  @Post('/CreateProject')
+  async createProject(
+    @Body() { name, workspaceId, languageIds, description }: CreateProjectDto,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.CreateProject.Responses.$201> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    const project = await this.projectService.createProject({
+      name,
+      workspaceId,
+      languageIds,
+      description: description ?? undefined,
+      requester,
+    })
+
+    return ApiController.formatProject(project)
+  }
+
+  @Post('/UpdateProject')
+  async updateProject(
+    @Body() { id, name, description }: UpdateProjectDto,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.UpdateProject.Responses.$200> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    const project = await this.projectService.updateProject({
+      id,
+      name,
+      description: description ?? undefined,
+      requester,
+    })
+
+    return ApiController.formatProject(project)
+  }
+
+  @Get('/GetProject')
+  async getProject(
+    @Query('id') id: string,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.GetProject.Responses.$200> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    const project = await this.projectService.getProject({
+      projectId: id,
+      requester,
+    })
+
+    return ApiController.formatProject(project)
+  }
+
+  @Post('/AddLanguagesToProject')
+  async addLanguagesToProject(
+    @Body() { projectId, languageIds }: AddLanguagesToProjectDto,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.AddLanguagesToProject.Responses.$201> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    await this.projectService.addLanguagesToProject({
+      projectId,
+      requester,
+      languageIds,
+    })
+
+    return {}
+  }
+
+  @Delete('/DeleteProject')
+  async deleteProject(
+    @Body() { projectId }: DeleteProjectDto,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.DeleteProject.Responses.$204> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    await this.projectService.deleteProject({
+      projectId,
+      requester,
+    })
+
+    return {}
+  }
+
+  @Get('/ListProjects')
+  async listProjects(
+    @Query('workspaceId') workspaceId: string,
+    @AuthenticatedRequester() requester: Requester,
+    @Pagination() pagination: PaginationParams,
+  ): Promise<Paths.ListProjects.Responses.$200> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    const result = await this.projectService.listProjects({
+      workspaceId,
+      requester,
+      pagination,
+    })
+
+    return {
+      items: result.items.map(ApiController.formatProject),
+      pagination: result.pagination,
+    }
+  }
+
+  @Get('/ListProjectRevisions')
+  async listProjectRevisions(
+    @Query('projectId') projectId: string,
+    @Query('state') state: string,
+    @AuthenticatedRequester() requester: Requester,
+    @Pagination() pagination: PaginationParams,
+  ): Promise<Paths.ListProjectRevisions.Responses.$200> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    if (state !== 'open' && state !== 'closed') {
+      throw new BadRequestException('Invalid state')
+    }
+
+    const result = await this.projectService.listProjectRevisions({
+      projectId,
+      state,
+      requester,
+      pagination,
+    })
+
+    return {
+      items: result.items.map(ApiController.formatProjectRevision),
+      pagination: result.pagination,
+    }
+  }
+
+  @Get('/GetReferenceableAccounts')
+  async getReferenceableAccounts(
+    @Query('workspaceId') workspaceId: string,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.GetReferenceableAccounts.Responses.$200> {
+    const accounts = await this.workspaceService.getReferenceableAccounts({
+      workspaceId,
+      requester,
+    })
+
+    return { accounts }
   }
 }

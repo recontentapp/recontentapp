@@ -19,6 +19,7 @@ docker run -p 127.0.0.1:8080:8080/tcp --env PORT=8080 --env JWT_SECRET=HelloWorl
 | Name                           | Description                               |
 | ------------------------------ | ----------------------------------------- |
 | `DATABASE_URL`                 | Postgres connection string                |
+| `DATABASE_LOG_QUERIES`         | Log SQL queries                           |
 | `JWT_SECRET`                   | [JWT](https://jwt.io/) for authentication |
 | `MAILER_HOST`                  | Mailer config                             |
 | `MAILER_PORT`                  | Mailer config                             |

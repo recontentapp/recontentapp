@@ -12,6 +12,7 @@ import { HumanRequester, Requester } from 'src/utils/requester'
 import { WorkspaceInvitationCreatedEvent } from './events/invitation-created.event'
 import { PaginationParams } from 'src/utils/pagination'
 import { generateAPIKey } from 'src/utils/security'
+import { LanguageLocale } from './locale'
 
 interface CreateWorkspaceParams {
   key: string
@@ -48,6 +49,7 @@ interface JoinWorkspaceParams {
 interface ListWorkspaceAccountsParams {
   pagination: PaginationParams
   requester: Requester
+  type: 'human' | 'service' | 'all'
   workspaceId: string
 }
 
@@ -56,6 +58,25 @@ interface CreateWorkspaceServiceAccountParams {
   name: string
   role: WorkspaceAccountRole
   requester: HumanRequester
+}
+
+interface AddLanguagesToWorkspaceParams {
+  workspaceId: string
+  languages: Array<{
+    name: string
+    locale: LanguageLocale
+  }>
+  requester: HumanRequester
+}
+
+interface ListWorkspaceLanguagesParams {
+  workspaceId: string
+  requester: Requester
+}
+
+interface GetReferenceableAccountsParams {
+  workspaceId: string
+  requester: Requester
 }
 
 @Injectable()
@@ -238,6 +259,7 @@ export class WorkspaceService {
 
   async listWorkspaceAccounts({
     workspaceId,
+    type,
     requester,
     pagination,
   }: ListWorkspaceAccountsParams) {
@@ -250,6 +272,11 @@ export class WorkspaceService {
       this.prismaService.workspaceAccount.findMany({
         where: {
           workspaceId,
+          ...(type === 'human'
+            ? { userId: { not: null } }
+            : type === 'service'
+            ? { serviceId: { not: null } }
+            : {}),
         },
         include: {
           user: true,
@@ -261,6 +288,11 @@ export class WorkspaceService {
       this.prismaService.workspaceAccount.count({
         where: {
           workspaceId,
+          ...(type === 'human'
+            ? { userId: { not: null } }
+            : type === 'service'
+            ? { serviceId: { not: null } }
+            : {}),
         },
       }),
     ])
@@ -291,6 +323,7 @@ export class WorkspaceService {
                 id: user.id,
                 firstName: user.firstName,
                 lastName: user.lastName,
+                email: user.email,
               }
             : null,
           createdAt: createdAt.toISOString(),
@@ -335,5 +368,97 @@ export class WorkspaceService {
         },
       })
     })
+  }
+
+  async addLanguagesToWorkspace({
+    workspaceId,
+    languages,
+    requester,
+  }: AddLanguagesToWorkspaceParams) {
+    if (!requester.canAdminWorkspace(workspaceId)) {
+      throw new UnauthorizedException('User is not part of this workspace')
+    }
+
+    const existingLanguages = await this.prismaService.language.findMany({
+      where: {
+        workspaceId,
+      },
+    })
+
+    const newLanguagesLocales = languages.map(l => l.locale)
+    const existingLanguagesLocales = existingLanguages.map(
+      l => l.locale as LanguageLocale,
+    )
+    const localeAlreadyUsed = existingLanguagesLocales.some(locale =>
+      newLanguagesLocales.includes(locale),
+    )
+
+    if (localeAlreadyUsed) {
+      throw new BadRequestException('Locale is already used in workspace')
+    }
+
+    await this.prismaService.language.createMany({
+      data: languages.map(l => ({
+        workspaceId,
+        locale: l.locale,
+        name: l.name,
+        createdBy: requester.getAccountIDForWorkspace(workspaceId)!,
+      })),
+    })
+  }
+
+  async listWorkspaceLanguages({
+    workspaceId,
+    requester,
+  }: ListWorkspaceLanguagesParams) {
+    if (!requester.canAccessWorkspace(workspaceId)) {
+      throw new UnauthorizedException('User is not part of this workspace')
+    }
+
+    const languages = await this.prismaService.language.findMany({
+      where: {
+        workspaceId,
+      },
+    })
+
+    return languages
+  }
+
+  async getReferenceableAccounts({
+    requester,
+    workspaceId,
+  }: GetReferenceableAccountsParams) {
+    if (!requester.canAccessWorkspace(workspaceId)) {
+      throw new UnauthorizedException('User is not part of this workspace')
+    }
+
+    const accounts = await this.prismaService.workspaceAccount.findMany({
+      where: {
+        workspaceId,
+      },
+      include: {
+        user: {
+          select: {
+            firstName: true,
+            lastName: true,
+          },
+        },
+        service: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    })
+
+    return accounts.reduce<Record<string, string>>((acc, account) => {
+      if (account.type === 'human') {
+        acc[account.id] = `${account.user?.firstName} ${account.user?.lastName}`
+      } else {
+        acc[account.id] = `🤖 ${account.service?.name}`
+      }
+
+      return acc
+    }, {})
   }
 }

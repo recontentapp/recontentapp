@@ -14,6 +14,7 @@ import {
   useLooseCurrentWorkspace,
 } from './hooks/workspace'
 import { SelectWorkspace } from './screens/SelectWorkspace'
+import { Workspace } from './screens/Workspace'
 
 const AuthenticatedApp = () => {
   const currentUser = useCurrentUser()
@@ -27,7 +28,7 @@ const AuthenticatedApp = () => {
     return <SelectWorkspace />
   }
 
-  return <div>Hello World</div>
+  return <Workspace />
 }
 
 export const App = () => {

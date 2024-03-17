@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useCallback, useState } from 'react'
+import { Link } from 'react-router-dom'
 import slugify from 'slugify'
 
 import {
@@ -17,8 +17,7 @@ import { styled } from '../../../theme'
 import { useDebounce } from '../../../utils/debounce'
 import { toJoinWorkspace as toOnboardingJoinWorkspace } from '../routes'
 import { useAPIClient, useCreateWorkspace } from '../../../generated/reactQuery'
-import { useCurrentWorkspace } from '../../../hooks/workspace'
-import { toDashboard } from '../../Workspace/routes'
+import { useAuth } from '../../../auth'
 
 interface State {
   name: string
@@ -33,10 +32,8 @@ const StyledLink = styled('span', {
 })
 
 export const CreateWorkspace = () => {
-  const params = useParams<'workspaceKey'>()
-  const navigate = useNavigate()
+  const { refetchUser } = useAuth()
   const apiClient = useAPIClient()
-  const currentWorkspace = useCurrentWorkspace()
   const { mutateAsync: createWorkspace, isPending: isCreatingWorkspace } =
     useCreateWorkspace()
   const [state, setState] = useState<State>({
@@ -68,16 +65,6 @@ export const CreateWorkspace = () => {
     debouncedCheckAvailability(state.key)
   }, [state.key, debouncedCheckAvailability])
 
-  useEffect(() => {
-    if (
-      params.workspaceKey &&
-      currentWorkspace &&
-      params.workspaceKey !== currentWorkspace.key
-    ) {
-      navigate(toDashboard(currentWorkspace.key))
-    }
-  }, [params.workspaceKey, currentWorkspace?.key])
-
   const onSubmit = () => {
     createWorkspace({
       body: {
@@ -86,7 +73,7 @@ export const CreateWorkspace = () => {
       },
     })
       .then(() => {
-        navigate(toDashboard(currentWorkspace!.key))
+        refetchUser()
         toast('success', {
           title: 'Workspace created 🚀',
           description:

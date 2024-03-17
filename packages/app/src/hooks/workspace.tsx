@@ -22,6 +22,7 @@ interface WorkspaceContext {
   currentAccount: Account | null
   currentWorkspace: Workspace | null
   updateCurrentAccount: (account: Account) => void
+  availableAccounts: Account[]
 }
 
 const workspaceContext = createContext<WorkspaceContext>(null!)
@@ -148,9 +149,10 @@ export const CurrentWorkspaceProvider: FC<{ children: ReactNode }> = ({
       isReady,
       currentAccount,
       updateCurrentAccount,
+      availableAccounts: accounts,
       currentWorkspace: currentAccount?.workspace || null,
     }),
-    [currentAccount, isReady, updateCurrentAccount],
+    [currentAccount, accounts, isReady, updateCurrentAccount],
   )
 
   return (
@@ -162,8 +164,29 @@ export const CurrentWorkspaceProvider: FC<{ children: ReactNode }> = ({
 
 export const useLooseCurrentWorkspace = () => useContext(workspaceContext)
 
-export const useCurrentWorkspace = () =>
-  useContext(workspaceContext).currentWorkspace!
+export const useCurrentWorkspace = () => {
+  const { currentWorkspace } = useContext(workspaceContext)
 
-export const useCurrentAccount = () =>
-  useContext(workspaceContext).currentAccount!
+  if (!currentWorkspace) {
+    throw new Error('No current workspace')
+  }
+
+  return currentWorkspace
+}
+
+export const useCurrentAccount = () => {
+  const { currentAccount } = useContext(workspaceContext)
+
+  if (!currentAccount) {
+    throw new Error('No current account')
+  }
+
+  return useMemo(
+    () => ({
+      ...currentAccount,
+      canAdmin: () =>
+        currentAccount.role === 'owner' || currentAccount.role === 'biller',
+    }),
+    [currentAccount],
+  )
+}
