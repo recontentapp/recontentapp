@@ -7,6 +7,8 @@ import { ApiModule } from './adapters/api/api.module'
 import { MyLogger } from './utils/logger'
 import { PrismaExceptionFilter } from './utils/prisma-exception.filter'
 
+const BODY_PARSER_LIMIT = '10MB'
+
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(ApiModule, {
     cors: true,
@@ -16,10 +18,10 @@ async function bootstrap() {
   if (process.env.TRUST_PROXY === 'true') {
     app.enable('trust proxy')
   }
-  app.use(bodyParser.json({ limit: '10MB' }))
+  app.use(bodyParser.json({ limit: BODY_PARSER_LIMIT }))
   app.use(
     bodyParser.urlencoded({
-      limit: '10MB',
+      limit: BODY_PARSER_LIMIT,
       extended: true,
     }),
   )

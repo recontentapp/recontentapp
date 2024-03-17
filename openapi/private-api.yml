@@ -550,6 +550,160 @@ paths:
                     type: object
                     additionalProperties:
                       type: string
+  /ListPhrases:
+    get:
+      operationId: listPhrases
+      parameters:
+        - name: revisionId
+          in: query
+          schema:
+            type: string
+          required: true
+        - name: page
+          in: query
+          schema:
+            type: integer
+          required: false
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+          required: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PhraseItem'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                required:
+                  - items
+                  - pagination
+  /CreatePhrase:
+    post:
+      operationId: createPhrase
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                revisionId:
+                  type: string
+                key:
+                  type: string
+              required:
+                - revisionId
+                - key
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Phrase'
+  /GetPhrase:
+    get:
+      operationId: getPhrase
+      parameters:
+        - name: phraseId
+          in: query
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Phrase'
+  /UpdatePhraseKey:
+    post:
+      operationId: updatePhraseKey
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                phraseId:
+                  type: string
+                key:
+                  type: string
+              required:
+                - phraseId
+                - key
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Phrase'
+  /TranslatePhrase:
+    post:
+      operationId: translatePhrase
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                phraseId:
+                  type: string
+                translations:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    required:
+                      - languageId
+                      - content
+                    properties:
+                      languageId:
+                        type: string
+                      content:
+                        type: string
+              required:
+                - phraseId
+                - translations
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Phrase'
+  /DeletePhrase:
+    delete:
+      operationId: deletePhrase
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                phraseId:
+                  type: string
+              required:
+                - phraseId
+      responses:
+        '204':
+          description: OK
+
 components:
   schemas:
     Pagination:
@@ -826,6 +980,107 @@ components:
         - workspaceId
         - locale
         - name
+        - createdAt
+        - updatedAt
+        - createdBy
+        - updatedBy
+    PhraseItem:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        key:
+          type: string
+        revisionId:
+          type: string
+        projectId:
+          type: string
+        workspaceId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+        updatedBy:
+          type: string
+          nullable: true
+      required:
+        - id
+        - key
+        - revisionId
+        - projectId
+        - workspaceId
+        - createdAt
+        - updatedAt
+        - createdBy
+        - updatedBy
+    Phrase:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        key:
+          type: string
+        revisionId:
+          type: string
+        projectId:
+          type: string
+        workspaceId:
+          type: string
+        translations:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+              - languageId
+              - content
+              - createdAt
+              - updatedAt
+              - createdBy
+              - updatedBy
+            properties:
+              id:
+                type: string
+              languageId:
+                type: string
+              content:
+                type: string
+              createdAt:
+                type: string
+                format: date-time
+              updatedAt:
+                type: string
+                format: date-time
+              createdBy:
+                type: string
+              updatedBy:
+                type: string
+                nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+        updatedBy:
+          type: string
+          nullable: true
+      required:
+        - id
+        - key
+        - revisionId
+        - projectId
+        - workspaceId
+        - translations
         - createdAt
         - updatedAt
         - createdBy

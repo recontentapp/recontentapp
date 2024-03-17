@@ -1,8 +1,7 @@
 import {
   BadRequestException,
-  ForbiddenException,
   Injectable,
-  UnauthorizedException,
+  ForbiddenException,
 } from '@nestjs/common'
 import { EventEmitter2 } from '@nestjs/event-emitter'
 import { WorkspaceAccountRole } from '@prisma/client'
@@ -264,7 +263,7 @@ export class WorkspaceService {
     pagination,
   }: ListWorkspaceAccountsParams) {
     if (!requester.canAccessWorkspace(workspaceId)) {
-      throw new UnauthorizedException('User is not part of this workspace')
+      throw new ForbiddenException('User is not part of this workspace')
     }
 
     const { limit, offset, pageSize, page } = pagination
@@ -347,7 +346,7 @@ export class WorkspaceService {
     role,
   }: CreateWorkspaceServiceAccountParams) {
     if (!requester.canAdminWorkspace(workspaceId)) {
-      throw new UnauthorizedException('User is not part of this workspace')
+      throw new ForbiddenException('User is not part of this workspace')
     }
 
     await this.prismaService.$transaction(async t => {
@@ -376,7 +375,7 @@ export class WorkspaceService {
     requester,
   }: AddLanguagesToWorkspaceParams) {
     if (!requester.canAdminWorkspace(workspaceId)) {
-      throw new UnauthorizedException('User is not part of this workspace')
+      throw new ForbiddenException('User is not part of this workspace')
     }
 
     const existingLanguages = await this.prismaService.language.findMany({
@@ -412,7 +411,7 @@ export class WorkspaceService {
     requester,
   }: ListWorkspaceLanguagesParams) {
     if (!requester.canAccessWorkspace(workspaceId)) {
-      throw new UnauthorizedException('User is not part of this workspace')
+      throw new ForbiddenException('User is not part of this workspace')
     }
 
     const languages = await this.prismaService.language.findMany({
@@ -429,7 +428,7 @@ export class WorkspaceService {
     workspaceId,
   }: GetReferenceableAccountsParams) {
     if (!requester.canAccessWorkspace(workspaceId)) {
-      throw new UnauthorizedException('User is not part of this workspace')
+      throw new ForbiddenException('User is not part of this workspace')
     }
 
     const accounts = await this.prismaService.workspaceAccount.findMany({

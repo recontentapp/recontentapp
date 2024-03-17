@@ -10,13 +10,14 @@ import { RequestIdMiddleware } from 'src/utils/request-id.middleware'
 import { PrismaService } from 'src/utils/prisma.service'
 import { AuthModule } from 'src/modules/auth/auth.module'
 
-import { ApiController } from './private-api.controller'
+import { PrivateApiController } from './private-api.controller'
 import { PublicApiController } from './public-api.controller'
 import { NotificationsModule } from 'src/modules/notifications/notifications.module'
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
 import { APP_GUARD } from '@nestjs/core'
 import { WorkspaceModule } from 'src/modules/workspace/workspace.module'
 import { ProjectModule } from 'src/modules/project/project.module'
+import { PhraseModule } from 'src/modules/phrase/phrase.module'
 
 @Module({
   imports: [
@@ -47,8 +48,9 @@ import { ProjectModule } from 'src/modules/project/project.module'
     NotificationsModule,
     WorkspaceModule,
     ProjectModule,
+    PhraseModule,
   ],
-  controllers: [ApiController, PublicApiController],
+  controllers: [PrivateApiController, PublicApiController],
   providers: [
     MyLogger,
     PrismaService,

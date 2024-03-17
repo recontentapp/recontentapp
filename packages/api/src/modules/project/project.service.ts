@@ -1,7 +1,7 @@
 import {
   BadRequestException,
   Injectable,
-  UnauthorizedException,
+  ForbiddenException,
 } from '@nestjs/common'
 import { EventEmitter2 } from '@nestjs/event-emitter'
 import { ProjectRevisionState } from '@prisma/client'
@@ -54,6 +54,11 @@ interface ListProjectRevisionsParams {
   pagination: PaginationParams
 }
 
+interface GetProjectMasterRevisionParams {
+  projectId: string
+  requester: HumanRequester
+}
+
 @Injectable()
 export class ProjectService {
   constructor(
@@ -72,7 +77,7 @@ export class ProjectService {
     })
 
     if (!requester.canAccessWorkspace(project.workspaceId)) {
-      throw new UnauthorizedException('User is not part of this workspace')
+      throw new ForbiddenException('User is not part of this workspace')
     }
 
     return project
@@ -86,7 +91,7 @@ export class ProjectService {
     languageIds,
   }: CreateProjectParams) {
     if (!requester.canAdminWorkspace(workspaceId)) {
-      throw new UnauthorizedException('User is not part of this workspace')
+      throw new ForbiddenException('User is not part of this workspace')
     }
 
     if (languageIds.length > 0) {
@@ -158,7 +163,7 @@ export class ProjectService {
     })
 
     if (!requester.canAdminWorkspace(project.workspaceId)) {
-      throw new UnauthorizedException('User is not part of this workspace')
+      throw new ForbiddenException('User is not part of this workspace')
     }
 
     await this.prismaService.project.update({
@@ -190,7 +195,7 @@ export class ProjectService {
     })
 
     if (!requester.canAdminWorkspace(project.workspaceId)) {
-      throw new UnauthorizedException('User is not part of this workspace')
+      throw new ForbiddenException('User is not part of this workspace')
     }
 
     if (languageIds.length === 0) {
@@ -243,16 +248,27 @@ export class ProjectService {
     })
 
     if (!requester.canAdminWorkspace(project.workspaceId)) {
-      throw new UnauthorizedException('User is not part of this workspace')
+      throw new ForbiddenException('User is not part of this workspace')
     }
 
     await this.prismaService.$transaction(async t => {
+      await t.phraseTranslation.deleteMany({
+        where: {
+          phrase: {
+            projectId,
+          },
+        },
+      })
+      await t.phrase.deleteMany({
+        where: {
+          projectId,
+        },
+      })
       await t.projectRevision.deleteMany({
         where: {
           projectId,
         },
       })
-
       await t.project.delete({
         where: {
           id: projectId,
@@ -261,13 +277,41 @@ export class ProjectService {
     })
   }
 
+  async getProjectMasterRevision({
+    projectId,
+    requester,
+  }: GetProjectMasterRevisionParams) {
+    const project = await this.prismaService.project.findUniqueOrThrow({
+      where: {
+        id: projectId,
+      },
+      include: {
+        revisions: {
+          where: {
+            isMaster: true,
+          },
+        },
+      },
+    })
+
+    if (!requester.canAccessWorkspace(project.workspaceId)) {
+      throw new ForbiddenException('User is not part of this workspace')
+    }
+
+    if (project.revisions.length === 0) {
+      throw new BadRequestException('Project has no master revision')
+    }
+
+    return project.revisions[0]
+  }
+
   async listProjects({
     workspaceId,
     requester,
     pagination,
   }: ListProjectsParams) {
     if (!requester.canAccessWorkspace(workspaceId)) {
-      throw new UnauthorizedException('User is not part of this workspace')
+      throw new ForbiddenException('User is not part of this workspace')
     }
 
     const { limit, offset, pageSize, page } = pagination
@@ -313,7 +357,7 @@ export class ProjectService {
     })
 
     if (!requester.canAccessWorkspace(project.workspaceId)) {
-      throw new UnauthorizedException('User is not part of this workspace')
+      throw new ForbiddenException('User is not part of this workspace')
     }
 
     const { limit, offset, pageSize, page } = pagination
