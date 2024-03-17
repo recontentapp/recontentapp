@@ -1,5 +1,5 @@
 # Install dependencies
-FROM node:18-alpine As development
+FROM node:20-alpine As development
 
 WORKDIR /usr/src/app
 
@@ -18,7 +18,7 @@ USER node
 
 
 # Build
-FROM node:18-alpine As build
+FROM node:20-alpine As build
 
 WORKDIR /usr/src/app
 
@@ -42,7 +42,7 @@ RUN yarn workspace email-templates build
 USER node
 
 # Production
-FROM node:18-alpine As production
+FROM node:20-alpine As production
 
 WORKDIR /usr/src/app
 
