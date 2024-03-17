@@ -21,7 +21,7 @@ export class CreateProjectDto {
 export class UpdateProjectDto {
   @IsString()
   @IsNotEmpty()
-  projectId: string
+  id: string
 
   @IsString()
   @IsNotEmpty()

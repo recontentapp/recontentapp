@@ -27,6 +27,9 @@ export class APIKeyGuard implements CanActivate {
     const value = matches[2]
     const serviceAccount = await this.prismaService.workspaceAccount.findFirst({
       where: { apiKey: value },
+      include: {
+        service: true,
+      },
     })
     if (!serviceAccount) {
       throw new UnauthorizedException()

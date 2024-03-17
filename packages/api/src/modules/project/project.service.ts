@@ -19,7 +19,7 @@ interface CreateProjectParams {
 }
 
 interface UpdateProjectParams {
-  projectId: string
+  id: string
   name: string
   description?: string
   requester: HumanRequester
@@ -71,7 +71,7 @@ export class ProjectService {
       },
     })
 
-    if (!requester.canAccessWorkspace(project.id)) {
+    if (!requester.canAccessWorkspace(project.workspaceId)) {
       throw new UnauthorizedException('User is not part of this workspace')
     }
 
@@ -144,26 +144,26 @@ export class ProjectService {
 
   async updateProject({
     requester,
-    projectId,
+    id,
     name,
     description,
   }: UpdateProjectParams) {
     const project = await this.prismaService.project.findUniqueOrThrow({
       where: {
-        id: projectId,
+        id,
       },
       include: {
         languages: true,
       },
     })
 
-    if (!requester.canAdminWorkspace(project.id)) {
+    if (!requester.canAdminWorkspace(project.workspaceId)) {
       throw new UnauthorizedException('User is not part of this workspace')
     }
 
     await this.prismaService.project.update({
       where: {
-        id: projectId,
+        id,
       },
       data: {
         name,
@@ -189,7 +189,7 @@ export class ProjectService {
       },
     })
 
-    if (!requester.canAdminWorkspace(project.id)) {
+    if (!requester.canAdminWorkspace(project.workspaceId)) {
       throw new UnauthorizedException('User is not part of this workspace')
     }
 
@@ -242,7 +242,7 @@ export class ProjectService {
       },
     })
 
-    if (!requester.canAdminWorkspace(project.id)) {
+    if (!requester.canAdminWorkspace(project.workspaceId)) {
       throw new UnauthorizedException('User is not part of this workspace')
     }
 

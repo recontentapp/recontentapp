@@ -394,7 +394,7 @@ export class ApiController {
 
   @Post('/UpdateProject')
   async updateProject(
-    @Body() { projectId, name, description }: UpdateProjectDto,
+    @Body() { id, name, description }: UpdateProjectDto,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.UpdateProject.Responses.$200> {
     if (requester.type !== 'human') {
@@ -402,7 +402,7 @@ export class ApiController {
     }
 
     const project = await this.projectService.updateProject({
-      projectId,
+      id,
       name,
       description: description ?? undefined,
       requester,

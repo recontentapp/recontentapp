@@ -17,6 +17,7 @@ export interface AuthContext {
   accessToken: string | null
   currentUser: CurrentUser | null
   status: Status
+  refetchUser: () => void
   signOut: () => void
   signIn: (token: string) => void
 }
@@ -60,6 +61,23 @@ export const AuthProvider: FC<{ children?: ReactNode }> = ({ children }) => {
       })
   }, [])
 
+  const refetchUser = useCallback(async () => {
+    const apiClient = getAPIClient({
+      baseUrl: import.meta.env.VITE_APP_API_URL,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+
+    apiClient.getCurrentUser().then(res => {
+      if (!res.ok) {
+        return
+      }
+
+      setCurrentUser(res.data)
+    })
+  }, [accessToken])
+
   const signIn = useCallback(async (accessToken: string) => {
     const apiClient = getAPIClient({
       baseUrl: import.meta.env.VITE_APP_API_URL,
@@ -98,8 +116,9 @@ export const AuthProvider: FC<{ children?: ReactNode }> = ({ children }) => {
       currentUser,
       signOut,
       signIn,
+      refetchUser,
     }
-  }, [status, accessToken, signOut, currentUser, signIn])
+  }, [status, accessToken, signOut, currentUser, signIn, refetchUser])
 
   return <authContext.Provider value={value}>{children}</authContext.Provider>
 }

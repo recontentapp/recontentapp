@@ -6,6 +6,7 @@ import {
 import {
   User as PrismaUser,
   WorkspaceAccount as PrismaWorkspaceAccount,
+  Service as PrismaService,
 } from '@prisma/client'
 import { Request } from 'express'
 
@@ -18,7 +19,9 @@ export type RequestUser =
     }
   | {
       type: 'service'
-      account: PrismaWorkspaceAccount
+      account: PrismaWorkspaceAccount & {
+        service: PrismaService | null
+      }
     }
 
 export interface HumanRequester {
@@ -61,7 +64,7 @@ export const getRequesterOrNull = (req: Request): Requester | null => {
       canAdminWorkspace: workspaceId => {
         if (
           workspaceId === user.account.workspaceId &&
-          ['OWNER', 'ADMIN'].includes(user.account.role)
+          ['owner', 'admin'].includes(user.account.role)
         ) {
           return true
         }
@@ -99,7 +102,7 @@ export const getRequesterOrNull = (req: Request): Requester | null => {
       const account = user.user.accounts.find(
         account =>
           account.workspaceId === workspaceId &&
-          ['ADMIN', 'OWNER'].includes(account.role),
+          ['admin', 'owner'].includes(account.role),
       )
 
       if (account) {
