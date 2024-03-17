@@ -74,6 +74,11 @@ interface ListWorkspaceLanguagesParams {
   requester: Requester
 }
 
+interface GetReferenceableAccountsParams {
+  workspaceId: string
+  requester: Requester
+}
+
 @Injectable()
 export class WorkspaceService {
   constructor(
@@ -417,5 +422,43 @@ export class WorkspaceService {
     })
 
     return languages
+  }
+
+  async getReferenceableAccounts({
+    requester,
+    workspaceId,
+  }: GetReferenceableAccountsParams) {
+    if (!requester.canAccessWorkspace(workspaceId)) {
+      throw new UnauthorizedException('User is not part of this workspace')
+    }
+
+    const accounts = await this.prismaService.workspaceAccount.findMany({
+      where: {
+        workspaceId,
+      },
+      include: {
+        user: {
+          select: {
+            firstName: true,
+            lastName: true,
+          },
+        },
+        service: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    })
+
+    return accounts.reduce<Record<string, string>>((acc, account) => {
+      if (account.type === 'human') {
+        acc[account.id] = `${account.user?.firstName} ${account.user?.lastName}`
+      } else {
+        acc[account.id] = `🤖 ${account.service?.name}`
+      }
+
+      return acc
+    }, {})
   }
 }

@@ -526,6 +526,30 @@ paths:
                 required:
                   - items
                   - pagination
+  /GetReferenceableAccounts:
+    get:
+      operationId: getReferenceableAccounts
+      parameters:
+        - name: workspaceId
+          in: query
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                  - accounts
+                properties:
+                  accounts:
+                    type: object
+                    additionalProperties:
+                      type: string
 components:
   schemas:
     Pagination:

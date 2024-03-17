@@ -512,4 +512,17 @@ export class ApiController {
       pagination: result.pagination,
     }
   }
+
+  @Get('/GetReferenceableAccounts')
+  async getReferenceableAccounts(
+    @Query('workspaceId') workspaceId: string,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.GetReferenceableAccounts.Responses.$200> {
+    const accounts = await this.workspaceService.getReferenceableAccounts({
+      workspaceId,
+      requester,
+    })
+
+    return { accounts }
+  }
 }
