@@ -2001,18 +2001,10 @@
   dependencies:
     "@babel/runtime" "^7.12.5"
 
-"@tiptap/core@2.0.0-beta.199":
-  version "2.0.0-beta.199"
-  resolved "https://registry.yarnpkg.com/@tiptap/core/-/core-2.0.0-beta.199.tgz#77c3d8df10a4594cf5860b8a73d5007b0a020d01"
-  integrity sha512-34GaXcBEmNFjW1R7nf1LSmOHo3Q81YjKqvLAXjDLLG7MTx+YTrQ4yWwUvMsZtmi4o/FchUzrs1NVCfr571Zxzg==
-  dependencies:
-    prosemirror-commands "^1.3.1"
-    prosemirror-keymap "^1.2.0"
-    prosemirror-model "^1.18.1"
-    prosemirror-schema-list "^1.2.2"
-    prosemirror-state "^1.4.1"
-    prosemirror-transform "^1.7.0"
-    prosemirror-view "^1.28.2"
+"@tiptap/core@2.2.4":
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/@tiptap/core/-/core-2.2.4.tgz#6f957678eb733e70b9282fb5098d284a77bd09a3"
+  integrity sha512-cRrI8IlLIhCE1hacBQzXIC8dsRvGq6a4lYWQK/BaHuZg21CG7szp3Vd8Ix+ra1f5v0xPOT+Hy+QFNQooRMKMCw==
 
 "@tiptap/extension-bold@2.0.0-beta.199":
   version "2.0.0-beta.199"
