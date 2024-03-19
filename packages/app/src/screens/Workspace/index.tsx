@@ -7,7 +7,11 @@ import { Sidebar } from './components/Sidebar'
 import { ModalsProvider } from './hooks/modals'
 import { toDashboard, toWorkspaceSettingsMembers } from './routes'
 import { Dashboard } from './screens/Dashboard'
-import { Project, Settings as ProjectSettings } from './screens/Project'
+import {
+  Project,
+  Settings as ProjectSettings,
+  Phrases as ProjectPhrases,
+} from './screens/Project'
 import { UserSettings } from './screens/UserSettings'
 import {
   Integrations as WorkspaceIntegrations,
@@ -88,6 +92,9 @@ export const Workspace = () => {
                   element={<Project />}
                 >
                   <Route path="settings" element={<ProjectSettings />} />
+                  <Route path="phrases">
+                    <Route path=":revisionId" element={<ProjectPhrases />} />
+                  </Route>
                   <Route
                     path="*"
                     element={<Redirect to={toDashboard(workspaceKey)} />}

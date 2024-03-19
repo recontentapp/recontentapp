@@ -5,14 +5,16 @@ import { FullpageSpinner } from '../../../../components/FullpageSpinner'
 import { Head } from '../../../../components/Head'
 import { Page } from '../../components/Page'
 import { ScreenWrapper } from '../../components/ScreenWrapper'
-import { toDashboard, toProjectSettings } from '../../routes'
+import { toDashboard, toProjectPhrases, toProjectSettings } from '../../routes'
 import { useGetProject } from '../../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../../hooks/workspace'
+import { useKBarContext } from '../../components/KBar'
 
 export const Project: FC = () => {
   const params = useParams<'projectId' | 'revisionId'>()
   const navigate = useNavigate()
   const { key: workspaceKey, name: workspaceName } = useCurrentWorkspace()
+  const { setProjectContext } = useKBarContext()
   const {
     data: project,
     isLoading: projectLoading,
@@ -22,6 +24,18 @@ export const Project: FC = () => {
       id: params.projectId!,
     },
   })
+
+  useEffect(() => {
+    if (!project) {
+      return
+    }
+
+    setProjectContext(project, params.revisionId || project.masterRevisionId)
+
+    return () => {
+      setProjectContext(null, null)
+    }
+  }, [project, params.revisionId, setProjectContext])
 
   useEffect(() => {
     if (failureCount > 0) {
@@ -51,6 +65,14 @@ export const Project: FC = () => {
         title={project.name}
         description={project.description ? project.description : undefined}
         tabs={[
+          {
+            label: 'Phrases',
+            to: toProjectPhrases(
+              workspaceKey,
+              project.id,
+              project.masterRevisionId,
+            ),
+          },
           {
             label: 'Settings',
             to: toProjectSettings(workspaceKey, project.id),
