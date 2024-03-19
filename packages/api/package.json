@@ -21,7 +21,7 @@
     "@nestjs/passport": "10.0.3",
     "@nestjs/platform-express": "10.0.0",
     "@nestjs/serve-static": "4.0.0",
-    "@nestjs/terminus": "10.2.0",
+    "@nestjs/terminus": "10.2.3",
     "@nestjs/throttler": "5.1.2",
     "@prisma/client": "5.10.2",
     "bcrypt": "5.1.1",
