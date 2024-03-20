@@ -1,11 +1,4 @@
-import {
-  FC,
-  MutableRefObject,
-  forwardRef,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from 'react'
+import { FC, forwardRef, useImperativeHandle, useRef, useState } from 'react'
 
 import {
   Box,
@@ -17,7 +10,11 @@ import {
 } from '../../../../components/primitives'
 import { styled } from '../../../../theme'
 import { Components } from '../../../../generated/typeDefinitions'
-import { useCreatePhrase } from '../../../../generated/reactQuery'
+import {
+  getListPhrasesQueryKey,
+  useCreatePhrase,
+} from '../../../../generated/reactQuery'
+import { useQueryClient } from '@tanstack/react-query'
 
 export interface CreatePhraseModalRef {
   open: (project: Components.Schemas.Project, revisionId: string) => void
@@ -41,10 +38,10 @@ const Input = styled('input', {
 interface ContentProps {
   project: Components.Schemas.Project
   revisionId: string
-  modalRef: MutableRefObject<ModalRef>
+  onRequestClose: () => void
 }
 
-const Content: FC<ContentProps> = ({ project, revisionId, modalRef }) => {
+const Content: FC<ContentProps> = ({ project, revisionId, onRequestClose }) => {
   const [isCreatingMore, setIsCreatingMore] = useState(false)
   const { mutateAsync: createPhrase, isPending: isCreatingPhrase } =
     useCreatePhrase()
@@ -69,7 +66,7 @@ const Content: FC<ContentProps> = ({ project, revisionId, modalRef }) => {
         })
 
         if (!isCreatingMore) {
-          modalRef.current.close()
+          onRequestClose()
         }
       })
       .catch(() => {
@@ -115,6 +112,7 @@ const Content: FC<ContentProps> = ({ project, revisionId, modalRef }) => {
 
 export const CreatePhraseModal = forwardRef<CreatePhraseModalRef>(
   (_props, ref) => {
+    const queryClient = useQueryClient()
     const [project, setProject] = useState<Components.Schemas.Project | null>(
       null,
     )
@@ -128,6 +126,13 @@ export const CreatePhraseModal = forwardRef<CreatePhraseModalRef>(
         modalRef.current.open()
       },
       close: () => {
+        if (revisionId) {
+          queryClient.invalidateQueries({
+            queryKey: getListPhrasesQueryKey({
+              queryParams: { revisionId },
+            }),
+          })
+        }
         modalRef.current.close()
       },
     }))
@@ -138,7 +143,14 @@ export const CreatePhraseModal = forwardRef<CreatePhraseModalRef>(
           <Content
             project={project}
             revisionId={revisionId}
-            modalRef={modalRef}
+            onRequestClose={() => {
+              queryClient.invalidateQueries({
+                queryKey: getListPhrasesQueryKey({
+                  queryParams: { revisionId },
+                }),
+              })
+              modalRef.current.close()
+            }}
           />
         )}
       </Modal>

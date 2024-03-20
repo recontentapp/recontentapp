@@ -48,6 +48,7 @@ const Input = styled('input', {
 export const CreateProjectModal = forwardRef<CreateProjectModalRef>(
   (_props, ref) => {
     const queryClient = useQueryClient()
+    const [isCreatingMore, setIsCreatingMore] = useState(false)
     const navigate = useNavigate()
     const { key: workspaceKey, id: workspaceId } = useCurrentWorkspace()
     const modalRef = useRef<ModalRef>(null!)
@@ -111,6 +112,10 @@ export const CreateProjectModal = forwardRef<CreateProjectModalRef>(
             onAction: onSubmit,
             isDisabled: !canBeSubmitted,
             isLoading: isCreatingProject,
+          }}
+          footer={{
+            isCreatingMore,
+            onToggleCreatingMore: value => setIsCreatingMore(value),
           }}
         >
           <Box paddingBottom="$space200" minHeight={122}>

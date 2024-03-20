@@ -280,7 +280,7 @@ export const SignIn: FC = () => {
 
             <Box paddingTop="$space200">
               <Text size="$size80" color="$gray11" lineHeight="$lineHeight300">
-                By clicking Sign in with Google/Email" above, you acknowledge
+                By clicking "Sign in with Google/Email" above, you acknowledge
                 that you have read and agree to our{' '}
                 <ExternalLink
                   title="Terms of use"

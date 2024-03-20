@@ -8,6 +8,7 @@ interface HeadingProps
   children: ReactNode
   size: FontSizeValue
   color?: ColorValue
+  textWrap?: 'balance'
   renderAs: 'h1' | 'h2' | 'h3' | 'h4' | 'span' | 'p'
   withEllipsis?: boolean
 }
@@ -16,6 +17,7 @@ export const Heading: FC<HeadingProps> = ({
   size,
   withEllipsis,
   color = '$gray14',
+  textWrap,
   renderAs,
   children,
   ...props
@@ -25,6 +27,7 @@ export const Heading: FC<HeadingProps> = ({
       display: 'inline-block',
       fontWeight: 700,
       fontSize: size,
+      textWrap,
       lineHeight: '$lineHeight200',
       color,
       ...(withEllipsis && {
@@ -33,7 +36,7 @@ export const Heading: FC<HeadingProps> = ({
         textOverflow: 'ellipsis',
       }),
     })
-  }, [size, withEllipsis, renderAs, color])
+  }, [size, withEllipsis, renderAs, textWrap, color])
 
   return <Component css={props}>{children}</Component>
 }

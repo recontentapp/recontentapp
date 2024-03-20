@@ -11,7 +11,7 @@ interface PageTab {
 }
 
 interface PageProps {
-  title: string
+  title?: string
   titleRightContent?: ReactNode
   subtitle?: string
   description?: string | ReactNode
@@ -88,51 +88,53 @@ export const Page: FC<PageProps> = ({
   return (
     <Box position="relative" paddingTop="$space400">
       <Stack direction="column" spacing="$space300" width="100%">
-        <Box
-          width="100%"
-          maxWidth={MAX_WIDTH}
-          margin="0 auto"
-          paddingX="$space400"
-        >
-          <Stack direction="column" spacing="$space60">
-            {subtitle && (
-              <Text size="$size100" color="$gray11">
-                {subtitle}
-              </Text>
-            )}
-            <Stack
-              direction="column"
-              spacing={
-                typeof description === 'string' ? '$space80' : '$space200'
-              }
-            >
-              <Stack direction="row" spacing="$space100" alignItems="center">
-                <Heading
-                  renderAs="h1"
-                  size="$size500"
-                  lineHeight="$lineHeight100"
-                >
-                  {title}
-                </Heading>
-
-                {titleRightContent && <Box>{titleRightContent}</Box>}
-              </Stack>
-
-              {description && typeof description === 'string' ? (
-                <Text
-                  size="$size100"
-                  color="$gray11"
-                  maxWidth={600}
-                  lineHeight="$lineHeight300"
-                >
-                  {description}
+        {title && (
+          <Box
+            width="100%"
+            maxWidth={MAX_WIDTH}
+            margin="0 auto"
+            paddingX="$space400"
+          >
+            <Stack direction="column" spacing="$space60">
+              {subtitle && (
+                <Text size="$size100" color="$gray11">
+                  {subtitle}
                 </Text>
-              ) : (
-                description
               )}
+              <Stack
+                direction="column"
+                spacing={
+                  typeof description === 'string' ? '$space80' : '$space200'
+                }
+              >
+                <Stack direction="row" spacing="$space100" alignItems="center">
+                  <Heading
+                    renderAs="h1"
+                    size="$size500"
+                    lineHeight="$lineHeight100"
+                  >
+                    {title}
+                  </Heading>
+
+                  {titleRightContent && <Box>{titleRightContent}</Box>}
+                </Stack>
+
+                {description && typeof description === 'string' ? (
+                  <Text
+                    size="$size100"
+                    color="$gray11"
+                    maxWidth={600}
+                    lineHeight="$lineHeight300"
+                  >
+                    {description}
+                  </Text>
+                ) : (
+                  description
+                )}
+              </Stack>
             </Stack>
-          </Stack>
-        </Box>
+          </Box>
+        )}
 
         {tabs && (
           <Stack direction="column" spacing="$space0">

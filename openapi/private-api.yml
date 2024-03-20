@@ -495,7 +495,7 @@ paths:
             type: string
         - name: state
           in: query
-          required: false
+          required: true
           schema:
             $ref: '#/components/schemas/ProjectRevisionState'
         - name: page

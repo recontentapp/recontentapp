@@ -82,7 +82,7 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
   const navigate = useNavigate()
   const formatter = useFormatter()
   const { data: revisions } = useListProjectRevisions({
-    queryParams: { projectId: project.id },
+    queryParams: { projectId: project.id, state: 'open' },
   })
   const filterRef = useRef<FilterRef>(null!)
   const editPhraseKeyModalRef = useRef<EditPhraseKeyModalRef>(null!)
