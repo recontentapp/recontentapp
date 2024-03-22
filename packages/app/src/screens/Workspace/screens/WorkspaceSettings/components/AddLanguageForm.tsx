@@ -9,11 +9,13 @@ import {
   toast,
 } from '../../../../../components/primitives'
 import {
+  getListWorkspaceLanguagesQueryKey,
   useAddLanguagesToWorkspace,
   useListWorkspaceLanguages,
 } from '../../../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
 import { languageLocales } from '../../../../../utils/locales'
+import { useQueryClient } from '@tanstack/react-query'
 
 export interface State {
   name: string
@@ -26,7 +28,16 @@ interface AddLanguageFormProps {
 
 export const AddLanguageForm: FC<AddLanguageFormProps> = ({ onClose }) => {
   const { id: workspaceId } = useCurrentWorkspace()
-  const { mutateAsync, isPending } = useAddLanguagesToWorkspace()
+  const queryClient = useQueryClient()
+  const { mutateAsync, isPending } = useAddLanguagesToWorkspace({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: getListWorkspaceLanguagesQueryKey({
+          queryParams: { workspaceId },
+        }),
+      })
+    },
+  })
   const { data: languages = [], isLoading: isLoadingLanguages } =
     useListWorkspaceLanguages({ queryParams: { workspaceId } })
   const [state, setState] = useState<State>({

@@ -31,6 +31,8 @@ import {
 import { WorkspaceService } from 'src/modules/workspace/workspace.service'
 import {
   Language,
+  Phrase,
+  PhraseTranslation,
   Project,
   ProjectRevision,
   User,
@@ -45,16 +47,66 @@ import {
   UpdateProjectDto,
 } from './dto/project.dto'
 import { ProjectService } from 'src/modules/project/project.service'
+import { PhraseService } from 'src/modules/phrase/phrase.service'
+import {
+  CreatePhraseDto,
+  DeletePhraseDto,
+  TranslatePhraseDto,
+  UpdatePhraseKeyDto,
+} from './dto/phrase.dto'
+import { RequiredQuery } from 'src/utils/required-query'
 
 @Controller('private-api')
 @UseGuards(JwtAuthGuard)
-export class ApiController {
+export class PrivateApiController {
   constructor(
     private readonly authService: AuthService,
     private readonly workspaceService: WorkspaceService,
     private readonly projectService: ProjectService,
+    private readonly phraseService: PhraseService,
     private readonly prismaService: PrismaService,
   ) {}
+
+  private static formatPhraseItem(
+    phrase: Phrase,
+  ): Components.Schemas.PhraseItem {
+    return {
+      id: phrase.id,
+      key: phrase.key,
+      revisionId: phrase.revisionId,
+      projectId: phrase.projectId,
+      workspaceId: phrase.workspaceId,
+      createdAt: phrase.createdAt.toISOString(),
+      updatedAt: phrase.updatedAt.toISOString(),
+      createdBy: phrase.createdBy,
+      updatedBy: phrase.updatedBy,
+    }
+  }
+
+  private static formatPhrase(
+    phrase: Phrase & { translations: PhraseTranslation[] },
+  ): Components.Schemas.Phrase {
+    return {
+      id: phrase.id,
+      key: phrase.key,
+      revisionId: phrase.revisionId,
+      projectId: phrase.projectId,
+      workspaceId: phrase.workspaceId,
+      translations: phrase.translations.map(t => ({
+        id: t.id,
+        languageId: t.languageId,
+        content: t.content,
+        createdAt: t.createdAt.toISOString(),
+        updatedAt: t.updatedAt.toISOString(),
+        createdBy: t.createdBy,
+        updatedBy: t.updatedBy,
+      })),
+      createdAt: phrase.createdAt.toISOString(),
+      updatedAt: phrase.updatedAt.toISOString(),
+      createdBy: phrase.createdBy,
+      updatedBy: phrase.updatedBy,
+    }
+  }
 
   private static formatWorkspace(
     workspace: Workspace,
@@ -85,7 +137,7 @@ export class ApiController {
       accounts: user.accounts.map(account => ({
         id: account.id,
         role: account.role,
-        workspace: ApiController.formatWorkspace(account.workspace),
+        workspace: PrivateApiController.formatWorkspace(account.workspace),
       })),
     }
   }
@@ -106,18 +158,20 @@ export class ApiController {
   }
 
   private static formatProject(
-    project: Project & { languages: Language[] },
+    project: Project & { languages: Language[]; revisions: ProjectRevision[] },
   ): Components.Schemas.Project {
     return {
       id: project.id,
       workspaceId: project.workspaceId,
+      // TODO: How to enforce presence?
+      masterRevisionId: project.revisions.find(r => r.isMaster)?.id ?? '',
       name: project.name,
       description: project.description,
       createdAt: project.createdAt.toISOString(),
       updatedAt: project.updatedAt.toISOString(),
       createdBy: project.createdBy,
       updatedBy: project.updatedBy,
-      languages: project.languages.map(ApiController.formatLanguage),
+      languages: project.languages.map(PrivateApiController.formatLanguage),
     }
   }
 
@@ -195,7 +249,7 @@ export class ApiController {
       },
     })
 
-    return ApiController.formatCurrentUser(user)
+    return PrivateApiController.formatCurrentUser(user)
   }
 
   @Post('/UpdateCurrentUser')
@@ -224,12 +278,12 @@ export class ApiController {
       },
     })
 
-    return ApiController.formatCurrentUser(user)
+    return PrivateApiController.formatCurrentUser(user)
   }
 
   @Get('/GetWorkspaceAvailability')
   async getWorkspaceAvailability(
-    @Query('key') key: string,
+    @RequiredQuery('key') key: string,
   ): Promise<Paths.GetWorkspaceAvailability.Responses.$200> {
     const isAvailable = await this.workspaceService.isWorkspaceKeyAvailable(key)
     return {
@@ -253,12 +307,12 @@ export class ApiController {
       requester,
     })
 
-    return ApiController.formatWorkspace(workspace)
+    return PrivateApiController.formatWorkspace(workspace)
   }
 
   @Get('/GetWorkspace')
   async getWorkspace(
-    @Query('id') id: string,
+    @RequiredQuery('id') id: string,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.GetWorkspace.Responses.$200> {
     const workspace = await this.workspaceService.getWorkspace({
@@ -266,7 +320,7 @@ export class ApiController {
       requester,
     })
 
-    return ApiController.formatWorkspace(workspace)
+    return PrivateApiController.formatWorkspace(workspace)
   }
 
   @Post('/InviteToWorkspace')
@@ -303,8 +357,8 @@ export class ApiController {
 
   @Get('/ListWorkspaceAccounts')
   async listWorkspaceAccounts(
-    @Query('workspaceId') workspaceId: string,
-    @Query('type') type: string,
+    @RequiredQuery('workspaceId') workspaceId: string,
+    @RequiredQuery('type') type: string,
     @Pagination() pagination: PaginationParams,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.ListWorkspaceAccounts.Responses.$200> {
@@ -343,7 +397,7 @@ export class ApiController {
 
   @Get('/ListWorkspaceLanguages')
   async listWorkspaceLanguages(
-    @Query('workspaceId') workspaceId: string,
+    @RequiredQuery('workspaceId') workspaceId: string,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.ListWorkspaceLanguages.Responses.$200> {
     const languages = await this.workspaceService.listWorkspaceLanguages({
@@ -351,7 +405,7 @@ export class ApiController {
       requester,
     })
 
-    return languages.map(ApiController.formatLanguage)
+    return languages.map(PrivateApiController.formatLanguage)
   }
 
   @Post('/AddLanguagesToWorkspace')
@@ -389,7 +443,7 @@ export class ApiController {
       requester,
     })
 
-    return ApiController.formatProject(project)
+    return PrivateApiController.formatProject(project)
   }
 
   @Post('/UpdateProject')
@@ -408,12 +462,12 @@ export class ApiController {
       requester,
     })
 
-    return ApiController.formatProject(project)
+    return PrivateApiController.formatProject(project)
   }
 
   @Get('/GetProject')
   async getProject(
-    @Query('id') id: string,
+    @RequiredQuery('id') id: string,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.GetProject.Responses.$200> {
     if (requester.type !== 'human') {
@@ -425,7 +479,7 @@ export class ApiController {
       requester,
     })
 
-    return ApiController.formatProject(project)
+    return PrivateApiController.formatProject(project)
   }
 
   @Post('/AddLanguagesToProject')
@@ -465,7 +519,7 @@ export class ApiController {
 
   @Get('/ListProjects')
   async listProjects(
-    @Query('workspaceId') workspaceId: string,
+    @RequiredQuery('workspaceId') workspaceId: string,
     @AuthenticatedRequester() requester: Requester,
     @Pagination() pagination: PaginationParams,
   ): Promise<Paths.ListProjects.Responses.$200> {
@@ -480,15 +534,15 @@ export class ApiController {
     })
 
     return {
-      items: result.items.map(ApiController.formatProject),
+      items: result.items.map(PrivateApiController.formatProject),
       pagination: result.pagination,
     }
   }
 
   @Get('/ListProjectRevisions')
   async listProjectRevisions(
-    @Query('projectId') projectId: string,
-    @Query('state') state: string,
+    @RequiredQuery('projectId') projectId: string,
+    @RequiredQuery('state') state: string,
     @AuthenticatedRequester() requester: Requester,
     @Pagination() pagination: PaginationParams,
   ): Promise<Paths.ListProjectRevisions.Responses.$200> {
@@ -508,14 +562,31 @@ export class ApiController {
     })
 
     return {
-      items: result.items.map(ApiController.formatProjectRevision),
+      items: result.items.map(PrivateApiController.formatProjectRevision),
       pagination: result.pagination,
     }
   }
 
+  @Get('/GetProjectRevision')
+  async getProjectRevision(
+    @RequiredQuery('revisionId') revisionId: string,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.GetProjectRevision.Responses.$200> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    const revision = await this.projectService.getProjectRevision({
+      revisionId,
+      requester,
+    })
+
+    return PrivateApiController.formatProjectRevision(revision)
+  }
+
   @Get('/GetReferenceableAccounts')
   async getReferenceableAccounts(
-    @Query('workspaceId') workspaceId: string,
+    @RequiredQuery('workspaceId') workspaceId: string,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.GetReferenceableAccounts.Responses.$200> {
     const accounts = await this.workspaceService.getReferenceableAccounts({
@@ -524,5 +595,121 @@ export class ApiController {
     })
 
     return { accounts }
+  }
+
+  @Get('/ListPhrases')
+  async listPhrases(
+    @RequiredQuery('revisionId') revisionId: string,
+    @AuthenticatedRequester() requester: Requester,
+    @Pagination() pagination: PaginationParams,
+    @Query('key') key?: string,
+    @Query('translated') translated?: string,
+    @Query('untranslated') untranslated?: string,
+  ): Promise<Paths.ListPhrases.Responses.$200> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    const result = await this.phraseService.listPhrases({
+      revisionId,
+      key,
+      translated,
+      untranslated,
+      requester,
+      pagination,
+    })
+
+    return {
+      items: result.items.map(PrivateApiController.formatPhraseItem),
+      pagination: result.pagination,
+    }
+  }
+
+  @Post('/CreatePhrase')
+  async createPhrase(
+    @Body() { revisionId, key }: CreatePhraseDto,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.CreatePhrase.Responses.$201> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    const phrase = await this.phraseService.createPhrase({
+      revisionId,
+      key,
+      requester,
+    })
+
+    return PrivateApiController.formatPhrase(phrase)
+  }
+
+  @Get('/GetPhrase')
+  async getPhrase(
+    @RequiredQuery('phraseId') phraseId: string,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.GetPhrase.Responses.$200> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    const phrase = await this.phraseService.getPhrase({
+      phraseId,
+      requester,
+    })
+
+    return PrivateApiController.formatPhrase(phrase)
+  }
+
+  @Post('/UpdatePhraseKey')
+  async updatePhraseKey(
+    @Body() { phraseId, key }: UpdatePhraseKeyDto,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.UpdatePhraseKey.Responses.$200> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    const phrase = await this.phraseService.updatePhraseKey({
+      phraseId,
+      key,
+      requester,
+    })
+
+    return PrivateApiController.formatPhrase(phrase)
+  }
+
+  @Post('/TranslatePhrase')
+  async translatePhrase(
+    @Body() { phraseId, translations }: TranslatePhraseDto,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.TranslatePhrase.Responses.$200> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    const phrase = await this.phraseService.translatePhrase({
+      phraseId,
+      translations,
+      requester,
+    })
+
+    return PrivateApiController.formatPhrase(phrase)
+  }
+
+  @Delete('/DeletePhrase')
+  async deletePhrase(
+    @Body() { phraseId }: DeletePhraseDto,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.DeleteProject.Responses.$204> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    await this.phraseService.deletePhrase({
+      phraseId,
+      requester,
+    })
+
+    return {}
   }
 }

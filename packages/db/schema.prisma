@@ -58,18 +58,20 @@ model Service {
 }
 
 model Workspace {
-  id          String                @id @default(uuid()) @db.VarChar()
-  key         String                @db.VarChar()
-  name        String                @db.VarChar()
-  invitations WorkspaceInvitation[]
-  accounts    WorkspaceAccount[]
-  revisions   ProjectRevision[]
-  languages   Language[]
-  projects    Project[]
-  createdAt   DateTime              @default(now())
-  updatedAt   DateTime              @updatedAt
-  createdBy   String                @db.VarChar()
-  updatedBy   String?               @db.VarChar()
+  id                 String                @id @default(uuid()) @db.VarChar()
+  key                String                @db.VarChar()
+  name               String                @db.VarChar()
+  invitations        WorkspaceInvitation[]
+  accounts           WorkspaceAccount[]
+  revisions          ProjectRevision[]
+  languages          Language[]
+  projects           Project[]
+  phrases            Phrase[]
+  phraseTranslations PhraseTranslation[]
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+  createdBy          String                @db.VarChar()
+  updatedBy          String?               @db.VarChar()
 
   @@unique([key])
   @@map("workspaces")
@@ -93,7 +95,6 @@ model WorkspaceAccount {
 
   @@unique([userId, workspaceId])
   @@unique([apiKey])
-  @@index([workspaceId])
   @@map("workspace_accounts")
 }
 
@@ -111,17 +112,17 @@ model WorkspaceInvitation {
   expiredAt  DateTime
   acceptedAt DateTime?
 
-  @@index([workspaceId])
   @@map("workspace_invitations")
 }
 
 model Language {
-  id          String    @id @default(uuid()) @db.VarChar()
-  workspaceId String    @db.VarChar()
-  locale      String    @db.VarChar()
-  name        String    @db.VarChar()
-  workspace   Workspace @relation(fields: [workspaceId], references: [id])
-  projects    Project[] @relation("projects_languages")
+  id                 String              @id @default(uuid()) @db.VarChar()
+  workspaceId        String              @db.VarChar()
+  locale             String              @db.VarChar()
+  name               String              @db.VarChar()
+  workspace          Workspace           @relation(fields: [workspaceId], references: [id])
+  projects           Project[]           @relation("projects_languages")
+  phraseTranslations PhraseTranslation[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -129,7 +130,6 @@ model Language {
   updatedBy String?  @db.VarChar()
 
   @@unique([workspaceId, locale])
-  @@index([workspaceId])
   @@map("languages")
 }
 
@@ -141,6 +141,7 @@ model Project {
   workspace   Workspace         @relation(fields: [workspaceId], references: [id])
   languages   Language[]        @relation("projects_languages")
   revisions   ProjectRevision[]
+  phrases     Phrase[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -148,19 +149,20 @@ model Project {
   updatedBy String?  @db.VarChar()
 
   @@unique([workspaceId, name])
-  @@index([workspaceId])
   @@map("projects")
 }
 
 model ProjectRevision {
-  id          String               @id @default(uuid()) @db.VarChar()
-  workspaceId String               @db.VarChar()
-  projectId   String               @db.VarChar()
-  isMaster    Boolean              @default(false)
-  name        String               @db.VarChar()
-  state       ProjectRevisionState
-  project     Project              @relation(fields: [projectId], references: [id])
-  workspace   Workspace            @relation(fields: [workspaceId], references: [id])
+  id                 String               @id @default(uuid()) @db.VarChar()
+  workspaceId        String               @db.VarChar()
+  projectId          String               @db.VarChar()
+  isMaster           Boolean              @default(false)
+  name               String               @db.VarChar()
+  state              ProjectRevisionState
+  project            Project              @relation(fields: [projectId], references: [id])
+  workspace          Workspace            @relation(fields: [workspaceId], references: [id])
+  phrases            Phrase[]
+  phraseTranslations PhraseTranslation[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -169,6 +171,46 @@ model ProjectRevision {
   updatedBy String?   @db.VarChar()
   mergedBy  String?   @db.VarChar()
 
-  @@index([workspaceId])
   @@map("project_revisions")
+}
+
+model Phrase {
+  id           String              @id @default(cuid()) @db.VarChar()
+  key          String              @db.VarChar()
+  revisionId   String              @db.VarChar()
+  projectId    String              @db.VarChar()
+  workspaceId  String              @db.VarChar()
+  revision     ProjectRevision     @relation(fields: [revisionId], references: [id])
+  project      Project             @relation(fields: [projectId], references: [id])
+  workspace    Workspace           @relation(fields: [workspaceId], references: [id])
+  translations PhraseTranslation[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String   @db.VarChar()
+  updatedBy String?  @db.VarChar()
+
+  @@unique([key, revisionId])
+  @@map("phrases")
+}
+
+model PhraseTranslation {
+  id          String          @id @default(cuid()) @db.VarChar()
+  languageId  String          @db.VarChar()
+  revisionId  String          @db.VarChar()
+  workspaceId String          @db.VarChar()
+  phraseId    String          @db.VarChar()
+  content     String
+  language    Language        @relation(fields: [languageId], references: [id])
+  phrase      Phrase          @relation(fields: [phraseId], references: [id])
+  revision    ProjectRevision @relation(fields: [revisionId], references: [id])
+  workspace   Workspace       @relation(fields: [workspaceId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String   @db.VarChar()
+  updatedBy String?  @db.VarChar()
+
+  @@unique([phraseId, languageId, revisionId])
+  @@map("phrase_translations")
 }

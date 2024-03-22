@@ -87,7 +87,15 @@ export const Filter = forwardRef<FilterRef, FilterProps>(
       }
     }
 
-    useOutsideClick(containerRef, () => {
+    useOutsideClick(containerRef, event => {
+      // @ts-expect-error
+      const clickedElementIsOption = !!event.target.closest(
+        '[data-reach-listbox-option]',
+      )
+      if (clickedElementIsOption) {
+        return
+      }
+
       if (!secondSelect) {
         setFirstSelect(undefined)
       }

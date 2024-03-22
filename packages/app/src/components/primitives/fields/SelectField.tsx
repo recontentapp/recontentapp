@@ -1,11 +1,5 @@
-import {
-  ListboxButton,
-  ListboxInput,
-  ListboxList,
-  ListboxOption,
-  ListboxPopover,
-} from '@reach/listbox'
 import { CSSProperties, FC } from 'react'
+import * as Select from '@radix-ui/react-select'
 
 import { useId } from '../../../hooks/ids'
 import { globalCss, keyframes, styled, theme } from '../../../theme'
@@ -36,9 +30,8 @@ const contentShow = keyframes({
 export const globalStyles = globalCss({
   '[data-reach-listbox-popover]': {
     display: 'block',
-    position: 'absolute',
-    zIndex: 120,
     minWidth: 'min-content',
+    zIndex: 1000,
     outline: 'none',
     backgroundColor: '$white',
     border: '1px solid $gray7',
@@ -77,17 +70,14 @@ export const globalStyles = globalCss({
     margin: 0,
     whiteSpace: 'nowrap',
     userSelect: 'none',
+    outline: 'none',
+    '&[data-highlighted]': {
+      backgroundColor: '$gray3',
+    },
+    '&[data-state="checked"]': {
+      fontWeight: 500,
+    },
   },
-
-  '[data-reach-listbox-option][data-current-nav]': {
-    backgroundColor: '$gray3',
-  },
-
-  '[data-reach-listbox-option][data-current-selected]': {
-    fontWeight: 500,
-  },
-
-  '[data-reach-listbox-option][data-current-selected][data-confirming]': {},
 
   '[data-reach-listbox-option][aria-disabled="true"]': {
     opacity: 0.5,
@@ -160,15 +150,15 @@ export const globalStyles = globalCss({
   },
 })
 
-const HeaderLabel = styled('span', {
-  display: 'block',
-  fontSize: '$size60',
-  color: '$gray9',
-  fontWeight: 500,
-  paddingX: '$space80',
-  paddingY: '$space60',
-  borderBottom: '1px solid $gray4',
-})
+// const HeaderLabel = styled('span', {
+//   display: 'block',
+//   fontSize: '$size60',
+//   color: '$gray9',
+//   fontWeight: 500,
+//   paddingX: '$space80',
+//   paddingY: '$space60',
+//   borderBottom: '1px solid $gray4',
+// })
 
 const FooterAction = styled('button', {
   color: '$blue900',
@@ -188,7 +178,6 @@ const FooterAction = styled('button', {
 export const SelectField: FC<SelectFieldProps> = ({
   label,
   hideLabel = false,
-  portal = false,
   width,
   placeholder,
   onChange,
@@ -200,7 +189,6 @@ export const SelectField: FC<SelectFieldProps> = ({
   hint,
   isOptional,
   footerAction,
-  headerLabel,
   info,
   error,
 }) => {
@@ -231,34 +219,41 @@ export const SelectField: FC<SelectFieldProps> = ({
         isOptional={isOptional}
       />
 
-      <ListboxInput
-        aria-labelledby={ID}
-        value={value}
-        name={name}
-        onChange={onSelect}
-        onBlur={onBlur}
-      >
-        <ListboxButton arrow="▼" data-error={!!error} />
-        <ListboxPopover portal={portal}>
-          {headerLabel && <HeaderLabel>{headerLabel}</HeaderLabel>}
-          <ListboxList>
-            {placeholder && (
-              <ListboxOption value={PLACEHOLDER}>{placeholder}</ListboxOption>
-            )}
+      <Select.Root value={value} name={name} onValueChange={onSelect}>
+        <Select.Trigger data-reach-listbox-button>
+          <Select.Value onBlur={onBlur} placeholder={placeholder} />
+          <Select.Icon data-reach-listbox-arrow />
+        </Select.Trigger>
 
-            {options.map(option => (
-              <ListboxOption key={option.value} value={option.value}>
-                {option.label}
-              </ListboxOption>
-            ))}
-          </ListboxList>
-          {footerAction && (
-            <FooterAction onClick={footerAction.onAction}>
-              {footerAction.label}
-            </FooterAction>
-          )}
-        </ListboxPopover>
-      </ListboxInput>
+        <Select.Portal>
+          <Select.Content
+            position="popper"
+            sideOffset={0}
+            data-reach-listbox-popover
+            className="SelectContent"
+          >
+            <Select.Viewport className="SelectViewport">
+              <Select.Group>
+                {options.map(option => (
+                  <Select.Item
+                    data-reach-listbox-option
+                    key={option.value}
+                    value={option.value}
+                  >
+                    <Select.ItemText>{option.label}</Select.ItemText>
+                  </Select.Item>
+                ))}
+              </Select.Group>
+            </Select.Viewport>
+
+            {footerAction && (
+              <FooterAction onClick={footerAction.onAction}>
+                {footerAction.label}
+              </FooterAction>
+            )}
+          </Select.Content>
+        </Select.Portal>
+      </Select.Root>
 
       <Message error={error} info={info} />
     </Stack>

@@ -1,7 +1,7 @@
 import {
   BadRequestException,
   Injectable,
-  UnauthorizedException,
+  ForbiddenException,
 } from '@nestjs/common'
 import { EventEmitter2 } from '@nestjs/event-emitter'
 import { ProjectRevisionState } from '@prisma/client'
@@ -54,6 +54,16 @@ interface ListProjectRevisionsParams {
   pagination: PaginationParams
 }
 
+interface GetProjectMasterRevisionParams {
+  projectId: string
+  requester: HumanRequester
+}
+
+interface GetProjectRevisionParams {
+  revisionId: string
+  requester: HumanRequester
+}
+
 @Injectable()
 export class ProjectService {
   constructor(
@@ -68,11 +78,16 @@ export class ProjectService {
       },
       include: {
         languages: true,
+        revisions: {
+          where: {
+            isMaster: true,
+          },
+        },
       },
     })
 
     if (!requester.canAccessWorkspace(project.workspaceId)) {
-      throw new UnauthorizedException('User is not part of this workspace')
+      throw new ForbiddenException('User is not part of this workspace')
     }
 
     return project
@@ -86,7 +101,7 @@ export class ProjectService {
     languageIds,
   }: CreateProjectParams) {
     if (!requester.canAdminWorkspace(workspaceId)) {
-      throw new UnauthorizedException('User is not part of this workspace')
+      throw new ForbiddenException('User is not part of this workspace')
     }
 
     if (languageIds.length > 0) {
@@ -115,9 +130,6 @@ export class ProjectService {
             })),
           },
         },
-        include: {
-          languages: true,
-        },
       })
 
       await t.projectRevision.create({
@@ -131,7 +143,19 @@ export class ProjectService {
         },
       })
 
-      return project
+      return t.project.findFirstOrThrow({
+        where: {
+          id: project.id,
+        },
+        include: {
+          languages: true,
+          revisions: {
+            where: {
+              isMaster: true,
+            },
+          },
+        },
+      })
     })
 
     this.eventEmitter.emit(
@@ -158,10 +182,10 @@ export class ProjectService {
     })
 
     if (!requester.canAdminWorkspace(project.workspaceId)) {
-      throw new UnauthorizedException('User is not part of this workspace')
+      throw new ForbiddenException('User is not part of this workspace')
     }
 
-    await this.prismaService.project.update({
+    return this.prismaService.project.update({
       where: {
         id,
       },
@@ -170,9 +194,15 @@ export class ProjectService {
         description,
         updatedBy: requester.getAccountIDForWorkspace(project.workspaceId)!,
       },
+      include: {
+        revisions: {
+          where: {
+            isMaster: true,
+          },
+        },
+        languages: true,
+      },
     })
-
-    return project
   }
 
   async addLanguagesToProject({
@@ -190,7 +220,7 @@ export class ProjectService {
     })
 
     if (!requester.canAdminWorkspace(project.workspaceId)) {
-      throw new UnauthorizedException('User is not part of this workspace')
+      throw new ForbiddenException('User is not part of this workspace')
     }
 
     if (languageIds.length === 0) {
@@ -243,16 +273,27 @@ export class ProjectService {
     })
 
     if (!requester.canAdminWorkspace(project.workspaceId)) {
-      throw new UnauthorizedException('User is not part of this workspace')
+      throw new ForbiddenException('User is not part of this workspace')
     }
 
     await this.prismaService.$transaction(async t => {
+      await t.phraseTranslation.deleteMany({
+        where: {
+          phrase: {
+            projectId,
+          },
+        },
+      })
+      await t.phrase.deleteMany({
+        where: {
+          projectId,
+        },
+      })
       await t.projectRevision.deleteMany({
         where: {
           projectId,
         },
       })
-
       await t.project.delete({
         where: {
           id: projectId,
@@ -261,13 +302,41 @@ export class ProjectService {
     })
   }
 
+  async getProjectMasterRevision({
+    projectId,
+    requester,
+  }: GetProjectMasterRevisionParams) {
+    const project = await this.prismaService.project.findUniqueOrThrow({
+      where: {
+        id: projectId,
+      },
+      include: {
+        revisions: {
+          where: {
+            isMaster: true,
+          },
+        },
+      },
+    })
+
+    if (!requester.canAccessWorkspace(project.workspaceId)) {
+      throw new ForbiddenException('User is not part of this workspace')
+    }
+
+    if (project.revisions.length === 0) {
+      throw new BadRequestException('Project has no master revision')
+    }
+
+    return project.revisions[0]
+  }
+
   async listProjects({
     workspaceId,
     requester,
     pagination,
   }: ListProjectsParams) {
     if (!requester.canAccessWorkspace(workspaceId)) {
-      throw new UnauthorizedException('User is not part of this workspace')
+      throw new ForbiddenException('User is not part of this workspace')
     }
 
     const { limit, offset, pageSize, page } = pagination
@@ -278,6 +347,11 @@ export class ProjectService {
         },
         include: {
           languages: true,
+          revisions: {
+            where: {
+              isMaster: true,
+            },
+          },
         },
         take: limit,
         skip: offset,
@@ -300,6 +374,25 @@ export class ProjectService {
     }
   }
 
+  async getProjectRevision({
+    revisionId,
+    requester,
+  }: GetProjectRevisionParams) {
+    const revision = await this.prismaService.projectRevision.findUniqueOrThrow(
+      {
+        where: {
+          id: revisionId,
+        },
+      },
+    )
+
+    if (!requester.canAccessWorkspace(revision.workspaceId)) {
+      throw new ForbiddenException('User is not part of this workspace')
+    }
+
+    return revision
+  }
+
   async listProjectRevisions({
     projectId,
     requester,
@@ -313,7 +406,7 @@ export class ProjectService {
     })
 
     if (!requester.canAccessWorkspace(project.workspaceId)) {
-      throw new UnauthorizedException('User is not part of this workspace')
+      throw new ForbiddenException('User is not part of this workspace')
     }
 
     const { limit, offset, pageSize, page } = pagination

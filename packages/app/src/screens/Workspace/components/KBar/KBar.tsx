@@ -176,7 +176,7 @@ export const KBar = () => {
     },
   })
   const containerRef = useRef<HTMLDivElement>(null)
-  const { closeAll, openCreateProject } = useModals()
+  const { closeAll, openCreatePhrase, openCreateProject } = useModals()
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -203,6 +203,10 @@ export const KBar = () => {
   const navigationItems = useMemo(() => {
     return [
       {
+        label: 'Go to Dashboard',
+        path: toDashboard(workspaceKey),
+      },
+      {
         label: 'Go to Members settings',
         path: toWorkspaceSettingsMembers(workspaceKey),
       },
@@ -218,15 +222,20 @@ export const KBar = () => {
         label: 'Go to User settings',
         path: toUserSettings(workspaceKey),
       },
-      {
-        label: 'Go to Dashboard',
-        path: toDashboard(workspaceKey),
-      },
     ]
   }, [workspaceKey])
 
   const actionsItems = useMemo(() => {
     const actions: Action[] = []
+
+    if (project) {
+      actions.push({
+        label: 'Create a phrase',
+        onSelect: () => {
+          openCreatePhrase(project, project.masterRevisionId)
+        },
+      })
+    }
 
     actions.push({
       label: 'Create a project',
@@ -236,7 +245,7 @@ export const KBar = () => {
     })
 
     return actions
-  }, [project, openCreateProject])
+  }, [project, openCreateProject, openCreatePhrase])
 
   const projectItems = useMemo(() => {
     if (!project) {
@@ -244,6 +253,10 @@ export const KBar = () => {
     }
 
     return [
+      {
+        label: 'Go to Project phrases',
+        path: toProjectSettings(workspaceKey, project.id),
+      },
       {
         label: 'Go to Project settings',
         path: toProjectSettings(workspaceKey, project.id),
