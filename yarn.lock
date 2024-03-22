@@ -5453,10 +5453,10 @@ fast-diff@^1.1.2:
   resolved "https://registry.yarnpkg.com/fast-diff/-/fast-diff-1.3.0.tgz#ece407fa550a64d638536cd727e129c61616e0f0"
   integrity sha512-VxPP4NqbUjj6MaAOafWeUn2cXWLcCtljklUtZf0Ind4XQ+QPtmA0b18zZy0jIQx+ExRVCR/ZQpBmik5lXshNsw==
 
-fast-equals@3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/fast-equals/-/fast-equals-3.0.0.tgz#efbe679d4c0d74040f61d4dda3e6bcb3bdccab82"
-  integrity sha512-Af7nSOpf7617idrFg0MJY6x7yVDPoO80aSwtKTC0afT8B/SsmvTpA+2a+uPLmhVF5IHmY5NPuBAA3dJrp55rJA==
+fast-equals@5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/fast-equals/-/fast-equals-5.0.1.tgz#a4eefe3c5d1c0d021aeed0bc10ba5e0c12ee405d"
+  integrity sha512-WF1Wi8PwwSY7/6Kx0vKXtw8RwuSGoM1bvDaJbu7MxDlR1vovZjIAKrnzyrThgAjm6JDTu0fVgWXDlMGspodfoQ==
 
 fast-glob@^3.2.5, fast-glob@^3.2.9:
   version "3.3.2"

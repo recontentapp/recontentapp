@@ -46,7 +46,7 @@
     "@tiptap/suggestion": "2.0.0-beta.199",
     "cmdk": "0.1.21",
     "emmet-monaco-es": "5.0.2",
-    "fast-equals": "3.0.0",
+    "fast-equals": "5.0.1",
     "history": "5.2.0",
     "match-sorter": "6.3.1",
     "monaco-editor": "0.31.1",
