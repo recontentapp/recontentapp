@@ -248,6 +248,15 @@ export class PhraseService {
     const createdBy = requester.getAccountIDForWorkspace(phrase.workspaceId)!
 
     await this.prismaService.$transaction([
+      this.prismaService.phrase.update({
+        where: {
+          id: phraseId,
+        },
+        data: {
+          updatedAt: new Date(),
+          updatedBy: createdBy,
+        },
+      }),
       ...toInsert.map(({ languageId, content }) =>
         this.prismaService.phraseTranslation.create({
           data: {
