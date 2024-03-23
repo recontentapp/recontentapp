@@ -33,7 +33,7 @@
     "@tiptap/extension-hard-break": "2.0.0-beta.199",
     "@tiptap/extension-history": "2.0.0-beta.199",
     "@tiptap/extension-italic": "2.0.0-beta.199",
-    "@tiptap/extension-link": "2.0.0-beta.199",
+    "@tiptap/extension-link": "2.2.4",
     "@tiptap/extension-list-item": "2.0.0-beta.199",
     "@tiptap/extension-mention": "2.0.0-beta.204",
     "@tiptap/extension-ordered-list": "2.0.0-beta.199",
