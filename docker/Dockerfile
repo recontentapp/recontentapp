@@ -46,7 +46,7 @@ FROM node:20-alpine As production
 
 WORKDIR /usr/src/app
 
-ENV NODE_ENV production
+ENV NODE_ENV=production
 
 COPY --chown=node:node package.json yarn.lock ./
 COPY --chown=node:node ./packages/api/package.json ./packages/api/package.json
