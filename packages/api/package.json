@@ -20,7 +20,7 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/passport": "10.0.3",
     "@nestjs/platform-express": "10.3.4",
-    "@nestjs/serve-static": "4.0.0",
+    "@nestjs/serve-static": "4.0.1",
     "@nestjs/terminus": "10.2.3",
     "@nestjs/throttler": "5.1.2",
     "@prisma/client": "5.10.2",
