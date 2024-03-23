@@ -1,0 +1,15 @@
+FROM node:20-alpine
+
+ENV NODE_ENV=production
+
+WORKDIR /usr/src/app
+
+COPY --chown=node:node package.json yarn.lock ./
+COPY --chown=node:node ./packages/db/migrations ./packages/db/migrations
+COPY --chown=node:node ./packages/db/package.json ./packages/db/package.json
+COPY --chown=node:node ./packages/db/schema.prisma ./packages/db/schema.prisma
+
+RUN yarn install --production --frozen-lockfile
+
+ENTRYPOINT ["packages/db/node_modules/.bin/prisma"]
+CMD ["migrate", "deploy", "--schema", "packages/db/schema.prisma"]

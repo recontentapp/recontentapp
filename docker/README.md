@@ -1,8 +1,11 @@
-# Building Recontent.app using Docker
+# Building Docker images
 
 ```sh
-# Build image
+# Build app image
 docker build . -f docker/Dockerfile -t recontentapp:latest --no-cache
+
+# Build migrations image
+docker build . -f docker/Dockerfile.migrate -t recontentapp-migrate:latest --no-cache
 
 # Run bash within image to inspect content
 docker run -it recontentapp:latest sh
@@ -10,11 +13,14 @@ docker run -it recontentapp:latest sh
 # Get metadata about image
 docker inspect recontentapp:latest
 
-# Run container locally to ensure it works
+# Run migrate container locally to ensure it works
+docker run --env DATABASE_URL=postgres://postgres:postgres@host.docker.internal:6033/recontentapp recontentapp-migrate:latest
+
+# Run app container locally to ensure it works
 docker run -p 127.0.0.1:8080:8080/tcp --env PORT=8080 --env JWT_SECRET=HelloWorld --env DATABASE_URL=postgres://postgres:postgres@host.docker.internal:6033/recontentapp --env SERVE_STATIC_FILES=true recontentapp:latest
 ```
 
-## Environment variables
+## App environment variables
 
 | Name                           | Description                               |
 | ------------------------------ | ----------------------------------------- |
@@ -29,3 +35,9 @@ docker run -p 127.0.0.1:8080:8080/tcp --env PORT=8080 --env JWT_SECRET=HelloWorl
 | `MAILER_FROM_EMAIL`            | Email address used to send emails         |
 | `NODE_TLS_REJECT_UNAUTHORIZED` | Bypass mailer security checks             |
 | `SERVE_STATIC_FILES`           | Wether or not web app should be served    |
+
+## Migrate environment variables
+
+| Name           | Description                |
+| -------------- | -------------------------- |
+| `DATABASE_URL` | Postgres connection string |
