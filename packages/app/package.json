@@ -67,7 +67,7 @@
     "react-virtual": "2.10.4",
     "rtl-detect": "^1.1.2",
     "search-params": "4.0.1",
-    "slugify": "1.6.5",
+    "slugify": "1.6.6",
     "tippy.js": "6.3.7",
     "use-deep-compare-effect": "1.8.1",
     "web-vitals": "2.1.4",
