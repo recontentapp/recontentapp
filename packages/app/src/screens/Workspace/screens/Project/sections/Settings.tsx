@@ -23,14 +23,17 @@ import { useReferenceableAccounts } from '../../../hooks/referenceable'
 import { toDashboard, toWorkspaceSettingsLanguages } from '../../../routes'
 import { AddLanguageForm } from '../components/AddLanguageForm'
 import {
+  getGetProjectQueryKey,
   useDeleteProject,
   useGetProject,
   useListWorkspaceLanguages,
   useUpdateProject,
 } from '../../../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
+import { useQueryClient } from '@tanstack/react-query'
 
 export const Settings: FC = () => {
+  const queryClient = useQueryClient()
   const params = useParams<'projectId'>()
   const [state, setState] = useState({
     name: '',
@@ -43,7 +46,15 @@ export const Settings: FC = () => {
     queryParams: { workspaceId },
   })
   const { mutateAsync: updateProject, isPending: isUpdatingProject } =
-    useUpdateProject()
+    useUpdateProject({
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: getGetProjectQueryKey({
+            queryParams: { id: params.projectId! },
+          }),
+        })
+      },
+    })
   const {
     data: project,
     isLoading: projectLoading,

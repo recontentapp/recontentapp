@@ -15,6 +15,7 @@ import { toDashboard } from '../../routes'
 import {
   getListProjectsQueryKey,
   useCreateProject,
+  useListWorkspaceLanguages,
 } from '../../../../generated/reactQuery'
 import { useQueryClient } from '@tanstack/react-query'
 
@@ -48,9 +49,12 @@ const Input = styled('input', {
 export const CreateProjectModal = forwardRef<CreateProjectModalRef>(
   (_props, ref) => {
     const queryClient = useQueryClient()
-    const [isCreatingMore, setIsCreatingMore] = useState(false)
+    const [addAllLanguages, setAddAllLanguages] = useState(false)
     const navigate = useNavigate()
     const { key: workspaceKey, id: workspaceId } = useCurrentWorkspace()
+    const { data: languages = [] } = useListWorkspaceLanguages({
+      queryParams: { workspaceId },
+    })
     const modalRef = useRef<ModalRef>(null!)
     const inputRef = useRef<HTMLInputElement>(null!)
     const { mutateAsync: createProject, isPending: isCreatingProject } =
@@ -80,7 +84,7 @@ export const CreateProjectModal = forwardRef<CreateProjectModalRef>(
         body: {
           name: state.name,
           description: state.description,
-          languageIds: [],
+          languageIds: addAllLanguages ? languages.map(l => l.id) : [],
           workspaceId,
         },
       })
@@ -114,8 +118,9 @@ export const CreateProjectModal = forwardRef<CreateProjectModalRef>(
             isLoading: isCreatingProject,
           }}
           footer={{
-            isCreatingMore,
-            onToggleCreatingMore: value => setIsCreatingMore(value),
+            toggleLabel: 'Add all workspace languages',
+            isToggled: addAllLanguages,
+            onToggle: value => setAddAllLanguages(value),
           }}
         >
           <Box paddingBottom="$space200" minHeight={122}>

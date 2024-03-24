@@ -44,6 +44,11 @@ interface DeletePhraseParams {
   requester: HumanRequester
 }
 
+interface BatchDeletePhrasesParams {
+  ids: string[]
+  requester: HumanRequester
+}
+
 interface GetPhraseParams {
   phraseId: string
   requester: HumanRequester
@@ -310,6 +315,51 @@ export class PhraseService {
       await t.phrase.delete({
         where: {
           id: phraseId,
+        },
+      })
+    })
+  }
+
+  async batchDeletePhrases({ ids, requester }: BatchDeletePhrasesParams) {
+    const phrases = await this.prismaService.phrase.findMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+    })
+
+    if (phrases.length !== ids.length) {
+      throw new BadRequestException('Some phrases do not exist')
+    }
+
+    const allBelongToSameProject = phrases.every(
+      p => p.projectId === phrases[0].projectId,
+    )
+    if (!allBelongToSameProject) {
+      throw new BadRequestException(
+        'All phrases must belong to the same project',
+      )
+    }
+
+    const workspaceId = phrases[0].workspaceId
+    if (!requester.canAccessWorkspace(workspaceId)) {
+      throw new ForbiddenException('User is not part of this workspace')
+    }
+
+    await this.prismaService.$transaction(async t => {
+      await t.phraseTranslation.deleteMany({
+        where: {
+          phraseId: {
+            in: ids,
+          },
+        },
+      })
+      await t.phrase.deleteMany({
+        where: {
+          id: {
+            in: ids,
+          },
         },
       })
     })

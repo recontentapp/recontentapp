@@ -20,9 +20,10 @@ interface FooterMoveUpDown {
   }
 }
 
-interface FooterCreateMore {
-  isCreatingMore: boolean
-  onToggleCreatingMore: (value: boolean) => void
+interface FooterToggle {
+  isToggled: boolean
+  toggleLabel: string
+  onToggle: (value: boolean) => void
 }
 
 interface ContentProps {
@@ -31,7 +32,7 @@ interface ContentProps {
   description?: string
   children: ReactNode
   asForm?: boolean
-  footer?: FooterMoveUpDown | FooterCreateMore
+  footer?: FooterMoveUpDown | FooterToggle
   contextAction?: {
     icon: IconName
     label: string
@@ -216,11 +217,11 @@ export const Content: FC<ContentProps> = ({
             </Box>
 
             <Stack direction="row" spacing="$space100">
-              {footer && 'isCreatingMore' in footer && (
+              {footer && 'toggleLabel' in footer && (
                 <Switch
-                  value={footer.isCreatingMore}
-                  onChange={value => footer.onToggleCreatingMore(value)}
-                  label="Create more"
+                  value={footer.isToggled}
+                  onChange={value => footer.onToggle(value)}
+                  label={footer.toggleLabel}
                 />
               )}
 

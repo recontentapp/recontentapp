@@ -12,14 +12,17 @@ import {
   UpdatePhraseModalRef,
 } from '../components/UpdatePhraseModal'
 import {
+  getListPhrasesQueryKey,
   useDeletePhrase,
   useGetProject,
   useListPhrases,
   useListWorkspaceLanguages,
 } from '../../../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
+import { useQueryClient } from '@tanstack/react-query'
 
 export const Phrases: FC = () => {
+  const queryClient = useQueryClient()
   const { key: workspaceKey, id: workspaceId } = useCurrentWorkspace()
   const [editingPhraseIndex, setEditingPhraseIndex] = useState<
     number | undefined
@@ -63,13 +66,14 @@ export const Phrases: FC = () => {
     queryParams: { workspaceId },
   })
   const { openCreatePhrase } = useModals()
-  // const { data: phrasesData, isPending } = useListPhrases({
-  //   queryParams: {
-  //     revisionId,
-  //   },
-  // })
   const { mutateAsync: deletePhrase, isPending: isDeletingPhrase } =
-    useDeletePhrase()
+    useDeletePhrase({
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: getListPhrasesQueryKey({ queryParams: { revisionId } }),
+        })
+      },
+    })
 
   if (!project || !languages) {
     return <HorizontalSpinner />
@@ -123,7 +127,7 @@ export const Phrases: FC = () => {
           <PhrasesTable
             project={project}
             phrases={phrases}
-            phrasesTotalCount={0}
+            phrasesTotalCount={data?.pagination.itemsCount ?? 0}
             initialKey={state.key}
             setState={setState}
             translated={state.translated}

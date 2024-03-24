@@ -82,8 +82,9 @@ const Content: FC<ContentProps> = ({ project, revisionId, onRequestClose }) => {
       contextTitle={project.name}
       title="Create phrase"
       footer={{
-        isCreatingMore,
-        onToggleCreatingMore: value => setIsCreatingMore(value),
+        toggleLabel: 'Add more',
+        isToggled: isCreatingMore,
+        onToggle: value => setIsCreatingMore(value),
       }}
       primaryAction={{
         label: 'Save phrase',
@@ -126,6 +127,7 @@ export const CreatePhraseModal = forwardRef<CreatePhraseModalRef>(
         modalRef.current.open()
       },
       close: () => {
+        console.log(revisionId)
         if (revisionId) {
           queryClient.invalidateQueries({
             queryKey: getListPhrasesQueryKey({
@@ -138,7 +140,19 @@ export const CreatePhraseModal = forwardRef<CreatePhraseModalRef>(
     }))
 
     return (
-      <Modal ref={modalRef}>
+      <Modal
+        ref={modalRef}
+        onClose={() => {
+          if (!revisionId) {
+            return
+          }
+          queryClient.invalidateQueries({
+            queryKey: getListPhrasesQueryKey({
+              queryParams: { revisionId },
+            }),
+          })
+        }}
+      >
         {project && revisionId && (
           <Content
             project={project}

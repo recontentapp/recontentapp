@@ -16,6 +16,7 @@ import {
   Table,
   TableRef,
   Text,
+  toast,
 } from '../../../../../components/primitives'
 import { useDebouncedUpdate } from '../../../../../hooks/debouncedEffect'
 import { useFormatter } from '../../../../../hooks/formatter'
@@ -26,10 +27,13 @@ import { toProjectPhrases } from '../../../routes'
 import { EditPhraseKeyModal, EditPhraseKeyModalRef } from './EditPhraseKeyModal'
 import { Search } from './Search'
 import {
+  getListPhrasesQueryKey,
+  useBatchDeletePhrase,
   useListProjectRevisions,
   useListWorkspaceLanguages,
 } from '../../../../../generated/reactQuery'
 import { Components } from '../../../../../generated/typeDefinitions'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface State {
   translated: string | undefined
@@ -73,9 +77,17 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
   const [selectedPhrases, setSelectedPhrases] = useState<
     Components.Schemas.PhraseItem[]
   >([])
+  const queryClient = useQueryClient()
   const tableRef = useRef<TableRef>(null!)
   const { getName } = useReferenceableAccounts()
   const { key: workspaceKey, id: workspaceId } = useCurrentWorkspace()
+  const { mutateAsync: batchDeletePhrases } = useBatchDeletePhrase({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: getListPhrasesQueryKey({ queryParams: { revisionId } }),
+      })
+    },
+  })
   const { data: languages = [] } = useListWorkspaceLanguages({
     queryParams: { workspaceId },
   })
@@ -93,29 +105,27 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
     editPhraseKeyModalRef.current.open({ phrase })
   }
 
-  const onRequestBatchDeletePhrases = (_ids: string[]) => {
+  const onRequestBatchDeletePhrases = (ids: string[]) => {
     confirmationModalRef.current.confirm().then(result => {
       if (!result) {
         return
       }
 
-      // batchDeletePhrase({
-      //   phrase_ids: ids,
-      //   project_id: project.id,
-      //   revision_id: revisionId,
-      // })
-      //   .then(() => {
-      //     toast('success', {
-      //       title: 'Phrases deleted',
-      //     })
-      //     tableRef.current.resetSelection()
-      //   })
-      //   .catch(() => {
-      //     toast('error', {
-      //       title: 'Could not delete phrases',
-      //       description: 'Feel free to try later or contact us',
-      //     })
-      //   })
+      batchDeletePhrases({
+        body: { ids },
+      })
+        .then(() => {
+          toast('success', {
+            title: 'Phrases deleted',
+          })
+          tableRef.current.resetSelection()
+        })
+        .catch(() => {
+          toast('error', {
+            title: 'Could not delete phrases',
+            description: 'Feel free to try later or contact us',
+          })
+        })
     })
   }
 

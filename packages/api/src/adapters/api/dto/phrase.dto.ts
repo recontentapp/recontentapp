@@ -45,3 +45,9 @@ export class DeletePhraseDto {
   @IsNotEmpty()
   phraseId: string
 }
+
+export class BatchDeletePhraseDto {
+  @IsArray()
+  @IsNotEmpty()
+  ids: string[]
+}

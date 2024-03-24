@@ -49,6 +49,7 @@ import {
 import { ProjectService } from 'src/modules/project/project.service'
 import { PhraseService } from 'src/modules/phrase/phrase.service'
 import {
+  BatchDeletePhraseDto,
   CreatePhraseDto,
   DeletePhraseDto,
   TranslatePhraseDto,
@@ -694,6 +695,23 @@ export class PrivateApiController {
     })
 
     return PrivateApiController.formatPhrase(phrase)
+  }
+
+  @Delete('/BatchDeletePhrase')
+  async batchDeletePhrase(
+    @Body() { ids }: BatchDeletePhraseDto,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.BatchDeletePhrase.Responses.$204> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    await this.phraseService.batchDeletePhrases({
+      ids,
+      requester,
+    })
+
+    return {}
   }
 
   @Delete('/DeletePhrase')

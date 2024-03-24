@@ -734,6 +734,25 @@ paths:
       responses:
         '204':
           description: OK
+  /BatchDeletePhrase:
+    delete:
+      operationId: batchDeletePhrase
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ids:
+                  type: array
+                  items:
+                    type: string
+              additionalProperties: false
+              required:
+                - ids
+      responses:
+        '204':
+          description: OK
 components:
   schemas:
     Pagination:
