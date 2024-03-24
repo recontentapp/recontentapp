@@ -18,7 +18,7 @@
 
 Recontent.app is packaged as Docker images & only requires a Postgres database.
 
-To learn more, visit [`docker/README.md`](/docker/README.md).
+To learn more, visit [`docker/README.md`](https://github.com/recontentapp/recontentapp/blob/master/docker/README.md).
 
 ## Try it live!
 
