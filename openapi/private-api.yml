@@ -918,6 +918,15 @@ components:
       enum:
         - open
         - closed
+    FileFormat:
+      type: string
+      enum:
+        - json
+        - yaml
+        - nested_json
+        - nested_yaml
+        - excel
+        - csv
     Project:
       type: object
       properties:
