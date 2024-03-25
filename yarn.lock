@@ -2183,7 +2183,7 @@
     prosemirror-view "^1.28.2"
     tippy.js "^6.3.7"
 
-"@tiptap/extension-bubble-menu@^2.0.0-beta.199":
+"@tiptap/extension-bubble-menu@^2.2.4":
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/@tiptap/extension-bubble-menu/-/extension-bubble-menu-2.2.4.tgz#2477901c78a18c629f7ae828394ff1f91a500c60"
   integrity sha512-Nx1fS9jcFlhxaTDYlnayz2UulhK6CMaePc36+7PQIVI+u20RhgTCRNr25zKNemvsiM0RPZZVUjlHkxC0l5as1Q==
@@ -2200,7 +2200,7 @@
   resolved "https://registry.yarnpkg.com/@tiptap/extension-document/-/extension-document-2.0.0-beta.199.tgz#4a9432ab239cc951b4d9903a90d3a7d5597d3318"
   integrity sha512-l/3k9N2O4wIMQoN/SM3aIBwOhZ2KRxQoqGJfsbAUUwBURBDiT4N2VZaNiJC/w3xCVQXIxHSIlqtm9ZBcZeiH/Q==
 
-"@tiptap/extension-floating-menu@^2.0.0-beta.199":
+"@tiptap/extension-floating-menu@^2.2.4":
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/@tiptap/extension-floating-menu/-/extension-floating-menu-2.2.4.tgz#a97becec8cedfa1fb282a7a52caed35a80098581"
   integrity sha512-U25l7PEzOmlAPugNRl8t8lqyhQZS6W/+3f92+FdwW9qXju3i62iX/3OGCC3Gv+vybmQ4fbZmMjvl+VDfenNi3A==
@@ -2293,14 +2293,13 @@
     prosemirror-transform "^1.7.0"
     prosemirror-view "^1.28.2"
 
-"@tiptap/react@2.0.0-beta.199":
-  version "2.0.0-beta.199"
-  resolved "https://registry.yarnpkg.com/@tiptap/react/-/react-2.0.0-beta.199.tgz#98f9fb2134fdc385648ed06ea1ec78902c0e99cf"
-  integrity sha512-AjBtoavcJ7WOoEXdJlrVEdEv6xuI5UFnqB88w8NlORSkWbfQ3uuOm3A0LUZ92/SsBz6NISZbsFahMy0DYgGbIA==
+"@tiptap/react@2.2.4":
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/@tiptap/react/-/react-2.2.4.tgz#bfb6a484a26d85df7a6f9636b98c38f4e83de4c0"
+  integrity sha512-HkYmMZWcETPZn3KpzdDg/ns2TKeFh54TvtCEInA4ljYtWGLoZc/A+KaiEtMIgVs+Mo1XwrhuoNGjL9c0OK2HJw==
   dependencies:
-    "@tiptap/extension-bubble-menu" "^2.0.0-beta.199"
-    "@tiptap/extension-floating-menu" "^2.0.0-beta.199"
-    prosemirror-view "^1.28.2"
+    "@tiptap/extension-bubble-menu" "^2.2.4"
+    "@tiptap/extension-floating-menu" "^2.2.4"
 
 "@tiptap/suggestion@2.0.0-beta.199":
   version "2.0.0-beta.199"
