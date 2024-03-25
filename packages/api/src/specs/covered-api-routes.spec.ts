@@ -69,7 +69,7 @@ describe('private-api', () => {
     const openAPIFile: OpenAPIFile = yaml.parse(privateAPI)
 
     const uncovered: Route[] = []
-    const allCovered = Object.keys(openAPIFile.paths).every(path => {
+    Object.keys(openAPIFile.paths).forEach(path => {
       const prefixedPath = `/private-api${path}`
       const methods = Object.keys(openAPIFile.paths[path])
 
@@ -89,9 +89,47 @@ describe('private-api', () => {
       return covered
     })
 
-    if (!allCovered) {
+    if (uncovered.length > 0) {
       console.log('Uncovered routes:', uncovered)
     }
-    expect(allCovered).toBe(true)
+    expect(uncovered.length).toBe(0)
+  })
+})
+
+describe('public-api', () => {
+  it('covers all routes', async () => {
+    const routes = await getRoutes()
+
+    const privateAPI = fs.readFileSync(
+      path.join(__dirname, '../../../../openapi/public-api.yml'),
+      'utf8',
+    )
+    const openAPIFile: OpenAPIFile = yaml.parse(privateAPI)
+
+    const uncovered: Route[] = []
+    Object.keys(openAPIFile.paths).forEach(path => {
+      const prefixedPath = `/public-api${path}`
+      const methods = Object.keys(openAPIFile.paths[path])
+
+      const covered = methods.every(method => {
+        return routes.some(route => {
+          return route.path === prefixedPath && route.method === method
+        })
+      })
+
+      if (!covered) {
+        uncovered.push({
+          path: prefixedPath,
+          method: methods.join(', '),
+        })
+      }
+
+      return covered
+    })
+
+    if (uncovered.length > 0) {
+      console.log('Uncovered routes:', uncovered)
+    }
+    expect(uncovered.length).toBe(0)
   })
 })

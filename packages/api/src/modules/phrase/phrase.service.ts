@@ -7,7 +7,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter'
 import { Prisma } from '@prisma/client'
 import { PaginationParams } from 'src/utils/pagination'
 import { PrismaService } from 'src/utils/prisma.service'
-import { HumanRequester } from 'src/utils/requester'
+import { HumanRequester, Requester } from 'src/utils/requester'
 
 interface ListPhrasesParams {
   revisionId: string
@@ -15,7 +15,7 @@ interface ListPhrasesParams {
   translated?: string
   untranslated?: string
   pagination: PaginationParams
-  requester: HumanRequester
+  requester: Requester
 }
 
 interface CreatePhraseParams {
@@ -51,7 +51,7 @@ interface BatchDeletePhrasesParams {
 
 interface GetPhraseParams {
   phraseId: string
-  requester: HumanRequester
+  requester: Requester
 }
 
 @Injectable()

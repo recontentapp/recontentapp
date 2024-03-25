@@ -12,8 +12,8 @@
     "prepare": "husky",
     "prettier:lint": "prettier -c .",
     "prettier:fix": "prettier -w .",
-    "openapi:generate": "openapi-kit generate -f ./openapi/private-api.yml -o ./packages/api/src/generated --types && openapi-kit generate -f ./openapi/private-api.yml -o ./packages/app/src/generated",
-    "openapi:format": "openapi-format ./openapi/private-api.yml -o ./openapi/private-api.yml",
+    "openapi:generate": "openapi-kit generate -f ./openapi/private-api.yml -o ./packages/api/src/generated --types && openapi-kit generate -f ./openapi/public-api.yml -o ./packages/api/src/generated/public --types && openapi-kit generate -f ./openapi/private-api.yml -o ./packages/app/src/generated",
+    "openapi:format": "openapi-format ./openapi/private-api.yml -o ./openapi/private-api.yml && openapi-format ./openapi/public-api.yml -o ./openapi/public-api.yml",
     "start:app": "yarn workspace app start",
     "start:api": "yarn workspace api start"
   },
