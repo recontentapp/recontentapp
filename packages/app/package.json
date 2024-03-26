@@ -14,7 +14,7 @@
     "@monaco-editor/loader": "1.2.0",
     "@radix-ui/colors": "0.1.8",
     "@radix-ui/react-select": "2.0.0",
-    "@reach/combobox": "0.16.5",
+    "@reach/combobox": "0.18.0",
     "@reach/dialog": "0.16.2",
     "@reach/menu-button": "0.16.2",
     "@reach/popover": "0.16.2",
