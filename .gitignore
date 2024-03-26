@@ -188,5 +188,5 @@ dist
 .ionide
 
 # Generated folders
-/**/generated/*.ts
-/**/generated/*.tsx
+/**/generated/**/*.ts
+/**/generated/**/*.tsx

@@ -1,11 +1,14 @@
 import * as bcrypt from 'bcrypt'
-import { randomBytes } from 'node:crypto'
+import { randomBytes } from 'crypto'
 
 const roundsOfHashing = 10
 
 export const generateAPIKey = () => {
-  const buffer = randomBytes(32)
-  const apiKey = buffer.toString('utf-8')
+  const buffer = randomBytes(100)
+  const apiKey = buffer
+    .toString('base64')
+    .replace(/[^a-zA-Z0-9]/g, '')
+    .slice(0, 32)
 
   return apiKey
 }

@@ -89,9 +89,11 @@ model WorkspaceAccount {
   service     Service?             @relation(fields: [serviceId], references: [id])
   workspace   Workspace            @relation(fields: [workspaceId], references: [id])
 
-  invitedBy String?  @db.VarChar()
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  invitedBy String?   @db.VarChar()
+  blockedBy String?   @db.VarChar()
+  blockedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@unique([userId, workspaceId])
   @@unique([apiKey])
@@ -175,7 +177,7 @@ model ProjectRevision {
 }
 
 model Phrase {
-  id           String              @id @default(cuid()) @db.VarChar()
+  id           String              @id @default(uuid()) @db.VarChar()
   key          String              @db.VarChar()
   revisionId   String              @db.VarChar()
   projectId    String              @db.VarChar()
@@ -195,7 +197,7 @@ model Phrase {
 }
 
 model PhraseTranslation {
-  id          String          @id @default(cuid()) @db.VarChar()
+  id          String          @id @default(uuid()) @db.VarChar()
   languageId  String          @db.VarChar()
   revisionId  String          @db.VarChar()
   workspaceId String          @db.VarChar()

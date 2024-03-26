@@ -5,34 +5,58 @@ import {
   Button,
   Stack,
   TextField,
+  toast,
 } from '../../../../../components/primitives'
+import {
+  getListWorkspaceAccountsQueryKey,
+  useCreateWorkspaceServiceAccount,
+} from '../../../../../generated/reactQuery'
+import { useCurrentWorkspace } from '../../../../../hooks/workspace'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface AddAPIKeyFormProps {
   onClose: () => void
 }
 
 export const AddAPIKeyForm: FC<AddAPIKeyFormProps> = ({ onClose }) => {
+  const queryClient = useQueryClient()
   const [name, setName] = useState('')
+  const { id: workspaceId } = useCurrentWorkspace()
+  const { mutateAsync } = useCreateWorkspaceServiceAccount({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: getListWorkspaceAccountsQueryKey({
+          queryParams: {
+            workspaceId,
+            type: 'service',
+          },
+        }),
+      })
+    },
+  })
 
   const onSubmit = () => {
-    // mutateAsync({
-    //   name,
-    //   workspace_id: workspaceId,
-    // })
-    //   .then(result => {
-    //     alert(
-    //       `Your API key is ${result.key}. Make sure to copy it somewhere secure, it won't be available within the app in the future.`,
-    //     )
-    //     onClose()
-    //     toast('success', {
-    //       title: 'API key created',
-    //     })
-    //   })
-    //   .catch(() => {
-    //     toast('error', {
-    //       title: 'Could not create API key',
-    //     })
-    //   })
+    mutateAsync({
+      body: {
+        name,
+        role: 'member',
+        workspaceId,
+      },
+    })
+      .then(result => {
+        alert(
+          `Your API key is ${result.apiKey}. Make sure to copy it somewhere secure, it won't be available within the app in the future.`,
+        )
+        onClose()
+        toast('success', {
+          title: 'API key created',
+        })
+      })
+      .catch(() => {
+        toast('error', {
+          title: 'Could not create API key',
+        })
+      })
   }
 
   const canBeSubmitted = name.length > 0

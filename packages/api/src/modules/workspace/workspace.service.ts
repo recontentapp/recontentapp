@@ -59,6 +59,11 @@ interface CreateWorkspaceServiceAccountParams {
   requester: HumanRequester
 }
 
+interface DeleteWorkspaceServiceAccountParams {
+  id: string
+  requester: HumanRequester
+}
+
 interface AddLanguagesToWorkspaceParams {
   workspaceId: string
   languages: Array<{
@@ -274,8 +279,9 @@ export class WorkspaceService {
           ...(type === 'human'
             ? { userId: { not: null } }
             : type === 'service'
-            ? { serviceId: { not: null } }
-            : {}),
+              ? { serviceId: { not: null } }
+              : {}),
+          blockedAt: null,
         },
         include: {
           user: true,
@@ -290,8 +296,9 @@ export class WorkspaceService {
           ...(type === 'human'
             ? { userId: { not: null } }
             : type === 'service'
-            ? { serviceId: { not: null } }
-            : {}),
+              ? { serviceId: { not: null } }
+              : {}),
+          blockedAt: null,
         },
       }),
     ])
@@ -349,6 +356,8 @@ export class WorkspaceService {
       throw new ForbiddenException('User is not part of this workspace')
     }
 
+    const apiKey = generateAPIKey()
+
     await this.prismaService.$transaction(async t => {
       const service = await t.service.create({
         data: {
@@ -360,12 +369,41 @@ export class WorkspaceService {
         data: {
           type: 'service',
           workspaceId,
-          apiKey: generateAPIKey(),
+          apiKey,
           serviceId: service.id,
           invitedBy: requester.getAccountIDForWorkspace(workspaceId)!,
           role,
         },
       })
+    })
+
+    return apiKey
+  }
+
+  async deleteWorkspaceServiceAccount({
+    id,
+    requester,
+  }: DeleteWorkspaceServiceAccountParams) {
+    const account = await this.prismaService.workspaceAccount.findUniqueOrThrow(
+      {
+        where: {
+          id,
+        },
+      },
+    )
+
+    if (!requester.canAdminWorkspace(account.workspaceId)) {
+      throw new ForbiddenException('User is not part of this workspace')
+    }
+
+    await this.prismaService.workspaceAccount.update({
+      where: {
+        id,
+      },
+      data: {
+        blockedAt: new Date(),
+        blockedBy: requester.getAccountIDForWorkspace(account.workspaceId)!,
+      },
     })
   }
 

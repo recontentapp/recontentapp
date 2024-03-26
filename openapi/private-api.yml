@@ -282,6 +282,33 @@ paths:
       responses:
         '201':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  apiKey:
+                    type: string
+                additionalProperties: false
+                required:
+                  - apiKey
+  /DeleteWorkspaceServiceAccount:
+    delete:
+      operationId: deleteWorkspaceServiceAccount
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+              additionalProperties: false
+              required:
+                - id
+      responses:
+        '204':
+          description: OK
   /ListWorkspaceLanguages:
     get:
       operationId: listWorkspaceLanguages
