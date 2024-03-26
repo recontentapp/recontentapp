@@ -89,9 +89,11 @@ model WorkspaceAccount {
   service     Service?             @relation(fields: [serviceId], references: [id])
   workspace   Workspace            @relation(fields: [workspaceId], references: [id])
 
-  invitedBy String?  @db.VarChar()
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  invitedBy String?   @db.VarChar()
+  blockedBy String?   @db.VarChar()
+  blockedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@unique([userId, workspaceId])
   @@unique([apiKey])

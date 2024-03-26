@@ -59,6 +59,12 @@ export class CreateWorkspaceServiceAccountDto {
   role: WorkspaceAccountRole
 }
 
+export class DeleteWorkspaceServiceAccountDto {
+  @IsString()
+  @IsNotEmpty()
+  id: string
+}
+
 class Language {
   @IsString()
   @IsNotEmpty()

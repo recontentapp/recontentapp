@@ -18,24 +18,20 @@ import {
 } from '@prisma/client'
 import { Components, Paths } from 'src/generated/public/typeDefinitions'
 import { APIKeyGuard } from 'src/modules/auth/api-key.guard'
-import { AuthService } from 'src/modules/auth/auth.service'
 import { PhraseService } from 'src/modules/phrase/phrase.service'
-import { ProjectService } from 'src/modules/project/project.service'
 import { possibleLocales } from 'src/modules/workspace/locale'
-import { WorkspaceService } from 'src/modules/workspace/workspace.service'
 import { Pagination, PaginationParams } from 'src/utils/pagination'
 import { PrismaService } from 'src/utils/prisma.service'
 import { AuthenticatedRequester, Requester } from 'src/utils/requester'
 import { RequiredQuery } from 'src/utils/required-query'
 import { CreatePhraseExportDto } from './public-dto/phrase.dto'
+import { Throttle } from '@nestjs/throttler'
 
 @Controller('public-api')
+@Throttle({ default: { limit: 10, ttl: 1000 } })
 @UseGuards(APIKeyGuard)
 export class PublicApiController {
   constructor(
-    private readonly authService: AuthService,
-    private readonly workspaceService: WorkspaceService,
-    private readonly projectService: ProjectService,
     private readonly phraseService: PhraseService,
     private readonly prismaService: PrismaService,
   ) {}
