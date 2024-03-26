@@ -43,7 +43,7 @@
     "@tiptap/extension-text": "2.0.0-beta.199",
     "@tiptap/pm": "2.1.13",
     "@tiptap/react": "2.2.4",
-    "@tiptap/suggestion": "2.0.0-beta.199",
+    "@tiptap/suggestion": "2.2.4",
     "cmdk": "0.1.21",
     "emmet-monaco-es": "5.0.2",
     "fast-equals": "5.0.1",
