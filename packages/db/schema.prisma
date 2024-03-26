@@ -177,7 +177,7 @@ model ProjectRevision {
 }
 
 model Phrase {
-  id           String              @id @default(cuid()) @db.VarChar()
+  id           String              @id @default(uuid()) @db.VarChar()
   key          String              @db.VarChar()
   revisionId   String              @db.VarChar()
   projectId    String              @db.VarChar()
@@ -197,7 +197,7 @@ model Phrase {
 }
 
 model PhraseTranslation {
-  id          String          @id @default(cuid()) @db.VarChar()
+  id          String          @id @default(uuid()) @db.VarChar()
   languageId  String          @db.VarChar()
   revisionId  String          @db.VarChar()
   workspaceId String          @db.VarChar()
