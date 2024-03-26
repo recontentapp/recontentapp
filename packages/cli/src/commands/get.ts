@@ -1,6 +1,7 @@
 import { Command } from 'commander'
 import { getEnvironment } from '../utils/environment'
 import { getAPIClient } from '../generated/apiClient'
+import { AsciiTable3 } from 'ascii-table3'
 
 interface Flags {
   project?: string
@@ -17,7 +18,7 @@ const getCommand = new Command('get')
   .description(
     'Prints a table of the most important information about the specified resources.',
   )
-  .argument('<resource>', 'string to split')
+  .argument('<resource>', 'projects, languages or workspace')
   .option('-p, --project <id>')
   .action(async (resource: string, flags: Flags, command: Command) => {
     if (!isValidResource(resource)) {
@@ -37,17 +38,49 @@ const getCommand = new Command('get')
       },
     })
 
+    const items: Array<{ id: string; label: string }> = []
+
     switch (resource) {
-      case 'projects':
-        apiClient.listProjects({ queryParams: {} })
+      case 'projects': {
+        const res = await apiClient.listProjects({ queryParams: {} })
+        if (!res.ok) {
+          command.error('Failed to fetch projects.')
+        }
+        res.data.items.forEach(project => {
+          items.push({ id: project.id, label: project.name })
+        })
         break
-      case 'languages':
-        console.log('Getting languages...')
+      }
+      case 'languages': {
+        const res = await apiClient.listLanguages({
+          queryParams: {
+            projectId: flags.project,
+          },
+        })
+        if (!res.ok) {
+          command.error('Failed to fetch languages.')
+        }
+        res.data.items.forEach(project => {
+          items.push({ id: project.id, label: project.name })
+        })
         break
-      case 'workspace':
-        console.log('Getting workspace...')
-        break
+      }
+      case 'workspace': {
+        const res = await apiClient.getWorkspace()
+        if (!res.ok) {
+          command.error('Failed to fetch workspace.')
+        }
+        items.push({ id: res.data.id, label: res.data.name })
+      }
     }
+
+    const table = new AsciiTable3()
+      .setHeading('ID', 'Label')
+      .setStyle('compact')
+    items.forEach(item => {
+      table.addRow(item.id, item.label)
+    })
+    console.log(table.toString())
   })
 
 export default getCommand

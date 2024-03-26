@@ -52,6 +52,10 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Language'
+                additionalProperties: false
+                required:
+                  - pagination
+                  - items
   /projects:
     get:
       operationId: listProjects
@@ -83,6 +87,10 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Project'
+                additionalProperties: false
+                required:
+                  - pagination
+                  - items
   '/projects/{id}':
     get:
       operationId: getProject
@@ -138,6 +146,10 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/PhraseItem'
+                additionalProperties: false
+                required:
+                  - pagination
+                  - items
   '/phrases/{id}':
     get:
       operationId: getPhrase
