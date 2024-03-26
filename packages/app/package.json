@@ -12,7 +12,7 @@
   "dependencies": {
     "@hookform/resolvers": "2.9.10",
     "@monaco-editor/loader": "1.2.0",
-    "@radix-ui/colors": "0.1.8",
+    "@radix-ui/colors": "3.0.0",
     "@radix-ui/react-select": "2.0.0",
     "@reach/combobox": "0.16.5",
     "@reach/dialog": "0.16.2",
