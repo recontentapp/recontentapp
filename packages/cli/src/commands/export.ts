@@ -3,6 +3,7 @@ import path from 'path'
 import { getEnvironment } from '../utils/environment'
 import { getAPIClient } from '../generated/apiClient'
 import { writeFile } from '../utils/fs'
+import io from '../io'
 
 interface Flags {
   project: string
@@ -37,7 +38,9 @@ const exportCommand = new Command('export')
       command.error('Invalid resource, please use phrases.')
     }
 
-    if (!isValidFormat(String(flags.format))) {
+    const format = String(flags.format)
+
+    if (!isValidFormat(format)) {
       command.error('Invalid format, please use json or nested-json.')
     }
 
@@ -92,6 +95,8 @@ const exportCommand = new Command('export')
       ),
     )
 
+    const formatter = io[format]
+
     for (const [index, file] of files.entries()) {
       if (file.status !== 'fulfilled' || !file.value.ok) {
         command.error('Failed to export phrases.')
@@ -101,7 +106,7 @@ const exportCommand = new Command('export')
 
       writeFile(
         path.resolve(process.cwd(), fileName),
-        JSON.stringify(file.value.data.data, null, 2),
+        formatter(file.value.data.data),
       )
     }
   })
