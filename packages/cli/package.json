@@ -1,6 +1,6 @@
 {
   "name": "@recontentapp/cli",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "license": "AGPL-3.0-only",
   "private": false,
   "scripts": {
@@ -8,8 +8,17 @@
     "dev": "esbuild src/index.ts --bundle --platform=node --packages=external --outfile=dist/index.js --watch",
     "start": "node dist/index.js"
   },
+  "keywords": [
+    "translations",
+    "i18n"
+  ],
+  "homepage": "https://github.com/recontentapp/recontentapp",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/recontentapp/recontentapp"
+  },
   "bin": {
-    "recontentapp": "./dist/index.js"
+    "recontentapp": "dist/index.js"
   },
   "dependencies": {
     "ascii-table3": "0.9.0",
