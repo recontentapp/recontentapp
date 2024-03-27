@@ -1,9 +1,8 @@
 import { Command } from 'commander'
 import path from 'path'
-import { getEnvironment } from '../utils/environment'
-import { getAPIClient } from '../generated/apiClient'
+import { getApiClient } from '../utils/environment'
 import { writeFile } from '../utils/fs'
-import io from '../io'
+import io, { isValidFormat } from '../io'
 
 interface Flags {
   project: string
@@ -18,11 +17,6 @@ const isValidResource = (resource: string): resource is Resource => {
   return ['phrases'].includes(resource)
 }
 
-type Format = 'json' | 'nested-json'
-const isValidFormat = (format: string): format is Format => {
-  return ['json', 'nested-json'].includes(format)
-}
-
 const exportCommand = new Command('export')
   .summary('Export phrases')
   .description(
@@ -32,7 +26,7 @@ const exportCommand = new Command('export')
   .requiredOption('-p, --project <id>')
   .option('-l --language <id>', 'Language ID')
   .option('-f --format <format>', 'Output format', 'json')
-  .option('-o --output <path>', 'Output directory')
+  .option('-o --output <path>', 'Output directory', '.')
   .action(async (resource: string, flags: Flags, command: Command) => {
     if (!isValidResource(resource)) {
       command.error('Invalid resource, please use phrases.')
@@ -44,17 +38,7 @@ const exportCommand = new Command('export')
       command.error('Invalid format, please use json or nested-json.')
     }
 
-    const { apiKey, apiUrl } = getEnvironment()
-    const apiClient = getAPIClient({
-      baseUrl: apiUrl,
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-      },
-      onError: () => {
-        command.error('API request failed.')
-      },
-    })
-
+    const apiClient = getApiClient(command)
     const languages = await apiClient.listLanguages({
       queryParams: {
         projectId: flags.project,
@@ -105,7 +89,7 @@ const exportCommand = new Command('export')
       const fileName = `${languagesToExport[index].name}.json`
 
       writeFile(
-        path.resolve(process.cwd(), fileName),
+        path.resolve(process.cwd(), String(flags.output), fileName),
         formatter(file.value.data.data),
       )
     }

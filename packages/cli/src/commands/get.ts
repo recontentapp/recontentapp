@@ -1,7 +1,6 @@
 import { Command } from 'commander'
-import { getEnvironment } from '../utils/environment'
-import { getAPIClient } from '../generated/apiClient'
-import { AsciiTable3 } from 'ascii-table3'
+import { getApiClient } from '../utils/environment'
+import { renderTable } from '../utils/stdout'
 
 interface Flags {
   project?: string
@@ -27,17 +26,7 @@ const getCommand = new Command('get')
       )
     }
 
-    const { apiKey, apiUrl } = getEnvironment()
-    const apiClient = getAPIClient({
-      baseUrl: apiUrl,
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-      },
-      onError: () => {
-        command.error('API request failed.')
-      },
-    })
-
+    const apiClient = getApiClient(command)
     const items: Array<{ id: string; label: string }> = []
 
     switch (resource) {
@@ -74,13 +63,10 @@ const getCommand = new Command('get')
       }
     }
 
-    const table = new AsciiTable3()
-      .setHeading('ID', 'Label')
-      .setStyle('compact')
-    items.forEach(item => {
-      table.addRow(item.id, item.label)
+    renderTable({
+      headers: ['ID', 'Label'],
+      rows: items.map(item => [item.id, item.label]),
     })
-    console.log(table.toString())
   })
 
 export default getCommand

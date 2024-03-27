@@ -1,8 +1,10 @@
 import json from './json'
 import nestedJson from './nestedJson'
-export type { Data } from './types'
+import { Format, Formatter } from './types'
 
-const io = {
+export { isValidFormat } from './functions'
+
+const io: Record<Format, Formatter> = {
   json: json,
   'nested-json': nestedJson,
 }
