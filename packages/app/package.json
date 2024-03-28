@@ -17,7 +17,7 @@
     "@reach/combobox": "0.18.0",
     "@reach/dialog": "0.16.2",
     "@reach/menu-button": "0.16.2",
-    "@reach/popover": "0.16.2",
+    "@reach/popover": "0.18.0",
     "@reach/portal": "0.16.2",
     "@reach/tooltip": "0.16.2",
     "@sentry/react": "7.21.1",
