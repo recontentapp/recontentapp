@@ -7905,10 +7905,10 @@ passport@0.7.0:
     pause "0.0.1"
     utils-merge "^1.0.1"
 
-password-validator@5.2.1:
-  version "5.2.1"
-  resolved "https://registry.yarnpkg.com/password-validator/-/password-validator-5.2.1.tgz#51f67c33e768acbef24d8719a52ad544f7dce004"
-  integrity sha512-EfNW0akQ+YrMawF5KNXoDBTdUvXwx2vxvIuq1XXUiDmti7aaBDnqTl/IAruxztWTCN0Bt+og3LL3I9E4blCRqQ==
+password-validator@5.3.0:
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/password-validator/-/password-validator-5.3.0.tgz#472b89997c71c185eb22b7917b225726b4d64577"
+  integrity sha512-Q+bSEM5pjokZqzWGoQaoylkeWeH4+9uMYlVImiPD0EOJClQ2RPBhrJ5h0OjhMKtwOmu5rRcLaTZo5Gk9RBl0ig==
 
 path-exists@^4.0.0:
   version "4.0.0"
