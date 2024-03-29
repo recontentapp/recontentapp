@@ -30,12 +30,14 @@
     "class-validator": "0.14.0",
     "ejs": "3.1.9",
     "nodemailer": "6.9.12",
+    "papaparse": "5.4.1",
     "passport": "0.7.0",
     "passport-jwt": "4.0.1",
     "reflect-metadata": "0.1.13",
     "rxjs": "7.8.1",
     "uuid": "9.0.1",
-    "winston": "3.12.0"
+    "winston": "3.12.0",
+    "yaml": "2.4.1"
   },
   "devDependencies": {
     "@nestjs/cli": "10.3.2",
@@ -47,8 +49,10 @@
     "@types/ejs": "3.1.5",
     "@types/express": "4.17.21",
     "@types/jest": "29.5.12",
+    "@types/multer": "1.4.11",
     "@types/node": "20.11.28",
     "@types/nodemailer": "6.4.14",
+    "@types/papaparse": "5.3.14",
     "@types/passport-jwt": "3.0.13",
     "@types/supertest": "6.0.2",
     "@types/uuid": "9.0.7",
