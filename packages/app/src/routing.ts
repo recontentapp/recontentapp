@@ -75,6 +75,39 @@ export interface ProjectsettingsParams {
   }
 }
 
+export interface ProjectimportParams {
+  pathParams: {
+    workspaceKey: string
+    projectId: string
+    [k: string]: string | undefined
+  }
+  queryParams?: {
+    [k: string]: string | undefined
+  }
+}
+
+export interface ProjectimportfromfileParams {
+  pathParams: {
+    workspaceKey: string
+    projectId: string
+    [k: string]: string | undefined
+  }
+  queryParams?: {
+    [k: string]: string | undefined
+  }
+}
+
+export interface ProjectexportParams {
+  pathParams: {
+    workspaceKey: string
+    projectId: string
+    [k: string]: string | undefined
+  }
+  queryParams?: {
+    [k: string]: string | undefined
+  }
+}
+
 export interface SigninParams {
   pathParams?: {
     [k: string]: string | undefined
@@ -223,6 +256,48 @@ const routes = {
       return queryParams ? `${path}?${queryParams}` : path
     },
     path: '/:workspaceKey/projects/:projectId/settings',
+    metadata: {},
+  },
+  projectImport: {
+    url: (params: ProjectimportParams) => {
+      const path = generatePath(
+        '/:workspaceKey/projects/:projectId/import',
+        params.pathParams,
+      )
+      const queryParams = params.queryParams
+        ? QueryString.stringify(params.queryParams)
+        : undefined
+      return queryParams ? `${path}?${queryParams}` : path
+    },
+    path: '/:workspaceKey/projects/:projectId/import',
+    metadata: {},
+  },
+  projectImportFromFile: {
+    url: (params: ProjectimportfromfileParams) => {
+      const path = generatePath(
+        '/:workspaceKey/projects/:projectId/import/from-file',
+        params.pathParams,
+      )
+      const queryParams = params.queryParams
+        ? QueryString.stringify(params.queryParams)
+        : undefined
+      return queryParams ? `${path}?${queryParams}` : path
+    },
+    path: '/:workspaceKey/projects/:projectId/import/from-file',
+    metadata: {},
+  },
+  projectExport: {
+    url: (params: ProjectexportParams) => {
+      const path = generatePath(
+        '/:workspaceKey/projects/:projectId/export',
+        params.pathParams,
+      )
+      const queryParams = params.queryParams
+        ? QueryString.stringify(params.queryParams)
+        : undefined
+      return queryParams ? `${path}?${queryParams}` : path
+    },
+    path: '/:workspaceKey/projects/:projectId/export',
     metadata: {},
   },
   signIn: {

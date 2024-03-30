@@ -22,6 +22,15 @@ const routes: RoutesCollection = {
   '/:workspaceKey/projects/:projectId/settings': {
     name: 'projectSettings',
   },
+  '/:workspaceKey/projects/:projectId/import': {
+    name: 'projectImport',
+  },
+  '/:workspaceKey/projects/:projectId/import/from-file': {
+    name: 'projectImportFromFile',
+  },
+  '/:workspaceKey/projects/:projectId/export': {
+    name: 'projectExport',
+  },
 }
 
 export default routes

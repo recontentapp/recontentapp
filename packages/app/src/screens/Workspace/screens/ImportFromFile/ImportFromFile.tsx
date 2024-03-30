@@ -103,11 +103,21 @@ export const ImportFromFile = () => {
         },
         {
           label: project.name,
-          path: '',
+          path: routes.projectImport.url({
+            pathParams: {
+              workspaceKey,
+              projectId: project.id,
+            },
+          }),
         },
         {
           label: 'Import from file',
-          path: '',
+          path: routes.projectImportFromFile.url({
+            pathParams: {
+              workspaceKey,
+              projectId: project.id,
+            },
+          }),
         },
       ]}
     >

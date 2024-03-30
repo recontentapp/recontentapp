@@ -82,6 +82,24 @@ export const Project: FC = () => {
             }),
           },
           {
+            label: 'Import',
+            to: routes.projectImport.url({
+              pathParams: {
+                workspaceKey,
+                projectId: project.id,
+              },
+            }),
+          },
+          {
+            label: 'Export',
+            to: routes.projectExport.url({
+              pathParams: {
+                workspaceKey,
+                projectId: project.id,
+              },
+            }),
+          },
+          {
             label: 'Settings',
             to: routes.projectSettings.url({
               pathParams: { workspaceKey, projectId: project.id },
