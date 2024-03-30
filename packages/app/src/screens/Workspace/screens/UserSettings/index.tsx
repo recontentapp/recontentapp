@@ -12,10 +12,10 @@ import {
 } from '../../../../components/primitives'
 import { Page } from '../../components/Page'
 import { ScreenWrapper } from '../../components/ScreenWrapper'
-import { toDashboard, toUserSettings } from '../../routes'
 import { useCurrentUser } from '../../../../auth'
 import { useUpdateCurrentUser } from '../../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../../hooks/workspace'
+import routes from '../../../../routing'
 
 export const UserSettings: FC = () => {
   const { key: workspaceKey, name: workspaceName } = useCurrentWorkspace()
@@ -54,11 +54,11 @@ export const UserSettings: FC = () => {
       breadcrumbItems={[
         {
           label: workspaceName,
-          path: toDashboard(workspaceKey),
+          path: routes.dashboard.url({ pathParams: { workspaceKey } }),
         },
         {
           label: 'User settings',
-          path: toUserSettings(workspaceKey),
+          path: routes.userSettings.url({ pathParams: { workspaceKey } }),
         },
       ]}
     >

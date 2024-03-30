@@ -12,7 +12,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 
 import { useCurrentUser } from '../auth'
 import { Components } from '../generated/typeDefinitions'
-import { toDashboard } from '../screens/Workspace/routes'
+import routes from '../routing'
 
 type Workspace = Components.Schemas.Workspace
 type Account = Components.Schemas.CurrentUser['accounts'][number]
@@ -74,7 +74,12 @@ export const CurrentWorkspaceProvider: FC<{ children: ReactNode }> = ({
       const onlyWorkspace = accounts[0].workspace
 
       if (workspaceKeyInURL !== onlyWorkspace.key) {
-        navigate(toDashboard(onlyWorkspace.key), { replace: true })
+        navigate(
+          routes.dashboard.url({
+            pathParams: { workspaceKey: onlyWorkspace.key },
+          }),
+          { replace: true },
+        )
       }
 
       setCurrentAccount(accounts[0])
@@ -116,9 +121,14 @@ export const CurrentWorkspaceProvider: FC<{ children: ReactNode }> = ({
         setIsReady(true)
 
         if (workspaceKeyInURL !== account.workspace.key) {
-          navigate(toDashboard(account.workspace.key), {
-            replace: true,
-          })
+          navigate(
+            routes.dashboard.url({
+              pathParams: { workspaceKey: account.workspace.key },
+            }),
+            {
+              replace: true,
+            },
+          )
         }
 
         return
@@ -138,7 +148,11 @@ export const CurrentWorkspaceProvider: FC<{ children: ReactNode }> = ({
   const updateCurrentAccount = useCallback(
     (account: Account) => {
       setPreferredWorkspace(account.workspace.id)
-      navigate(toDashboard(account.workspace.key))
+      navigate(
+        routes.dashboard.url({
+          pathParams: { workspaceKey: account.workspace.key },
+        }),
+      )
       setCurrentAccount(account)
     },
     [navigate],

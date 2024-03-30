@@ -1,5 +1,5 @@
 import { FC, useRef } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { FullpageSpinner } from '../../../../../components/FullpageSpinner'
 import {
   Button,
@@ -10,17 +10,16 @@ import {
   Heading,
 } from '../../../../../components/primitives'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
-import { toWorkspaceSettingsIntegrations } from '../../../routes'
 import {
   ExportToFileModal,
   ExportToFileModalRef,
 } from '../components/ExportToFileModal'
 import { useGetProject } from '../../../../../generated/reactQuery'
+import routes from '../../../../../routing'
 
 export const Export: FC = () => {
   const exportToFileModalRef = useRef<ExportToFileModalRef>(null)
   const { key: workspaceKey } = useCurrentWorkspace()
-  const navigate = useNavigate()
   const params = useParams<'projectId'>()
   const { data: project } = useGetProject({
     queryParams: { id: params.projectId! },
@@ -78,7 +77,9 @@ export const Export: FC = () => {
                 documentation to learn more. API keys can be generated from your{' '}
                 <Link
                   size="$size80"
-                  to={toWorkspaceSettingsIntegrations(workspaceKey)}
+                  to={routes.workspaceSettingsIntegrations.url({
+                    pathParams: { workspaceKey },
+                  })}
                 >
                   workspace settings
                 </Link>

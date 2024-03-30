@@ -1,27 +1,20 @@
 import { Dispatch, SetStateAction, useCallback, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import {
-  DEFAULT_REVISION,
-  fileFormatAccept,
-  useLanguagesByProject,
-  useListRevisionsInProject,
-} from '../../../../../api'
-import {
-  Banner,
   Box,
   Button,
   FileUpload,
   SelectField,
   Stack,
 } from '../../../../../components/primitives'
-import { useCurrentWorkspace } from '../../../../../hooks/workspace'
-import { toProjectSettings } from '../../../routes'
 import { State } from '../types'
 import {
+  fileFormatAccept,
   getCSVPreviewData,
   getExcelPreviewData,
   getFileType,
 } from '../../../../../utils/files'
+import { useGetProject } from '../../../../../generated/reactQuery'
+import { FullpageSpinner } from '../../../../../components/FullpageSpinner'
 
 interface Props {
   projectId: string
@@ -40,21 +33,19 @@ export const Form = ({
   canMoveToNextStep,
   onSubmit,
 }: Props) => {
-  const navigate = useNavigate()
-  const { key: workspaceKey } = useCurrentWorkspace()
-  const { data: revisions = [] } = useListRevisionsInProject(projectId, true)
-  const { data: languages = [], isLoading: isLoadingLanguages } =
-    useLanguagesByProject(projectId)
+  const { data } = useGetProject({
+    queryParams: { id: projectId },
+  })
 
   useEffect(() => {
-    if (languages && !state.locale) {
+    if (data?.languages && !state.locale) {
       updateState(state => ({
         ...state,
-        locale: languages[0]?.locale,
-        languageName: languages[0]?.name,
+        locale: data.languages.at(0)?.locale,
+        languageName: data.languages.at(0)?.name,
       }))
     }
-  }, [languages])
+  }, [data?.languages])
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles.at(0)
@@ -117,20 +108,12 @@ export const Form = ({
       ? 'Configure import'
       : 'Import phrases'
 
+  if (!data) {
+    return <FullpageSpinner />
+  }
+
   return (
     <Stack direction="column" spacing="$space200" width="100%">
-      {languages.length === 0 && !isLoadingLanguages && (
-        <Banner
-          variation="warning"
-          description="You need to add languages to your project to import translations for them."
-          action={{
-            label: 'Go to settings',
-            onAction: () =>
-              navigate(toProjectSettings(workspaceKey, projectId)),
-          }}
-        />
-      )}
-
       <Stack direction="column" spacing="$space200" width="100%">
         <Stack direction="column" spacing="$space200">
           <Stack
@@ -141,7 +124,7 @@ export const Form = ({
           >
             <SelectField
               width="100%"
-              options={languages.map(language => ({
+              options={data.languages.map(language => ({
                 label: language.name,
                 value: language.locale,
               }))}
@@ -153,29 +136,6 @@ export const Form = ({
                   ...state,
                   locale: option?.value,
                   languageName: option?.label,
-                }))
-              }}
-            />
-
-            <SelectField
-              width="100%"
-              options={revisions
-                .map(revision => ({
-                  label: revision.name,
-                  value: revision.id,
-                }))
-                .concat([
-                  {
-                    label: 'Master',
-                    value: DEFAULT_REVISION,
-                  },
-                ])}
-              label="Revision"
-              value={state.revisionId}
-              onChange={option => {
-                updateState(state => ({
-                  ...state,
-                  revisionId: option?.value ?? DEFAULT_REVISION,
                 }))
               }}
             />

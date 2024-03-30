@@ -2,9 +2,9 @@ import { useNavigate } from 'react-router-dom'
 import { Stack } from '../../../../../components/primitives'
 import { useModals } from '../../../hooks/modals'
 import { StepCard } from './StepCard'
-import { toWorkspaceSettingsLanguages } from '../../../routes'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
 import { Components } from '../../../../../generated/typeDefinitions'
+import routes from '../../../../../routing'
 
 interface OnboardingProps {
   languages: Components.Schemas.Language[]
@@ -21,7 +21,13 @@ export const Onboarding = ({ languages }: OnboardingProps) => {
         checked={languages.length > 0}
         title="Add languages to workspace"
         description="Languages can be reused across multiple projects"
-        onAction={() => navigate(toWorkspaceSettingsLanguages(workspaceKey))}
+        onAction={() =>
+          navigate(
+            routes.workspaceSettingsLanguages.url({
+              pathParams: { workspaceKey },
+            }),
+          )
+        }
       />
       <StepCard
         title="Create a project"

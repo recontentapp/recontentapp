@@ -23,7 +23,6 @@ import { useFormatter } from '../../../../../hooks/formatter'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
 import { formatRelative } from '../../../../../utils/dates'
 import { useReferenceableAccounts } from '../../../hooks/referenceable'
-import { toProjectPhrases } from '../../../routes'
 import { EditPhraseKeyModal, EditPhraseKeyModalRef } from './EditPhraseKeyModal'
 import { Search } from './Search'
 import {
@@ -34,6 +33,7 @@ import {
 } from '../../../../../generated/reactQuery'
 import { Components } from '../../../../../generated/typeDefinitions'
 import { useQueryClient } from '@tanstack/react-query'
+import routes from '../../../../../routing'
 
 interface State {
   translated: string | undefined
@@ -268,11 +268,13 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
               value={revisionId}
               onChange={revision =>
                 navigate(
-                  toProjectPhrases(
-                    workspaceKey,
-                    project.id,
-                    revision?.value ?? '',
-                  ),
+                  routes.projectPhrases.url({
+                    pathParams: {
+                      workspaceKey,
+                      projectId: project.id,
+                      revisionId: revision?.value ?? '',
+                    },
+                  }),
                 )
               }
               headerLabel="Switch revisions"

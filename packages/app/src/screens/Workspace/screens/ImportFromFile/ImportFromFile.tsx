@@ -2,20 +2,14 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { FullpageSpinner } from '../../../../components/FullpageSpinner'
 import { Head } from '../../../../components/Head'
-import { toast } from '../../../../components/primitives'
 import { Page } from '../../components/Page'
 import { ScreenWrapper } from '../../components/ScreenWrapper'
-import {
-  toDashboard,
-  toProjectImport,
-  toProjectImportFromFile,
-  toProjectPhrases,
-} from '../../routes'
 import { State } from './types'
 import { Form } from './steps/Form'
 import { Mapping } from './steps/Mapping'
 import { useCurrentWorkspace } from '../../../../hooks/workspace'
 import { useGetProject } from '../../../../generated/reactQuery'
+import routes from '../../../../routing'
 
 export const ImportFromFile = () => {
   const navigate = useNavigate()
@@ -25,8 +19,6 @@ export const ImportFromFile = () => {
   const [step, setStep] = useState<'form' | 'mapping'>('form')
   const [state, setState] = useState<State>({
     fileFormat: 'json',
-    revisionId: '',
-    tags: [],
   })
   const {
     data: project,
@@ -36,14 +28,9 @@ export const ImportFromFile = () => {
 
   useEffect(() => {
     if (failureCount > 0) {
-      navigate(toDashboard(workspaceKey))
+      navigate(routes.dashboard.url({ pathParams: { workspaceKey } }))
     }
   }, [failureCount, navigate, workspaceKey])
-
-  const { mutateAsync, isLoading: isImporting } = useImportPhrases(
-    params.projectId!,
-    state.revisionId,
-  )
 
   const canBeSubmitted = !!state.file && !!state.fileFormat && !!state.locale
 
@@ -70,37 +57,37 @@ export const ImportFromFile = () => {
       return
     }
 
-    mutateAsync({
-      project_id: params.projectId!,
-      revision_id: state.revisionId,
-      locale: state.locale!,
-      file: state.file!,
-      file_format: state.fileFormat,
-      tags: state.tags,
-      mapping: state.mapping
-        ? {
-            sheetIndex: state.mapping.sheetIndex,
-            rowStartIndex: state.mapping.rowStartIndex,
-            keyColumnIndex: state.mapping.keyColumnIndex!,
-            translationColumnIndex: state.mapping.translationColumnIndex!,
-          }
-        : undefined,
-    })
-      .then(() => {
-        toast('success', {
-          title: 'Phrases imported',
-          description: 'All phrases are now imported in your revision',
-        })
-        navigate(
-          toProjectPhrases(workspaceKey, params.projectId!, state.revisionId),
-        )
-      })
-      .catch(err => {
-        console.log(err)
-        toast('error', {
-          title: 'Could not import phrases',
-        })
-      })
+    // mutateAsync({
+    //   project_id: params.projectId!,
+    //   revision_id: state.revisionId,
+    //   locale: state.locale!,
+    //   file: state.file!,
+    //   file_format: state.fileFormat,
+    //   tags: state.tags,
+    //   mapping: state.mapping
+    //     ? {
+    //         sheetIndex: state.mapping.sheetIndex,
+    //         rowStartIndex: state.mapping.rowStartIndex,
+    //         keyColumnIndex: state.mapping.keyColumnIndex!,
+    //         translationColumnIndex: state.mapping.translationColumnIndex!,
+    //       }
+    //     : undefined,
+    // })
+    //   .then(() => {
+    //     toast('success', {
+    //       title: 'Phrases imported',
+    //       description: 'All phrases are now imported in your revision',
+    //     })
+    //     navigate(
+    //       toProjectPhrases(workspaceKey, params.projectId!, state.revisionId),
+    //     )
+    //   })
+    //   .catch(err => {
+    //     console.log(err)
+    //     toast('error', {
+    //       title: 'Could not import phrases',
+    //     })
+    //   })
   }
 
   if (projectLoading || !project) {
@@ -112,15 +99,15 @@ export const ImportFromFile = () => {
       breadcrumbItems={[
         {
           label: workspaceName,
-          path: toDashboard(workspaceKey),
+          path: routes.dashboard.url({ pathParams: { workspaceKey } }),
         },
         {
           label: project.name,
-          path: toProjectImport(workspaceKey, project.id),
+          path: '',
         },
         {
           label: 'Import from file',
-          path: toProjectImportFromFile(workspaceKey, project.id),
+          path: '',
         },
       ]}
     >
@@ -133,7 +120,7 @@ export const ImportFromFile = () => {
             projectId={params.projectId!}
             canMoveToNextStep={canBeSubmitted}
             onSubmit={onFormNext}
-            isLoading={isImporting}
+            isLoading={false}
           />
         )}
 
@@ -142,7 +129,7 @@ export const ImportFromFile = () => {
             state={state}
             updateState={setState}
             onSubmit={onSubmit}
-            isLoading={isImporting}
+            isLoading={false}
           />
         )}
       </Page>

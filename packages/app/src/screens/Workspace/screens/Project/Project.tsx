@@ -5,10 +5,10 @@ import { FullpageSpinner } from '../../../../components/FullpageSpinner'
 import { Head } from '../../../../components/Head'
 import { Page } from '../../components/Page'
 import { ScreenWrapper } from '../../components/ScreenWrapper'
-import { toDashboard, toProjectPhrases, toProjectSettings } from '../../routes'
 import { useGetProject } from '../../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../../hooks/workspace'
 import { useKBarContext } from '../../components/KBar'
+import routes from '../../../../routing'
 
 export const Project: FC = () => {
   const params = useParams<'projectId' | 'revisionId'>()
@@ -39,7 +39,7 @@ export const Project: FC = () => {
 
   useEffect(() => {
     if (failureCount > 0) {
-      navigate(toDashboard(workspaceKey))
+      navigate(routes.dashboard.url({ pathParams: { workspaceKey } }))
     }
   }, [failureCount, navigate, workspaceKey])
 
@@ -52,11 +52,17 @@ export const Project: FC = () => {
       breadcrumbItems={[
         {
           label: workspaceName,
-          path: toDashboard(workspaceKey),
+          path: routes.dashboard.url({ pathParams: { workspaceKey } }),
         },
         {
           label: project.name,
-          path: toProjectSettings(workspaceKey, project.id),
+          path: routes.projectPhrases.url({
+            pathParams: {
+              workspaceKey,
+              projectId: project.id,
+              revisionId: project.masterRevisionId,
+            },
+          }),
         },
       ]}
     >
@@ -67,15 +73,19 @@ export const Project: FC = () => {
         tabs={[
           {
             label: 'Phrases',
-            to: toProjectPhrases(
-              workspaceKey,
-              project.id,
-              project.masterRevisionId,
-            ),
+            to: routes.projectPhrases.url({
+              pathParams: {
+                workspaceKey,
+                projectId: project.id,
+                revisionId: project.masterRevisionId,
+              },
+            }),
           },
           {
             label: 'Settings',
-            to: toProjectSettings(workspaceKey, project.id),
+            to: routes.projectSettings.url({
+              pathParams: { workspaceKey, projectId: project.id },
+            }),
           },
         ]}
       >

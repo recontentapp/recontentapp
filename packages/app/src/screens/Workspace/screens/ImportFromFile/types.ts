@@ -6,7 +6,6 @@ export interface State {
   fileFormat: Components.Schemas.FileFormat
   locale?: string
   languageName?: string
-  revisionId: string
   csvPreviewData?: CSVPreviewData
   excelPreviewData?: ExcelSheetPreviewData[]
   mapping?: {

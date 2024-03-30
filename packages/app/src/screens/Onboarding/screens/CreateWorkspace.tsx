@@ -15,9 +15,9 @@ import {
 import { useUpdate } from '../../../hooks/update'
 import { styled } from '../../../theme'
 import { useDebounce } from '../../../utils/debounce'
-import { toJoinWorkspace as toOnboardingJoinWorkspace } from '../routes'
 import { useAPIClient, useCreateWorkspace } from '../../../generated/reactQuery'
 import { useAuth } from '../../../auth'
+import routes from '../../../routing'
 
 interface State {
   name: string
@@ -180,7 +180,7 @@ export const CreateWorkspace = () => {
                   <Text size="$size100" color="$gray11">
                     Got an invitation by email?{' '}
                     <StyledLink>
-                      <Link to={toOnboardingJoinWorkspace()}>
+                      <Link to={routes.onboardingJoinWorkspace.url({})}>
                         Join a workspace instead.
                       </Link>
                     </StyledLink>

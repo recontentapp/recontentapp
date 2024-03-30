@@ -11,9 +11,9 @@ import {
   TextField,
   toast,
 } from '../../../components/primitives'
-import { toCreateWorkspace } from '../routes'
 import { useCurrentUser } from '../../../auth'
 import { useUpdateCurrentUser } from '../../../generated/reactQuery'
+import routes from '../../../routing'
 
 export const You: FC = () => {
   const { firstName, lastName } = useCurrentUser()
@@ -26,7 +26,7 @@ export const You: FC = () => {
 
   useEffect(() => {
     if (firstName.length > 0 && lastName.length > 0) {
-      navigate(toCreateWorkspace())
+      navigate(routes.onboardingCreateWorkspace.url({}))
     }
   }, [firstName, lastName])
 
@@ -37,7 +37,7 @@ export const You: FC = () => {
 
     mutateAsync({ body: state })
       .then(() => {
-        navigate(toCreateWorkspace())
+        navigate(routes.onboardingCreateWorkspace.url({}))
       })
       .catch(() => {
         toast('error', {

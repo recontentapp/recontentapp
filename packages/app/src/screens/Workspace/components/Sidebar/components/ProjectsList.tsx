@@ -4,7 +4,7 @@ import { useMatch, useNavigate } from 'react-router-dom'
 import { Box, Icon, Stack, Tooltip } from '../../../../../components/primitives'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
 import { styled } from '../../../../../theme'
-import { toProjectSettings } from '../../../routes'
+import routes from '../../../../../routing'
 
 interface ProjectsListItem {
   id: string
@@ -106,7 +106,11 @@ export const ProjectsList: FC<ProjectsListProps> = ({
               <ProjectButton
                 active={match !== null && match.params.projectId === item.id}
                 onClick={() =>
-                  navigate(toProjectSettings(workspaceKey, item.id))
+                  navigate(
+                    routes.projectSettings.url({
+                      pathParams: { workspaceKey, projectId: item.id },
+                    }),
+                  )
                 }
               >
                 {item.name}

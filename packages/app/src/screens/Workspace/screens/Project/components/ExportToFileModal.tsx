@@ -1,12 +1,4 @@
 import { FC, forwardRef, useImperativeHandle, useRef, useState } from 'react'
-import {
-  DEFAULT_REVISION,
-  FileFormat,
-  Project,
-  fileFormatLabels,
-  useGenerateExportLink,
-  useListRevisionsInProject,
-} from '../../../../../api'
 
 import {
   Modal,
@@ -17,9 +9,11 @@ import {
   Switch,
   toast,
 } from '../../../../../components/primitives'
+import { Components } from '../../../../../generated/typeDefinitions'
+import { fileFormatLabels } from '../../../../../utils/files'
 
 interface OpenProps {
-  project: Project
+  project: Components.Schemas.Project
 }
 
 interface ContentProps extends OpenProps {
@@ -32,48 +26,45 @@ export interface ExportToFileModalRef {
 
 interface State {
   projectId: string
-  revisionId: string
   languageId?: string
-  fileFormat: FileFormat
+  fileFormat: Components.Schemas.FileFormat
   exportAllLanguages: boolean
   includeEmptyTranslations: boolean
 }
 
 const Content: FC<ContentProps> = ({ project, onRedirect }) => {
-  const { isLoading, mutateAsync: generateExportLink } = useGenerateExportLink()
-  const { data: revisions = [] } = useListRevisionsInProject(project.id, true)
+  // const { isLoading, mutateAsync: generateExportLink } = useGenerateExportLink()
+  // const { data: revisions = [] } = useListRevisionsInProject(project.id, true)
   const [state, setState] = useState<State>({
     projectId: project.id,
-    revisionId: DEFAULT_REVISION,
     languageId: project.languages.at(0)?.id,
     fileFormat: 'json',
     exportAllLanguages: false,
     includeEmptyTranslations: true,
   })
 
-  const isValid = state.projectId && state.revisionId && state.fileFormat
+  const isValid = state.projectId && state.fileFormat
 
   const onSubmit = async () => {
     if (!isValid) {
       return
     }
 
-    const url = await generateExportLink({
-      project_id: state.projectId,
-      revision_id: state.revisionId,
-      language_id: state.exportAllLanguages ? undefined : state.languageId,
-      file_format: state.fileFormat,
-      include_empty_translations: state.includeEmptyTranslations,
-    }).catch(() => {
-      toast('error', { title: 'Could not generate export link' })
-      return null
-    })
+    // const url = await generateExportLink({
+    //   project_id: state.projectId,
+    //   language_id: state.exportAllLanguages ? undefined : state.languageId,
+    //   file_format: state.fileFormat,
+    //   include_empty_translations: state.includeEmptyTranslations,
+    // }).catch(() => {
+    //   toast('error', { title: 'Could not generate export link' })
+    //   return null
+    // })
 
-    if (!url) {
-      return
-    }
+    // if (!url) {
+    //   return
+    // }
 
-    window.open(url, '_blank')
+    // window.open(url, '_blank')
     onRedirect()
     toast('success', { title: 'Export link successfully generated' })
   }
@@ -87,7 +78,7 @@ const Content: FC<ContentProps> = ({ project, onRedirect }) => {
         label: 'Generate & download',
         onAction: onSubmit,
         isDisabled: !isValid,
-        isLoading,
+        isLoading: false,
       }}
     >
       <Stack direction="column" spacing="$space100" paddingBottom="$space300">
@@ -104,7 +95,7 @@ const Content: FC<ContentProps> = ({ project, onRedirect }) => {
             }
             setState(state => ({
               ...state,
-              fileFormat: option.value as FileFormat,
+              fileFormat: option.value as Components.Schemas.FileFormat,
               exportAllLanguages: false,
             }))
           }}
@@ -137,27 +128,6 @@ const Content: FC<ContentProps> = ({ project, onRedirect }) => {
             }
           />
         )}
-
-        <SelectField
-          label="Revision"
-          options={[
-            {
-              label: 'Master',
-              value: DEFAULT_REVISION,
-            },
-            ...revisions.map(revision => ({
-              label: revision.name,
-              value: revision.id,
-            })),
-          ]}
-          value={state.revisionId}
-          onChange={option => {
-            if (!option) {
-              return
-            }
-            setState(state => ({ ...state, revisionId: option.value }))
-          }}
-        />
       </Stack>
     </ModalContent>
   )

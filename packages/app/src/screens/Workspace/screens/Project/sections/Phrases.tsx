@@ -5,7 +5,6 @@ import { HorizontalSpinner } from '../../../../../components/HorizontalSpinner'
 import { Banner, Box, Stack } from '../../../../../components/primitives'
 import { useURLState } from '../../../../../hooks/urlState'
 import { useModals } from '../../../hooks/modals'
-import { toProjectSettings } from '../../../routes'
 import { PhrasesTable } from '../components/PhrasesTable'
 import {
   UpdatePhraseModal,
@@ -20,6 +19,7 @@ import {
 } from '../../../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
 import { useQueryClient } from '@tanstack/react-query'
+import routes from '../../../../../routing'
 
 export const Phrases: FC = () => {
   const queryClient = useQueryClient()
@@ -117,7 +117,14 @@ export const Phrases: FC = () => {
               action={{
                 label: 'Go to settings',
                 onAction: () =>
-                  navigate(toProjectSettings(workspaceKey, params.projectId!)),
+                  navigate(
+                    routes.projectSettings.url({
+                      pathParams: {
+                        workspaceKey,
+                        projectId: params.projectId!,
+                      },
+                    }),
+                  ),
               }}
             />
           )}

@@ -5,13 +5,13 @@ import { Head } from '../../../../components/Head'
 import { useCurrentWorkspace } from '../../../../hooks/workspace'
 import { Page } from '../../components/Page'
 import { ScreenWrapper } from '../../components/ScreenWrapper'
-import { toDashboard } from '../../routes'
 import {
   useListProjects,
   useListWorkspaceLanguages,
 } from '../../../../generated/reactQuery'
 import { ProjectsList } from './components/ProjectsList'
 import { Onboarding } from './components/Onboarding'
+import routes from '../../../../routing'
 
 export const Dashboard: FC = () => {
   const {
@@ -45,7 +45,7 @@ export const Dashboard: FC = () => {
       breadcrumbItems={[
         {
           label: workspaceName,
-          path: toDashboard(workspaceKey),
+          path: routes.dashboard.url({ pathParams: { workspaceKey } }),
         },
       ]}
     >

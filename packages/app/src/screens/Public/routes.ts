@@ -1,3 +1,15 @@
-export const toSignIn = () => '/sign-in'
-export const toSignUp = () => '/sign-up'
-export const toForgotPassword = () => '/forgot-password'
+import { RoutesCollection } from '../../routing-types'
+
+const routes: RoutesCollection = {
+  '/sign-in': {
+    name: 'signIn',
+  },
+  '/signUp': {
+    name: 'signUp',
+  },
+  '/forgotPassword': {
+    name: 'forgotPassword',
+  },
+}
+
+export default routes

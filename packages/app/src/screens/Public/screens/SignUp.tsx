@@ -15,8 +15,8 @@ import {
   TextField,
   toast,
 } from '../../../components/primitives'
-import { toSignIn } from '../routes'
 import { getAPIClient } from '../../../generated/apiClient'
+import routes from '../../../routing'
 
 interface State {
   email: string
@@ -61,7 +61,7 @@ export const SignUp: FC = () => {
           title: 'Account created',
           description: 'Check your inbox to connect to your account',
         })
-        navigate(toSignIn())
+        navigate(routes.signIn.url({}))
       })
       .finally(() => {
         setLoading(false)
@@ -81,7 +81,8 @@ export const SignUp: FC = () => {
               Sign Up
             </Heading>
             <Text size="$size100" color="$gray11">
-              Already have an account? <Link to={toSignIn()}>Sign in.</Link>
+              Already have an account?{' '}
+              <Link to={routes.signIn.url({})}>Sign in.</Link>
             </Text>
           </Stack>
 
