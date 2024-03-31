@@ -4,10 +4,16 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
+  ParseFilePipeBuilder,
   Post,
   Query,
+  Res,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common'
+import { Response } from 'express'
 import { Components, Paths } from 'src/generated/typeDefinitions'
 import { AuthService } from 'src/modules/auth/auth.service'
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard'
@@ -52,10 +58,13 @@ import {
   BatchDeletePhraseDto,
   CreatePhraseDto,
   DeletePhraseDto,
+  GeneratePhrasesExportLinkDto,
+  ImportPhrasesDto,
   TranslatePhraseDto,
   UpdatePhraseKeyDto,
 } from './dto/phrase.dto'
 import { RequiredQuery } from 'src/utils/required-query'
+import { FileInterceptor } from '@nestjs/platform-express'
 
 @Controller('private-api')
 @UseGuards(JwtAuthGuard)
@@ -729,5 +738,99 @@ export class PrivateApiController {
     })
 
     return {}
+  }
+
+  @Post('/ImportPhrases')
+  @UseInterceptors(FileInterceptor('file'))
+  async importPhrases(
+    @AuthenticatedRequester() requester: Requester,
+    @Body()
+    {
+      fileFormat,
+      revisionId,
+      languageId,
+      mappingKeyColumnIndex,
+      mappingRowStartIndex,
+      mappingSheetName,
+      mappingTranslationColumnIndex,
+    }: ImportPhrasesDto,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({
+          fileType: 'application/json',
+        })
+        .addMaxSizeValidator({
+          maxSize: 5e6, // 5MB
+        })
+        .build({
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        }),
+    )
+    file: Express.Multer.File,
+  ): Promise<Paths.ImportPhrases.Responses.$201> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    await this.phraseService.importPhrases({
+      file: file.buffer,
+      fileFormat,
+      revisionId,
+      languageId,
+      mappingKeyColumnIndex,
+      mappingRowStartIndex,
+      mappingSheetName,
+      mappingTranslationColumnIndex,
+      requester,
+    })
+
+    return {}
+  }
+
+  @Post('/GeneratePhrasesExportLink')
+  async generatePhrasesExportLink(
+    @AuthenticatedRequester() requester: Requester,
+    @Body()
+    {
+      revisionId,
+      languageId,
+      fileFormat,
+      includeEmptyTranslations,
+    }: GeneratePhrasesExportLinkDto,
+  ): Promise<Paths.GeneratePhrasesExportLink.Responses.$201> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    const token = await this.phraseService.generatePhrasesExportToken({
+      revisionId,
+      languageId,
+      fileFormat,
+      includeEmptyTranslations,
+      requester,
+    })
+
+    return {
+      link: `${process.env.API_URL}/private-api/GetPhrasesExport?token=${token}`,
+    }
+  }
+
+  @Public()
+  @Throttle({ default: { limit: 1, ttl: 1000 } })
+  @Get('/GetPhrasesExport')
+  async getPhrasesExport(
+    @RequiredQuery('token') token: string,
+    @Res() response: Response,
+  ) {
+    const { buffer, contentType, fileName } =
+      await this.phraseService.exportPhrases({
+        token,
+      })
+
+    response.set({
+      'Content-Type': contentType,
+      'Content-Disposition': `attachment; filename="${fileName}"`,
+    })
+    response.send(buffer)
   }
 }

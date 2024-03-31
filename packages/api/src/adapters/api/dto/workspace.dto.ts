@@ -10,7 +10,7 @@ import {
   ValidateNested,
 } from 'class-validator'
 import { LanguageLocale } from 'src/modules/workspace/locale'
-import { LanguageLocaleValidator } from 'src/modules/workspace/locale.dto'
+import { LanguageLocaleValidator } from './domain.dto'
 
 export class CreateWorkspaceDto {
   @IsString()

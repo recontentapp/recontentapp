@@ -18,6 +18,7 @@ import { APP_GUARD } from '@nestjs/core'
 import { WorkspaceModule } from 'src/modules/workspace/workspace.module'
 import { ProjectModule } from 'src/modules/project/project.module'
 import { PhraseModule } from 'src/modules/phrase/phrase.module'
+import { IOModule } from 'src/modules/io/io.module'
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { PhraseModule } from 'src/modules/phrase/phrase.module'
         ]
       : []),
     AuthModule,
+    IOModule,
     NotificationsModule,
     WorkspaceModule,
     ProjectModule,

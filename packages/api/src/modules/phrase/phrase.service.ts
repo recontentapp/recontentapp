@@ -3,11 +3,18 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common'
-import { EventEmitter2 } from '@nestjs/event-emitter'
 import { Prisma } from '@prisma/client'
+import { Components } from 'src/generated/typeDefinitions'
 import { PaginationParams } from 'src/utils/pagination'
 import { PrismaService } from 'src/utils/prisma.service'
 import { HumanRequester } from 'src/utils/requester'
+import jwt from 'jsonwebtoken'
+import { JSONService } from '../io/json.service'
+import { CSVService } from '../io/csv.service'
+import { YAMLService } from '../io/yaml.service'
+import { fileFormatContentType, fileFormatExtensions } from '../io/fileFormat'
+import { ExcelService } from '../io/excel.service'
+import { Data } from '../io/types'
 
 interface ListPhrasesParams {
   revisionId: string
@@ -54,11 +61,47 @@ interface GetPhraseParams {
   requester: HumanRequester
 }
 
+interface ImportPhrasesParams {
+  file: Buffer
+  fileFormat: Components.Schemas.FileFormat
+  revisionId: string
+  languageId: string
+  mappingSheetName?: string
+  mappingRowStartIndex?: number
+  mappingKeyColumnIndex?: number
+  mappingTranslationColumnIndex?: number
+  requester: HumanRequester
+}
+
+interface GeneratePhrasesExportTokenParams {
+  revisionId: string
+  languageId: string
+  fileFormat: Components.Schemas.FileFormat
+  includeEmptyTranslations: boolean
+  requester: HumanRequester
+}
+
+interface ExportPhrasesParams {
+  token: string
+}
+
+interface PhrasesExportTokenPayload {
+  revisionId: string
+  languageId: string
+  fileFormat: Components.Schemas.FileFormat
+  includeEmptyTranslations: boolean
+}
+
 @Injectable()
 export class PhraseService {
+  private static jwtIssuer = 'recontent.app'
+
   constructor(
     private prismaService: PrismaService,
-    private eventEmitter: EventEmitter2,
+    private csvService: CSVService,
+    private jsonService: JSONService,
+    private yamlService: YAMLService,
+    private excelService: ExcelService,
   ) {}
 
   async listPhrases({
@@ -363,5 +406,204 @@ export class PhraseService {
         },
       })
     })
+  }
+
+  async importPhrases({
+    file,
+    fileFormat,
+    revisionId,
+    languageId,
+    mappingSheetName,
+    mappingRowStartIndex,
+    mappingKeyColumnIndex,
+    mappingTranslationColumnIndex,
+    requester,
+  }: ImportPhrasesParams) {
+    const revision = await this.prismaService.projectRevision.findUniqueOrThrow(
+      {
+        where: { id: revisionId },
+      },
+    )
+
+    if (!requester.canAccessWorkspace(revision.workspaceId)) {
+      throw new ForbiddenException('User is not part of this workspace')
+    }
+
+    const language = await this.prismaService.language.findUniqueOrThrow({
+      where: { id: languageId },
+    })
+
+    if (language.workspaceId !== revision.workspaceId) {
+      throw new BadRequestException(
+        'Language does not belong to this workspace',
+      )
+    }
+
+    let data: Data = {}
+
+    switch (fileFormat) {
+      case 'json':
+      case 'nested_json':
+        data = this.jsonService.parse(file)
+        break
+      case 'csv':
+        data = this.csvService.parse(file)
+        break
+      case 'yaml':
+      case 'nested_yaml':
+        data = this.yamlService.parse(file)
+        break
+      case 'excel':
+        data = await this.excelService.parse({
+          buffer: file,
+          sheetName: mappingSheetName!,
+          rowStartIndex: mappingRowStartIndex!,
+          keyColumnIndex: mappingKeyColumnIndex!,
+          translationColumnIndex: mappingTranslationColumnIndex!,
+        })
+        break
+    }
+
+    await this.prismaService.$transaction(
+      Object.entries(data).map(([key, value]) =>
+        this.prismaService.phrase.create({
+          data: {
+            key,
+            revisionId,
+            projectId: revision.projectId,
+            workspaceId: revision.workspaceId,
+            createdBy: requester.getAccountIDForWorkspace(
+              revision.workspaceId,
+            )!,
+            translations: {
+              create: {
+                content: value,
+                languageId,
+                workspaceId: revision.workspaceId,
+                revisionId,
+                createdBy: requester.getAccountIDForWorkspace(
+                  revision.workspaceId,
+                )!,
+              },
+            },
+          },
+        }),
+      ),
+    )
+  }
+
+  async generatePhrasesExportToken({
+    revisionId,
+    languageId,
+    fileFormat,
+    includeEmptyTranslations,
+    requester,
+  }: GeneratePhrasesExportTokenParams) {
+    const revision = await this.prismaService.projectRevision.findUniqueOrThrow(
+      {
+        where: { id: revisionId },
+      },
+    )
+
+    if (!requester.canAccessWorkspace(revision.workspaceId)) {
+      throw new ForbiddenException('User is not part of this workspace')
+    }
+
+    const language = await this.prismaService.language.findUniqueOrThrow({
+      where: { id: languageId },
+    })
+
+    if (language.workspaceId !== revision.workspaceId) {
+      throw new BadRequestException(
+        'Language does not belong to this workspace',
+      )
+    }
+
+    const payload: PhrasesExportTokenPayload = {
+      fileFormat,
+      includeEmptyTranslations,
+      revisionId,
+      languageId,
+    }
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET!, {
+      expiresIn: '1h',
+      issuer: PhraseService.jwtIssuer,
+    })
+
+    return token
+  }
+
+  async exportPhrases({ token }: ExportPhrasesParams) {
+    let payload: PhrasesExportTokenPayload | null = null
+
+    try {
+      payload = jwt.verify(token, process.env.JWT_SECRET!, {
+        issuer: PhraseService.jwtIssuer,
+      }) as PhrasesExportTokenPayload
+    } catch (e) {}
+
+    if (!payload) {
+      throw new BadRequestException('Invalid token')
+    }
+
+    const { revisionId, languageId, fileFormat, includeEmptyTranslations } =
+      payload
+
+    const phrases = await this.prismaService.phrase.findMany({
+      where: {
+        revisionId,
+      },
+      select: {
+        key: true,
+        translations: {
+          where: {
+            languageId,
+          },
+          select: {
+            content: true,
+          },
+        },
+      },
+    })
+
+    const data = phrases.reduce<Record<string, string>>((acc, phrase) => {
+      if (phrase.translations.length === 0 && !includeEmptyTranslations) {
+        return acc
+      }
+
+      acc[phrase.key] = phrase.translations.at(0)?.content ?? ''
+
+      return acc
+    }, {})
+
+    let buffer: Buffer = Buffer.from('')
+
+    switch (fileFormat) {
+      case 'json':
+        buffer = this.jsonService.render(data)
+        break
+      case 'nested_json':
+        buffer = this.jsonService.renderNested(data)
+        break
+      case 'csv':
+        buffer = this.csvService.render(data)
+        break
+      case 'yaml':
+        buffer = this.yamlService.render(data)
+        break
+      case 'nested_yaml':
+        buffer = this.yamlService.renderNested(data)
+        break
+      case 'excel':
+        buffer = await this.excelService.render(data)
+        break
+    }
+
+    return {
+      buffer,
+      contentType: fileFormatContentType[fileFormat],
+      fileName: `export${fileFormatExtensions[fileFormat]}`,
+    }
   }
 }
