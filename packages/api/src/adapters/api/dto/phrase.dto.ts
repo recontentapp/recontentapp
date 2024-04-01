@@ -1,4 +1,15 @@
-import { IsArray, IsNotEmpty, IsString, ValidateNested } from 'class-validator'
+import {
+  IsArray,
+  IsBoolean,
+  IsNotEmpty,
+  IsNumberString,
+  IsOptional,
+  IsString,
+  Validate,
+  ValidateNested,
+} from 'class-validator'
+import { FileFormatValidator } from './domain.dto'
+import { Components } from 'src/generated/typeDefinitions'
 
 export class CreatePhraseDto {
   @IsString()
@@ -50,4 +61,51 @@ export class BatchDeletePhraseDto {
   @IsArray()
   @IsNotEmpty()
   ids: string[]
+}
+
+export class ImportPhrasesDto {
+  @Validate(FileFormatValidator)
+  @IsNotEmpty()
+  fileFormat: Components.Schemas.FileFormat
+
+  @IsString()
+  @IsNotEmpty()
+  revisionId: string
+
+  @IsString()
+  @IsNotEmpty()
+  languageId: string
+
+  @IsString()
+  @IsOptional()
+  mappingSheetName?: string
+
+  @IsNumberString()
+  @IsOptional()
+  mappingRowStartIndex?: string
+
+  @IsNumberString()
+  @IsOptional()
+  mappingKeyColumnIndex?: string
+
+  @IsNumberString()
+  @IsOptional()
+  mappingTranslationColumnIndex?: string
+}
+
+export class GeneratePhrasesExportLinkDto {
+  @IsString()
+  @IsNotEmpty()
+  revisionId: string
+
+  @IsString()
+  @IsNotEmpty()
+  languageId: string
+
+  @Validate(FileFormatValidator)
+  @IsNotEmpty()
+  fileFormat: Components.Schemas.FileFormat
+
+  @IsBoolean()
+  includeEmptyTranslations: boolean
 }

@@ -1,3 +1,5 @@
 export { Project } from './Project'
 export { Settings } from './sections/Settings'
 export { Phrases } from './sections/Phrases'
+export { Import } from './sections/Import'
+export { Export } from './sections/Export'

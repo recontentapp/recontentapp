@@ -780,6 +780,89 @@ paths:
       responses:
         '204':
           description: OK
+  /ImportPhrases:
+    post:
+      operationId: importPhrases
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                fileFormat:
+                  $ref: '#/components/schemas/FileFormat'
+                revisionId:
+                  type: string
+                languageId:
+                  type: string
+                mappingKeyColumnIndex:
+                  type: integer
+                mappingRowStartIndex:
+                  type: integer
+                mappingSheetIndex:
+                  type: integer
+                mappingTranslationColumnIndex:
+                  type: integer
+              additionalProperties: false
+              required:
+                - file
+                - fileFormat
+                - revisionId
+                - languageId
+      responses:
+        '201':
+          description: OK
+  /GeneratePhrasesExportLink:
+    post:
+      operationId: generatePhrasesExportLink
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                revisionId:
+                  type: string
+                languageId:
+                  type: string
+                fileFormat:
+                  $ref: '#/components/schemas/FileFormat'
+                includeEmptyTranslations:
+                  type: boolean
+              additionalProperties: false
+              required:
+                - revisionId
+                - languageId
+                - fileFormat
+                - includeEmptyTranslations
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  link:
+                    type: string
+                additionalProperties: false
+                required:
+                  - link
+  /GetPhrasesExport:
+    get:
+      operationId: getPhrasesExport
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
 components:
   schemas:
     Pagination:
@@ -945,6 +1028,15 @@ components:
       enum:
         - open
         - closed
+    FileFormat:
+      type: string
+      enum:
+        - json
+        - yaml
+        - nested_json
+        - nested_yaml
+        - excel
+        - csv
     Project:
       type: object
       properties:

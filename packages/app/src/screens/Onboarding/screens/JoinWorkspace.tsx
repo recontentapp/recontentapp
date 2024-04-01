@@ -11,9 +11,9 @@ import {
   TextField,
   toast,
 } from '../../../components/primitives'
-import { toDashboard } from '../../Workspace/routes'
 import { useJoinWorkspace } from '../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../hooks/workspace'
+import routes from '../../../routing'
 
 export const JoinWorkspace = () => {
   const currentWorkspace = useCurrentWorkspace()
@@ -47,7 +47,11 @@ export const JoinWorkspace = () => {
       currentWorkspace &&
       params.workspaceKey !== currentWorkspace.key
     ) {
-      navigate(toDashboard(currentWorkspace.key))
+      navigate(
+        routes.dashboard.url({
+          pathParams: { workspaceKey: currentWorkspace.key },
+        }),
+      )
     }
   }, [params.workspaceKey, currentWorkspace?.key])
 
@@ -59,7 +63,7 @@ export const JoinWorkspace = () => {
         <Stack width="100%" direction="column" spacing="$space300">
           <Stack direction="column" alignItems="center" spacing="$space60">
             <Text size="$size80" color="$gray14">
-              Step 2 of 3
+              Step 2 of 2
             </Text>
 
             <Stack direction="column" spacing="$space100">

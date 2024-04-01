@@ -15,9 +15,9 @@ import {
 import { useUpdate } from '../../../hooks/update'
 import { styled } from '../../../theme'
 import { useDebounce } from '../../../utils/debounce'
-import { toJoinWorkspace as toOnboardingJoinWorkspace } from '../routes'
 import { useAPIClient, useCreateWorkspace } from '../../../generated/reactQuery'
 import { useAuth } from '../../../auth'
+import routes from '../../../routing'
 
 interface State {
   name: string
@@ -99,7 +99,7 @@ export const CreateWorkspace = () => {
         <Stack width="100%" direction="column" spacing="$space300">
           <Stack direction="column" alignItems="center" spacing="$space60">
             <Text size="$size80" color="$gray14">
-              Step 2 of 3
+              Step 2 of 2
             </Text>
 
             <Stack direction="column" spacing="$space100">
@@ -142,8 +142,8 @@ export const CreateWorkspace = () => {
                     !workspaceKeyAvailable
                       ? `https://recontent.app/${state.key} is already used`
                       : state.name.length > 40
-                      ? 'Workspace name must not exceed 40 characters'
-                      : undefined
+                        ? 'Workspace name must not exceed 40 characters'
+                        : undefined
                   }
                   onChange={name => {
                     const key = slugify(name, {
@@ -180,7 +180,7 @@ export const CreateWorkspace = () => {
                   <Text size="$size100" color="$gray11">
                     Got an invitation by email?{' '}
                     <StyledLink>
-                      <Link to={toOnboardingJoinWorkspace()}>
+                      <Link to={routes.onboardingJoinWorkspace.url({})}>
                         Join a workspace instead.
                       </Link>
                     </StyledLink>

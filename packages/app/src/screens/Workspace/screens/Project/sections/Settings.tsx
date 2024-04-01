@@ -20,7 +20,6 @@ import {
 import { formatRelative } from '../../../../../utils/dates'
 import { SettingsSection } from '../../../components/SettingsSection'
 import { useReferenceableAccounts } from '../../../hooks/referenceable'
-import { toDashboard, toWorkspaceSettingsLanguages } from '../../../routes'
 import { AddLanguageForm } from '../components/AddLanguageForm'
 import {
   getGetProjectQueryKey,
@@ -31,6 +30,7 @@ import {
 } from '../../../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
 import { useQueryClient } from '@tanstack/react-query'
+import routes from '../../../../../routing'
 
 export const Settings: FC = () => {
   const queryClient = useQueryClient()
@@ -104,7 +104,7 @@ export const Settings: FC = () => {
           toast('success', {
             title: 'Project deleted',
           })
-          navigate(toDashboard(workspaceKey))
+          navigate(routes.dashboard.url({ pathParams: { workspaceKey } }))
         })
         .catch(() => {
           toast('error', {
@@ -117,7 +117,7 @@ export const Settings: FC = () => {
 
   useEffect(() => {
     if (failureCount > 0) {
-      navigate(toDashboard(workspaceKey))
+      navigate(routes.dashboard.url({ pathParams: { workspaceKey } }))
     }
   }, [failureCount, navigate, workspaceKey])
 
@@ -214,7 +214,9 @@ export const Settings: FC = () => {
             Want to use more languages? Add them in your{' '}
             <Link
               size="$size80"
-              to={toWorkspaceSettingsLanguages(workspaceKey)}
+              to={routes.workspaceSettingsLanguages.url({
+                pathParams: { workspaceKey },
+              })}
             >
               workspace settings
             </Link>

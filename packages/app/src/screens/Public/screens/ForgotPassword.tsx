@@ -11,7 +11,7 @@ import {
   Text,
   TextField,
 } from '../../../components/primitives'
-import { toSignIn } from '../routes'
+import routes from '../../../routing'
 
 interface RequestState {
   email: string
@@ -54,8 +54,8 @@ export const ForgotPassword: FC = () => {
               Forgot password
             </Heading>
             <Text size="$size100" color="$gray11">
-              Remember your password? <Link to={toSignIn()}>Sign in</Link> to
-              your account.
+              Remember your password?{' '}
+              <Link to={routes.signIn.url({})}>Sign in</Link> to your account.
             </Text>
           </Stack>
 

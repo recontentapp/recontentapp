@@ -1,5 +1,6 @@
 import papaparse from 'papaparse'
 import * as xlsx from 'xlsx'
+import { Components } from '../generated/typeDefinitions'
 
 export const formatFileSize = (bytes: number) => {
   const dp = 1
@@ -125,4 +126,75 @@ export const getExcelPreviewData = (
 
     fileReader.readAsBinaryString(file)
   })
+}
+
+export const fileFormatAccept: Record<string, string[]> = {
+  'application/json': ['.json'],
+  'application/yaml': ['.yaml', '.yml'],
+  'text/csv': ['.csv'],
+  'application/vnd.ms-excel': ['.xls'],
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': [
+    '.xlsx',
+  ],
+}
+
+export const fileFormatLabels: Record<Components.Schemas.FileFormat, string> = {
+  json: 'JSON',
+  nested_json: 'Nested JSON',
+  yaml: 'YAML',
+  nested_yaml: 'Nested YAML',
+  excel: 'Excel',
+  csv: 'CSV',
+}
+
+export const fileFormatContentType: Record<
+  Components.Schemas.FileFormat,
+  string[]
+> = {
+  json: ['application/json'],
+  nested_json: ['application/json'],
+  yaml: ['application/yaml'],
+  nested_yaml: ['application/yaml'],
+  excel: [
+    'application/vnd.ms-excel',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  ],
+  csv: ['text/csv'],
+}
+
+export const getFileType = (
+  file: File,
+): Components.Schemas.FileFormat | null => {
+  switch (file.type) {
+    case 'application/json':
+      return 'json'
+    case 'application/yaml':
+    case 'application/yml':
+      return 'yaml'
+  }
+
+  if (fileFormatContentType.csv.includes(file.type)) {
+    return 'csv'
+  }
+
+  if (fileFormatContentType.excel.includes(file.type)) {
+    return 'excel'
+  }
+
+  const nameParts = file.name.split('.')
+  const extension = nameParts[nameParts.length - 1]
+
+  switch (extension) {
+    case 'csv':
+      return 'csv'
+    case 'yaml':
+    case 'yml':
+      return 'yaml'
+    case 'json':
+      return 'json'
+    case 'xlsx':
+      return 'excel'
+  }
+
+  return null
 }

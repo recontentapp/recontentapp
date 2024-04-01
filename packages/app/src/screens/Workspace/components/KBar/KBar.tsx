@@ -6,17 +6,10 @@ import { useNavigate } from 'react-router-dom'
 import { Box } from '../../../../components/primitives'
 import { keyframes, styled } from '../../../../theme'
 import { useModals } from '../../hooks/modals'
-import {
-  toDashboard,
-  toProjectSettings,
-  toUserSettings,
-  toWorkspaceSettingsIntegrations,
-  toWorkspaceSettingsLanguages,
-  toWorkspaceSettingsMembers,
-} from '../../routes'
 import { useKBarContext } from './context'
 import { useListProjects } from '../../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../../hooks/workspace'
+import routes from '../../../../routing'
 
 const fadeIn = keyframes({
   '0%': {
@@ -204,23 +197,29 @@ export const KBar = () => {
     return [
       {
         label: 'Go to Dashboard',
-        path: toDashboard(workspaceKey),
+        path: routes.dashboard.url({ pathParams: { workspaceKey } }),
       },
       {
         label: 'Go to Members settings',
-        path: toWorkspaceSettingsMembers(workspaceKey),
+        path: routes.workspaceSettingsMembers.url({
+          pathParams: { workspaceKey },
+        }),
       },
       {
         label: 'Go to Languages settings',
-        path: toWorkspaceSettingsLanguages(workspaceKey),
+        path: routes.workspaceSettingsLanguages.url({
+          pathParams: { workspaceKey },
+        }),
       },
       {
         label: 'Go to Integrations settings',
-        path: toWorkspaceSettingsIntegrations(workspaceKey),
+        path: routes.workspaceSettingsIntegrations.url({
+          pathParams: { workspaceKey },
+        }),
       },
       {
         label: 'Go to User settings',
-        path: toUserSettings(workspaceKey),
+        path: routes.userSettings.url({ pathParams: { workspaceKey } }),
       },
     ]
   }, [workspaceKey])
@@ -255,11 +254,19 @@ export const KBar = () => {
     return [
       {
         label: 'Go to Project phrases',
-        path: toProjectSettings(workspaceKey, project.id),
+        path: routes.projectPhrases.url({
+          pathParams: {
+            workspaceKey,
+            projectId: project.id,
+            revisionId: project.masterRevisionId,
+          },
+        }),
       },
       {
         label: 'Go to Project settings',
-        path: toProjectSettings(workspaceKey, project.id),
+        path: routes.projectSettings.url({
+          pathParams: { workspaceKey, projectId: project.id },
+        }),
       },
     ]
   }, [workspaceKey, project])
@@ -315,7 +322,11 @@ export const KBar = () => {
               <Command.Item
                 key={project.id}
                 onSelect={doAndClose(() =>
-                  navigate(toProjectSettings(workspaceKey, project.id)),
+                  navigate(
+                    routes.projectSettings.url({
+                      pathParams: { workspaceKey, projectId: project.id },
+                    }),
+                  ),
                 )}
               >
                 {project.name}

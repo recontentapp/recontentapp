@@ -18,7 +18,7 @@ import {
   useLooseCurrentWorkspace,
 } from '../../../../../hooks/workspace'
 import { styled } from '../../../../../theme'
-import { toUserSettings } from '../../../routes'
+import routes from '../../../../../routing'
 
 const WorkspaceButton = styled('div', {
   cursor: 'pointer',
@@ -143,7 +143,13 @@ export const WorkspaceDropdown: FC = () => {
           </Tooltip>
         </MenuButton>
         <MenuList>
-          <MenuItem onSelect={() => navigate(toUserSettings(workspaceKey))}>
+          <MenuItem
+            onSelect={() =>
+              navigate(
+                routes.userSettings.url({ pathParams: { workspaceKey } }),
+              )
+            }
+          >
             <LabelWithIcon icon="settings" label="User settings" />
           </MenuItem>
           <MenuItem onSelect={signOut}>

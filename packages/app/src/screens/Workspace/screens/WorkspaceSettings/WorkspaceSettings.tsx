@@ -4,13 +4,8 @@ import { Outlet } from 'react-router-dom'
 import { Head } from '../../../../components/Head'
 import { Page } from '../../components/Page'
 import { ScreenWrapper } from '../../components/ScreenWrapper'
-import {
-  toDashboard,
-  toWorkspaceSettingsIntegrations,
-  toWorkspaceSettingsLanguages,
-  toWorkspaceSettingsMembers,
-} from '../../routes'
 import { useCurrentWorkspace } from '../../../../hooks/workspace'
+import routes from '../../../../routing'
 
 export const WorkspaceSettings: FC = () => {
   const { key: workspaceKey, name: workspaceName } = useCurrentWorkspace()
@@ -20,11 +15,13 @@ export const WorkspaceSettings: FC = () => {
       breadcrumbItems={[
         {
           label: workspaceName,
-          path: toDashboard(workspaceKey),
+          path: routes.dashboard.url({ pathParams: { workspaceKey } }),
         },
         {
           label: 'Workspace settings',
-          path: toWorkspaceSettingsMembers(workspaceKey),
+          path: routes.workspaceSettingsMembers.url({
+            pathParams: { workspaceKey },
+          }),
         },
       ]}
     >
@@ -34,15 +31,21 @@ export const WorkspaceSettings: FC = () => {
         tabs={[
           {
             label: 'Members',
-            to: toWorkspaceSettingsMembers(workspaceKey),
+            to: routes.workspaceSettingsMembers.url({
+              pathParams: { workspaceKey },
+            }),
           },
           {
             label: 'Languages',
-            to: toWorkspaceSettingsLanguages(workspaceKey),
+            to: routes.workspaceSettingsLanguages.url({
+              pathParams: { workspaceKey },
+            }),
           },
           {
             label: 'Integrations',
-            to: toWorkspaceSettingsIntegrations(workspaceKey),
+            to: routes.workspaceSettingsIntegrations.url({
+              pathParams: { workspaceKey },
+            }),
           },
         ]}
       >

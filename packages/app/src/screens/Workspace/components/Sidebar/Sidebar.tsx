@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom'
 import { Box, Stack } from '../../../../components/primitives'
 import { styled } from '../../../../theme'
 import { useModals } from '../../hooks/modals'
-import { toWorkspaceSettingsMembers } from '../../routes'
 import {
   ActionButton,
   ActionButtonProps,
@@ -18,6 +17,7 @@ import {
   useCurrentAccount,
   useCurrentWorkspace,
 } from '../../../../hooks/workspace'
+import routes from '../../../../routing'
 
 const Container = styled('aside', {
   display: 'flex',
@@ -84,7 +84,12 @@ export const Sidebar: FC = () => {
       list.push({
         name: 'Settings & Members',
         icon: 'settings',
-        onAction: () => navigate(toWorkspaceSettingsMembers(workspaceKey)),
+        onAction: () =>
+          navigate(
+            routes.workspaceSettingsMembers.url({
+              pathParams: { workspaceKey },
+            }),
+          ),
       })
     }
 

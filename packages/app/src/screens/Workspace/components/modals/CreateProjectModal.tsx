@@ -11,13 +11,13 @@ import {
 } from '../../../../components/primitives'
 import { useCurrentWorkspace } from '../../../../hooks/workspace'
 import { styled } from '../../../../theme'
-import { toDashboard } from '../../routes'
 import {
   getListProjectsQueryKey,
   useCreateProject,
   useListWorkspaceLanguages,
 } from '../../../../generated/reactQuery'
 import { useQueryClient } from '@tanstack/react-query'
+import routes from '../../../../routing'
 
 export interface CreateProjectModalRef {
   open: () => void
@@ -97,7 +97,7 @@ export const CreateProjectModal = forwardRef<CreateProjectModalRef>(
             description: 'You can start adding phrases to it',
           })
           modalRef.current.close()
-          navigate(toDashboard(workspaceKey))
+          navigate(routes.dashboard.url({ pathParams: { workspaceKey } }))
         })
         .catch(() => {
           toast('error', {

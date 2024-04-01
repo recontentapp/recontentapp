@@ -14,8 +14,8 @@ import {
   TextField,
   toast,
 } from '../../../components/primitives'
-import { toForgotPassword, toSignUp } from '../routes'
 import { HTTPRequestError, getAPIClient } from '../../../generated/apiClient'
+import routes from '../../../routing'
 
 interface State {
   email: string
@@ -175,8 +175,8 @@ export const SignIn: FC = () => {
               Sign in
             </Heading>
             <Text size="$size100" color="$gray11">
-              New to Recontent? <Link to={toSignUp()}>Sign up</Link> for an
-              account.
+              New to Recontent? <Link to={routes.signUp.url({})}>Sign up</Link>{' '}
+              for an account.
             </Text>
           </Stack>
 
@@ -210,7 +210,9 @@ export const SignIn: FC = () => {
                     }
                   />
                   <Text size="$size100" color="$gray11">
-                    <Link to={toForgotPassword()}>Forgot password?</Link>
+                    <Link to={routes.forgotPassword.url({})}>
+                      Forgot password?
+                    </Link>
                   </Text>
                 </Stack>
               )}

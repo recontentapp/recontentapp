@@ -1,16 +1,36 @@
-export const toUserSettings = (workspaceKey: string) =>
-  `/${workspaceKey}/settings/user`
-export const toDashboard = (workspaceKey: string) => `/${workspaceKey}`
-export const toProjectPhrases = (
-  workspaceKey: string,
-  projectId: string,
-  masterRevisionId: string,
-) => `/${workspaceKey}/projects/${projectId}/phrases/${masterRevisionId}`
-export const toProjectSettings = (workspaceKey: string, projectId: string) =>
-  `/${workspaceKey}/projects/${projectId}/settings`
-export const toWorkspaceSettingsLanguages = (workspaceKey: string) =>
-  `/${workspaceKey}/settings/languages`
-export const toWorkspaceSettingsIntegrations = (workspaceKey: string) =>
-  `/${workspaceKey}/settings/integrations`
-export const toWorkspaceSettingsMembers = (workspaceKey: string) =>
-  `/${workspaceKey}/settings/members`
+import { RoutesCollection } from '../../routing-types'
+
+const routes: RoutesCollection = {
+  '/:workspaceKey': {
+    name: 'dashboard',
+  },
+  '/:workspaceKey/settings/languages': {
+    name: 'workspaceSettingsLanguages',
+  },
+  '/:workspaceKey/settings/integrations': {
+    name: 'workspaceSettingsIntegrations',
+  },
+  '/:workspaceKey/settings/members': {
+    name: 'workspaceSettingsMembers',
+  },
+  '/:workspaceKey/settings/user': {
+    name: 'userSettings',
+  },
+  '/:workspaceKey/projects/:projectId/phrases/:revisionId': {
+    name: 'projectPhrases',
+  },
+  '/:workspaceKey/projects/:projectId/settings': {
+    name: 'projectSettings',
+  },
+  '/:workspaceKey/projects/:projectId/import': {
+    name: 'projectImport',
+  },
+  '/:workspaceKey/projects/:projectId/import/from-file': {
+    name: 'projectImportFromFile',
+  },
+  '/:workspaceKey/projects/:projectId/export': {
+    name: 'projectExport',
+  },
+}
+
+export default routes

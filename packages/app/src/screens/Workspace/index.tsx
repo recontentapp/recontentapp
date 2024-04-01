@@ -5,12 +5,13 @@ import { Redirect } from '../Redirect'
 import { KBar, KBarProvider } from './components/KBar'
 import { Sidebar } from './components/Sidebar'
 import { ModalsProvider } from './hooks/modals'
-import { toDashboard, toWorkspaceSettingsMembers } from './routes'
 import { Dashboard } from './screens/Dashboard'
 import {
   Project,
   Settings as ProjectSettings,
   Phrases as ProjectPhrases,
+  Import as ProjectImport,
+  Export as ProjectExport,
 } from './screens/Project'
 import { UserSettings } from './screens/UserSettings'
 import {
@@ -19,7 +20,9 @@ import {
   Members as WorkspaceMembers,
   WorkspaceSettings,
 } from './screens/WorkspaceSettings'
+import { ImportFromFile } from './screens/ImportFromFile'
 import { useCurrentAccount, useCurrentWorkspace } from '../../hooks/workspace'
+import routes from '../../routing'
 
 const MainContainer = styled('div', {
   height: '100vh',
@@ -80,7 +83,9 @@ export const Workspace = () => {
                       index
                       element={
                         <Redirect
-                          to={toWorkspaceSettingsMembers(workspaceKey)}
+                          to={routes.workspaceSettingsMembers.url({
+                            pathParams: { workspaceKey },
+                          })}
                         />
                       }
                     />
@@ -88,21 +93,40 @@ export const Workspace = () => {
                 )}
 
                 <Route
+                  path="/:workspaceKey/projects/:projectId/import/from-file"
+                  element={<ImportFromFile />}
+                />
+
+                <Route
                   path="/:workspaceKey/projects/:projectId"
                   element={<Project />}
                 >
+                  <Route path="import" element={<ProjectImport />} />
+                  <Route path="export" element={<ProjectExport />} />
                   <Route path="settings" element={<ProjectSettings />} />
                   <Route path="phrases">
                     <Route path=":revisionId" element={<ProjectPhrases />} />
                   </Route>
                   <Route
                     path="*"
-                    element={<Redirect to={toDashboard(workspaceKey)} />}
+                    element={
+                      <Redirect
+                        to={routes.dashboard.url({
+                          pathParams: { workspaceKey },
+                        })}
+                      />
+                    }
                   />
                 </Route>
                 <Route
                   path="*"
-                  element={<Redirect to={toDashboard(workspaceKey)} />}
+                  element={
+                    <Redirect
+                      to={routes.dashboard.url({
+                        pathParams: { workspaceKey },
+                      })}
+                    />
+                  }
                 />
               </Routes>
             </Main>

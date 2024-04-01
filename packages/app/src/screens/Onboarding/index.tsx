@@ -2,11 +2,11 @@ import { useEffect } from 'react'
 import { Route, Routes, useNavigate } from 'react-router-dom'
 
 import { Redirect } from '../Redirect'
-import { toYou } from './routes'
 import { CreateWorkspace } from './screens/CreateWorkspace'
 import { JoinWorkspace } from './screens/JoinWorkspace'
 import { You } from './screens/You'
 import { useCurrentUser } from '../../auth'
+import routes from '../../routing'
 
 export const Onboarding = () => {
   const { firstName, lastName } = useCurrentUser()
@@ -14,9 +14,9 @@ export const Onboarding = () => {
 
   useEffect(() => {
     if (firstName.length === 0 || lastName.length === 0) {
-      navigate(toYou())
+      navigate(routes.onboardingYou.url({}))
     }
-  }, [firstName, lastName])
+  }, [firstName, lastName, navigate])
 
   return (
     <Routes>
@@ -25,7 +25,10 @@ export const Onboarding = () => {
         <Route path="create-workspace" element={<CreateWorkspace />} />
         <Route path="join-workspace" element={<JoinWorkspace />} />
       </Route>
-      <Route path="*" element={<Redirect to={toYou()} />} />
+      <Route
+        path="*"
+        element={<Redirect to={routes.onboardingYou.url({})} />}
+      />
     </Routes>
   )
 }

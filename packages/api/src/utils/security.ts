@@ -25,3 +25,19 @@ export const isPasswordValid = async (
   const isPasswordValid = await bcrypt.compare(password, hashedPassword)
   return isPasswordValid
 }
+
+export const escapeFileName = (filename: string) => {
+  return filename.replace(/[^a-z0-9]/gi, '_')
+}
+
+export const escapeForExcel = (cellContent: string) => {
+  /**
+   * Avoid Excel from interpreting the content
+   * as a formula for security reasons
+   */
+  if (/^[=+@-]/.test(cellContent)) {
+    return `'${cellContent}`
+  }
+
+  return cellContent
+}

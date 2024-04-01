@@ -1,10 +1,10 @@
 import { Stack } from '../../../../../components/primitives'
 import { Components } from '../../../../../generated/typeDefinitions'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
+import routes from '../../../../../routing'
 import { AddCard } from '../../../components/AddCard'
 import { Card } from '../../../components/Card'
 import { useModals } from '../../../hooks/modals'
-import { toProjectPhrases } from '../../../routes'
 
 interface ProjectsListProps {
   projects: Components.Schemas.Project[]
@@ -19,11 +19,13 @@ export const ProjectsList = ({ projects }: ProjectsListProps) => {
       {projects.map(project => (
         <li key={project.id}>
           <Card
-            to={toProjectPhrases(
-              workspaceKey,
-              project.id,
-              project.masterRevisionId,
-            )}
+            to={routes.projectPhrases.url({
+              pathParams: {
+                workspaceKey,
+                projectId: project.id,
+                revisionId: project.masterRevisionId,
+              },
+            })}
             id={project.id}
             title={project.name}
             date={new Date(project.updatedAt)}
