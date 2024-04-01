@@ -13,7 +13,7 @@ export interface State {
   mapping?: {
     sheetName: string | undefined
     rowStartIndex: number
-    keyColumnIndex: number | undefined
-    translationColumnIndex: number | undefined
+    keyColumnIndex: number
+    translationColumnIndex: number
   }
 }

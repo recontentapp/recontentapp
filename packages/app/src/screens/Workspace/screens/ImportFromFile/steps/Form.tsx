@@ -79,6 +79,12 @@ export const Form = ({
         updateState(state => ({
           ...state,
           fileFormat: 'csv',
+          mapping: {
+            sheetName: undefined,
+            rowStartIndex: 0,
+            keyColumnIndex: 0,
+            translationColumnIndex: 1,
+          },
           csvPreviewData,
         }))
         break
@@ -95,6 +101,12 @@ export const Form = ({
         updateState(state => ({
           ...state,
           excelPreviewData,
+          mapping: {
+            sheetName: excelPreviewData.at(0)?.name,
+            rowStartIndex: 0,
+            keyColumnIndex: 0,
+            translationColumnIndex: 1,
+          },
           fileFormat: 'excel',
         }))
         break

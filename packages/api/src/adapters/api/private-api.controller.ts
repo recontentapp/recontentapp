@@ -765,10 +765,16 @@ export class PrivateApiController {
       fileFormat: body.fileFormat,
       revisionId: body.revisionId,
       languageId: body.languageId,
-      mappingKeyColumnIndex: body.mappingKeyColumnIndex,
-      mappingRowStartIndex: body.mappingRowStartIndex,
       mappingSheetName: body.mappingSheetName,
-      mappingTranslationColumnIndex: body.mappingTranslationColumnIndex,
+      mappingKeyColumnIndex: body.mappingKeyColumnIndex
+        ? Number(body.mappingKeyColumnIndex)
+        : undefined,
+      mappingRowStartIndex: body.mappingRowStartIndex
+        ? Number(body.mappingRowStartIndex)
+        : undefined,
+      mappingTranslationColumnIndex: body.mappingTranslationColumnIndex
+        ? Number(body.mappingTranslationColumnIndex)
+        : undefined,
       requester,
     })
 

@@ -2,7 +2,7 @@ import {
   IsArray,
   IsBoolean,
   IsNotEmpty,
-  IsNumber,
+  IsNumberString,
   IsOptional,
   IsString,
   Validate,
@@ -80,17 +80,17 @@ export class ImportPhrasesDto {
   @IsOptional()
   mappingSheetName?: string
 
-  @IsNumber()
+  @IsNumberString()
   @IsOptional()
-  mappingRowStartIndex?: number
+  mappingRowStartIndex?: string
 
-  @IsNumber()
+  @IsNumberString()
   @IsOptional()
-  mappingKeyColumnIndex?: number
+  mappingKeyColumnIndex?: string
 
-  @IsNumber()
+  @IsNumberString()
   @IsOptional()
-  mappingTranslationColumnIndex?: number
+  mappingTranslationColumnIndex?: string
 }
 
 export class GeneratePhrasesExportLinkDto {

@@ -21,6 +21,7 @@ export class ExcelService {
     translationColumnIndex,
   }: ParseParams): Promise<Data> {
     const workbook = new Excel.Workbook()
+
     await workbook.xlsx.load(buffer).catch(() => {
       throw new BadRequestException('Invalid excel file')
     })
@@ -37,8 +38,9 @@ export class ExcelService {
         return
       }
 
-      const key = row.getCell(keyColumnIndex).text
-      const translation = row.getCell(translationColumnIndex).text
+      const key = row.getCell(keyColumnIndex + 1).text
+      const translation = row.getCell(translationColumnIndex + 1).text
+
       data[key] = translation
     })
 

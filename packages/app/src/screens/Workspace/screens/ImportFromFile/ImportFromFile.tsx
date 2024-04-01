@@ -41,16 +41,7 @@ export const ImportFromFile = () => {
   const canBeSubmitted = !!state.file && !!state.fileFormat && !!state.language
 
   const onFormNext = () => {
-    if (['excel', 'csv'].includes(state.fileFormat) && !state.mapping) {
-      setState(state => ({
-        ...state,
-        mapping: {
-          sheetName: undefined,
-          rowStartIndex: 0,
-          keyColumnIndex: undefined,
-          translationColumnIndex: undefined,
-        },
-      }))
+    if (['excel', 'csv'].includes(state.fileFormat)) {
       setStep('mapping')
       return
     }
@@ -69,19 +60,22 @@ export const ImportFromFile = () => {
     formData.append('revisionId', project.masterRevisionId)
     formData.append('languageId', state.language?.id)
 
-    if (state.mapping) {
-      formData.append('mappingSheetName', state.mapping.sheetName || '')
+    if (state.mapping && ['excel', 'csv'].includes(state.fileFormat)) {
+      if (state.mapping.sheetName) {
+        formData.append('mappingSheetName', String(state.mapping.sheetName))
+      }
+
       formData.append(
         'mappingRowStartIndex',
         state.mapping.rowStartIndex.toString(),
       )
       formData.append(
         'mappingKeyColumnIndex',
-        state.mapping.keyColumnIndex!.toString(),
+        state.mapping.keyColumnIndex.toString(),
       )
       formData.append(
         'mappingTranslationColumnIndex',
-        state.mapping.translationColumnIndex!.toString(),
+        state.mapping.translationColumnIndex.toString(),
       )
     }
 
