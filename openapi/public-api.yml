@@ -1,0 +1,410 @@
+openapi: 3.0.3
+info:
+  title: Public API
+  version: 1.0.0
+paths:
+  /workspaces/me:
+    get:
+      operationId: getWorkspace
+      summary: Get workspace associated with API key
+      responses:
+        '200':
+          description: The workspace
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Workspace'
+  /languages:
+    get:
+      operationId: listLanguages
+      summary: List languages by workspace or project
+      parameters:
+        - name: projectId
+          in: query
+          description: Project ID
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+        - name: pageSize
+          in: query
+          description: Page size
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of languages
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Language'
+                additionalProperties: false
+                required:
+                  - pagination
+                  - items
+  /projects:
+    get:
+      operationId: listProjects
+      summary: List projects
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+        - name: pageSize
+          in: query
+          description: Page size
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of projects
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Project'
+                additionalProperties: false
+                required:
+                  - pagination
+                  - items
+  '/projects/{id}':
+    get:
+      operationId: getProject
+      summary: Get project by ID
+      parameters:
+        - name: id
+          in: path
+          description: Project ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The project
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+  /phrases:
+    get:
+      operationId: listPhrases
+      summary: List phrases by revision
+      parameters:
+        - name: revisionId
+          in: query
+          description: Revision ID
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+        - name: pageSize
+          in: query
+          description: Page size
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of phrases
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PhraseItem'
+                additionalProperties: false
+                required:
+                  - pagination
+                  - items
+  '/phrases/{id}':
+    get:
+      operationId: getPhrase
+      summary: Get phrase by ID
+      parameters:
+        - name: id
+          in: path
+          description: Phrase ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The phrase
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Phrase'
+  /phrase-exports:
+    post:
+      operationId: exportPhrases
+      summary: Export phrases
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                revisionId:
+                  type: string
+                languageId:
+                  type: string
+              additionalProperties: false
+              required:
+                - revisionId
+                - languageId
+      responses:
+        '200':
+          description: Exported phrases
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    example:
+                      dashboard.title: Welcome back!
+                      dashboard.description: Visualize your payments & subscriptions
+                    additionalProperties:
+                      type: string
+                additionalProperties: false
+                required:
+                  - data
+  /possible-locales:
+    get:
+      operationId: listPossibleLocales
+      summary: List possible locales
+      responses:
+        '200':
+          description: List of possible locales
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: false
+                      required:
+                        - key
+                        - label
+                      properties:
+                        key:
+                          type: string
+                        label:
+                          type: string
+                additionalProperties: false
+                required:
+                  - items
+components:
+  schemas:
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        pagesCount:
+          type: integer
+        itemsCount:
+          type: integer
+      additionalProperties: false
+      required:
+        - page
+        - pageSize
+        - pagesCount
+        - itemsCount
+    Workspace:
+      type: object
+      properties:
+        id:
+          type: string
+        key:
+          type: string
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      additionalProperties: false
+      required:
+        - id
+        - key
+        - name
+        - createdAt
+        - updatedAt
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+        workspaceId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        masterRevisionId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      additionalProperties: false
+      required:
+        - id
+        - workspaceId
+        - masterRevisionId
+        - name
+        - description
+        - createdAt
+        - updatedAt
+    Language:
+      type: object
+      properties:
+        id:
+          type: string
+        workspaceId:
+          type: string
+        locale:
+          type: string
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      additionalProperties: false
+      required:
+        - id
+        - workspaceId
+        - locale
+        - name
+        - createdAt
+        - updatedAt
+    PhraseItem:
+      type: object
+      properties:
+        id:
+          type: string
+        key:
+          type: string
+        revisionId:
+          type: string
+        projectId:
+          type: string
+        workspaceId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      additionalProperties: false
+      required:
+        - id
+        - key
+        - revisionId
+        - projectId
+        - workspaceId
+        - createdAt
+        - updatedAt
+    Phrase:
+      type: object
+      properties:
+        id:
+          type: string
+        key:
+          type: string
+        revisionId:
+          type: string
+        projectId:
+          type: string
+        workspaceId:
+          type: string
+        translations:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+              - languageId
+              - content
+              - createdAt
+              - updatedAt
+            properties:
+              id:
+                type: string
+              languageId:
+                type: string
+              content:
+                type: string
+              createdAt:
+                type: string
+                format: date-time
+              updatedAt:
+                type: string
+                format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      additionalProperties: false
+      required:
+        - id
+        - key
+        - revisionId
+        - projectId
+        - workspaceId
+        - translations
+        - createdAt
+        - updatedAt

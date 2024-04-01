@@ -7,7 +7,7 @@ import { Prisma } from '@prisma/client'
 import { Components } from 'src/generated/typeDefinitions'
 import { PaginationParams } from 'src/utils/pagination'
 import { PrismaService } from 'src/utils/prisma.service'
-import { HumanRequester } from 'src/utils/requester'
+import { HumanRequester, Requester } from 'src/utils/requester'
 import * as jwt from 'jsonwebtoken'
 import { JSONService } from '../io/json.service'
 import { CSVService } from '../io/csv.service'
@@ -23,7 +23,7 @@ interface ListPhrasesParams {
   translated?: string
   untranslated?: string
   pagination: PaginationParams
-  requester: HumanRequester
+  requester: Requester
 }
 
 interface CreatePhraseParams {
@@ -59,7 +59,7 @@ interface BatchDeletePhrasesParams {
 
 interface GetPhraseParams {
   phraseId: string
-  requester: HumanRequester
+  requester: Requester
 }
 
 interface ImportPhrasesParams {

@@ -31,6 +31,7 @@ import {
   AddLanguagesToWorkspaceDto,
   CreateWorkspaceDto,
   CreateWorkspaceServiceAccountDto,
+  DeleteWorkspaceServiceAccountDto,
   InviteToWorkspaceDto,
   JoinWorkspaceDto,
 } from './dto/workspace.dto'
@@ -395,11 +396,28 @@ export class PrivateApiController {
       throw new BadRequestException('Invalid requester')
     }
 
-    await this.workspaceService.createWorkspaceServiceAccount({
+    const apiKey = await this.workspaceService.createWorkspaceServiceAccount({
       workspaceId,
       requester,
       name,
       role,
+    })
+
+    return { apiKey }
+  }
+
+  @Delete('/DeleteWorkspaceServiceAccount')
+  async deleteWorkspaceServiceAccount(
+    @Body() { id }: DeleteWorkspaceServiceAccountDto,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.DeleteWorkspaceServiceAccount.Responses.$204> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    await this.workspaceService.deleteWorkspaceServiceAccount({
+      id,
+      requester,
     })
 
     return {}

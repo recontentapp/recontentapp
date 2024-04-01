@@ -36,6 +36,7 @@ export interface HumanRequester {
 export interface ServiceRequester {
   type: 'service'
   serviceAccountId: string
+  serviceWorkspaceId: string
   canAccessWorkspace: (workspaceId: string) => boolean
   canAdminWorkspace: (workspaceId: string) => boolean
   getAccountIDForWorkspace: (workspaceId: string) => string | null
@@ -54,6 +55,7 @@ export const getRequesterOrNull = (req: Request): Requester | null => {
     const requester: ServiceRequester = {
       type: 'service',
       serviceAccountId: user.account.id,
+      serviceWorkspaceId: user.account.workspaceId,
       canAccessWorkspace: workspaceId => {
         if (workspaceId === user.account.workspaceId) {
           return true

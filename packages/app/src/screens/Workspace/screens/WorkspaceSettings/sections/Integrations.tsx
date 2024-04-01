@@ -16,9 +16,15 @@ import { formatRelative } from '../../../../../utils/dates'
 import { useReferenceableAccounts } from '../../../hooks/referenceable'
 import { AddAPIKeyForm } from '../components/AddAPIKeyForm'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
-import { useListWorkspaceAccounts } from '../../../../../generated/reactQuery'
+import {
+  getListWorkspaceAccountsQueryKey,
+  useDeleteWorkspaceServiceAccount,
+  useListWorkspaceAccounts,
+} from '../../../../../generated/reactQuery'
+import { useQueryClient } from '@tanstack/react-query'
 
 export const Integrations: FC = () => {
+  const queryClient = useQueryClient()
   const { getName } = useReferenceableAccounts()
   const { id: workspaceId } = useCurrentWorkspace()
   const confirmationModalRef = useRef<ConfirmationModalRef>(null!)
@@ -28,12 +34,29 @@ export const Integrations: FC = () => {
       type: 'service',
     },
   })
+  const { mutateAsync: deleteServiceAccount } =
+    useDeleteWorkspaceServiceAccount({
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: getListWorkspaceAccountsQueryKey({
+            queryParams: {
+              workspaceId,
+              type: 'service',
+            },
+          }),
+        })
+      },
+    })
 
-  const onRequestDelete = (_id: string) => {
+  const onRequestDelete = (id: string) => {
     confirmationModalRef.current.confirm().then(result => {
       if (!result) {
         return
       }
+
+      deleteServiceAccount({
+        body: { id },
+      })
     })
   }
 

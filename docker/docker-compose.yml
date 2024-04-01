@@ -1,0 +1,52 @@
+version: '3.8'
+services:
+  app:
+    platform: linux/x86_64
+    image: ghcr.io/recontentapp/recontentapp:master
+    restart: always
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    ports:
+      - '3000:3000'
+    environment:
+      - PORT=3000
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/recontentapp
+      - DATABASE_LOG_QUERIES=false
+      - JWT_SECRET=xM7jGWpRdeZutWQS6Jmg
+      - MAILER_HOST=host.com
+      - MAILER_PORT=587
+      - MAILER_SECURE=true
+      - MAILER_USER=example
+      - MAILER_PASSWORD=password
+      - MAILER_FROM_EMAIL=hello@recontent.app
+      - NODE_TLS_REJECT_UNAUTHORIZED=false
+      - SERVE_STATIC_FILES=true
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/healthz']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+  migrate:
+    platform: linux/x86_64
+    image: ghcr.io/recontentapp/recontentapp-migrate:master
+    restart: on-failure
+    depends_on:
+      postgres:
+        condition: service_started
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/recontentapp
+  postgres:
+    image: postgres:16.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=recontentapp
+    ports:
+      - '6033:5432'
+    volumes:
+      - postgres:/var/lib/postgresql/data
+volumes:
+  postgres:
+    driver: local
