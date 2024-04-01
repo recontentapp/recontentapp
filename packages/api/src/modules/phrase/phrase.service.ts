@@ -8,13 +8,14 @@ import { Components } from 'src/generated/typeDefinitions'
 import { PaginationParams } from 'src/utils/pagination'
 import { PrismaService } from 'src/utils/prisma.service'
 import { HumanRequester } from 'src/utils/requester'
-import jwt from 'jsonwebtoken'
+import * as jwt from 'jsonwebtoken'
 import { JSONService } from '../io/json.service'
 import { CSVService } from '../io/csv.service'
 import { YAMLService } from '../io/yaml.service'
 import { fileFormatContentType, fileFormatExtensions } from '../io/fileFormat'
 import { ExcelService } from '../io/excel.service'
 import { Data } from '../io/types'
+import { escapeFileName } from 'src/utils/security'
 
 interface ListPhrasesParams {
   revisionId: string
@@ -87,6 +88,7 @@ interface ExportPhrasesParams {
 
 interface PhrasesExportTokenPayload {
   revisionId: string
+  projectId: string
   languageId: string
   fileFormat: Components.Schemas.FileFormat
   includeEmptyTranslations: boolean
@@ -521,17 +523,23 @@ export class PhraseService {
 
     const payload: PhrasesExportTokenPayload = {
       fileFormat,
+      projectId: revision.projectId,
       includeEmptyTranslations,
       revisionId,
       languageId,
     }
 
-    const token = jwt.sign(payload, process.env.JWT_SECRET!, {
-      expiresIn: '1h',
-      issuer: PhraseService.jwtIssuer,
-    })
+    try {
+      const token = jwt.sign(payload, process.env.JWT_SECRET!, {
+        expiresIn: '1h',
+        issuer: PhraseService.jwtIssuer,
+      })
 
-    return token
+      return token
+    } catch (e) {
+      console.log(e)
+      throw new BadRequestException('Could not generate token')
+    }
   }
 
   async exportPhrases({ token }: ExportPhrasesParams) {
@@ -541,14 +549,36 @@ export class PhraseService {
       payload = jwt.verify(token, process.env.JWT_SECRET!, {
         issuer: PhraseService.jwtIssuer,
       }) as PhrasesExportTokenPayload
-    } catch (e) {}
+    } catch (e) {
+      console.log(e)
+    }
 
     if (!payload) {
       throw new BadRequestException('Invalid token')
     }
 
-    const { revisionId, languageId, fileFormat, includeEmptyTranslations } =
-      payload
+    const {
+      revisionId,
+      projectId,
+      languageId,
+      fileFormat,
+      includeEmptyTranslations,
+    } = payload
+
+    const [project, language] = await Promise.all([
+      this.prismaService.project.findUniqueOrThrow({
+        where: { id: projectId },
+        select: {
+          name: true,
+        },
+      }),
+      this.prismaService.language.findUniqueOrThrow({
+        where: { id: languageId },
+        select: {
+          name: true,
+        },
+      }),
+    ])
 
     const phrases = await this.prismaService.phrase.findMany({
       where: {
@@ -600,10 +630,14 @@ export class PhraseService {
         break
     }
 
+    const fileName = escapeFileName(
+      `Recontent_${project.name}_${language.name}`,
+    )
+
     return {
       buffer,
       contentType: fileFormatContentType[fileFormat],
-      fileName: `export${fileFormatExtensions[fileFormat]}`,
+      fileName: `${fileName}${fileFormatExtensions[fileFormat]}`,
     }
   }
 }

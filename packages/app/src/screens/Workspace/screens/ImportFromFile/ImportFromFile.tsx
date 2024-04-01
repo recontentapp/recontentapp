@@ -8,13 +8,19 @@ import { State } from './types'
 import { Form } from './steps/Form'
 import { Mapping } from './steps/Mapping'
 import { useCurrentWorkspace } from '../../../../hooks/workspace'
-import { useGetProject } from '../../../../generated/reactQuery'
+import {
+  useGetProject,
+  useImportPhrases,
+} from '../../../../generated/reactQuery'
 import routes from '../../../../routing'
+import { toast } from '../../../../components/primitives'
 
 export const ImportFromFile = () => {
   const navigate = useNavigate()
   const params = useParams<'projectId'>()
   const { key: workspaceKey, name: workspaceName } = useCurrentWorkspace()
+  const { mutateAsync: importPhrases, isPending: isImporting } =
+    useImportPhrases()
 
   const [step, setStep] = useState<'form' | 'mapping'>('form')
   const [state, setState] = useState<State>({
@@ -32,14 +38,14 @@ export const ImportFromFile = () => {
     }
   }, [failureCount, navigate, workspaceKey])
 
-  const canBeSubmitted = !!state.file && !!state.fileFormat && !!state.locale
+  const canBeSubmitted = !!state.file && !!state.fileFormat && !!state.language
 
   const onFormNext = () => {
     if (['excel', 'csv'].includes(state.fileFormat) && !state.mapping) {
       setState(state => ({
         ...state,
         mapping: {
-          sheetIndex: 0,
+          sheetName: undefined,
           rowStartIndex: 0,
           keyColumnIndex: undefined,
           translationColumnIndex: undefined,
@@ -53,41 +59,56 @@ export const ImportFromFile = () => {
   }
 
   const onSubmit = () => {
-    if (!canBeSubmitted) {
+    if (!canBeSubmitted || !project || isImporting || !state.language) {
       return
     }
 
-    // mutateAsync({
-    //   project_id: params.projectId!,
-    //   revision_id: state.revisionId,
-    //   locale: state.locale!,
-    //   file: state.file!,
-    //   file_format: state.fileFormat,
-    //   tags: state.tags,
-    //   mapping: state.mapping
-    //     ? {
-    //         sheetIndex: state.mapping.sheetIndex,
-    //         rowStartIndex: state.mapping.rowStartIndex,
-    //         keyColumnIndex: state.mapping.keyColumnIndex!,
-    //         translationColumnIndex: state.mapping.translationColumnIndex!,
-    //       }
-    //     : undefined,
-    // })
-    //   .then(() => {
-    //     toast('success', {
-    //       title: 'Phrases imported',
-    //       description: 'All phrases are now imported in your revision',
-    //     })
-    //     navigate(
-    //       toProjectPhrases(workspaceKey, params.projectId!, state.revisionId),
-    //     )
-    //   })
-    //   .catch(err => {
-    //     console.log(err)
-    //     toast('error', {
-    //       title: 'Could not import phrases',
-    //     })
-    //   })
+    const formData = new FormData()
+    formData.set('file', state.file!)
+    formData.set('fileFormat', state.fileFormat)
+    formData.set('revisionId', project.masterRevisionId)
+    formData.set('languageId', state.language?.id)
+
+    if (state.mapping) {
+      formData.set('mappingSheetName', state.mapping.sheetName || '')
+      formData.set(
+        'mappingRowStartIndex',
+        state.mapping.rowStartIndex.toString(),
+      )
+      formData.set(
+        'mappingKeyColumnIndex',
+        state.mapping.keyColumnIndex!.toString(),
+      )
+      formData.set(
+        'mappingTranslationColumnIndex',
+        state.mapping.translationColumnIndex!.toString(),
+      )
+    }
+
+    importPhrases({
+      body: formData,
+    })
+      .then(() => {
+        toast('success', {
+          title: 'Phrases imported',
+          description: 'All phrases are now imported in your revision',
+        })
+        navigate(
+          routes.projectPhrases.url({
+            pathParams: {
+              workspaceKey,
+              projectId: project.id,
+              revisionId: project.masterRevisionId,
+            },
+          }),
+        )
+      })
+      .catch(err => {
+        console.log(err)
+        toast('error', {
+          title: 'Could not import phrases',
+        })
+      })
   }
 
   if (projectLoading || !project) {
@@ -127,7 +148,7 @@ export const ImportFromFile = () => {
           <Form
             state={state}
             updateState={setState}
-            projectId={params.projectId!}
+            project={project}
             canMoveToNextStep={canBeSubmitted}
             onSubmit={onFormNext}
             isLoading={false}

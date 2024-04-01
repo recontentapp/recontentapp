@@ -18,7 +18,7 @@ interface Props {
 }
 
 export const Mapping = ({ state, updateState, onSubmit, isLoading }: Props) => {
-  const { rowStartIndex, sheetIndex, keyColumnIndex, translationColumnIndex } =
+  const { rowStartIndex, sheetName, keyColumnIndex, translationColumnIndex } =
     state.mapping!
 
   const data: string[][] = useMemo(() => {
@@ -27,13 +27,15 @@ export const Mapping = ({ state, updateState, onSubmit, isLoading }: Props) => {
     }
 
     if (state.excelPreviewData) {
-      return (state.excelPreviewData.at(sheetIndex)?.data ?? []).slice(
-        rowStartIndex,
+      return (
+        state.excelPreviewData
+          .find(a => a.name === sheetName)
+          ?.data.slice(rowStartIndex) ?? []
       )
     }
 
     return []
-  }, [state, sheetIndex, rowStartIndex])
+  }, [state, sheetName, rowStartIndex])
 
   const canBeSubmitted =
     keyColumnIndex !== undefined && translationColumnIndex !== undefined
@@ -92,10 +94,10 @@ export const Mapping = ({ state, updateState, onSubmit, isLoading }: Props) => {
                 },
               }))
             }}
-            value={String(sheetIndex)}
-            options={state.excelPreviewData.map((item, index) => ({
+            value={sheetName}
+            options={state.excelPreviewData.map(item => ({
               label: item.name,
-              value: String(index),
+              value: item.name,
             }))}
           />
         )}
@@ -150,7 +152,7 @@ export const Mapping = ({ state, updateState, onSubmit, isLoading }: Props) => {
                   options={[
                     { label: 'Key', value: 'key' },
                     {
-                      label: `"${state.languageName}" translation`,
+                      label: `"${state.language?.name}" translation`,
                       value: 'translation',
                     },
                   ]}

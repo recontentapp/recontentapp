@@ -13,11 +13,10 @@ import {
   getExcelPreviewData,
   getFileType,
 } from '../../../../../utils/files'
-import { useGetProject } from '../../../../../generated/reactQuery'
-import { FullpageSpinner } from '../../../../../components/FullpageSpinner'
+import { Components } from '../../../../../generated/typeDefinitions'
 
 interface Props {
-  projectId: string
+  project: Components.Schemas.Project
   state: State
   updateState: Dispatch<SetStateAction<State>>
   canMoveToNextStep: boolean
@@ -26,26 +25,26 @@ interface Props {
 }
 
 export const Form = ({
-  projectId,
+  project,
   state,
   updateState,
   isLoading,
   canMoveToNextStep,
   onSubmit,
 }: Props) => {
-  const { data } = useGetProject({
-    queryParams: { id: projectId },
-  })
-
   useEffect(() => {
-    if (data?.languages && !state.locale) {
-      updateState(state => ({
-        ...state,
-        locale: data.languages.at(0)?.locale,
-        languageName: data.languages.at(0)?.name,
-      }))
+    if (state.language || project.languages.length === 0) {
+      return
     }
-  }, [data?.languages])
+
+    updateState(state => ({
+      ...state,
+      language: {
+        id: project.languages[0].id,
+        name: project.languages[0].name,
+      },
+    }))
+  }, [state.language])
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles.at(0)
@@ -108,10 +107,6 @@ export const Form = ({
       ? 'Configure import'
       : 'Import phrases'
 
-  if (!data) {
-    return <FullpageSpinner />
-  }
-
   return (
     <Stack direction="column" spacing="$space200" width="100%">
       <Stack direction="column" spacing="$space200" width="100%">
@@ -124,18 +119,24 @@ export const Form = ({
           >
             <SelectField
               width="100%"
-              options={data.languages.map(language => ({
+              options={project.languages.map(language => ({
                 label: language.name,
-                value: language.locale,
+                value: language.id,
               }))}
               label="Language"
               placeholder="Choose a language"
-              value={state.locale}
+              value={state.language?.id}
               onChange={option => {
+                if (!option) {
+                  return
+                }
+
                 updateState(state => ({
                   ...state,
-                  locale: option?.value,
-                  languageName: option?.label,
+                  language: {
+                    id: option.value,
+                    name: option.label,
+                  },
                 }))
               }}
             />

@@ -6,11 +6,11 @@ import {
   ModalRef,
   SelectField,
   Stack,
-  Switch,
   toast,
 } from '../../../../../components/primitives'
 import { Components } from '../../../../../generated/typeDefinitions'
 import { fileFormatLabels } from '../../../../../utils/files'
+import { useGeneratePhrasesExportLink } from '../../../../../generated/reactQuery'
 
 interface OpenProps {
   project: Components.Schemas.Project
@@ -28,43 +28,41 @@ interface State {
   projectId: string
   languageId?: string
   fileFormat: Components.Schemas.FileFormat
-  exportAllLanguages: boolean
   includeEmptyTranslations: boolean
 }
 
 const Content: FC<ContentProps> = ({ project, onRedirect }) => {
-  // const { isLoading, mutateAsync: generateExportLink } = useGenerateExportLink()
-  // const { data: revisions = [] } = useListRevisionsInProject(project.id, true)
+  const { isPending, mutateAsync: generateExportLink } =
+    useGeneratePhrasesExportLink()
   const [state, setState] = useState<State>({
     projectId: project.id,
     languageId: project.languages.at(0)?.id,
     fileFormat: 'json',
-    exportAllLanguages: false,
     includeEmptyTranslations: true,
   })
 
-  const isValid = state.projectId && state.fileFormat
-
   const onSubmit = async () => {
-    if (!isValid) {
+    if (!state.languageId || isPending) {
       return
     }
 
-    // const url = await generateExportLink({
-    //   project_id: state.projectId,
-    //   language_id: state.exportAllLanguages ? undefined : state.languageId,
-    //   file_format: state.fileFormat,
-    //   include_empty_translations: state.includeEmptyTranslations,
-    // }).catch(() => {
-    //   toast('error', { title: 'Could not generate export link' })
-    //   return null
-    // })
+    const response = await generateExportLink({
+      body: {
+        revisionId: project.masterRevisionId,
+        languageId: state.languageId,
+        fileFormat: state.fileFormat,
+        includeEmptyTranslations: state.includeEmptyTranslations,
+      },
+    }).catch(() => {
+      toast('error', { title: 'Could not generate export link' })
+      return null
+    })
 
-    // if (!url) {
-    //   return
-    // }
+    if (!response?.link) {
+      return
+    }
 
-    // window.open(url, '_blank')
+    window.open(response.link, '_blank')
     onRedirect()
     toast('success', { title: 'Export link successfully generated' })
   }
@@ -77,8 +75,7 @@ const Content: FC<ContentProps> = ({ project, onRedirect }) => {
       primaryAction={{
         label: 'Generate & download',
         onAction: onSubmit,
-        isDisabled: !isValid,
-        isLoading: false,
+        isLoading: isPending,
       }}
     >
       <Stack direction="column" spacing="$space100" paddingBottom="$space300">
@@ -101,33 +98,21 @@ const Content: FC<ContentProps> = ({ project, onRedirect }) => {
           }}
         />
 
-        {['csv', 'excel'].includes(state.fileFormat) && (
-          <Switch
-            label="Export all languages in the same file?"
-            value={state.exportAllLanguages}
-            onChange={exportAllLanguages => {
-              setState(state => ({
-                ...state,
-                exportAllLanguages,
-              }))
-            }}
-          />
-        )}
-
-        {!state.exportAllLanguages && (
-          <SelectField
-            label="Language"
-            placeholder="Choose a language"
-            options={project.languages.map(language => ({
-              label: language.name,
-              value: language.id,
-            }))}
-            value={state.languageId}
-            onChange={option =>
-              setState(state => ({ ...state, languageId: option?.value }))
+        <SelectField
+          label="Language"
+          placeholder="Choose a language"
+          options={project.languages.map(language => ({
+            label: language.name,
+            value: language.id,
+          }))}
+          value={state.languageId}
+          onChange={option => {
+            if (!option) {
+              return
             }
-          />
-        )}
+            setState(state => ({ ...state, languageId: option.value }))
+          }}
+        />
       </Stack>
     </ModalContent>
   )

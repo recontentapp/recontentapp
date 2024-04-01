@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
-import Excel from 'exceljs'
+import * as Excel from 'exceljs'
 import { Data } from './types'
+import { escapeForExcel } from 'src/utils/security'
 
 interface ParseParams {
   buffer: Buffer
@@ -51,7 +52,7 @@ export class ExcelService {
     sheet.addRow(['Key', 'Translation'])
 
     Object.entries(data).forEach(([key, translation]) => {
-      sheet.addRow([key, translation])
+      sheet.addRow([escapeForExcel(key), escapeForExcel(translation)])
     })
 
     const buffer = await workbook.xlsx.writeBuffer()
