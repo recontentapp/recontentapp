@@ -76,8 +76,8 @@ export class ImportPhrasesDto {
   @IsNotEmpty()
   languageId: string
 
-  @IsNumber()
   @IsString()
+  @IsOptional()
   mappingSheetName?: string
 
   @IsNumber()

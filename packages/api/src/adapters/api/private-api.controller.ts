@@ -744,21 +744,9 @@ export class PrivateApiController {
   @UseInterceptors(FileInterceptor('file'))
   async importPhrases(
     @AuthenticatedRequester() requester: Requester,
-    @Body()
-    {
-      fileFormat,
-      revisionId,
-      languageId,
-      mappingKeyColumnIndex,
-      mappingRowStartIndex,
-      mappingSheetName,
-      mappingTranslationColumnIndex,
-    }: ImportPhrasesDto,
+    @Body() body: ImportPhrasesDto,
     @UploadedFile(
       new ParseFilePipeBuilder()
-        .addFileTypeValidator({
-          fileType: 'application/json',
-        })
         .addMaxSizeValidator({
           maxSize: 5e6, // 5MB
         })
@@ -774,13 +762,13 @@ export class PrivateApiController {
 
     await this.phraseService.importPhrases({
       file: file.buffer,
-      fileFormat,
-      revisionId,
-      languageId,
-      mappingKeyColumnIndex,
-      mappingRowStartIndex,
-      mappingSheetName,
-      mappingTranslationColumnIndex,
+      fileFormat: body.fileFormat,
+      revisionId: body.revisionId,
+      languageId: body.languageId,
+      mappingKeyColumnIndex: body.mappingKeyColumnIndex,
+      mappingRowStartIndex: body.mappingRowStartIndex,
+      mappingSheetName: body.mappingSheetName,
+      mappingTranslationColumnIndex: body.mappingTranslationColumnIndex,
       requester,
     })
 

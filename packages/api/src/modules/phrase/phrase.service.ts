@@ -415,11 +415,8 @@ export class PhraseService {
     fileFormat,
     revisionId,
     languageId,
-    mappingSheetName,
-    mappingRowStartIndex,
-    mappingKeyColumnIndex,
-    mappingTranslationColumnIndex,
     requester,
+    ...mappingParams
   }: ImportPhrasesParams) {
     const revision = await this.prismaService.projectRevision.findUniqueOrThrow(
       {
@@ -441,6 +438,16 @@ export class PhraseService {
       )
     }
 
+    if (
+      fileFormat === 'excel' &&
+      (mappingParams.mappingSheetName === undefined ||
+        mappingParams.mappingRowStartIndex === undefined ||
+        mappingParams.mappingKeyColumnIndex === undefined ||
+        mappingParams.mappingTranslationColumnIndex === undefined)
+    ) {
+      throw new BadRequestException('Missing mapping parameters for Excel file')
+    }
+
     let data: Data = {}
 
     switch (fileFormat) {
@@ -458,18 +465,24 @@ export class PhraseService {
       case 'excel':
         data = await this.excelService.parse({
           buffer: file,
-          sheetName: mappingSheetName!,
-          rowStartIndex: mappingRowStartIndex!,
-          keyColumnIndex: mappingKeyColumnIndex!,
-          translationColumnIndex: mappingTranslationColumnIndex!,
+          sheetName: mappingParams.mappingSheetName!,
+          rowStartIndex: mappingParams.mappingRowStartIndex!,
+          keyColumnIndex: mappingParams.mappingKeyColumnIndex!,
+          translationColumnIndex: mappingParams.mappingTranslationColumnIndex!,
         })
         break
     }
 
     await this.prismaService.$transaction(
       Object.entries(data).map(([key, value]) =>
-        this.prismaService.phrase.create({
-          data: {
+        this.prismaService.phrase.upsert({
+          where: {
+            key_revisionId: {
+              key,
+              revisionId,
+            },
+          },
+          create: {
             key,
             revisionId,
             projectId: revision.projectId,
@@ -489,6 +502,7 @@ export class PhraseService {
               },
             },
           },
+          update: {},
         }),
       ),
     )

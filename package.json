@@ -22,7 +22,7 @@
     "husky": "9.0.11",
     "lint-staged": "15.2.2",
     "openapi-format": "1.16.1",
-    "openapi-kit": "0.6.0",
+    "openapi-kit": "0.6.1",
     "prettier": "3.2.5"
   }
 }

@@ -95,40 +95,30 @@ export const Phrases: FC = () => {
           onPrevious={() => setEditingPhraseIndex(index => index! - 1)}
           onClose={() => {
             setEditingPhraseIndex(undefined)
-            // TODO
-            // queryClient.invalidateQueries([
-            //   'projects',
-            //   params.projectId!,
-            //   'revisions',
-            //   revisionId,
-            //   'translationProgression',
-            // ])
           }}
         />
       )}
 
       <Stack width="100%" direction="column" spacing="$space400">
-        <Stack direction="column" spacing="$space100">
-          {!hasLanguages && (
-            <Banner
-              variation="info"
-              title="Welcome to your new project"
-              description="Make sure to setup languages you want to use in it by updating project's settings"
-              action={{
-                label: 'Go to settings',
-                onAction: () =>
-                  navigate(
-                    routes.projectSettings.url({
-                      pathParams: {
-                        workspaceKey,
-                        projectId: params.projectId!,
-                      },
-                    }),
-                  ),
-              }}
-            />
-          )}
-        </Stack>
+        {!hasLanguages && (
+          <Banner
+            variation="info"
+            title="Welcome to your new project"
+            description="Make sure to setup languages you want to use in it by updating project's settings"
+            action={{
+              label: 'Go to settings',
+              onAction: () =>
+                navigate(
+                  routes.projectSettings.url({
+                    pathParams: {
+                      workspaceKey,
+                      projectId: params.projectId!,
+                    },
+                  }),
+                ),
+            }}
+          />
+        )}
 
         <Suspense fallback={null}>
           <PhrasesTable

@@ -64,22 +64,22 @@ export const ImportFromFile = () => {
     }
 
     const formData = new FormData()
-    formData.set('file', state.file!)
-    formData.set('fileFormat', state.fileFormat)
-    formData.set('revisionId', project.masterRevisionId)
-    formData.set('languageId', state.language?.id)
+    formData.append('file', state.file!)
+    formData.append('fileFormat', state.fileFormat)
+    formData.append('revisionId', project.masterRevisionId)
+    formData.append('languageId', state.language?.id)
 
     if (state.mapping) {
-      formData.set('mappingSheetName', state.mapping.sheetName || '')
-      formData.set(
+      formData.append('mappingSheetName', state.mapping.sheetName || '')
+      formData.append(
         'mappingRowStartIndex',
         state.mapping.rowStartIndex.toString(),
       )
-      formData.set(
+      formData.append(
         'mappingKeyColumnIndex',
         state.mapping.keyColumnIndex!.toString(),
       )
-      formData.set(
+      formData.append(
         'mappingTranslationColumnIndex',
         state.mapping.translationColumnIndex!.toString(),
       )

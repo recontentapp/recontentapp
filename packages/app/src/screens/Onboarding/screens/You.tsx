@@ -55,7 +55,7 @@ export const You: FC = () => {
         <Stack width="100%" direction="column" spacing="$space300">
           <Stack direction="column" alignItems="center" spacing="$space60">
             <Text size="$size80" color="$gray14">
-              Step 1 of 3
+              Step 1 of 2
             </Text>
 
             <Stack direction="column" spacing="$space100">
