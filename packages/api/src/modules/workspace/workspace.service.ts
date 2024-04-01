@@ -478,6 +478,7 @@ export class WorkspaceService {
           select: {
             firstName: true,
             lastName: true,
+            email: true,
           },
         },
         service: {
@@ -490,9 +491,13 @@ export class WorkspaceService {
 
     return accounts.reduce<Record<string, string>>((acc, account) => {
       if (account.type === 'human') {
-        acc[account.id] = `${account.user?.firstName} ${account.user?.lastName}`
+        const name =
+          account.user?.firstName && account.user?.lastName
+            ? `${account.user.firstName} ${account.user.lastName}`
+            : String(account.user?.email)
+        acc[account.id] = name
       } else {
-        acc[account.id] = `🤖 ${account.service?.name}`
+        acc[account.id] = `🤖 ${account.service?.name ?? 'Robot'}`
       }
 
       return acc
