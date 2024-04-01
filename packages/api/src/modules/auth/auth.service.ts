@@ -56,7 +56,22 @@ export class AuthService {
     return confirmationCode
   }
 
+  private async checkSignUpDisabled() {
+    const signUpDisabledRequested = process.env.SIGN_UP_DISABLED === 'true'
+
+    if (!signUpDisabledRequested) {
+      return
+    }
+
+    const user = await this.prisma.user.findFirst()
+    if (user) {
+      throw new BadRequestException('Sign up disabled')
+    }
+  }
+
   async createUser({ firstName, lastName, email, password }: CreateUserParams) {
+    await this.checkSignUpDisabled()
+
     const encryptedPassword = await hashPassword(password)
 
     try {

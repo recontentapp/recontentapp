@@ -38,6 +38,7 @@ docker run -p 127.0.0.1:8080:8080/tcp --env PORT=8080 --env JWT_SECRET=HelloWorl
 | `SERVE_STATIC_FILES`           | Wether or not web app should be served    |
 | `APP_URL`                      | Base URL for webapp                       |
 | `API_URL`                      | Base URL for API                          |
+| `SIGN_UP_DISABLED`             | Disable sign up after first registration  |
 
 ## Migrate environment variables
 

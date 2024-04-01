@@ -3,6 +3,36 @@ info:
   title: Private API
   version: 1.0.0
 paths:
+  /system:
+    get:
+      operationId: getSystem
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  version:
+                    type: string
+                  distribution:
+                    type: string
+                    enum:
+                      - self-hosted
+                  settings:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      signUpDisabled:
+                        type: boolean
+                    required:
+                      - signUpDisabled
+                additionalProperties: false
+                required:
+                  - version
+                  - distribution
+                  - settings
   /SignUp:
     post:
       operationId: signUp

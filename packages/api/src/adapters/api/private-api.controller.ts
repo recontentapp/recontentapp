@@ -203,6 +203,27 @@ export class PrivateApiController {
     }
   }
 
+  @Throttle({ default: { limit: 10, ttl: 1000 } })
+  @Get('/system')
+  @Public()
+  async settings() {
+    const signUpDisabledRequested = process.env.SIGN_UP_DISABLED === 'true'
+    let signUpDisabled = false
+
+    if (signUpDisabledRequested) {
+      const user = await this.prismaService.user.findFirst()
+      signUpDisabled = !!user
+    }
+
+    return {
+      version: process.env.APP_VERSION ?? '0.0.0',
+      distribution: process.env.APP_DISTRIBUTION ?? 'self-hosted',
+      settings: {
+        signUpDisabled,
+      },
+    }
+  }
+
   @Throttle({ default: { limit: 1, ttl: 1000 } })
   @Post('/LogIn')
   @Public()
