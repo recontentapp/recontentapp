@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common'
 import { EventEmitter2 } from '@nestjs/event-emitter'
 import { WorkspaceAccountRole } from '@prisma/client'
-import { randomBytes } from 'node:crypto'
+import { randomInt } from 'node:crypto'
 import { PrismaService } from 'src/utils/prisma.service'
 import { HumanRequester, Requester } from 'src/utils/requester'
 import { WorkspaceInvitationCreatedEvent } from './events/invitation-created.event'
@@ -170,8 +170,15 @@ export class WorkspaceService {
     return workspace
   }
 
-  private generateInvitationToken(): string {
-    return randomBytes(32).toString('hex')
+  private generateInvitationToken() {
+    let invitationToken = ''
+    const possibleChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+
+    for (let i = 0; i < 16; i++) {
+      invitationToken += possibleChars[randomInt(possibleChars.length)]
+    }
+
+    return invitationToken
   }
 
   private async getValidPendingWorkspaceInvitationByEmail(

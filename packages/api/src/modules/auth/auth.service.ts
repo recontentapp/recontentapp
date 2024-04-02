@@ -49,7 +49,7 @@ export class AuthService {
     let confirmationCode = ''
     const possibleChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
 
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 16; i++) {
       confirmationCode += possibleChars[randomInt(possibleChars.length)]
     }
 
