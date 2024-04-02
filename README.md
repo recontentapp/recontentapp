@@ -1,11 +1,13 @@
 <p align="center">
   <a href="https://recontent.app">
-    <img src="https://recontent.app/assets/logo.svg" width="320px" alt="Recontent.app logo" />
+    <img src="https://recontent.app/assets/logo.svg" width="220px" alt="Recontent.app logo" />
   </a>
 </p>
 
 <h3 align="center">Open source Product copy & Localization for product teams</h3>
 <p align="center">Recontent.app is a free & open source alternative to translation management systems (TMS) like Lokalise & PhraseApp.</p>
+
+![Recontent.app](https://recontent.app/assets/app.jpg)
 
 ---
 
@@ -30,7 +32,7 @@ Recontent.app is available as a software-as-a-service (SaaS) on [app.recontent.a
 
 ## Contributing
 
-To learn more about the technical stack used & how to contribute to Recontent.app, check out the CONTRIBUTING.md file.
+To learn more about the technical stack used & how to contribute to Recontent.app, check out the [`CONTRIBUTING.md`](https://github.com/recontentapp/recontentapp/blob/master/CONTRIBUTING.md) file.
 
 ## License
 
