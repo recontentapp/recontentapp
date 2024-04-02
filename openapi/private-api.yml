@@ -3,6 +3,36 @@ info:
   title: Private API
   version: 1.0.0
 paths:
+  /system:
+    get:
+      operationId: getSystem
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  version:
+                    type: string
+                  distribution:
+                    type: string
+                    enum:
+                      - self-hosted
+                  settings:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      signUpDisabled:
+                        type: boolean
+                    required:
+                      - signUpDisabled
+                additionalProperties: false
+                required:
+                  - version
+                  - distribution
+                  - settings
   /SignUp:
     post:
       operationId: signUp
@@ -213,6 +243,67 @@ paths:
       responses:
         '201':
           description: OK
+  /ListWorkspaceInvitations:
+    get:
+      operationId: listWorkspaceInvitations
+      parameters:
+        - name: workspaceId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: false
+                      required:
+                        - id
+                        - email
+                        - role
+                        - createdAt
+                        - expiredAt
+                        - createdBy
+                      properties:
+                        id:
+                          type: string
+                        email:
+                          type: string
+                          format: email
+                        role:
+                          $ref: '#/components/schemas/WorkspaceAccountRole'
+                        createdBy:
+                          type: string
+                        createdAt:
+                          type: string
+                          format: date-time
+                        expiredAt:
+                          type: string
+                          format: date-time
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                additionalProperties: false
+                required:
+                  - items
+                  - pagination
   /ListWorkspaceAccounts:
     get:
       operationId: listWorkspaceAccounts

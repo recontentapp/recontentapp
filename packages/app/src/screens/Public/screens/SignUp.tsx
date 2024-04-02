@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { passwordConfig } from '../../../auth/config'
 import { Logo } from '../../../components/Logo'
 import {
+  Banner,
   Box,
   Button,
   ExternalLink,
@@ -17,6 +18,7 @@ import {
 } from '../../../components/primitives'
 import { getAPIClient } from '../../../generated/apiClient'
 import routes from '../../../routing'
+import { useSystem } from '../../../hooks/system'
 
 interface State {
   email: string
@@ -24,6 +26,7 @@ interface State {
 }
 
 export const SignUp: FC = () => {
+  const { settings } = useSystem()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [state, setState] = useState<State>({
@@ -86,74 +89,81 @@ export const SignUp: FC = () => {
             </Text>
           </Stack>
 
-          <Form onSubmit={onSignUpSubmit}>
-            <Stack direction="column" spacing="$space200">
-              <TextField
-                label="Email"
-                id="email"
-                type="email"
-                value={state.email}
-                onChange={value =>
-                  setState(state => ({
-                    ...state,
-                    email: value,
-                  }))
-                }
-              />
-              <TextField
-                label="Password"
-                id="password"
-                type="password"
-                info="At least 8 characters with uppercase, lowercase & digits"
-                value={state.password}
-                onChange={value =>
-                  setState(state => ({
-                    ...state,
-                    password: value,
-                  }))
-                }
-              />
+          {settings.signUpDisabled ? (
+            <Banner
+              variation="warning"
+              description="Sign up is disabled on this Recontent.app instance. Please contact your administrator."
+            />
+          ) : (
+            <Form onSubmit={onSignUpSubmit}>
+              <Stack direction="column" spacing="$space200">
+                <TextField
+                  label="Email"
+                  id="email"
+                  type="email"
+                  value={state.email}
+                  onChange={value =>
+                    setState(state => ({
+                      ...state,
+                      email: value,
+                    }))
+                  }
+                />
+                <TextField
+                  label="Password"
+                  id="password"
+                  type="password"
+                  info="At least 8 characters with uppercase, lowercase & digits"
+                  value={state.password}
+                  onChange={value =>
+                    setState(state => ({
+                      ...state,
+                      password: value,
+                    }))
+                  }
+                />
 
-              <Stack direction="column" spacing="$space100">
-                <Button
-                  variation="primary"
-                  type="submit"
-                  isFullwidth
-                  isLoading={loading}
-                  isDisabled={!canSignUpBeSubmitted}
-                >
-                  Sign up with email
-                </Button>
+                <Stack direction="column" spacing="$space100">
+                  <Button
+                    variation="primary"
+                    type="submit"
+                    isFullwidth
+                    isLoading={loading}
+                    isDisabled={!canSignUpBeSubmitted}
+                  >
+                    Sign up with email
+                  </Button>
+                </Stack>
               </Stack>
-            </Stack>
+            </Form>
+          )}
 
-            <Box paddingTop="$space200">
-              <Text size="$size80" color="$gray11" lineHeight="$lineHeight300">
-                By clicking Sign in/up with Google/Email" above, you acknowledge
-                that you have read and agree to our{' '}
-                <ExternalLink
-                  title="Terms of use"
-                  fontSize="$size80"
-                  target="_blank"
-                  icon={false}
-                  href="https://recontent.app/terms"
-                >
-                  Terms of use
-                </ExternalLink>{' '}
-                and{' '}
-                <ExternalLink
-                  title="Privacy policy"
-                  fontSize="$size80"
-                  target="_blank"
-                  icon={false}
-                  href="https://recontent.app/privacy"
-                >
-                  Privacy policy
-                </ExternalLink>
-                .
-              </Text>
-            </Box>
-          </Form>
+          <Box paddingTop="$space200">
+            <Text size="$size80" color="$gray11" lineHeight="$lineHeight300">
+              By clicking Sign in/up with Google/Email" above, you acknowledge
+              that you have read and agree to our{' '}
+              <ExternalLink
+                title="Terms of use"
+                fontSize="$size80"
+                target="_blank"
+                icon={false}
+                href="https://recontent.app/terms"
+              >
+                Terms of use
+              </ExternalLink>{' '}
+              and{' '}
+              <ExternalLink
+                title="Privacy policy"
+                fontSize="$size80"
+                target="_blank"
+                icon={false}
+                href="https://recontent.app/privacy"
+              >
+                Privacy policy
+              </ExternalLink>
+              .
+            </Text>
+          </Box>
         </Stack>
       </Box>
     </Box>

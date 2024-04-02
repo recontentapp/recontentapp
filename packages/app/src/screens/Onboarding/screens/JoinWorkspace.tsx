@@ -12,11 +12,13 @@ import {
   toast,
 } from '../../../components/primitives'
 import { useJoinWorkspace } from '../../../generated/reactQuery'
-import { useCurrentWorkspace } from '../../../hooks/workspace'
+import { useLooseCurrentWorkspace } from '../../../hooks/workspace'
 import routes from '../../../routing'
+import { useAuth } from '../../../auth'
 
 export const JoinWorkspace = () => {
-  const currentWorkspace = useCurrentWorkspace()
+  const { refetchUser } = useAuth()
+  const { currentWorkspace } = useLooseCurrentWorkspace()
   const params = useParams<'workspaceKey'>()
   const navigate = useNavigate()
   const { mutateAsync, isPending } = useJoinWorkspace()
@@ -29,6 +31,7 @@ export const JoinWorkspace = () => {
 
     mutateAsync({ body: { invitationCode } })
       .then(() => {
+        refetchUser()
         toast('success', {
           title: 'Workspace joined 🚀',
           description: 'You can now create projects & start adding content',

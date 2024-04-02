@@ -11,11 +11,12 @@ import {
   TextField,
   toast,
 } from '../../../components/primitives'
-import { useCurrentUser } from '../../../auth'
+import { useAuth, useCurrentUser } from '../../../auth'
 import { useUpdateCurrentUser } from '../../../generated/reactQuery'
 import routes from '../../../routing'
 
 export const You: FC = () => {
+  const { refetchUser } = useAuth()
   const { firstName, lastName } = useCurrentUser()
   const { mutateAsync, isPending } = useUpdateCurrentUser()
   const [state, setState] = useState({
@@ -36,6 +37,7 @@ export const You: FC = () => {
     }
 
     mutateAsync({ body: state })
+      .then(refetchUser)
       .then(() => {
         navigate(routes.onboardingCreateWorkspace.url({}))
       })

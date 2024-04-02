@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common'
 import { EventEmitter2 } from '@nestjs/event-emitter'
 import { WorkspaceAccountRole } from '@prisma/client'
-import { randomBytes } from 'node:crypto'
+import { randomInt } from 'node:crypto'
 import { PrismaService } from 'src/utils/prisma.service'
 import { HumanRequester, Requester } from 'src/utils/requester'
 import { WorkspaceInvitationCreatedEvent } from './events/invitation-created.event'
@@ -49,6 +49,12 @@ interface ListWorkspaceAccountsParams {
   pagination: PaginationParams
   requester: Requester
   type: 'human' | 'service' | 'all'
+  workspaceId: string
+}
+
+interface ListWorkspaceInvitationsParams {
+  pagination: PaginationParams
+  requester: Requester
   workspaceId: string
 }
 
@@ -164,8 +170,15 @@ export class WorkspaceService {
     return workspace
   }
 
-  private generateInvitationToken(): string {
-    return randomBytes(32).toString('hex')
+  private generateInvitationToken() {
+    let invitationToken = ''
+    const possibleChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+
+    for (let i = 0; i < 16; i++) {
+      invitationToken += possibleChars[randomInt(possibleChars.length)]
+    }
+
+    return invitationToken
   }
 
   private async getValidPendingWorkspaceInvitationByEmail(
@@ -195,6 +208,21 @@ export class WorkspaceService {
       })
     if (existingInvitation) {
       throw new BadRequestException('Invitation already exists')
+    }
+
+    const existingUserWithinWorkspace =
+      await this.prismaService.workspaceAccount.findFirst({
+        where: {
+          workspaceId: params.workspaceId,
+          user: {
+            email: params.email,
+          },
+        },
+      })
+    if (existingUserWithinWorkspace) {
+      throw new BadRequestException(
+        'User with email address already exists within workspace',
+      )
     }
 
     const invitation = await this.prismaService.workspaceInvitation.create({
@@ -346,6 +374,57 @@ export class WorkspaceService {
     }
   }
 
+  async listWorkspaceInvitations({
+    workspaceId,
+    requester,
+    pagination,
+  }: ListWorkspaceInvitationsParams) {
+    if (!requester.canAccessWorkspace(workspaceId)) {
+      throw new ForbiddenException('User is not part of this workspace')
+    }
+
+    const { limit, offset, pageSize, page } = pagination
+    const [invitations, count] = await Promise.all([
+      this.prismaService.workspaceInvitation.findMany({
+        where: {
+          workspaceId,
+          acceptedAt: null,
+          expiredAt: {
+            gt: new Date(),
+          },
+        },
+        take: limit,
+        skip: offset,
+      }),
+      this.prismaService.workspaceInvitation.count({
+        where: {
+          workspaceId,
+          acceptedAt: null,
+          expiredAt: {
+            gt: new Date(),
+          },
+        },
+      }),
+    ])
+
+    return {
+      items: invitations.map(invitation => ({
+        id: invitation.id,
+        email: invitation.email,
+        role: invitation.role,
+        createdBy: invitation.createdBy,
+        createdAt: invitation.createdAt.toISOString(),
+        expiredAt: invitation.expiredAt.toISOString(),
+      })),
+      pagination: {
+        page,
+        pageSize,
+        pagesCount: Math.ceil(count / pageSize),
+        itemsCount: count,
+      },
+    }
+  }
+
   async createWorkspaceServiceAccount({
     workspaceId,
     name,
@@ -478,6 +557,7 @@ export class WorkspaceService {
           select: {
             firstName: true,
             lastName: true,
+            email: true,
           },
         },
         service: {
@@ -490,9 +570,13 @@ export class WorkspaceService {
 
     return accounts.reduce<Record<string, string>>((acc, account) => {
       if (account.type === 'human') {
-        acc[account.id] = `${account.user?.firstName} ${account.user?.lastName}`
+        const name =
+          account.user?.firstName && account.user?.lastName
+            ? `${account.user.firstName} ${account.user.lastName}`
+            : String(account.user?.email)
+        acc[account.id] = name
       } else {
-        acc[account.id] = `🤖 ${account.service?.name}`
+        acc[account.id] = `🤖 ${account.service?.name ?? 'Robot'}`
       }
 
       return acc

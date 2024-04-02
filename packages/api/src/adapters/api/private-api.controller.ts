@@ -203,6 +203,27 @@ export class PrivateApiController {
     }
   }
 
+  @Throttle({ default: { limit: 10, ttl: 1000 } })
+  @Get('/system')
+  @Public()
+  async settings() {
+    const signUpDisabledRequested = process.env.SIGN_UP_DISABLED === 'true'
+    let signUpDisabled = false
+
+    if (signUpDisabledRequested) {
+      const user = await this.prismaService.user.findFirst()
+      signUpDisabled = !!user
+    }
+
+    return {
+      version: process.env.APP_VERSION ?? '0.0.0',
+      distribution: process.env.APP_DISTRIBUTION ?? 'self-hosted',
+      settings: {
+        signUpDisabled,
+      },
+    }
+  }
+
   @Throttle({ default: { limit: 1, ttl: 1000 } })
   @Post('/LogIn')
   @Public()
@@ -364,6 +385,25 @@ export class PrivateApiController {
 
     await this.workspaceService.joinWorkspace({ invitationCode, requester })
     return {}
+  }
+
+  @Get('/ListWorkspaceInvitations')
+  async listWorkspaceInvitations(
+    @RequiredQuery('workspaceId') workspaceId: string,
+    @AuthenticatedRequester() requester: Requester,
+    @Pagination() pagination: PaginationParams,
+  ): Promise<Paths.ListWorkspaceInvitations.Responses.$200> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    const invitations = await this.workspaceService.listWorkspaceInvitations({
+      workspaceId,
+      requester,
+      pagination,
+    })
+
+    return invitations
   }
 
   @Get('/ListWorkspaceAccounts')
