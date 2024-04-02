@@ -387,6 +387,25 @@ export class PrivateApiController {
     return {}
   }
 
+  @Get('/ListWorkspaceInvitations')
+  async listWorkspaceInvitations(
+    @RequiredQuery('workspaceId') workspaceId: string,
+    @AuthenticatedRequester() requester: Requester,
+    @Pagination() pagination: PaginationParams,
+  ): Promise<Paths.ListWorkspaceInvitations.Responses.$200> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    const invitations = await this.workspaceService.listWorkspaceInvitations({
+      workspaceId,
+      requester,
+      pagination,
+    })
+
+    return invitations
+  }
+
   @Get('/ListWorkspaceAccounts')
   async listWorkspaceAccounts(
     @RequiredQuery('workspaceId') workspaceId: string,

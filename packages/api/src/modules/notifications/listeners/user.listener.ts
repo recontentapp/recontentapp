@@ -15,7 +15,7 @@ export class UserListener {
     private mailerService: MailerService,
   ) {}
 
-  @OnEvent('user.created')
+  @OnEvent('user.created', { suppressErrors: true, async: true })
   async onUserCreated(event: UserCreatedEvent) {
     const user = await this.prismaService.user.findFirst({
       where: {

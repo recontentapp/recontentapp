@@ -15,7 +15,10 @@ export class WorkspaceListener {
     private mailerService: MailerService,
   ) {}
 
-  @OnEvent('workspace.invitation.created')
+  @OnEvent('workspace.invitation.created', {
+    suppressErrors: true,
+    async: true,
+  })
   async onWorkspaceInvitationCreated(event: WorkspaceInvitationCreatedEvent) {
     const invitation = await this.prismaService.workspaceInvitation.findUnique({
       where: {

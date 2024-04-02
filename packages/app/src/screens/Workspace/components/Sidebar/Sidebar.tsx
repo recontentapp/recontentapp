@@ -4,11 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { Box, Stack } from '../../../../components/primitives'
 import { styled } from '../../../../theme'
 import { useModals } from '../../hooks/modals'
-import {
-  ActionButton,
-  ActionButtonProps,
-  ActionsList,
-} from './components/ActionsList'
+import { ActionButtonProps, ActionsList } from './components/ActionsList'
 import { Button } from './components/Button'
 import { ProjectsList } from './components/ProjectsList'
 import { WorkspaceDropdown } from './components/WorkspaceDropdown'
@@ -18,6 +14,7 @@ import {
   useCurrentWorkspace,
 } from '../../../../hooks/workspace'
 import routes from '../../../../routing'
+import { useSystem } from '../../../../hooks/system'
 
 const Container = styled('aside', {
   display: 'flex',
@@ -65,6 +62,7 @@ const LegalLink = styled('a', {
 })
 
 export const Sidebar: FC = () => {
+  const { version } = useSystem()
   const { openCreateProject } = useModals()
   const navigate = useNavigate()
   const { key: workspaceKey, id: workspaceId } = useCurrentWorkspace()
@@ -126,13 +124,13 @@ export const Sidebar: FC = () => {
       <Bottom>
         <Box paddingX="$space60">
           <Stack width="100%" direction="column" spacing="$space200">
-            <Stack direction="column" spacing="$space0">
+            {/* <Stack direction="column" spacing="$space0">
               <ActionButton
                 onAction={() => {}}
                 name="Contact us"
                 icon="question_answer"
               />
-            </Stack>
+            </Stack> */}
 
             <Stack
               direction="row"
@@ -148,7 +146,7 @@ export const Sidebar: FC = () => {
                 </LegalLink>
               </Stack>
 
-              <VersionLabel>v0.1.0</VersionLabel>
+              <VersionLabel>v{version}</VersionLabel>
             </Stack>
           </Stack>
         </Box>

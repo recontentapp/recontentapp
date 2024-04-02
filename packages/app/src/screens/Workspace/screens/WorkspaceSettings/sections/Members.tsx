@@ -4,7 +4,10 @@ import { Heading, Stack, Table } from '../../../../../components/primitives'
 import { formatRelative } from '../../../../../utils/dates'
 import { useReferenceableAccounts } from '../../../hooks/referenceable'
 import { InvitationForm } from '../components/InvitationForm'
-import { useListWorkspaceAccounts } from '../../../../../generated/reactQuery'
+import {
+  useListWorkspaceAccounts,
+  useListWorkspaceInvitations,
+} from '../../../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
 
 export const Members: FC = () => {
@@ -17,8 +20,14 @@ export const Members: FC = () => {
         type: 'human',
       },
     })
-  const areInvitationsLoading = false
-  const invitations: any[] = []
+  const { data, isPending: areInvitationsLoading } =
+    useListWorkspaceInvitations({
+      queryParams: {
+        workspaceId,
+        page: 1,
+        pageSize: 50,
+      },
+    })
 
   return (
     <Stack width="100%" direction="column" spacing="$space400">
@@ -68,32 +77,32 @@ export const Members: FC = () => {
           footerAdd={({ requestClose }) => (
             <InvitationForm onClose={requestClose} />
           )}
-          items={invitations ?? []}
+          items={data?.items ?? []}
           isLoading={areInvitationsLoading}
           columns={[
             {
               headerCell: 'Invited email address',
               key: 'for',
               width: 300,
-              bodyCell: invitation => invitation.email_address,
+              bodyCell: invitation => invitation.email,
             },
             {
               headerCell: 'Expiration date',
               key: 'expired_at',
               bodyCell: invitation => (
-                <p>{formatRelative(new Date(invitation.expired_at))}</p>
+                <p>{formatRelative(new Date(invitation.expiredAt))}</p>
               ),
             },
             {
               headerCell: 'Invited by',
               key: 'created_by',
-              bodyCell: invitation => getName(invitation.created_by),
+              bodyCell: invitation => getName(invitation.createdBy),
             },
             {
               headerCell: 'Creation date',
               key: 'created_at',
               bodyCell: invitation =>
-                formatRelative(new Date(invitation.created_at)),
+                formatRelative(new Date(invitation.createdAt)),
             },
           ]}
         />

@@ -52,6 +52,12 @@ interface ListWorkspaceAccountsParams {
   workspaceId: string
 }
 
+interface ListWorkspaceInvitationsParams {
+  pagination: PaginationParams
+  requester: Requester
+  workspaceId: string
+}
+
 interface CreateWorkspaceServiceAccountParams {
   workspaceId: string
   name: string
@@ -197,6 +203,21 @@ export class WorkspaceService {
       throw new BadRequestException('Invitation already exists')
     }
 
+    const existingUserWithinWorkspace =
+      await this.prismaService.workspaceAccount.findFirst({
+        where: {
+          workspaceId: params.workspaceId,
+          user: {
+            email: params.email,
+          },
+        },
+      })
+    if (existingUserWithinWorkspace) {
+      throw new BadRequestException(
+        'User with email address already exists within workspace',
+      )
+    }
+
     const invitation = await this.prismaService.workspaceInvitation.create({
       data: {
         email: params.email,
@@ -337,6 +358,57 @@ export class WorkspaceService {
           invitedBy,
         }),
       ),
+      pagination: {
+        page,
+        pageSize,
+        pagesCount: Math.ceil(count / pageSize),
+        itemsCount: count,
+      },
+    }
+  }
+
+  async listWorkspaceInvitations({
+    workspaceId,
+    requester,
+    pagination,
+  }: ListWorkspaceInvitationsParams) {
+    if (!requester.canAccessWorkspace(workspaceId)) {
+      throw new ForbiddenException('User is not part of this workspace')
+    }
+
+    const { limit, offset, pageSize, page } = pagination
+    const [invitations, count] = await Promise.all([
+      this.prismaService.workspaceInvitation.findMany({
+        where: {
+          workspaceId,
+          acceptedAt: null,
+          expiredAt: {
+            gt: new Date(),
+          },
+        },
+        take: limit,
+        skip: offset,
+      }),
+      this.prismaService.workspaceInvitation.count({
+        where: {
+          workspaceId,
+          acceptedAt: null,
+          expiredAt: {
+            gt: new Date(),
+          },
+        },
+      }),
+    ])
+
+    return {
+      items: invitations.map(invitation => ({
+        id: invitation.id,
+        email: invitation.email,
+        role: invitation.role,
+        createdBy: invitation.createdBy,
+        createdAt: invitation.createdAt.toISOString(),
+        expiredAt: invitation.expiredAt.toISOString(),
+      })),
       pagination: {
         page,
         pageSize,
