@@ -20,7 +20,7 @@
     "@reach/menu-button": "0.18.0",
     "@reach/popover": "0.18.0",
     "@reach/portal": "0.18.0",
-    "@reach/tooltip": "0.16.2",
+    "@reach/tooltip": "0.18.0",
     "@sentry/react": "7.109.0",
     "@sentry/tracing": "7.21.1",
     "@stitches/react": "1.2.8",
