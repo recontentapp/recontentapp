@@ -2,7 +2,7 @@
 
 ## Get started
 
-In order to set up Recontent.app on your machine, git, docker, docker-compose & node.js need to be installed.
+In order to set up Recontent.app on your machine, git, docker, docker-compose, node.js & the AWS CLI need to be installed.
 
 ```sh
 git clone git@github.com:recontentapp/recontentapp.git

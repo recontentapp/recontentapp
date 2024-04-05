@@ -15,7 +15,9 @@
     "openapi:generate": "openapi-kit generate -f ./openapi/private-api.yml -o ./packages/api/src/generated --types && openapi-kit generate -f ./openapi/public-api.yml -o ./packages/api/src/generated/public --types && openapi-kit generate -f ./openapi/private-api.yml -o ./packages/app/src/generated && openapi-kit generate -f ./openapi/public-api.yml -o ./packages/cli/src/generated --types --apiClient",
     "openapi:format": "openapi-format ./openapi/private-api.yml -o ./openapi/private-api.yml && openapi-format ./openapi/public-api.yml -o ./openapi/public-api.yml",
     "start:app": "yarn workspace app start",
-    "start:api": "yarn workspace api start"
+    "start:api": "yarn workspace api start",
+    "localstack:start": "yarn localstack:s3",
+    "localstack:s3": "aws --endpoint-url=http://localhost:4566 s3api create-bucket --bucket recontent-public --region us-east-1 && aws --endpoint-url=http://localhost:4566 s3api put-bucket-policy --bucket recontent-public --policy file://localstack/s3-bucket-policy.json"
   },
   "devDependencies": {
     "eslint": "8.57.0",
