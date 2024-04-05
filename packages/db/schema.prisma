@@ -24,6 +24,12 @@ enum ProjectRevisionState {
   closed @map("closed")
 }
 
+enum DestinationType {
+  cdn                  @map("cdn")
+  aws_s3               @map("aws_s3")
+  google_cloud_storage @map("google_cloud_storage")
+}
+
 model User {
   id                String             @id @default(uuid()) @db.VarChar()
   firstName         String             @db.VarChar()
@@ -58,20 +64,24 @@ model Service {
 }
 
 model Workspace {
-  id                 String                @id @default(uuid()) @db.VarChar()
-  key                String                @db.VarChar()
-  name               String                @db.VarChar()
-  invitations        WorkspaceInvitation[]
-  accounts           WorkspaceAccount[]
-  revisions          ProjectRevision[]
-  languages          Language[]
-  projects           Project[]
-  phrases            Phrase[]
-  phraseTranslations PhraseTranslation[]
-  createdAt          DateTime              @default(now())
-  updatedAt          DateTime              @updatedAt
-  createdBy          String                @db.VarChar()
-  updatedBy          String?               @db.VarChar()
+  id                                   String                                @id @default(uuid()) @db.VarChar()
+  key                                  String                                @db.VarChar()
+  name                                 String                                @db.VarChar()
+  invitations                          WorkspaceInvitation[]
+  accounts                             WorkspaceAccount[]
+  revisions                            ProjectRevision[]
+  languages                            Language[]
+  projects                             Project[]
+  phrases                              Phrase[]
+  phraseTranslations                   PhraseTranslation[]
+  destinations                         Destination[]
+  destinationConfigsCDN                DestinationConfigCDN[]
+  destinationConfigsGoogleCloudStorage DestinationConfigGoogleCloudStorage[]
+  destinationConfigsAWSS3              DestinationConfigAWSS3[]
+  createdAt                            DateTime                              @default(now())
+  updatedAt                            DateTime                              @updatedAt
+  createdBy                            String                                @db.VarChar()
+  updatedBy                            String?                               @db.VarChar()
 
   @@unique([key])
   @@map("workspaces")
@@ -165,6 +175,7 @@ model ProjectRevision {
   workspace          Workspace            @relation(fields: [workspaceId], references: [id])
   phrases            Phrase[]
   phraseTranslations PhraseTranslation[]
+  destinations       Destination[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -215,4 +226,76 @@ model PhraseTranslation {
 
   @@unique([phraseId, languageId, revisionId])
   @@map("phrase_translations")
+}
+
+model Destination {
+  id                       String                               @id @default(uuid()) @db.VarChar()
+  workspaceId              String                               @db.VarChar()
+  revisionId               String                               @db.VarChar()
+  name                     String                               @db.VarChar()
+  type                     DestinationType
+  active                   Boolean                              @default(true)
+  lastSyncError            String?
+  lastSyncAt               DateTime?
+  lastSuccessfulSyncAt     DateTime?
+  workspace                Workspace                            @relation(fields: [workspaceId], references: [id])
+  revision                 ProjectRevision                      @relation(fields: [revisionId], references: [id])
+  configCDN                DestinationConfigCDN?
+  configGoogleCloudStorage DestinationConfigGoogleCloudStorage?
+  configAWSS3              DestinationConfigAWSS3?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String   @db.VarChar()
+  updatedBy String?  @db.VarChar()
+
+  @@map("destinations")
+}
+
+model DestinationConfigCDN {
+  id                       String      @id @default(uuid()) @db.VarChar()
+  destinationId            String      @db.VarChar()
+  workspaceId              String      @db.VarChar()
+  destination              Destination @relation(fields: [destinationId], references: [id])
+  workspace                Workspace   @relation(fields: [workspaceId], references: [id])
+  fileFormat               String      @db.VarChar()
+  includeEmptyTranslations Boolean     @default(false)
+  urls                     String[]
+
+  @@unique([destinationId])
+  @@map("destination_configs_cdn")
+}
+
+model DestinationConfigGoogleCloudStorage {
+  id                       String      @id @default(uuid()) @db.VarChar()
+  destinationId            String      @db.VarChar()
+  workspaceId              String      @db.VarChar()
+  destination              Destination @relation(fields: [destinationId], references: [id])
+  workspace                Workspace   @relation(fields: [workspaceId], references: [id])
+  fileFormat               String      @db.VarChar()
+  includeEmptyTranslations Boolean     @default(false)
+  objectsPrefix            String?     @db.VarChar()
+  GoogleCloudProjectId     String      @db.VarChar()
+  GoogleCloudBucketId      String      @db.VarChar()
+  GoogleCloudKey           String
+
+  @@unique([destinationId])
+  @@map("destination_configs_google_cloud_storage")
+}
+
+model DestinationConfigAWSS3 {
+  id                       String      @id @default(uuid()) @db.VarChar()
+  destinationId            String      @db.VarChar()
+  workspaceId              String      @db.VarChar()
+  destination              Destination @relation(fields: [destinationId], references: [id])
+  workspace                Workspace   @relation(fields: [workspaceId], references: [id])
+  fileFormat               String      @db.VarChar()
+  includeEmptyTranslations Boolean     @default(false)
+  objectsPrefix            String?     @db.VarChar()
+  AWSBucketId              String      @db.VarChar()
+  AWSAccessKeyId           String
+  AWSSecretAccessKey       String
+
+  @@unique([destinationId])
+  @@map("destination_configs_aws_s3")
 }
