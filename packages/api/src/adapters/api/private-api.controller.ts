@@ -209,10 +209,13 @@ export class PrivateApiController {
   @Throttle({ default: { limit: 10, ttl: 1000 } })
   @Get('/system')
   @Public()
-  async settings() {
+  async settings(): Promise<Paths.GetSystem.Responses.$200> {
     let signUpDisabled = false
 
     const appConfig = this.configService.get('app', {
+      infer: true,
+    })
+    const cdnConfig = this.configService.get('cdn', {
       infer: true,
     })
 
@@ -223,9 +226,11 @@ export class PrivateApiController {
 
     return {
       version: appConfig.version,
+      // @ts-expect-error TODO
       distribution: appConfig.distribution,
       settings: {
         signUpDisabled,
+        cdnAvailable: cdnConfig.available,
       },
     }
   }

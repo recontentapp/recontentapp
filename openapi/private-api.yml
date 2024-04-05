@@ -26,8 +26,11 @@ paths:
                     properties:
                       signUpDisabled:
                         type: boolean
+                      cdnAvailable:
+                        type: boolean
                     required:
                       - signUpDisabled
+                      - cdnAvailable
                 additionalProperties: false
                 required:
                   - version

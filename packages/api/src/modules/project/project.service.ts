@@ -276,6 +276,18 @@ export class ProjectService {
       throw new ForbiddenException('User is not part of this workspace')
     }
 
+    const hasDestinations = await this.prismaService.destination.count({
+      where: {
+        revision: {
+          projectId,
+        },
+      },
+    })
+
+    if (hasDestinations > 0) {
+      throw new BadRequestException('Project has destinations')
+    }
+
     await this.prismaService.$transaction(async t => {
       await t.phraseTranslation.deleteMany({
         where: {
