@@ -66,6 +66,8 @@ import {
 } from './dto/phrase.dto'
 import { RequiredQuery } from 'src/utils/required-query'
 import { FileInterceptor } from '@nestjs/platform-express'
+import { ConfigService } from '@nestjs/config'
+import { Config } from 'src/utils/config'
 
 @Controller('private-api')
 @UseGuards(JwtAuthGuard)
@@ -76,6 +78,7 @@ export class PrivateApiController {
     private readonly projectService: ProjectService,
     private readonly phraseService: PhraseService,
     private readonly prismaService: PrismaService,
+    private readonly configService: ConfigService<Config, true>,
   ) {}
 
   private static formatPhraseItem(
@@ -207,17 +210,20 @@ export class PrivateApiController {
   @Get('/system')
   @Public()
   async settings() {
-    const signUpDisabledRequested = process.env.SIGN_UP_DISABLED === 'true'
     let signUpDisabled = false
 
-    if (signUpDisabledRequested) {
+    const appConfig = this.configService.get('app', {
+      infer: true,
+    })
+
+    if (appConfig.signUpDisabled) {
       const user = await this.prismaService.user.findFirst()
       signUpDisabled = !!user
     }
 
     return {
-      version: process.env.APP_VERSION ?? '0.0.0',
-      distribution: process.env.APP_DISTRIBUTION ?? 'self-hosted',
+      version: appConfig.version,
+      distribution: appConfig.distribution,
       settings: {
         signUpDisabled,
       },
@@ -862,8 +868,10 @@ export class PrivateApiController {
       requester,
     })
 
+    const apiUrl = this.configService.get('urls.api', { infer: true })
+
     return {
-      link: `${process.env.API_URL}/private-api/GetPhrasesExport?token=${token}`,
+      link: `${apiUrl}/private-api/GetPhrasesExport?token=${token}`,
     }
   }
 

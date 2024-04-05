@@ -16,6 +16,8 @@ import { fileFormatContentType, fileFormatExtensions } from '../io/fileFormat'
 import { ExcelService } from '../io/excel.service'
 import { Data } from '../io/types'
 import { escapeFileName } from 'src/utils/security'
+import { ConfigService } from '@nestjs/config'
+import { Config } from 'src/utils/config'
 
 interface ListPhrasesParams {
   revisionId: string
@@ -104,6 +106,7 @@ export class PhraseService {
     private jsonService: JSONService,
     private yamlService: YAMLService,
     private excelService: ExcelService,
+    private configService: ConfigService<Config>,
   ) {}
 
   async listPhrases({
@@ -544,10 +547,14 @@ export class PhraseService {
     }
 
     try {
-      const token = jwt.sign(payload, process.env.JWT_SECRET!, {
-        expiresIn: '1h',
-        issuer: PhraseService.jwtIssuer,
-      })
+      const token = jwt.sign(
+        payload,
+        this.configService.get('security.jwtSecret', { infer: true })!,
+        {
+          expiresIn: '1h',
+          issuer: PhraseService.jwtIssuer,
+        },
+      )
 
       return token
     } catch (e) {
@@ -560,9 +567,13 @@ export class PhraseService {
     let payload: PhrasesExportTokenPayload | null = null
 
     try {
-      payload = jwt.verify(token, process.env.JWT_SECRET!, {
-        issuer: PhraseService.jwtIssuer,
-      }) as PhrasesExportTokenPayload
+      payload = jwt.verify(
+        token,
+        this.configService.get('security.jwtSecret', { infer: true })!,
+        {
+          issuer: PhraseService.jwtIssuer,
+        },
+      ) as PhrasesExportTokenPayload
     } catch (e) {
       console.log(e)
     }
