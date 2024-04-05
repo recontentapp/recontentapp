@@ -2358,10 +2358,10 @@
   resolved "https://registry.yarnpkg.com/@tiptap/extension-strike/-/extension-strike-2.0.0-beta.199.tgz#5fc6e067728009d92027e58a042f18449f2fa264"
   integrity sha512-KyN5+d9o9FGvrSiSuh81oo4+XjMDsZVY4UHc9lBY0nAzaGAkJOwkCjk40RfyO5ZJ2GdEEQ6Nh/3YqVMcJTY+rA==
 
-"@tiptap/extension-text@2.0.0-beta.199":
-  version "2.0.0-beta.199"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-text/-/extension-text-2.0.0-beta.199.tgz#0204f3e50622e39b6fd08b5ef72fe7d0199117f5"
-  integrity sha512-ntOqEhkBjDHrdzxvpPe4U1JB5GgE9/yyWqWdgzSL9lpSndRTJN1xQLOmyuv0qsLqOgBHn1YITHvaxPb3t8FrFw==
+"@tiptap/extension-text@2.2.4":
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-text/-/extension-text-2.2.4.tgz#aa101c568aa78a4ddc06a944eefcd3ac944987d4"
+  integrity sha512-NlKHMPnRJXB+0AGtDlU0P2Pg+SdesA2lMMd7JzDUgJgL7pX2jOb8eUqSeOjFKuSzFSqYfH6C3o6mQiNhuQMv+g==
 
 "@tiptap/pm@2.2.4":
   version "2.2.4"
