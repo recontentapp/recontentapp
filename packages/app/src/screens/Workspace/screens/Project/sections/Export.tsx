@@ -1,5 +1,5 @@
 import { FC, useRef } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { FullpageSpinner } from '../../../../../components/FullpageSpinner'
 import {
   Button,
@@ -14,13 +14,23 @@ import {
   ExportToFileModal,
   ExportToFileModalRef,
 } from '../components/ExportToFileModal'
-import { useGetProject } from '../../../../../generated/reactQuery'
+import {
+  useGetProject,
+  useListDestinations,
+} from '../../../../../generated/reactQuery'
 import routes from '../../../../../routing'
+import { useModals } from '../../../hooks/modals'
+import { DestinationCard } from '../components/DestinationCard'
 
 export const Export: FC = () => {
+  const navigate = useNavigate()
+  const params = useParams<'projectId'>()
   const exportToFileModalRef = useRef<ExportToFileModalRef>(null)
   const { key: workspaceKey } = useCurrentWorkspace()
-  const params = useParams<'projectId'>()
+  const { openCreateDestination } = useModals()
+  const { data } = useListDestinations({
+    queryParams: { projectId: params.projectId! },
+  })
   const { data: project } = useGetProject({
     queryParams: { id: params.projectId! },
   })
@@ -32,12 +42,21 @@ export const Export: FC = () => {
   return (
     <Stack direction="column" spacing="$space300">
       <ExportToFileModal ref={exportToFileModalRef} />
-      <Stack direction="column" spacing="$space200">
+
+      <Stack direction="column" spacing="$space300">
         <Stack direction="column" spacing="$space100">
           <Stack direction="row" spacing="$space60" alignItems="center">
             <Heading renderAs="h2" size="$size100">
               Destinations
             </Heading>
+            <Button
+              variation="primary"
+              icon="add"
+              size="xsmall"
+              onAction={() => openCreateDestination(project)}
+            >
+              Add
+            </Button>
             <Button
               variation="secondary"
               icon="file"
@@ -87,6 +106,26 @@ export const Export: FC = () => {
               </span>
             }
           />
+        </Stack>
+
+        <Stack direction="row" spacing="$space100">
+          {data?.items.map(destination => (
+            <DestinationCard
+              key={destination.id}
+              destination={destination}
+              onAction={() => {
+                navigate(
+                  routes.projectDestination.url({
+                    pathParams: {
+                      workspaceKey,
+                      projectId: project.id,
+                      destinationId: destination.id,
+                    },
+                  }),
+                )
+              }}
+            />
+          ))}
         </Stack>
       </Stack>
     </Stack>

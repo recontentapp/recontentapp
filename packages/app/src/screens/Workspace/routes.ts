@@ -31,6 +31,9 @@ const routes: RoutesCollection = {
   '/:workspaceKey/projects/:projectId/export': {
     name: 'projectExport',
   },
+  '/:workspaceKey/projects/:projectId/destinations/:destinationId': {
+    name: 'projectDestination',
+  },
 }
 
 export default routes

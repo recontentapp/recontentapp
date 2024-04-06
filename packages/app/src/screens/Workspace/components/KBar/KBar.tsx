@@ -169,7 +169,12 @@ export const KBar = () => {
     },
   })
   const containerRef = useRef<HTMLDivElement>(null)
-  const { closeAll, openCreatePhrase, openCreateProject } = useModals()
+  const {
+    closeAll,
+    openCreatePhrase,
+    openCreateProject,
+    openCreateDestination,
+  } = useModals()
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -228,12 +233,22 @@ export const KBar = () => {
     const actions: Action[] = []
 
     if (project) {
-      actions.push({
-        label: 'Create a phrase',
-        onSelect: () => {
-          openCreatePhrase(project, project.masterRevisionId)
-        },
-      })
+      actions.push(
+        ...[
+          {
+            label: 'Create a phrase',
+            onSelect: () => {
+              openCreatePhrase(project, project.masterRevisionId)
+            },
+          },
+          {
+            label: 'Create a destination',
+            onSelect: () => {
+              openCreateDestination(project)
+            },
+          },
+        ],
+      )
     }
 
     actions.push({
@@ -244,7 +259,7 @@ export const KBar = () => {
     })
 
     return actions
-  }, [project, openCreateProject, openCreatePhrase])
+  }, [project, openCreateProject, openCreatePhrase, openCreateDestination])
 
   const projectItems = useMemo(() => {
     if (!project) {
@@ -260,6 +275,18 @@ export const KBar = () => {
             projectId: project.id,
             revisionId: project.masterRevisionId,
           },
+        }),
+      },
+      {
+        label: 'Go to Project Import',
+        path: routes.projectImport.url({
+          pathParams: { workspaceKey, projectId: project.id },
+        }),
+      },
+      {
+        label: 'Go to Project Export',
+        path: routes.projectExport.url({
+          pathParams: { workspaceKey, projectId: project.id },
         }),
       },
       {

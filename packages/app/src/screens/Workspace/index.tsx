@@ -21,6 +21,7 @@ import {
   WorkspaceSettings,
 } from './screens/WorkspaceSettings'
 import { ImportFromFile } from './screens/ImportFromFile'
+import { Destination } from './screens/Destination'
 import { useCurrentAccount, useCurrentWorkspace } from '../../hooks/workspace'
 import routes from '../../routing'
 
@@ -95,6 +96,11 @@ export const Workspace = () => {
                 <Route
                   path="/:workspaceKey/projects/:projectId/import/from-file"
                   element={<ImportFromFile />}
+                />
+
+                <Route
+                  path="/:workspaceKey/projects/:projectId/destinations/:destinationId"
+                  element={<Destination />}
                 />
 
                 <Route

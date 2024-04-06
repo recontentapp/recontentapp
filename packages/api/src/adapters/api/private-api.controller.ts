@@ -37,6 +37,10 @@ import {
 } from './dto/workspace.dto'
 import { WorkspaceService } from 'src/modules/workspace/workspace.service'
 import {
+  Destination,
+  DestinationConfigAWSS3,
+  DestinationConfigCDN,
+  DestinationConfigGoogleCloudStorage,
   Language,
   Phrase,
   PhraseTranslation,
@@ -68,6 +72,12 @@ import { RequiredQuery } from 'src/utils/required-query'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { ConfigService } from '@nestjs/config'
 import { Config } from 'src/utils/config'
+import { DestinationService } from 'src/modules/phrase/destination.service'
+import {
+  CreateCDNDestinationDto,
+  DeleteDestinationDto,
+  SyncDestinationDto,
+} from './dto/destination.dto'
 
 @Controller('private-api')
 @UseGuards(JwtAuthGuard)
@@ -77,6 +87,7 @@ export class PrivateApiController {
     private readonly workspaceService: WorkspaceService,
     private readonly projectService: ProjectService,
     private readonly phraseService: PhraseService,
+    private readonly destinationService: DestinationService,
     private readonly prismaService: PrismaService,
     private readonly configService: ConfigService<Config, true>,
   ) {}
@@ -203,6 +214,68 @@ export class PrivateApiController {
       updatedAt: revision.updatedAt.toISOString(),
       createdBy: revision.createdBy,
       updatedBy: revision.updatedBy,
+    }
+  }
+
+  private static formatDestinationItem(
+    destination: Destination,
+  ): Components.Schemas.DestinationItem {
+    return {
+      id: destination.id,
+      workspaceId: destination.workspaceId,
+      revisionId: destination.revisionId,
+      name: destination.name,
+      type: destination.type,
+      active: destination.active,
+      lastSyncError: destination.lastSyncError,
+      lastSyncAt: destination.lastSyncAt
+        ? destination.lastSyncAt.toISOString()
+        : null,
+      lastSuccessfulSyncAt: destination.lastSuccessfulSyncAt
+        ? destination.lastSuccessfulSyncAt.toISOString()
+        : null,
+      createdAt: destination.createdAt.toISOString(),
+      updatedAt: destination.updatedAt.toISOString(),
+      createdBy: destination.createdBy,
+      updatedBy: destination.updatedBy,
+    }
+  }
+
+  private static formatDestination(
+    destination: Destination & {
+      configCDN: DestinationConfigCDN | null
+      configGoogleCloudStorage: DestinationConfigGoogleCloudStorage | null
+      configAWSS3: DestinationConfigAWSS3 | null
+    },
+  ): Components.Schemas.Destination {
+    return {
+      id: destination.id,
+      workspaceId: destination.workspaceId,
+      revisionId: destination.revisionId,
+      name: destination.name,
+      type: destination.type,
+      active: destination.active,
+      configCDN: destination.configCDN
+        ? {
+            fileFormat: destination.configCDN
+              .fileFormat as Components.Schemas.FileFormat,
+            includeEmptyTranslations:
+              destination.configCDN.includeEmptyTranslations,
+            id: destination.configCDN.id,
+            urls: destination.configCDN.urls,
+          }
+        : null,
+      lastSyncError: destination.lastSyncError,
+      lastSyncAt: destination.lastSyncAt
+        ? destination.lastSyncAt.toISOString()
+        : null,
+      lastSuccessfulSyncAt: destination.lastSuccessfulSyncAt
+        ? destination.lastSuccessfulSyncAt.toISOString()
+        : null,
+      createdAt: destination.createdAt.toISOString(),
+      updatedAt: destination.updatedAt.toISOString(),
+      createdBy: destination.createdBy,
+      updatedBy: destination.updatedBy,
     }
   }
 
@@ -897,5 +970,106 @@ export class PrivateApiController {
       'Content-Disposition': `attachment; filename="${fileName}"`,
     })
     response.send(buffer)
+  }
+
+  @Get('/ListDestinations')
+  async listDestinations(
+    @RequiredQuery('projectId') projectId: string,
+    @Query('revisionId') revisionId: string,
+    @AuthenticatedRequester() requester: Requester,
+    @Pagination() pagination: PaginationParams,
+  ): Promise<Paths.ListDestinations.Responses.$200> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    const result = await this.destinationService.listDestinations({
+      projectId,
+      revisionId,
+      requester,
+      pagination,
+    })
+
+    return {
+      items: result.items.map(PrivateApiController.formatDestinationItem),
+      pagination: result.pagination,
+    }
+  }
+
+  @Get('/GetDestination')
+  async getDestination(
+    @RequiredQuery('destinationId') destinationId: string,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.GetDestination.Responses.$200> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    const destination = await this.destinationService.getDestination({
+      destinationId,
+      requester,
+    })
+
+    return PrivateApiController.formatDestination(destination)
+  }
+
+  @Post('/CreateCDNDestination')
+  async createDestination(
+    @AuthenticatedRequester() requester: Requester,
+    @Body()
+    {
+      name,
+      revisionId,
+      fileFormat,
+      includeEmptyTranslations,
+    }: CreateCDNDestinationDto,
+  ): Promise<Paths.CreateCDNDestination.Responses.$201> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    const destination = await this.destinationService.createCDNDestination({
+      name,
+      revisionId,
+      fileFormat,
+      includeEmptyTranslations,
+      requester,
+    })
+
+    return PrivateApiController.formatDestination(destination)
+  }
+
+  @Post('/SyncDestination')
+  async syncDestination(
+    @AuthenticatedRequester() requester: Requester,
+    @Body() { destinationId }: SyncDestinationDto,
+  ): Promise<Paths.SyncDestination.Responses.$204> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    await this.destinationService.syncCDNDestination({
+      destinationId,
+      requester,
+    })
+
+    return {}
+  }
+
+  @Delete('/DeleteDestination')
+  async deleteDestination(
+    @AuthenticatedRequester() requester: Requester,
+    @Body() { destinationId }: DeleteDestinationDto,
+  ): Promise<Paths.DeleteDestination.Responses.$204> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    await this.destinationService.deleteDestination({
+      destinationId,
+      requester,
+    })
+
+    return {}
   }
 }

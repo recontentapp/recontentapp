@@ -1,4 +1,4 @@
-import ReachTooltip, { Position } from '@reach/tooltip'
+import { Position, Tooltip as ReachTooltip } from '@reach/tooltip'
 import { FC, ReactElement } from 'react'
 
 import { globalCss } from '../../theme'

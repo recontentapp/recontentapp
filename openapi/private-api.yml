@@ -957,8 +957,136 @@ paths:
       responses:
         '200':
           description: OK
+  /ListDestinations:
+    get:
+      operationId: listDestinations
+      parameters:
+        - name: projectId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: revisionId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DestinationItem'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                additionalProperties: false
+                required:
+                  - items
+                  - pagination
+  /CreateCDNDestination:
+    post:
+      operationId: createCDNDestination
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                revisionId:
+                  type: string
+                name:
+                  type: string
+                fileFormat:
+                  $ref: '#/components/schemas/FileFormat'
+                includeEmptyTranslations:
+                  type: boolean
+              additionalProperties: false
+              required:
+                - type
+                - revisionId
+                - name
+                - fileFormat
+                - includeEmptyTranslations
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Destination'
+  /GetDestination:
+    get:
+      operationId: getDestination
+      parameters:
+        - name: destinationId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Destination'
+  /SyncDestination:
+    post:
+      operationId: syncDestination
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                destinationId:
+                  type: string
+              additionalProperties: false
+              required:
+                - destinationId
+      responses:
+        '204':
+          description: OK
+  /DeleteDestination:
+    delete:
+      operationId: deleteDestination
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                destinationId:
+                  type: string
+              additionalProperties: false
+              required:
+                - destinationId
+      responses:
+        '204':
+          description: OK
 components:
   schemas:
+    Empty:
+      type: string
+      enum:
+        - null
+      nullable: true
     Pagination:
       type: object
       properties:
@@ -1350,3 +1478,137 @@ components:
         - updatedAt
         - createdBy
         - updatedBy
+    DestinationType:
+      type: string
+      enum:
+        - cdn
+        - aws_s3
+        - google_cloud_storage
+    DestinationItem:
+      type: object
+      properties:
+        id:
+          type: string
+        workspaceId:
+          type: string
+        revisionId:
+          type: string
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/DestinationType'
+        active:
+          type: boolean
+        lastSyncError:
+          type: string
+          nullable: true
+        lastSyncAt:
+          type: string
+          format: date-time
+          nullable: true
+        lastSuccessfulSyncAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+        updatedBy:
+          type: string
+          nullable: true
+      additionalProperties: false
+      required:
+        - id
+        - workspaceId
+        - revisionId
+        - name
+        - type
+        - active
+        - lastSyncError
+        - lastSyncAt
+        - lastSuccessfulSyncAt
+        - createdAt
+        - updatedAt
+        - createdBy
+        - updatedBy
+    Destination:
+      type: object
+      properties:
+        id:
+          type: string
+        workspaceId:
+          type: string
+        revisionId:
+          type: string
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/DestinationType'
+        active:
+          type: boolean
+        lastSyncError:
+          type: string
+          nullable: true
+        lastSyncAt:
+          type: string
+          format: date-time
+          nullable: true
+        lastSuccessfulSyncAt:
+          type: string
+          format: date-time
+          nullable: true
+        configCDN:
+          oneOf:
+            - $ref: '#/components/schemas/DestinationConfigCDN'
+            - $ref: '#/components/schemas/Empty'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+        updatedBy:
+          type: string
+          nullable: true
+      additionalProperties: false
+      required:
+        - id
+        - workspaceId
+        - revisionId
+        - name
+        - type
+        - active
+        - lastSyncError
+        - lastSyncAt
+        - lastSuccessfulSyncAt
+        - createdAt
+        - updatedAt
+        - createdBy
+        - updatedBy
+        - configCDN
+    DestinationConfigCDN:
+      type: object
+      properties:
+        id:
+          type: string
+        fileFormat:
+          $ref: '#/components/schemas/FileFormat'
+        includeEmptyTranslations:
+          type: boolean
+        urls:
+          type: array
+          items:
+            type: string
+      additionalProperties: false
+      required:
+        - id
+        - fileFormat
+        - includeEmptyTranslations
+        - urls

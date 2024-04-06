@@ -35,6 +35,11 @@ interface DeleteDestinationParams {
   requester: HumanRequester
 }
 
+interface GetDestinationParams {
+  destinationId: string
+  requester: HumanRequester
+}
+
 interface ListDestinationsParams {
   pagination: PaginationParams
   requester: HumanRequester
@@ -117,6 +122,23 @@ export class DestinationService {
     return buffer
   }
 
+  async getDestination({ destinationId, requester }: GetDestinationParams) {
+    const destination = await this.prismaService.destination.findUniqueOrThrow({
+      where: { id: destinationId },
+      include: {
+        configCDN: true,
+        configAWSS3: true,
+        configGoogleCloudStorage: true,
+      },
+    })
+
+    if (!requester.canAccessWorkspace(destination.workspaceId)) {
+      throw new ForbiddenException('You do not have access to this workspace')
+    }
+
+    return destination
+  }
+
   async listDestinations({
     projectId,
     requester,
@@ -188,7 +210,11 @@ export class DestinationService {
     }
 
     const destination = await this.prismaService.destination.create({
-      include: { configCDN: true },
+      include: {
+        configCDN: true,
+        configAWSS3: true,
+        configGoogleCloudStorage: true,
+      },
       data: {
         name,
         revisionId,
