@@ -40,9 +40,9 @@ CREATE TABLE "destination_configs_google_cloud_storage" (
     "fileFormat" VARCHAR NOT NULL,
     "includeEmptyTranslations" BOOLEAN NOT NULL DEFAULT false,
     "objectsPrefix" VARCHAR,
-    "GoogleCloudProjectId" VARCHAR NOT NULL,
-    "GoogleCloudBucketId" VARCHAR NOT NULL,
-    "GoogleCloudKey" TEXT NOT NULL,
+    "googleCloudProjectId" VARCHAR NOT NULL,
+    "googleCloudBucketId" VARCHAR NOT NULL,
+    "googleCloudServiceAccountKey" TEXT NOT NULL,
 
     CONSTRAINT "destination_configs_google_cloud_storage_pkey" PRIMARY KEY ("id")
 );
@@ -55,9 +55,10 @@ CREATE TABLE "destination_configs_aws_s3" (
     "fileFormat" VARCHAR NOT NULL,
     "includeEmptyTranslations" BOOLEAN NOT NULL DEFAULT false,
     "objectsPrefix" VARCHAR,
-    "AWSBucketId" VARCHAR NOT NULL,
-    "AWSAccessKeyId" TEXT NOT NULL,
-    "AWSSecretAccessKey" TEXT NOT NULL,
+    "awsBucketId" VARCHAR NOT NULL,
+    "awsRegion" VARCHAR NOT NULL,
+    "awsAccessKeyId" TEXT NOT NULL,
+    "awsSecretAccessKey" TEXT NOT NULL,
 
     CONSTRAINT "destination_configs_aws_s3_pkey" PRIMARY KEY ("id")
 );

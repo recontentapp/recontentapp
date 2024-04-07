@@ -1030,6 +1030,93 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Destination'
+  /CreateAWSS3Destination:
+    post:
+      operationId: createAWSS3Destination
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                revisionId:
+                  type: string
+                name:
+                  type: string
+                fileFormat:
+                  $ref: '#/components/schemas/FileFormat'
+                includeEmptyTranslations:
+                  type: boolean
+                objectsPrefix:
+                  type: string
+                awsRegion:
+                  type: string
+                awsBucketId:
+                  type: string
+                awsAccessKeyId:
+                  type: string
+                awsSecretAccessKey:
+                  type: string
+              additionalProperties: false
+              required:
+                - type
+                - revisionId
+                - name
+                - fileFormat
+                - includeEmptyTranslations
+                - awsRegion
+                - awsBucketId
+                - awsAccessKeyId
+                - awsSecretAccessKey
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Destination'
+  /CreateGoogleCloudStorageDestination:
+    post:
+      operationId: createGoogleCloudStorageDestination
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                revisionId:
+                  type: string
+                name:
+                  type: string
+                fileFormat:
+                  $ref: '#/components/schemas/FileFormat'
+                includeEmptyTranslations:
+                  type: boolean
+                objectsPrefix:
+                  type: string
+                googleCloudProjectId:
+                  type: string
+                googleCloudBucketId:
+                  type: string
+                googleCloudServiceAccountKey:
+                  type: string
+              additionalProperties: false
+              required:
+                - type
+                - revisionId
+                - name
+                - fileFormat
+                - includeEmptyTranslations
+                - googleCloudProjectId
+                - googleCloudBucketId
+                - googleCloudServiceAccountKey
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Destination'
   /GetDestination:
     get:
       operationId: getDestination
@@ -1566,6 +1653,14 @@ components:
           oneOf:
             - $ref: '#/components/schemas/DestinationConfigCDN'
             - $ref: '#/components/schemas/Empty'
+        configAWSS3:
+          oneOf:
+            - $ref: '#/components/schemas/DestinationConfigAWSS3'
+            - $ref: '#/components/schemas/Empty'
+        configGoogleCloudStorage:
+          oneOf:
+            - $ref: '#/components/schemas/DestinationConfigGoogleCloudStorage'
+            - $ref: '#/components/schemas/Empty'
         createdAt:
           type: string
           format: date-time
@@ -1593,6 +1688,8 @@ components:
         - createdBy
         - updatedBy
         - configCDN
+        - configAWSS3
+        - configGoogleCloudStorage
     DestinationConfigCDN:
       type: object
       properties:
@@ -1612,3 +1709,51 @@ components:
         - fileFormat
         - includeEmptyTranslations
         - urls
+    DestinationConfigAWSS3:
+      type: object
+      properties:
+        id:
+          type: string
+        fileFormat:
+          $ref: '#/components/schemas/FileFormat'
+        includeEmptyTranslations:
+          type: boolean
+        objectsPrefix:
+          type: string
+          nullable: true
+        region:
+          type: string
+        bucketId:
+          type: string
+      additionalProperties: false
+      required:
+        - id
+        - fileFormat
+        - includeEmptyTranslations
+        - objectsPrefix
+        - bucketId
+        - region
+    DestinationConfigGoogleCloudStorage:
+      type: object
+      properties:
+        id:
+          type: string
+        fileFormat:
+          $ref: '#/components/schemas/FileFormat'
+        includeEmptyTranslations:
+          type: boolean
+        objectsPrefix:
+          type: string
+          nullable: true
+        projectId:
+          type: string
+        bucketId:
+          type: string
+      additionalProperties: false
+      required:
+        - id
+        - fileFormat
+        - includeEmptyTranslations
+        - objectsPrefix
+        - projectId
+        - bucketId

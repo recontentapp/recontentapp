@@ -60,7 +60,7 @@ export const SignIn: FC = () => {
         body: {
           email: state.email,
           password: state.password,
-          confirmationCode: state.confirmationCode,
+          confirmationCode: state.confirmationCode.trim(),
         },
       })
       .then(res => {

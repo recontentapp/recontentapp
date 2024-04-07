@@ -45,7 +45,7 @@ export class AuthService {
     private eventEmitter: EventEmitter2,
     private prisma: PrismaService,
     private jwtService: JwtService,
-    private configService: ConfigService<Config>,
+    private configService: ConfigService<Config, true>,
   ) {}
 
   private generateConfirmationCode() {

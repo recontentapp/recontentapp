@@ -106,7 +106,7 @@ export class PhraseService {
     private jsonService: JSONService,
     private yamlService: YAMLService,
     private excelService: ExcelService,
-    private configService: ConfigService<Config>,
+    private configService: ConfigService<Config, true>,
   ) {}
 
   async listPhrases({

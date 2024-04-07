@@ -275,9 +275,11 @@ model DestinationConfigGoogleCloudStorage {
   fileFormat               String      @db.VarChar()
   includeEmptyTranslations Boolean     @default(false)
   objectsPrefix            String?     @db.VarChar()
-  GoogleCloudProjectId     String      @db.VarChar()
-  GoogleCloudBucketId      String      @db.VarChar()
-  GoogleCloudKey           String
+  googleCloudProjectId     String      @db.VarChar()
+  googleCloudBucketId      String      @db.VarChar()
+
+  // Encrypted
+  googleCloudServiceAccountKey String
 
   @@unique([destinationId])
   @@map("destination_configs_google_cloud_storage")
@@ -292,9 +294,13 @@ model DestinationConfigAWSS3 {
   fileFormat               String      @db.VarChar()
   includeEmptyTranslations Boolean     @default(false)
   objectsPrefix            String?     @db.VarChar()
-  AWSBucketId              String      @db.VarChar()
-  AWSAccessKeyId           String
-  AWSSecretAccessKey       String
+  awsBucketId              String      @db.VarChar()
+  awsRegion                String      @db.VarChar()
+
+  // Encrypted
+  awsAccessKeyId     String
+  // Encrypted
+  awsSecretAccessKey String
 
   @@unique([destinationId])
   @@map("destination_configs_aws_s3")

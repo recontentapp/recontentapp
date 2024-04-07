@@ -74,7 +74,9 @@ import { ConfigService } from '@nestjs/config'
 import { Config } from 'src/utils/config'
 import { DestinationService } from 'src/modules/phrase/destination.service'
 import {
+  CreateAWSS3DestinationDto,
   CreateCDNDestinationDto,
+  CreateGoogleCloudStorageDestinationDto,
   DeleteDestinationDto,
   SyncDestinationDto,
 } from './dto/destination.dto'
@@ -263,6 +265,31 @@ export class PrivateApiController {
               destination.configCDN.includeEmptyTranslations,
             id: destination.configCDN.id,
             urls: destination.configCDN.urls,
+          }
+        : null,
+      configGoogleCloudStorage: destination.configGoogleCloudStorage
+        ? {
+            fileFormat: destination.configGoogleCloudStorage
+              .fileFormat as Components.Schemas.FileFormat,
+            includeEmptyTranslations:
+              destination.configGoogleCloudStorage.includeEmptyTranslations,
+            id: destination.configGoogleCloudStorage.id,
+            objectsPrefix: destination.configGoogleCloudStorage.objectsPrefix,
+            bucketId: destination.configGoogleCloudStorage.googleCloudBucketId,
+            projectId:
+              destination.configGoogleCloudStorage.googleCloudProjectId,
+          }
+        : null,
+      configAWSS3: destination.configAWSS3
+        ? {
+            fileFormat: destination.configAWSS3
+              .fileFormat as Components.Schemas.FileFormat,
+            includeEmptyTranslations:
+              destination.configAWSS3.includeEmptyTranslations,
+            id: destination.configAWSS3.id,
+            objectsPrefix: destination.configAWSS3.objectsPrefix,
+            bucketId: destination.configAWSS3.awsBucketId,
+            region: destination.configAWSS3.awsRegion,
           }
         : null,
       lastSyncError: destination.lastSyncError,
@@ -1014,7 +1041,7 @@ export class PrivateApiController {
   }
 
   @Post('/CreateCDNDestination')
-  async createDestination(
+  async createCDNDestination(
     @AuthenticatedRequester() requester: Requester,
     @Body()
     {
@@ -1039,6 +1066,77 @@ export class PrivateApiController {
     return PrivateApiController.formatDestination(destination)
   }
 
+  @Post('/CreateAWSS3Destination')
+  async createAWSS3Destination(
+    @AuthenticatedRequester() requester: Requester,
+    @Body()
+    {
+      name,
+      revisionId,
+      fileFormat,
+      includeEmptyTranslations,
+      objectsPrefix,
+      awsRegion,
+      awsAccessKeyId,
+      awsBucketId,
+      awsSecretAccessKey,
+    }: CreateAWSS3DestinationDto,
+  ): Promise<Paths.CreateAWSS3Destination.Responses.$201> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    const destination = await this.destinationService.createAWSS3Destination({
+      name,
+      revisionId,
+      fileFormat,
+      includeEmptyTranslations,
+      objectsPrefix,
+      awsAccessKeyId,
+      awsRegion,
+      awsBucketId,
+      awsSecretAccessKey,
+      requester,
+    })
+
+    return PrivateApiController.formatDestination(destination)
+  }
+
+  @Post('/CreateGoogleCloudStorageDestination')
+  async createDestination(
+    @AuthenticatedRequester() requester: Requester,
+    @Body()
+    {
+      name,
+      revisionId,
+      fileFormat,
+      includeEmptyTranslations,
+      objectsPrefix,
+      googleCloudBucketId,
+      googleCloudServiceAccountKey,
+      googleCloudProjectId,
+    }: CreateGoogleCloudStorageDestinationDto,
+  ): Promise<Paths.CreateGoogleCloudStorageDestination.Responses.$201> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    const destination =
+      await this.destinationService.createGoogleCloudStorageDestination({
+        name,
+        revisionId,
+        fileFormat,
+        includeEmptyTranslations,
+        objectsPrefix,
+        googleCloudBucketId,
+        googleCloudServiceAccountKey,
+        googleCloudProjectId,
+        requester,
+      })
+
+    return PrivateApiController.formatDestination(destination)
+  }
+
   @Post('/SyncDestination')
   async syncDestination(
     @AuthenticatedRequester() requester: Requester,
@@ -1048,7 +1146,7 @@ export class PrivateApiController {
       throw new BadRequestException('Invalid requester')
     }
 
-    await this.destinationService.syncCDNDestination({
+    await this.destinationService.syncDestination({
       destinationId,
       requester,
     })

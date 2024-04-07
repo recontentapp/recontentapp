@@ -18,6 +18,8 @@ import { formatRelative } from '../../../utils/dates'
 import { Page } from '../components/Page'
 import { ScreenWrapper } from '../components/ScreenWrapper'
 import {
+  getGetDestinationQueryKey,
+  getListDestinationsQueryKey,
   useDeleteDestination,
   useGetDestination,
   useGetProject,
@@ -27,6 +29,7 @@ import { useCurrentWorkspace } from '../../../hooks/workspace'
 import routes from '../../../routing'
 import { destinationTypeLabels } from '../../../utils/destinations'
 import { fileFormatLabels } from '../../../utils/files'
+import { useQueryClient } from '@tanstack/react-query'
 
 const ErrorMessage = styled('span', {
   display: 'inline-block',
@@ -51,15 +54,32 @@ const Output = styled('pre', {
 })
 
 export const Destination: FC = () => {
+  const queryClient = useQueryClient()
   const params = useParams<'projectId' | 'destinationId'>()
   const navigate = useNavigate()
   const confirmationModalRef = useRef<ConfirmationModalRef>(null!)
   const {
     mutateAsync: syncDestination,
     isPending: isRequestingSyncDestination,
-  } = useSyncDestination()
+  } = useSyncDestination({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: getGetDestinationQueryKey({
+          queryParams: { destinationId: params.destinationId! },
+        }),
+      })
+    },
+  })
   const { mutateAsync: deleteDestination, isPending: isDeletingDestination } =
-    useDeleteDestination()
+    useDeleteDestination({
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: getListDestinationsQueryKey({
+            queryParams: { projectId: params.projectId! },
+          }),
+        })
+      },
+    })
   const { key: workspaceKey, name: workspaceName } = useCurrentWorkspace()
   const {
     data: destination,

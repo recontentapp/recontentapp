@@ -49,7 +49,7 @@ const Input = styled('input', {
 export const CreateProjectModal = forwardRef<CreateProjectModalRef>(
   (_props, ref) => {
     const queryClient = useQueryClient()
-    const [addAllLanguages, setAddAllLanguages] = useState(false)
+    const [addAllLanguages, setAddAllLanguages] = useState(true)
     const navigate = useNavigate()
     const { key: workspaceKey, id: workspaceId } = useCurrentWorkspace()
     const { data: languages = [] } = useListWorkspaceLanguages({

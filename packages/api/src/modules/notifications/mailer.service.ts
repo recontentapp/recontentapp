@@ -50,7 +50,7 @@ export class MailerService {
     'dist',
   )
 
-  constructor(private readonly configService: ConfigService<Config>) {
+  constructor(private readonly configService: ConfigService<Config, true>) {
     const config = this.configService.get('mailer', { infer: true })
 
     this.transporter = createTransport({

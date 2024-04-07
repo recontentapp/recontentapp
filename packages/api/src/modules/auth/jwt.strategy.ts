@@ -12,7 +12,7 @@ import { Config } from 'src/utils/config'
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
     private prismaService: PrismaService,
-    private configService: ConfigService<Config>,
+    private configService: ConfigService<Config, true>,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
