@@ -14,7 +14,6 @@ import { HumanRequester } from 'src/utils/requester'
 import { Components } from 'src/generated/typeDefinitions'
 import {
   DeleteObjectsCommand,
-  ListBucketsCommand,
   ListObjectsCommand,
   PutObjectCommand,
   S3Client,
@@ -556,11 +555,6 @@ export class DestinationService {
       },
     })
 
-    await client
-      .send(new ListBucketsCommand())
-      .then(console.log)
-      .catch(console.error)
-
     let error: string | null = null
 
     for (const language of revision.project.languages) {
@@ -580,8 +574,6 @@ export class DestinationService {
 
       const key = [
         (destination.configAWSS3.objectsPrefix ?? '').replace(/\/$/, ''),
-        destination.workspace.key,
-        destination.id,
         `${language.locale}${extension}`,
       ]
         .filter(Boolean)
@@ -697,8 +689,6 @@ export class DestinationService {
           /\/$/,
           '',
         ),
-        destination.workspace.key,
-        destination.id,
         `${language.locale}${extension}`,
       ]
         .filter(Boolean)

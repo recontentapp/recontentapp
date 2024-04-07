@@ -84,7 +84,7 @@ export const Destination: FC = () => {
     queryParams: { id: params.projectId! },
   })
 
-  const onRequestSyncDestination = () => {
+  const onSyncDestination = () => {
     if (!destination) {
       return
     }
@@ -92,13 +92,13 @@ export const Destination: FC = () => {
     syncDestination({ body: { destinationId: destination.id } })
       .then(() => {
         toast('success', {
-          title: 'Sync request received',
-          description: 'Your destination should be synced in a few seconds',
+          title: 'Destination synced',
+          description: 'Your destination should now be up-to-date',
         })
       })
       .catch(() => {
         toast('error', {
-          title: 'Could not request destination sync',
+          title: 'Could not sync destination',
           description: 'Feel free to try later or contact us',
         })
       })
@@ -320,7 +320,7 @@ export const Destination: FC = () => {
               <Button
                 variation="primary"
                 isLoading={isRequestingSyncDestination}
-                onAction={onRequestSyncDestination}
+                onAction={onSyncDestination}
               >
                 Manually sync destination
               </Button>

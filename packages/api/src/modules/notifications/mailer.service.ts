@@ -54,12 +54,12 @@ export class MailerService {
     const config = this.configService.get('mailer', { infer: true })
 
     this.transporter = createTransport({
-      host: config?.host,
-      port: config?.port,
-      secure: config?.secure,
+      host: config.host,
+      port: config.port,
+      secure: config.secure,
       auth: {
-        user: config?.user,
-        pass: config?.password,
+        user: config.user,
+        pass: config.password,
       },
     })
   }
