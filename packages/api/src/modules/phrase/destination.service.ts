@@ -344,6 +344,7 @@ export class DestinationService {
       },
     )
 
+    let error: string | null = null
     const urls: string[] = []
 
     for (const language of revision.project.languages) {
@@ -372,7 +373,7 @@ export class DestinationService {
         endpoint: process.env.AWS_CUSTOM_ENDPOINT,
       })
 
-      await client
+      const result = await client
         .send(
           new PutObjectCommand({
             Bucket: cdnConfig.bucket,
@@ -385,11 +386,28 @@ export class DestinationService {
             Body: buffer,
           }),
         )
-        .catch(err => {
-          throw new Error(err)
-        })
+        .catch(err => err.message ?? 'Unknown S3 error')
+
+      if (typeof result === 'string') {
+        error = result
+        break
+      }
 
       urls.push(`${cdnConfig.bucketUrl}/${key}`)
+    }
+
+    if (error) {
+      await this.prismaService.destination.update({
+        where: { id: destination.id },
+        data: {
+          lastSyncAt: new Date(),
+          lastSyncError: error,
+          updatedBy: requester.getAccountIDForWorkspace(
+            destination.workspaceId,
+          )!,
+        },
+      })
+      throw new BadRequestException(error)
     }
 
     await this.prismaService.$transaction([
