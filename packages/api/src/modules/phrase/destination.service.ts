@@ -12,7 +12,12 @@ import { ConfigService } from '@nestjs/config'
 import { Config } from 'src/utils/config'
 import { HumanRequester } from 'src/utils/requester'
 import { Components } from 'src/generated/typeDefinitions'
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import {
+  DeleteObjectsCommand,
+  ListObjectsCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3'
 import { fileFormatContentType, fileFormatExtensions } from '../io/fileFormat'
 import { PaginationParams } from 'src/utils/pagination'
 import { Prisma } from '@prisma/client'
@@ -241,15 +246,61 @@ export class DestinationService {
   }: DeleteDestinationParams) {
     const destination = await this.prismaService.destination.findUniqueOrThrow({
       where: { id: destinationId },
+      include: {
+        workspace: true,
+      },
     })
 
     if (!requester.canAccessWorkspace(destination.workspaceId)) {
       throw new ForbiddenException('You do not have access to this workspace')
     }
 
-    // TODO: clean up resources
-    await this.prismaService.destination.delete({
-      where: { id: destinationId },
+    if (destination.type === 'cdn') {
+      const client = new S3Client({
+        region: process.env.AWS_DEFAULT_REGION,
+        endpoint: process.env.AWS_CUSTOM_ENDPOINT,
+      })
+
+      const objects = await client.send(
+        new ListObjectsCommand({
+          Prefix: [destination.workspace.key, destination.id].join('/'),
+          Bucket: this.configService.get('cdn.bucket', { infer: true }),
+        }),
+      )
+
+      const keys =
+        objects.Contents?.map(object => object.Key!).filter(Boolean) ?? []
+
+      if (keys.length > 0) {
+        await client.send(
+          new DeleteObjectsCommand({
+            Bucket: this.configService.get('cdn.bucket', { infer: true }),
+            Delete: {
+              Objects: keys.map(key => ({
+                Key: key,
+              })),
+            },
+          }),
+        )
+      }
+    }
+
+    await this.prismaService.$transaction(async t => {
+      await t.destinationConfigAWSS3.deleteMany({
+        where: { destinationId },
+      })
+
+      await t.destinationConfigCDN.deleteMany({
+        where: { destinationId },
+      })
+
+      await t.destinationConfigGoogleCloudStorage.deleteMany({
+        where: { destinationId },
+      })
+
+      await t.destination.delete({
+        where: { id: destinationId },
+      })
     })
   }
 
@@ -305,26 +356,38 @@ export class DestinationService {
           destination.configCDN.includeEmptyTranslations,
       })
 
-      const key = `${destination.workspace.key}/${destination.id}/${
-        language.locale
-      }${
+      const extension =
         fileFormatExtensions[
           destination.configCDN.fileFormat as Components.Schemas.FileFormat
         ]
-      }`
 
-      const client = new S3Client({ region: 'us-east-1' })
-      await client.send(
-        new PutObjectCommand({
-          Bucket: cdnConfig.bucket,
-          ContentType:
-            fileFormatContentType[
-              destination.configCDN.fileFormat as Components.Schemas.FileFormat
-            ],
-          Key: key,
-          Body: buffer,
-        }),
-      )
+      const key = [
+        destination.workspace.key,
+        destination.id,
+        `${language.locale}${extension}`,
+      ].join('/')
+
+      const client = new S3Client({
+        region: process.env.AWS_DEFAULT_REGION,
+        endpoint: process.env.AWS_CUSTOM_ENDPOINT,
+      })
+
+      await client
+        .send(
+          new PutObjectCommand({
+            Bucket: cdnConfig.bucket,
+            ContentType:
+              fileFormatContentType[
+                destination.configCDN
+                  .fileFormat as Components.Schemas.FileFormat
+              ],
+            Key: key,
+            Body: buffer,
+          }),
+        )
+        .catch(err => {
+          throw new Error(err)
+        })
 
       urls.push(`${cdnConfig.bucketUrl}/${key}`)
     }
