@@ -29,9 +29,6 @@ const styles = {
   },
   '&:hover': {
     color: '$blue700',
-    '& path': {
-      fill: '$blue700',
-    },
   },
 } as const
 
@@ -56,7 +53,8 @@ export const ExternalLink: FC<ExternalLinkProps> = ({
           <Icon src="open_in_new" size={16} color="$blue900" />
         </IconContainer>
       )}
-      {children}
+
+      <span>{children}</span>
     </ExternalContainer>
   )
 }

@@ -19,9 +19,14 @@ import { WorkspaceModule } from 'src/modules/workspace/workspace.module'
 import { ProjectModule } from 'src/modules/project/project.module'
 import { PhraseModule } from 'src/modules/phrase/phrase.module'
 import { IOModule } from 'src/modules/io/io.module'
+import getConfig from 'src/utils/config'
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [getConfig],
+    }),
     ThrottlerModule.forRoot([
       // 100 requests per 5 seconds
       {
@@ -30,9 +35,6 @@ import { IOModule } from 'src/modules/io/io.module'
         limit: 100,
       },
     ]),
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
     EventEmitterModule.forRoot({
       ignoreErrors: true,
     }),

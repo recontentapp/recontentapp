@@ -16,6 +16,7 @@ const systemContext = createContext<System>({
   distribution: 'self-hosted',
   settings: {
     signUpDisabled: false,
+    cdnAvailable: false,
   },
 })
 
@@ -25,6 +26,7 @@ export const SystemProvider: FC<{ children: ReactNode }> = ({ children }) => {
     distribution: 'self-hosted',
     settings: {
       signUpDisabled: false,
+      cdnAvailable: false,
     },
   })
 

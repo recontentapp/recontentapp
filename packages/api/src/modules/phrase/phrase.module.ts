@@ -6,16 +6,18 @@ import { CSVService } from '../io/csv.service'
 import { JSONService } from '../io/json.service'
 import { YAMLService } from '../io/yaml.service'
 import { ExcelService } from '../io/excel.service'
+import { DestinationService } from './destination.service'
 
 @Module({
   providers: [
     PrismaService,
     PhraseService,
+    DestinationService,
     CSVService,
     JSONService,
     YAMLService,
     ExcelService,
   ],
-  exports: [PhraseService],
+  exports: [PhraseService, DestinationService],
 })
 export class PhraseModule {}

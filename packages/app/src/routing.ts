@@ -108,6 +108,18 @@ export interface ProjectexportParams {
   }
 }
 
+export interface ProjectdestinationParams {
+  pathParams: {
+    workspaceKey: string
+    projectId: string
+    destinationId: string
+    [k: string]: string | undefined
+  }
+  queryParams?: {
+    [k: string]: string | undefined
+  }
+}
+
 export interface SigninParams {
   pathParams?: {
     [k: string]: string | undefined
@@ -298,6 +310,20 @@ const routes = {
       return queryParams ? `${path}?${queryParams}` : path
     },
     path: '/:workspaceKey/projects/:projectId/export',
+    metadata: {},
+  },
+  projectDestination: {
+    url: (params: ProjectdestinationParams) => {
+      const path = generatePath(
+        '/:workspaceKey/projects/:projectId/destinations/:destinationId',
+        params.pathParams,
+      )
+      const queryParams = params.queryParams
+        ? QueryString.stringify(params.queryParams)
+        : undefined
+      return queryParams ? `${path}?${queryParams}` : path
+    },
+    path: '/:workspaceKey/projects/:projectId/destinations/:destinationId',
     metadata: {},
   },
   signIn: {

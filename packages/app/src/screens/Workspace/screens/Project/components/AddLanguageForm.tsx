@@ -8,10 +8,12 @@ import {
   toast,
 } from '../../../../../components/primitives'
 import {
+  getGetProjectQueryKey,
   useAddLanguagesToProject,
   useListWorkspaceLanguages,
 } from '../../../../../generated/reactQuery'
 import { Components } from '../../../../../generated/typeDefinitions'
+import { useQueryClient } from '@tanstack/react-query'
 
 export interface State {
   name: string
@@ -23,8 +25,18 @@ interface AddLanguageFormProps {
 }
 
 export const AddLanguageForm: FC<AddLanguageFormProps> = ({ project }) => {
-  const { mutateAsync, isPending: isAddingLanguage } =
-    useAddLanguagesToProject()
+  const queryClient = useQueryClient()
+  const { mutateAsync, isPending: isAddingLanguage } = useAddLanguagesToProject(
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: getGetProjectQueryKey({
+            queryParams: { id: project.id },
+          }),
+        })
+      },
+    },
+  )
   const { data: languages, isLoading } = useListWorkspaceLanguages({
     queryParams: { workspaceId: project.workspaceId },
   })

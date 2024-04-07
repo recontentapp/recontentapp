@@ -12,6 +12,8 @@ import { hashPassword, isPasswordValid } from 'src/utils/security'
 import { TokenContent } from './types'
 import { UserCreatedEvent } from './events/user-created.event'
 import { Prisma } from '@prisma/client'
+import { ConfigService } from '@nestjs/config'
+import { Config } from 'src/utils/config'
 
 interface CreateUserParams {
   firstName: string
@@ -43,6 +45,7 @@ export class AuthService {
     private eventEmitter: EventEmitter2,
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private configService: ConfigService<Config, true>,
   ) {}
 
   private generateConfirmationCode() {
@@ -57,7 +60,10 @@ export class AuthService {
   }
 
   private async checkSignUpDisabled() {
-    const signUpDisabledRequested = process.env.SIGN_UP_DISABLED === 'true'
+    const signUpDisabledRequested = this.configService.get(
+      'app.signUpDisabled',
+      { infer: true },
+    )
 
     if (!signUpDisabledRequested) {
       return

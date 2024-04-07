@@ -1,8 +1,10 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import * as ejs from 'ejs'
 import * as fs from 'fs'
 import { Transporter, createTransport } from 'nodemailer'
 import * as path from 'path'
+import { Config } from 'src/utils/config'
 
 interface TemplateOptions {
   name: string
@@ -48,14 +50,16 @@ export class MailerService {
     'dist',
   )
 
-  constructor() {
+  constructor(private readonly configService: ConfigService<Config, true>) {
+    const config = this.configService.get('mailer', { infer: true })
+
     this.transporter = createTransport({
-      host: process.env.MAILER_HOST,
-      port: Number(process.env.MAILER_PORT),
-      secure: process.env.MAILER_SECURE === 'true',
+      host: config.host,
+      port: config.port,
+      secure: config.secure,
       auth: {
-        user: process.env.MAILER_USER,
-        pass: process.env.MAILER_PASSWORD,
+        user: config.user,
+        pass: config.password,
       },
     })
   }
@@ -85,7 +89,8 @@ export class MailerService {
 
     try {
       await this.transporter.sendMail({
-        from: from ?? process.env.MAILER_FROM_EMAIL,
+        from:
+          from ?? this.configService.get('mailer.fromEmail', { infer: true }),
         to,
         subject,
         html,
