@@ -27,3 +27,28 @@ yarn start:api
 # Start Vite dev server
 yarn start:app
 ```
+
+## AWS services locally with LocalStack
+
+Some Recontent.app features are based on AWS services like S3. In order to make them work locally without actually using AWS during development, [`localstack`](https://localstack.cloud) is used.
+
+In order to set up `localstack` resources using the AWS CLI, you can define an AWS profile with the following values.
+
+```sh
+# ~/.aws/config
+[profile recontent]
+region=us-east-1
+output=json
+endpoint_url = http://localhost:4566
+
+# ~/.aws/credentials
+[recontent]
+aws_access_key_id=test
+aws_secret_access_key=test
+```
+
+Each AWS CLI command can then be ran while specifying this profile & a custom endpoint URL:
+
+```sh
+aws --profile recontent --endpoint-url=http://localhost:4566 s3api ls
+```
