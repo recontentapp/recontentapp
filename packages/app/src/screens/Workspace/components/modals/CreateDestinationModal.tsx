@@ -3,6 +3,7 @@ import {
   forwardRef,
   useCallback,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState,
 } from 'react'
@@ -30,6 +31,7 @@ import { fileFormatLabels } from '../../../../utils/files'
 import { useQueryClient } from '@tanstack/react-query'
 import { styled } from '../../../../theme'
 import { destinationTypeLabels } from '../../../../utils/destinations'
+import { useSystem } from '../../../../hooks/system'
 
 export interface CreateDestinationModalRef {
   open: (project: Components.Schemas.Project) => void
@@ -93,6 +95,9 @@ const isValid = (state: State): boolean => {
 
 const Content: FC<ContentProps> = ({ project, close }) => {
   const queryClient = useQueryClient()
+  const {
+    settings: { cdnAvailable },
+  } = useSystem()
   const { mutateAsync: createCDN, isPending: isCreatingCDN } =
     useCreateCDNDestination({
       onSuccess: () => {
@@ -127,7 +132,7 @@ const Content: FC<ContentProps> = ({ project, close }) => {
   })
   const [state, setState] = useState<State>({
     name: '',
-    type: 'cdn',
+    type: cdnAvailable ? 'cdn' : 'aws_s3',
     fileFormat: 'json',
     revisionId: project.masterRevisionId,
     includeEmptyTranslations: false,
@@ -228,6 +233,21 @@ const Content: FC<ContentProps> = ({ project, close }) => {
     }
   }
 
+  const typeOptions = useMemo(() => {
+    return Object.entries(destinationTypeLabels)
+      .map(([value, label]) => ({
+        label,
+        value,
+      }))
+      .filter(item => {
+        if (item.value === 'cdn') {
+          return cdnAvailable
+        }
+
+        return true
+      })
+  }, [cdnAvailable])
+
   const isStateValid = isValid(state)
 
   return (
@@ -310,12 +330,7 @@ const Content: FC<ContentProps> = ({ project, close }) => {
 
         <SelectField
           label="Type"
-          options={Object.entries(destinationTypeLabels).map(
-            ([value, label]) => ({
-              label,
-              value,
-            }),
-          )}
+          options={typeOptions}
           value={state.type}
           onChange={option => {
             if (!option) {

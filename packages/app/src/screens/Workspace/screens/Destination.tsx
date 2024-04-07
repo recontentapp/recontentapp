@@ -9,6 +9,8 @@ import {
   ConfirmationModal,
   ConfirmationModalRef,
   DangerZone,
+  ExternalLink,
+  Heading,
   Metadata,
   Stack,
   toast,
@@ -40,17 +42,6 @@ const ErrorMessage = styled('span', {
   paddingX: '$space40',
   paddingY: '$space20',
   backgroundColor: '$orange200',
-})
-
-const Output = styled('pre', {
-  fontFamily: '$mono',
-  fontSize: '$size80',
-  lineHeight: '$lineHeight200',
-  backgroundColor: '$gray3',
-  paddingX: '$space100',
-  paddingY: '$space80',
-  color: '$gray14',
-  borderRadius: '$radius200',
 })
 
 export const Destination: FC = () => {
@@ -227,17 +218,79 @@ export const Destination: FC = () => {
                         )
                       : 'Never',
                   },
-                  ...(destination.type === 'cdn'
+                  ...(destination.configGoogleCloudStorage
                     ? [
                         {
                           label: 'File format',
                           value:
-                            fileFormatLabels[destination.configCDN!.fileFormat],
+                            fileFormatLabels[
+                              destination.configGoogleCloudStorage.fileFormat
+                            ],
                         },
                         {
                           label: 'Include empty translations',
                           value: String(
-                            destination.configCDN!.includeEmptyTranslations,
+                            destination.configGoogleCloudStorage
+                              .includeEmptyTranslations,
+                          ),
+                        },
+                        {
+                          label: 'Project ID',
+                          value: destination.configGoogleCloudStorage.projectId,
+                        },
+                        {
+                          label: 'Bucket ID',
+                          value: destination.configGoogleCloudStorage.bucketId,
+                        },
+                        {
+                          label: 'Objects prefix',
+                          value:
+                            destination.configGoogleCloudStorage
+                              .objectsPrefix ?? 'None',
+                        },
+                      ]
+                    : []),
+                  ...(destination.configAWSS3
+                    ? [
+                        {
+                          label: 'File format',
+                          value:
+                            fileFormatLabels[
+                              destination.configAWSS3.fileFormat
+                            ],
+                        },
+                        {
+                          label: 'Include empty translations',
+                          value: String(
+                            destination.configAWSS3.includeEmptyTranslations,
+                          ),
+                        },
+                        {
+                          label: 'Region',
+                          value: destination.configAWSS3.region,
+                        },
+                        {
+                          label: 'Bucket',
+                          value: destination.configAWSS3.bucketId,
+                        },
+                        {
+                          label: 'Objects prefix',
+                          value:
+                            destination.configAWSS3.objectsPrefix ?? 'None',
+                        },
+                      ]
+                    : []),
+                  ...(destination.configCDN
+                    ? [
+                        {
+                          label: 'File format',
+                          value:
+                            fileFormatLabels[destination.configCDN.fileFormat],
+                        },
+                        {
+                          label: 'Include empty translations',
+                          value: String(
+                            destination.configCDN.includeEmptyTranslations,
                           ),
                         },
                       ]
@@ -246,10 +299,21 @@ export const Destination: FC = () => {
               />
             </Box>
 
-            {destination.lastSyncAt !== null && destination.configCDN?.urls && (
-              <Output>
-                {JSON.stringify(destination.configCDN.urls, null, 2)}
-              </Output>
+            {destination.configCDN?.urls && (
+              <Stack direction="column" spacing="$space60">
+                <Heading size="$size100" renderAs="h2">
+                  URLs
+                </Heading>
+                <Stack renderAs="ul" direction="column" spacing="$space60">
+                  {destination.configCDN.urls.map(url => (
+                    <li key={url}>
+                      <ExternalLink title={url} href={url} target="_blank">
+                        {url}
+                      </ExternalLink>
+                    </li>
+                  ))}
+                </Stack>
+              </Stack>
             )}
 
             <Stack direction="row" spacing="$space60">
