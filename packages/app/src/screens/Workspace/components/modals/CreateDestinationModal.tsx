@@ -516,7 +516,7 @@ const Content: FC<ContentProps> = ({ project, close }) => {
 }
 
 export const CreateDestinationModal = forwardRef<CreateDestinationModalRef>(
-  (props, ref) => {
+  (_props, ref) => {
     const [project, setProject] = useState<Components.Schemas.Project | null>(
       null,
     )
