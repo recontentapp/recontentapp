@@ -5853,17 +5853,17 @@ emittery@^0.13.1:
   resolved "https://registry.yarnpkg.com/emittery/-/emittery-0.13.1.tgz#c04b8c3457490e0847ae51fced3af52d338e3dad"
   integrity sha512-DeWwawk6r5yR9jFgnDKYt4sLS0LmHJJi3ZOnb5/JdbYwj3nW+FxQnHIjhBKz8YLC7oRNPVM9NQ47I3CVx34eqQ==
 
-emmet-monaco-es@5.0.2:
-  version "5.0.2"
-  resolved "https://registry.yarnpkg.com/emmet-monaco-es/-/emmet-monaco-es-5.0.2.tgz#4ec14bb5bf09ae27c4f21b4e30967c413dc55676"
-  integrity sha512-7BWKcX6pED4R7pRMBS85OU6DqqSi04OFMZQzrNScPzlj8vQyfS6l6EWAzmf8nbX+OG+TxRuAho4YptDNWGgiUA==
+emmet-monaco-es@5.3.2:
+  version "5.3.2"
+  resolved "https://registry.yarnpkg.com/emmet-monaco-es/-/emmet-monaco-es-5.3.2.tgz#7085be05803196f41a18d47caa764bb63277963f"
+  integrity sha512-fb8z9lUVtqXx4IGQQceMwuz7/hYDJdLQj40ZOMQOtBJ4qLTo5XT9H0u/DhfCSWyOktTxZZxiYfkQsGasrv6u0w==
   dependencies:
-    emmet "^2.3.4"
+    emmet "^2.4.6"
 
-emmet@^2.3.4:
-  version "2.4.6"
-  resolved "https://registry.yarnpkg.com/emmet/-/emmet-2.4.6.tgz#f975094fb0fb5d2e78a7c94a65c308bdfd6436aa"
-  integrity sha512-dJfbdY/hfeTyf/Ef7Y7ubLYzkBvPQ912wPaeVYpAxvFxkEBf/+hJu4H6vhAvFN6HlxqedlfVn2x1S44FfQ97pg==
+emmet@^2.4.6:
+  version "2.4.7"
+  resolved "https://registry.yarnpkg.com/emmet/-/emmet-2.4.7.tgz#19893c34e6274af14ea3c5729101e3c4ed18f01e"
+  integrity sha512-O5O5QNqtdlnQM2bmKHtJgyChcrFMgQuulI+WdiOw2NArzprUqqxUW6bgYtKvzKgrsYpuLWalOkdhNP+1jluhCA==
   dependencies:
     "@emmetio/abbreviation" "^2.3.3"
     "@emmetio/css-abbreviation" "^2.1.8"
