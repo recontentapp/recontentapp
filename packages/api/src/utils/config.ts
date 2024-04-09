@@ -49,6 +49,9 @@ const getConfig = () => {
       bucket: process.env.AWS_S3_CDN_BUCKET,
       bucketUrl: process.env.AWS_S3_CDN_BUCKET_URL,
     },
+    ai: {
+      openAIKey: process.env.OPENAI_API_KEY,
+    },
   }
 }
 

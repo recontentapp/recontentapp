@@ -3,11 +3,12 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common'
+import OpenAI from 'openai'
 import { PrismaService } from 'src/utils/prisma.service'
 import { ConfigService } from '@nestjs/config'
 import { Config } from 'src/utils/config'
 import { HumanRequester } from 'src/utils/requester'
-import { Language, PhraseTranslation } from '@prisma/client'
+import { Language, Phrase, PhraseTranslation } from '@prisma/client'
 import {
   TranslateClient,
   TranslateTextCommand,
@@ -17,6 +18,13 @@ interface TranslatePhraseParams {
   phraseId: string
   languageId: string
   requester: HumanRequester
+}
+
+interface TranslateWithProviderParams {
+  phrase: Phrase & {
+    translations: Array<PhraseTranslation & { language: Language }>
+  }
+  targetLanguage: Language
 }
 
 @Injectable()
@@ -120,15 +128,54 @@ export class TranslateService {
     })
   }
 
-  private async translate({
-    sourceLocale,
-    targetLocale,
-    text,
-  }: {
-    sourceLocale: string
-    targetLocale: string
-    text: string
-  }) {
+  private async translateWithOpenAI({
+    phrase,
+    targetLanguage,
+  }: TranslateWithProviderParams) {
+    const sourceLocale =
+      TranslateService.preferredSourceLocales.find(locale => {
+        return phrase.translations.find(
+          translation => translation.language.locale === locale,
+        )
+      }) ?? phrase.translations[0].language.locale
+    const sourceTranslation = phrase.translations.find(
+      translation => translation.language.locale === sourceLocale,
+    )!
+    const targetLocale = targetLanguage.locale
+    const textToTranslate = sourceTranslation.content
+
+    const client = new OpenAI({
+      apiKey: this.configService.get('ai.openAIKey', { infer: true }),
+    })
+
+    const chatCompletion = await client.chat.completions.create({
+      messages: [
+        {
+          role: 'system',
+          content:
+            'You are a translation assistant which translates a source text from one source locale to a target locale. You always answer in JSON with a single `text` property.',
+        },
+        {
+          role: 'user',
+          content: `Source locale: '${sourceLocale}'\nTarget locale: '${targetLocale}'\nSource text: '${textToTranslate}'`,
+        },
+      ],
+      model: 'gpt-3.5-turbo',
+      response_format: { type: 'json_object' },
+      temperature: 1,
+      max_tokens: 256,
+      top_p: 1,
+      frequency_penalty: 0,
+      presence_penalty: 0,
+    })
+
+    console.log(chatCompletion.choices[0].message.content)
+  }
+
+  private async translateWithAWSTranslate({
+    phrase,
+    targetLanguage,
+  }: TranslateWithProviderParams) {
     /**
      * AWS Translate is not supported by LocalStack
      * in development environment
@@ -136,6 +183,28 @@ export class TranslateService {
     if (process.env.AWS_CUSTOM_ENDPOINT) {
       return 'Auto translation'
     }
+
+    if (
+      TranslateService.supportedLocales.indexOf(targetLanguage.locale) === -1
+    ) {
+      throw new BadRequestException('Unsupported target locale')
+    }
+
+    const sourceLocale =
+      TranslateService.preferredSourceLocales.find(locale => {
+        return phrase.translations.find(
+          translation => translation.language.locale === locale,
+        )
+      }) ?? this.findFirstSupportedSourceLocale(phrase.translations)
+
+    if (!sourceLocale) {
+      throw new BadRequestException('No supported source translation found')
+    }
+
+    const sourceTranslation = phrase.translations.find(
+      translation => translation.language.locale === sourceLocale,
+    )!
+    const targetLocale = targetLanguage.locale
 
     const client = new TranslateClient({
       region: 'us-east-1',
@@ -147,7 +216,7 @@ export class TranslateService {
         new TranslateTextCommand({
           SourceLanguageCode: sourceLocale,
           TargetLanguageCode: targetLocale,
-          Text: text,
+          Text: sourceTranslation.content,
         }),
       )
       .catch(() => null)
@@ -193,31 +262,9 @@ export class TranslateService {
       throw new BadRequestException('Phrase has no source translation')
     }
 
-    if (
-      TranslateService.supportedLocales.indexOf(targetLanguage.locale) === -1
-    ) {
-      throw new BadRequestException('Unsupported target locale')
-    }
-
-    const sourceLocale =
-      TranslateService.preferredSourceLocales.find(locale => {
-        return phrase.translations.find(
-          translation => translation.language.locale === locale,
-        )
-      }) ?? this.findFirstSupportedSourceLocale(phrase.translations)
-
-    if (!sourceLocale) {
-      throw new BadRequestException('No supported source translation found')
-    }
-
-    const sourceTranslation = phrase.translations.find(
-      translation => translation.language.locale === sourceLocale,
-    )!
-
-    const translation = await this.translate({
-      sourceLocale,
-      targetLocale: targetLanguage.locale,
-      text: sourceTranslation.content,
+    const translation = await this.translateWithAWSTranslate({
+      phrase,
+      targetLanguage,
     })
 
     if (!translation) {
