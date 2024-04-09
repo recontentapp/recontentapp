@@ -60,6 +60,7 @@ import {
 import { ProjectService } from 'src/modules/project/project.service'
 import { PhraseService } from 'src/modules/phrase/phrase.service'
 import {
+  AutoTranslatePhraseDto,
   BatchDeletePhraseDto,
   CreatePhraseDto,
   DeletePhraseDto,
@@ -80,6 +81,7 @@ import {
   DeleteDestinationDto,
   SyncDestinationDto,
 } from './dto/destination.dto'
+import { TranslateService } from 'src/modules/phrase/translate.service'
 
 @Controller('private-api')
 @UseGuards(JwtAuthGuard)
@@ -90,6 +92,7 @@ export class PrivateApiController {
     private readonly projectService: ProjectService,
     private readonly phraseService: PhraseService,
     private readonly destinationService: DestinationService,
+    private readonly translateService: TranslateService,
     private readonly prismaService: PrismaService,
     private readonly configService: ConfigService<Config, true>,
   ) {}
@@ -318,6 +321,10 @@ export class PrivateApiController {
     const cdnConfig = this.configService.get('cdn', {
       infer: true,
     })
+    const autoTranslateProvider = this.configService.get(
+      'autoTranslate.provider',
+      { infer: true },
+    )
 
     if (appConfig.signUpDisabled) {
       const user = await this.prismaService.user.findFirst()
@@ -331,6 +338,7 @@ export class PrivateApiController {
       settings: {
         signUpDisabled,
         cdnAvailable: cdnConfig.available,
+        autoTranslateAvailable: autoTranslateProvider !== null,
       },
     }
   }
@@ -869,6 +877,24 @@ export class PrivateApiController {
     const phrase = await this.phraseService.translatePhrase({
       phraseId,
       translations,
+      requester,
+    })
+
+    return PrivateApiController.formatPhrase(phrase)
+  }
+
+  @Post('/AutoTranslatePhrase')
+  async autoTranslatePhrase(
+    @Body() { phraseId, languageId }: AutoTranslatePhraseDto,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.AutoTranslatePhrase.Responses.$200> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    const phrase = await this.translateService.translatePhrase({
+      phraseId,
+      languageId,
       requester,
     })
 

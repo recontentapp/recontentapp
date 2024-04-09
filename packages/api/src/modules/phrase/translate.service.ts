@@ -13,6 +13,7 @@ import {
   TranslateClient,
   TranslateTextCommand,
 } from '@aws-sdk/client-translate'
+import { UsageLogger } from 'src/utils/usage-logger'
 
 interface TranslatePhraseParams {
   phraseId: string
@@ -29,6 +30,8 @@ interface TranslateWithProviderParams {
 
 @Injectable()
 export class TranslateService {
+  private usageLogger = new UsageLogger()
+
   constructor(
     private prismaService: PrismaService,
     private configService: ConfigService<Config, true>,
@@ -120,10 +123,13 @@ export class TranslateService {
 
   private findFirstSupportedSourceLocale = (
     translations: Array<PhraseTranslation & { language: Language }>,
+    targetLanguage: Language,
   ) => {
     return TranslateService.supportedLocales.find(locale => {
       return translations.find(
-        translation => translation.language.locale === locale,
+        translation =>
+          translation.language.locale === locale &&
+          translation.language.locale !== targetLanguage.locale,
       )
     })
   }
@@ -135,9 +141,14 @@ export class TranslateService {
     const sourceLocale =
       TranslateService.preferredSourceLocales.find(locale => {
         return phrase.translations.find(
-          translation => translation.language.locale === locale,
+          translation =>
+            translation.language.locale === locale &&
+            translation.language.locale !== targetLanguage.locale,
         )
-      }) ?? phrase.translations[0].language.locale
+      }) ??
+      phrase.translations.find(
+        translation => translation.language.locale !== targetLanguage.locale,
+      )?.language.locale
     const sourceTranslation = phrase.translations.find(
       translation => translation.language.locale === sourceLocale,
     )!
@@ -145,7 +156,9 @@ export class TranslateService {
     const textToTranslate = sourceTranslation.content
 
     const client = new OpenAI({
-      apiKey: this.configService.get('ai.openAIKey', { infer: true }),
+      apiKey: this.configService.get('openAIKey', {
+        infer: true,
+      }),
     })
 
     const chatCompletion = await client.chat.completions.create({
@@ -153,7 +166,7 @@ export class TranslateService {
         {
           role: 'system',
           content:
-            'You are a translation assistant which translates a source text from one source locale to a target locale. You always answer in JSON with a single `text` property.',
+            "You're a translation assistant. From a source text & source locale, generate JSON with a single `translation` property in target locale.",
         },
         {
           role: 'user',
@@ -169,7 +182,25 @@ export class TranslateService {
       presence_penalty: 0,
     })
 
-    console.log(chatCompletion.choices[0].message.content)
+    const response = chatCompletion.choices.at(0)?.message.content
+    if (!response) {
+      return null
+    }
+
+    this.usageLogger.log({
+      metric: 'openai_token',
+      quantity: chatCompletion.usage?.total_tokens ?? 0,
+      id: chatCompletion.id,
+      workspaceId: phrase.workspaceId,
+      timestamp: new Date(chatCompletion.created),
+    })
+
+    try {
+      const { translation } = JSON.parse(response)
+      return translation
+    } catch (e) {
+      return null
+    }
   }
 
   private async translateWithAWSTranslate({
@@ -193,9 +224,12 @@ export class TranslateService {
     const sourceLocale =
       TranslateService.preferredSourceLocales.find(locale => {
         return phrase.translations.find(
-          translation => translation.language.locale === locale,
+          translation =>
+            translation.language.locale === locale &&
+            translation.language.locale !== targetLanguage.locale,
         )
-      }) ?? this.findFirstSupportedSourceLocale(phrase.translations)
+      }) ??
+      this.findFirstSupportedSourceLocale(phrase.translations, targetLanguage)
 
     if (!sourceLocale) {
       throw new BadRequestException('No supported source translation found')
@@ -258,20 +292,42 @@ export class TranslateService {
       )
     }
 
-    if (phrase.translations.length === 0) {
+    const doesNotHaveSourceTranslation = phrase.translations.length === 0
+    const onlyTranslationIsTargetLanguage =
+      phrase.translations.length === 1 &&
+      phrase.translations[0].language.locale === targetLanguage.locale
+
+    if (doesNotHaveSourceTranslation || onlyTranslationIsTargetLanguage) {
       throw new BadRequestException('Phrase has no source translation')
     }
 
-    const translation = await this.translateWithAWSTranslate({
-      phrase,
-      targetLanguage,
-    })
+    let translation: string | null = null
+
+    const autoTranslateProvider = this.configService.get(
+      'autoTranslate.provider',
+      { infer: true },
+    )
+
+    switch (autoTranslateProvider) {
+      case 'aws':
+        translation = await this.translateWithAWSTranslate({
+          phrase,
+          targetLanguage,
+        })
+        break
+      case 'openai':
+        translation = await this.translateWithOpenAI({
+          phrase,
+          targetLanguage,
+        })
+        break
+    }
 
     if (!translation) {
       throw new BadRequestException('Could not translate phrase')
     }
 
-    await this.prismaService.$transaction([
+    const [, updatedPhrase] = await this.prismaService.$transaction([
       this.prismaService.phraseTranslation.upsert({
         where: {
           phraseId_languageId_revisionId: {
@@ -295,11 +351,16 @@ export class TranslateService {
       }),
       this.prismaService.phrase.update({
         where: { id: phraseId },
+        include: {
+          translations: true,
+        },
         data: {
           updatedAt: new Date(),
           updatedBy: requester.getAccountIDForWorkspace(phrase.workspaceId)!,
         },
       }),
     ])
+
+    return updatedPhrase
   }
 }

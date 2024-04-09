@@ -1,4 +1,25 @@
-const requiredEnvVars = ['DATABASE_URL', 'JWT_SECRET', 'ENCRYPTION_KEY']
+const requiredEnvVars = [
+  'DATABASE_URL',
+  'JWT_SECRET',
+  'ENCRYPTION_KEY',
+  'MAILER_HOST',
+  'MAILER_PORT',
+  'MAILER_FROM_EMAIL',
+]
+
+const getAutoTranslateProvider = (): 'aws' | 'openai' | null => {
+  const requestedProvider = process.env.AUTO_TRANSLATE_PROVIDER
+
+  if (requestedProvider === 'aws') {
+    return 'aws'
+  }
+
+  if (requestedProvider === 'openai' && process.env.OPENAI_API_KEY) {
+    return 'openai'
+  }
+
+  return null
+}
 
 const getConfig = () => {
   /**
@@ -24,12 +45,12 @@ const getConfig = () => {
       logQueries: process.env.DATABASE_LOG_QUERIES === 'true',
     },
     mailer: {
-      host: process.env.MAILER_HOST,
+      host: String(process.env.MAILER_HOST),
       port: parseInt(process.env.MAILER_PORT ?? '1025', 10),
       secure: process.env.MAILER_SECURE === 'true',
       user: process.env.MAILER_USER,
       password: process.env.MAILER_PASSWORD,
-      fromEmail: process.env.MAILER_FROM_EMAIL,
+      fromEmail: String(process.env.MAILER_FROM_EMAIL),
     },
     urls: {
       app: process.env.APP_URL,
@@ -49,9 +70,10 @@ const getConfig = () => {
       bucket: process.env.AWS_S3_CDN_BUCKET,
       bucketUrl: process.env.AWS_S3_CDN_BUCKET_URL,
     },
-    ai: {
-      openAIKey: process.env.OPENAI_API_KEY,
+    autoTranslate: {
+      provider: getAutoTranslateProvider(),
     },
+    openAIKey: process.env.OPENAI_API_KEY,
   }
 }
 
