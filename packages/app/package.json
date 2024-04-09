@@ -99,7 +99,7 @@
     "glob": "10.3.12",
     "jest": "29.7.0",
     "json-schema-to-typescript": "13.1.2",
-    "path-to-regexp": "6.2.1",
+    "path-to-regexp": "6.2.2",
     "ts-jest": "29.1.2",
     "tsx": "4.7.1",
     "typescript": "5.4.3",
