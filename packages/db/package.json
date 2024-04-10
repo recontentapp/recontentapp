@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@prisma/client": "5.12.1",
-    "prisma": "5.10.2"
+    "prisma": "5.12.1"
   },
   "devDependencies": {
     "typescript": "5.4.3"
