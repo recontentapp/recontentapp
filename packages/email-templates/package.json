@@ -7,7 +7,7 @@
     "build": "tsx ./scripts/generate.ts"
   },
   "dependencies": {
-    "mjml": "4.13.0",
+    "mjml": "4.15.3",
     "tsx": "4.7.1",
     "typescript": "5.4.3"
   }
