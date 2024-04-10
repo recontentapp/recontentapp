@@ -189,7 +189,7 @@ export class TranslateService {
     this.usageLogger.log({
       metric: 'openai_token',
       quantity: chatCompletion.usage?.total_tokens ?? 0,
-      id: chatCompletion.id,
+      externalId: chatCompletion.id,
       workspaceId: phrase.workspaceId,
       timestamp: new Date(chatCompletion.created),
     })
