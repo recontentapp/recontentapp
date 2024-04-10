@@ -28,9 +28,12 @@ paths:
                         type: boolean
                       cdnAvailable:
                         type: boolean
+                      autoTranslateAvailable:
+                        type: boolean
                     required:
                       - signUpDisabled
                       - cdnAvailable
+                      - autoTranslateAvailable
                 additionalProperties: false
                 required:
                   - version
@@ -831,6 +834,30 @@ paths:
               required:
                 - phraseId
                 - translations
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Phrase'
+  /AutoTranslatePhrase:
+    post:
+      operationId: autoTranslatePhrase
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                phraseId:
+                  type: string
+                languageId:
+                  type: string
+              additionalProperties: false
+              required:
+                - phraseId
+                - languageId
       responses:
         '200':
           description: OK

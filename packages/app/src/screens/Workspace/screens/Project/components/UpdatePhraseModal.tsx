@@ -1,6 +1,7 @@
 import {
   FC,
   forwardRef,
+  useCallback,
   useEffect,
   useImperativeHandle,
   useRef,
@@ -11,18 +12,24 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { PhraseEditor } from '../../../../../components/PhraseEditor'
 import {
   Box,
+  Button,
   Modal,
   ModalContent,
   ModalRef,
   Stack,
+  Tooltip,
   toast,
 } from '../../../../../components/primitives'
 import { isLocaleRTL } from '../../../../../utils/locales'
 import {
+  getGetPhraseQueryKey,
+  useAutoTranslatePhrase,
   useGetPhrase,
   useGetProject,
   useTranslatePhrase,
 } from '../../../../../generated/reactQuery'
+import { useSystem } from '../../../../../hooks/system'
+import { useQueryClient } from '@tanstack/react-query'
 
 export interface UpdatePhraseModalRef {
   open: () => void
@@ -56,12 +63,25 @@ const Content: FC<ContentProps> = ({
   onNext,
   onPrevious,
 }) => {
+  const queryClient = useQueryClient()
+  const {
+    settings: { autoTranslateAvailable },
+  } = useSystem()
   const { data: project } = useGetProject({ queryParams: { id: projectId } })
   const { data: phrase, isLoading: isLoadingPhrase } = useGetPhrase({
     queryParams: {
       phraseId,
     },
   })
+  const { mutateAsync: autoTranslate, isPending: isAutoTranslating } =
+    useAutoTranslatePhrase({
+      onSuccess: data => {
+        queryClient.setQueryData(
+          getGetPhraseQueryKey({ queryParams: { phraseId } }),
+          data,
+        )
+      },
+    })
   const { mutateAsync: translate, isPending: isTranslating } =
     useTranslatePhrase()
   const [initialState, setInitialState] = useState<
@@ -117,6 +137,27 @@ const Content: FC<ContentProps> = ({
       })
   }
 
+  const onAutoTranslate = useCallback(
+    (languageId: string) => {
+      if (isAutoTranslating) {
+        return
+      }
+
+      autoTranslate({ body: { phraseId, languageId } })
+        .then(() => {
+          toast('success', {
+            title: 'Phrase autotranslated',
+          })
+        })
+        .catch(() => {
+          toast('error', {
+            title: 'Could not autotranslate phrase',
+          })
+        })
+    },
+    [phraseId, isAutoTranslating, autoTranslate],
+  )
+
   useHotkeys(
     ['metaKey+s', 'ctrl+s'],
     () => {
@@ -128,6 +169,13 @@ const Content: FC<ContentProps> = ({
     },
     [onSubmit],
   )
+
+  const singleTranslationId =
+    phrase?.translations.length === 1
+      ? phrase?.translations[0].languageId
+      : undefined
+  const hasAtLeastOneTranslation = (phrase?.translations ?? []).length > 0
+  const showAutoTranslate = autoTranslateAvailable && hasAtLeastOneTranslation
 
   return (
     <ModalContent
@@ -153,6 +201,7 @@ const Content: FC<ContentProps> = ({
       <Stack direction="column" spacing="$space100" paddingBottom="$space300">
         {(project?.languages ?? []).map((language, index) => {
           const isRTL = isLocaleRTL(language.locale)
+          const isSingleTranslation = singleTranslationId === language.id
 
           return (
             <Stack
@@ -182,6 +231,19 @@ const Content: FC<ContentProps> = ({
                   }
                 />
               </Box>
+              {showAutoTranslate && (
+                <Box display="block" paddingTop="$space200">
+                  <Tooltip title="Autotranslate" position="top" wrap>
+                    <Button
+                      variation="secondary"
+                      icon="translate"
+                      isDisabled={isSingleTranslation}
+                      isLoading={isAutoTranslating}
+                      onAction={() => onAutoTranslate(language.id)}
+                    />
+                  </Tooltip>
+                </Box>
+              )}
             </Stack>
           )
         })}

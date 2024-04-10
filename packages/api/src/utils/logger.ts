@@ -2,7 +2,7 @@ import { LoggerService } from '@nestjs/common'
 import { Logger as WinstonLogger, format, transports } from 'winston'
 
 export class MyLogger implements LoggerService {
-  private winston: WinstonLogger
+  public winston: WinstonLogger
 
   constructor() {
     const devFormat = format.combine(

@@ -282,21 +282,30 @@ export class PhraseService {
       translationId: string
       content: string
     }> = []
+    const toDelete: Array<string> = []
 
-    translations.forEach(({ languageId, content }) => {
+    for (const translation of translations) {
+      const { languageId, content } = translation
+
       const index = existingTranslations.findIndex(
         t => t.languageId === languageId,
       )
 
+      if (content.length === 0 && index !== -1) {
+        toDelete.push(existingTranslations[index].id)
+        continue
+      }
+
       if (index === -1) {
         toInsert.push({ languageId, content })
-      } else {
-        toUpdate.push({
-          translationId: existingTranslations[index].id,
-          content,
-        })
+        continue
       }
-    })
+
+      toUpdate.push({
+        translationId: existingTranslations[index].id,
+        content,
+      })
+    }
 
     const createdBy = requester.getAccountIDForWorkspace(phrase.workspaceId)!
 
@@ -310,6 +319,13 @@ export class PhraseService {
           updatedBy: createdBy,
         },
       }),
+      ...toDelete.map(translationId =>
+        this.prismaService.phraseTranslation.delete({
+          where: {
+            id: translationId,
+          },
+        }),
+      ),
       ...toInsert.map(({ languageId, content }) =>
         this.prismaService.phraseTranslation.create({
           data: {

@@ -51,6 +51,16 @@ export class TranslatePhraseDto {
   translations: Translation[]
 }
 
+export class AutoTranslatePhraseDto {
+  @IsString()
+  @IsNotEmpty()
+  phraseId: string
+
+  @IsString()
+  @IsNotEmpty()
+  languageId: string
+}
+
 export class DeletePhraseDto {
   @IsString()
   @IsNotEmpty()
