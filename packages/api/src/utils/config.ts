@@ -1,10 +1,13 @@
 const requiredEnvVars = [
+  'PORT',
   'DATABASE_URL',
   'JWT_SECRET',
   'ENCRYPTION_KEY',
   'MAILER_HOST',
   'MAILER_PORT',
   'MAILER_FROM_EMAIL',
+  'APP_URL',
+  'API_URL',
 ]
 
 const getAutoTranslateProvider = (): 'aws' | 'openai' | null => {

@@ -40,10 +40,9 @@ export class TranslateService {
   private static preferredSourceLocales = ['en', 'zh', 'es', 'fr', 'ar', 'pt']
 
   /**
-   * List of supported locales by AWS Translate
    * https://docs.aws.amazon.com/translate/latest/dg/what-is-languages.html
    */
-  private static supportedLocales = [
+  private static awsTranslateSupportedLocales = [
     'af',
     'sq',
     'am',
@@ -125,7 +124,7 @@ export class TranslateService {
     translations: Array<PhraseTranslation & { language: Language }>,
     targetLanguage: Language,
   ) => {
-    return TranslateService.supportedLocales.find(locale => {
+    return TranslateService.awsTranslateSupportedLocales.find(locale => {
       return translations.find(
         translation =>
           translation.language.locale === locale &&
@@ -216,7 +215,9 @@ export class TranslateService {
     }
 
     if (
-      TranslateService.supportedLocales.indexOf(targetLanguage.locale) === -1
+      TranslateService.awsTranslateSupportedLocales.indexOf(
+        targetLanguage.locale,
+      ) === -1
     ) {
       throw new BadRequestException('Unsupported target locale')
     }

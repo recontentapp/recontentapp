@@ -22,26 +22,28 @@ docker run -p 127.0.0.1:8080:8080/tcp --env PORT=8080 --env JWT_SECRET=HelloWorl
 
 ## App environment variables
 
-| Name                           | Description                               |
-| ------------------------------ | ----------------------------------------- |
-| `PORT`                         | Port on which app runs                    |
-| `DATABASE_URL`                 | Postgres connection string                |
-| `DATABASE_LOG_QUERIES`         | Log SQL queries                           |
-| `JWT_SECRET`                   | [JWT](https://jwt.io/) for authentication |
-| `MAILER_HOST`                  | Mailer config                             |
-| `MAILER_PORT`                  | Mailer config                             |
-| `MAILER_SECURE`                | Mailer config                             |
-| `MAILER_USER`                  | Mailer config                             |
-| `MAILER_PASSWORD`              | Mailer config                             |
-| `MAILER_FROM_EMAIL`            | Email address used to send emails         |
-| `NODE_TLS_REJECT_UNAUTHORIZED` | Bypass mailer security checks             |
-| `SERVE_STATIC_FILES`           | Wether or not web app should be served    |
-| `APP_URL`                      | Base URL for webapp                       |
-| `API_URL`                      | Base URL for API                          |
-| `SIGN_UP_DISABLED`             | Disable sign up after first registration  |
+| Name                           | Description                                              | Required |
+| ------------------------------ | -------------------------------------------------------- | -------- |
+| `PORT`                         | Port on which app runs                                   | `true`   |
+| `DATABASE_URL`                 | Postgres connection string                               | `true`   |
+| `DATABASE_LOG_QUERIES`         | Log SQL queries                                          | `false`  |
+| `JWT_SECRET`                   | [JWT](https://jwt.io/) for authentication                | `true`   |
+| `MAILER_HOST`                  | Mailer config                                            | `true`   |
+| `MAILER_PORT`                  | Mailer config                                            | `true`   |
+| `MAILER_SECURE`                | Mailer config                                            | `false`  |
+| `MAILER_USER`                  | Mailer config                                            | `false`  |
+| `MAILER_PASSWORD`              | Mailer config                                            | `false`  |
+| `MAILER_FROM_EMAIL`            | Email address used to send emails                        | `true`   |
+| `NODE_TLS_REJECT_UNAUTHORIZED` | Bypass mailer security checks                            | `false`  |
+| `SERVE_STATIC_FILES`           | Wether or not web app should be served                   | `false`  |
+| `APP_URL`                      | Base URL for webapp                                      | `true`   |
+| `API_URL`                      | Base URL for API                                         | `true`   |
+| `SIGN_UP_DISABLED`             | Disable sign up after first registration                 | `false`  |
+| `AUTO_TRANSLATE_PROVIDER`      | Service used for machine translations. `aws` or `openai` | `false`  |
+| `OPENAI_API_KEY`               | OpenAI API key for ChatGPT completions                   | `false`  |
 
 ## Migrate environment variables
 
-| Name           | Description                |
-| -------------- | -------------------------- |
-| `DATABASE_URL` | Postgres connection string |
+| Name           | Description                | Required |
+| -------------- | -------------------------- | -------- |
+| `DATABASE_URL` | Postgres connection string | `true`   |
