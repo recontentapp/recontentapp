@@ -40,7 +40,7 @@
     "@tiptap/extension-ordered-list": "2.3.0",
     "@tiptap/extension-paragraph": "2.3.0",
     "@tiptap/extension-placeholder": "2.2.4",
-    "@tiptap/extension-strike": "2.2.4",
+    "@tiptap/extension-strike": "2.3.0",
     "@tiptap/extension-text": "2.3.0",
     "@tiptap/pm": "2.2.4",
     "@tiptap/react": "2.2.4",
