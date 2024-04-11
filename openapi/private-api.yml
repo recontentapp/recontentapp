@@ -1579,6 +1579,16 @@ components:
         - biller
         - member
         - guest
+    WorkspacePermission:
+      type: string
+      enum:
+        - 'billing:manage'
+        - 'members:manage'
+        - 'languages:manage'
+        - 'api_keys:manage'
+        - 'auto_translation:use'
+        - 'projects:manage'
+        - 'projects:destinations:manage'
     WorkspaceAccountType:
       type: string
       enum:

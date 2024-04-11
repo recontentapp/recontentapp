@@ -6,6 +6,7 @@ import { PrismaService } from 'src/utils/prisma.service'
 
 import { AuthService } from './auth.service'
 import { JwtStrategy } from './jwt.strategy'
+import { PermissionService } from './permission.service'
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { JwtStrategy } from './jwt.strategy'
       signOptions: { expiresIn: '7d' },
     }),
   ],
-  providers: [AuthService, PrismaService, JwtStrategy],
-  exports: [AuthService],
+  providers: [AuthService, PrismaService, JwtStrategy, PermissionService],
+  exports: [AuthService, PermissionService],
 })
 export class AuthModule {}

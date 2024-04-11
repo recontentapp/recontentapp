@@ -7,6 +7,7 @@ import {
   User as PrismaUser,
   WorkspaceAccount as PrismaWorkspaceAccount,
   Service as PrismaService,
+  WorkspaceAccount,
 } from '@prisma/client'
 import { Request } from 'express'
 
@@ -30,6 +31,7 @@ export interface HumanRequester {
   userEmail: string
   canAccessWorkspace: (workspaceId: string) => boolean
   canAdminWorkspace: (workspaceId: string) => boolean
+  getAccountForWorkspace: (workspaceId: string) => WorkspaceAccount | null
   getAccountIDForWorkspace: (workspaceId: string) => string | null
 }
 
@@ -39,6 +41,7 @@ export interface ServiceRequester {
   serviceWorkspaceId: string
   canAccessWorkspace: (workspaceId: string) => boolean
   canAdminWorkspace: (workspaceId: string) => boolean
+  getAccountForWorkspace: (workspaceId: string) => WorkspaceAccount | null
   getAccountIDForWorkspace: (workspaceId: string) => string | null
 }
 
@@ -72,6 +75,13 @@ export const getRequesterOrNull = (req: Request): Requester | null => {
         }
 
         return false
+      },
+      getAccountForWorkspace: workspaceId => {
+        if (workspaceId === user.account.workspaceId) {
+          return user.account
+        }
+
+        return null
       },
       getAccountIDForWorkspace: workspaceId => {
         if (workspaceId === user.account.workspaceId) {
@@ -112,6 +122,13 @@ export const getRequesterOrNull = (req: Request): Requester | null => {
       }
 
       return false
+    },
+    getAccountForWorkspace: workspaceId => {
+      const account = user.user.accounts.find(
+        account => account.workspaceId === workspaceId,
+      )
+
+      return account ?? null
     },
     getAccountIDForWorkspace: workspaceId => {
       const account = user.user.accounts.find(
