@@ -865,6 +865,155 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Phrase'
+  /ListProjectTags:
+    get:
+      operationId: listProjectTags
+      parameters:
+        - name: projectId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Tag'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                additionalProperties: false
+                required:
+                  - items
+                  - pagination
+  /CreateProjectTag:
+    post:
+      operationId: createProjectTag
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                projectId:
+                  type: string
+                key:
+                  type: string
+                value:
+                  type: string
+                color:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+              additionalProperties: false
+              required:
+                - projectId
+                - key
+                - value
+                - color
+                - description
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+  /UpdateProjectTag:
+    post:
+      operationId: updateProjectTag
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tagId:
+                  type: string
+                key:
+                  type: string
+                value:
+                  type: string
+                color:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+              additionalProperties: false
+              required:
+                - tagId
+                - key
+                - value
+                - color
+                - description
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+  /DeleteProjectTag:
+    delete:
+      operationId: deleteProjectTag
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tagId:
+                  type: string
+              additionalProperties: false
+              required:
+                - tagId
+      responses:
+        '204':
+          description: OK
+  /ApplyProjectTag:
+    post:
+      operationId: applyProjectTag
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                recordIds:
+                  type: array
+                  items:
+                    type: string
+                tagId:
+                  type: string
+                recordType:
+                  type: string
+                  enum:
+                    - phrase
+              additionalProperties: false
+              required:
+                - recordIds
+                - tagId
+                - recordType
+      responses:
+        '204':
+          description: OK
   /DeletePhrase:
     delete:
       operationId: deletePhrase
@@ -1784,3 +1933,46 @@ components:
         - objectsPrefix
         - projectId
         - bucketId
+    Tag:
+      type: object
+      properties:
+        id:
+          type: string
+        workspaceId:
+          type: string
+        projectId:
+          type: string
+        key:
+          type: string
+        value:
+          type: string
+        color:
+          type: string
+        description:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdBy:
+          type: string
+        updatedBy:
+          type: string
+          nullable: true
+      additionalProperties: false
+      required:
+        - id
+        - workspaceId
+        - projectId
+        - key
+        - value
+        - color
+        - description
+        - createdAt
+        - updatedAt
+        - createdBy
+        - updatedBy

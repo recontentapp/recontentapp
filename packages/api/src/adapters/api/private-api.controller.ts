@@ -46,6 +46,7 @@ import {
   PhraseTranslation,
   Project,
   ProjectRevision,
+  Tag,
   User,
   Workspace,
   WorkspaceAccount,
@@ -82,6 +83,13 @@ import {
   SyncDestinationDto,
 } from './dto/destination.dto'
 import { TranslateService } from 'src/modules/phrase/translate.service'
+import { TagService } from 'src/modules/project/tag.service'
+import {
+  ApplyProjectTagDto,
+  CreateProjectTagDto,
+  DeleteProjectTagDto,
+  UpdateProjectTagDto,
+} from './dto/tag.dto'
 
 @Controller('private-api')
 @UseGuards(JwtAuthGuard)
@@ -93,9 +101,26 @@ export class PrivateApiController {
     private readonly phraseService: PhraseService,
     private readonly destinationService: DestinationService,
     private readonly translateService: TranslateService,
+    private readonly tagService: TagService,
     private readonly prismaService: PrismaService,
     private readonly configService: ConfigService<Config, true>,
   ) {}
+
+  private static formatTag(tag: Tag): Components.Schemas.Tag {
+    return {
+      id: tag.id,
+      workspaceId: tag.workspaceId,
+      projectId: tag.projectId,
+      key: tag.key,
+      value: tag.value,
+      color: tag.color,
+      description: tag.description,
+      createdAt: tag.createdAt.toISOString(),
+      updatedAt: tag.updatedAt.toISOString(),
+      createdBy: tag.createdBy,
+      updatedBy: tag.updatedBy,
+    }
+  }
 
   private static formatPhraseItem(
     phrase: Phrase,
@@ -1191,6 +1216,106 @@ export class PrivateApiController {
 
     await this.destinationService.deleteDestination({
       destinationId,
+      requester,
+    })
+
+    return {}
+  }
+
+  @Get('/ListProjectTags')
+  async listProjectTags(
+    @RequiredQuery('projectId') projectId: string,
+    @AuthenticatedRequester() requester: Requester,
+    @Pagination() pagination: PaginationParams,
+  ): Promise<Paths.ListProjectTags.Responses.$200> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    const result = await this.tagService.listProjectTags({
+      projectId,
+      requester,
+      pagination,
+    })
+
+    return {
+      items: result.items.map(PrivateApiController.formatTag),
+      pagination: result.pagination,
+    }
+  }
+
+  @Post('/CreateProjectTag')
+  async createProjectTag(
+    @AuthenticatedRequester() requester: Requester,
+    @Body() { projectId, key, value, color, description }: CreateProjectTagDto,
+  ): Promise<Paths.CreateProjectTag.Responses.$201> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    const tag = await this.tagService.createTag({
+      projectId,
+      key,
+      value,
+      color,
+      description: description ?? undefined,
+      requester,
+    })
+
+    return PrivateApiController.formatTag(tag)
+  }
+
+  @Post('/UpdateProjectTag')
+  async updateProjectTag(
+    @AuthenticatedRequester() requester: Requester,
+    @Body() { tagId, key, value, color, description }: UpdateProjectTagDto,
+  ): Promise<Paths.UpdateProjectTag.Responses.$200> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    const tag = await this.tagService.updateTag({
+      id: tagId,
+      key,
+      value,
+      color,
+      description: description ?? undefined,
+      requester,
+    })
+
+    return PrivateApiController.formatTag(tag)
+  }
+
+  @Delete('/DeleteProjectTag')
+  async deleteProjectTag(
+    @AuthenticatedRequester() requester: Requester,
+    @Body() { tagId }: DeleteProjectTagDto,
+  ): Promise<Paths.DeleteProjectTag.Responses.$204> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    await this.tagService.deleteTag({
+      id: tagId,
+      requester,
+    })
+
+    return {}
+  }
+
+  @Post('/ApplyProjectTag')
+  async applyProjectTag(
+    @AuthenticatedRequester() requester: Requester,
+    @Body() { tagId, recordIds, recordType }: ApplyProjectTagDto,
+  ): Promise<Paths.ApplyProjectTag.Responses.$204> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    await this.tagService.applyTag({
+      tagId,
+      recordIds,
+      recordType,
       requester,
     })
 
