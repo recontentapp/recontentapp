@@ -55,6 +55,19 @@ export const Phrases: FC = () => {
     },
   })
 
+  const phrasesQueryKey = useMemo(
+    () =>
+      getListPhrasesQueryKey({
+        queryParams: {
+          revisionId,
+          key: state.key,
+          translated: state.translated,
+          untranslated: state.untranslated,
+        },
+      }),
+    [revisionId, state.key, state.translated, state.untranslated],
+  )
+
   const phrases = useMemo(() => data?.items ?? [], [data])
 
   const { data: project } = useGetProject({
@@ -70,7 +83,7 @@ export const Phrases: FC = () => {
     useDeletePhrase({
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: getListPhrasesQueryKey({ queryParams: { revisionId } }),
+          queryKey: phrasesQueryKey,
         })
       },
     })
@@ -131,6 +144,7 @@ export const Phrases: FC = () => {
             untranslated={state.untranslated}
             revisionId={revisionId}
             isLoading={isDeletingPhrase}
+            phrasesQueryKey={phrasesQueryKey}
             onRequestTranslate={index => {
               setEditingPhraseIndex(index)
               requestAnimationFrame(() => updatePhraseModalRef.current?.open())

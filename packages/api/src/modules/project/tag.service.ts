@@ -14,6 +14,11 @@ interface ListProjectTagsParams {
   requester: HumanRequester
 }
 
+interface GetReferenceableTagsParams {
+  projectId: string
+  requester: HumanRequester
+}
+
 interface CreateTagParams {
   projectId: string
   key: string
@@ -37,10 +42,16 @@ interface DeleteTagParams {
   requester: HumanRequester
 }
 
-interface ApplyTagParams {
+interface BatchApplyTagParams {
   tagId: string
   recordIds: string[]
   recordType: 'phrase'
+  requester: HumanRequester
+}
+
+interface ApplyTagsToPhraseParams {
+  phraseId: string
+  tagIds: string[]
   requester: HumanRequester
 }
 
@@ -91,6 +102,42 @@ export class TagService {
     }
   }
 
+  async getReferenceableTags({
+    projectId,
+    requester,
+  }: GetReferenceableTagsParams) {
+    const project = await this.prismaService.project.findUniqueOrThrow({
+      where: { id: projectId },
+    })
+
+    if (!requester.canAccessWorkspace(project.workspaceId)) {
+      throw new ForbiddenException('You do not have access to this project')
+    }
+
+    const tags = await this.prismaService.tag.findMany({
+      where: {
+        projectId,
+      },
+      select: {
+        id: true,
+        key: true,
+        value: true,
+        color: true,
+      },
+    })
+
+    return tags.reduce<Record<string, { label: string; color: string }>>(
+      (acc, tag) => {
+        acc[tag.id] = {
+          label: `${tag.key}:${tag.value}`,
+          color: tag.color,
+        }
+        return acc
+      },
+      {},
+    )
+  }
+
   async createTag({
     projectId,
     key,
@@ -117,6 +164,16 @@ export class TagService {
 
     if (!isValidHexColor(color)) {
       throw new BadRequestException('Color is not valid')
+    }
+
+    const tagsCount = await this.prismaService.tag.count({
+      where: {
+        projectId,
+      },
+    })
+
+    if (tagsCount >= 500) {
+      throw new BadRequestException('You have reached the limit of tags')
     }
 
     const tag = await this.prismaService.tag.create({
@@ -198,7 +255,50 @@ export class TagService {
     })
   }
 
-  async applyTag({ tagId, recordIds, requester }: ApplyTagParams) {
+  async applyTagsToPhrase({
+    tagIds,
+    phraseId,
+    requester,
+  }: ApplyTagsToPhraseParams) {
+    const phrase = await this.prismaService.phrase.findUniqueOrThrow({
+      where: { id: phraseId },
+    })
+
+    if (!requester.canAccessWorkspace(phrase.workspaceId)) {
+      throw new ForbiddenException('You do not have access to this phrase')
+    }
+
+    const tagsCount = await this.prismaService.tag.count({
+      where: {
+        id: { in: tagIds },
+        workspaceId: phrase.workspaceId,
+      },
+    })
+
+    if (tagsCount !== tagIds.length) {
+      throw new BadRequestException('Some tags do not belong to this workspace')
+    }
+
+    await this.prismaService.$transaction(async t => {
+      await t.taggable.deleteMany({
+        where: {
+          recordId: phraseId,
+        },
+      })
+
+      await t.taggable.createMany({
+        data: tagIds.map(tagId => ({
+          tagId,
+          recordId: phraseId,
+          recordType: 'phrase',
+          workspaceId: phrase.workspaceId,
+          createdBy: requester.getAccountIDForWorkspace(phrase.workspaceId)!,
+        })),
+      })
+    })
+  }
+
+  async batchApplyTag({ tagId, recordIds, requester }: BatchApplyTagParams) {
     const tag = await this.prismaService.tag.findUniqueOrThrow({
       where: { id: tagId },
     })

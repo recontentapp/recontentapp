@@ -85,7 +85,8 @@ import {
 import { TranslateService } from 'src/modules/phrase/translate.service'
 import { TagService } from 'src/modules/project/tag.service'
 import {
-  ApplyProjectTagDto,
+  ApplyTagsToPhraseDto,
+  BatchApplyProjectTagDto,
   CreateProjectTagDto,
   DeleteProjectTagDto,
   UpdateProjectTagDto,
@@ -123,7 +124,11 @@ export class PrivateApiController {
   }
 
   private static formatPhraseItem(
-    phrase: Phrase,
+    phrase: Phrase & {
+      taggables: {
+        tagId: string
+      }[]
+    },
   ): Components.Schemas.PhraseItem {
     return {
       id: phrase.id,
@@ -131,6 +136,7 @@ export class PrivateApiController {
       revisionId: phrase.revisionId,
       projectId: phrase.projectId,
       workspaceId: phrase.workspaceId,
+      tags: phrase.taggables.map(t => t.tagId),
       createdAt: phrase.createdAt.toISOString(),
       updatedAt: phrase.updatedAt.toISOString(),
       createdBy: phrase.createdBy,
@@ -1244,6 +1250,25 @@ export class PrivateApiController {
     }
   }
 
+  @Get('/GetReferenceableTags')
+  async getReferenceableTags(
+    @RequiredQuery('projectId') projectId: string,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.GetReferenceableTags.Responses.$200> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    const tags = await this.tagService.getReferenceableTags({
+      projectId,
+      requester,
+    })
+
+    return {
+      tags,
+    }
+  }
+
   @Post('/CreateProjectTag')
   async createProjectTag(
     @AuthenticatedRequester() requester: Requester,
@@ -1303,16 +1328,34 @@ export class PrivateApiController {
     return {}
   }
 
-  @Post('/ApplyProjectTag')
+  @Post('/ApplyTagsToPhrase')
   async applyProjectTag(
     @AuthenticatedRequester() requester: Requester,
-    @Body() { tagId, recordIds, recordType }: ApplyProjectTagDto,
-  ): Promise<Paths.ApplyProjectTag.Responses.$204> {
+    @Body() { tagIds, phraseId }: ApplyTagsToPhraseDto,
+  ): Promise<Paths.ApplyTagsToPhrase.Responses.$204> {
     if (requester.type !== 'human') {
       throw new BadRequestException('Invalid requester')
     }
 
-    await this.tagService.applyTag({
+    await this.tagService.applyTagsToPhrase({
+      tagIds,
+      phraseId,
+      requester,
+    })
+
+    return {}
+  }
+
+  @Post('/BatchApplyProjectTagDto')
+  async batchApplyProjectTag(
+    @AuthenticatedRequester() requester: Requester,
+    @Body() { tagId, recordIds, recordType }: BatchApplyProjectTagDto,
+  ): Promise<Paths.BatchApplyProjectTag.Responses.$204> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    await this.tagService.batchApplyTag({
       tagId,
       recordIds,
       recordType,

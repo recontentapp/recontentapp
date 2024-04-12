@@ -1,6 +1,42 @@
 import { useCallback } from 'react'
-import { useGetReferenceableAccounts } from '../../../generated/reactQuery'
+import {
+  useGetReferenceableAccounts,
+  useGetReferenceableTags,
+} from '../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../hooks/workspace'
+import { theme } from '../../../theme'
+
+export const useReferenceableTags = (projectId: string) => {
+  const { data } = useGetReferenceableTags(
+    {
+      queryParams: { projectId },
+    },
+    { staleTime: Infinity },
+  )
+
+  const get = useCallback(
+    (tagId: string) => {
+      if (!data) {
+        return {
+          label: 'Loading...',
+          color: theme.colors.gray1.value,
+        }
+      }
+
+      return (
+        data.tags[tagId] ?? {
+          label: 'Unknown',
+          color: theme.colors.gray1.value,
+        }
+      )
+    },
+    [data],
+  )
+
+  return {
+    get,
+  }
+}
 
 export const useReferenceableAccounts = () => {
   const { id } = useCurrentWorkspace()

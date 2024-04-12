@@ -172,6 +172,7 @@ export const KBar = () => {
   const {
     closeAll,
     openCreatePhrase,
+    openCreateTag,
     openCreateProject,
     openCreateDestination,
   } = useModals()
@@ -239,6 +240,12 @@ export const KBar = () => {
             label: 'Create a phrase',
             onSelect: () => {
               openCreatePhrase(project, project.masterRevisionId)
+            },
+          },
+          {
+            label: 'Create a tag',
+            onSelect: () => {
+              openCreateTag(project)
             },
           },
           {

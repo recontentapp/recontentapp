@@ -1,8 +1,8 @@
-import { violetA } from '@radix-ui/colors'
 import { FC } from 'react'
 
 import { styled } from '../../theme'
 import { Icon } from './Icon'
+import { getColorBasedOnBackground } from '../../utils/colors'
 
 const Container = styled('span', {
   display: 'inline-flex',
@@ -25,20 +25,6 @@ const Container = styled('span', {
         fontSize: '$size80',
         paddingX: '$space80',
         height: 30,
-      },
-    },
-    variation: {
-      primary: {
-        backgroundColor: violetA.violetA5,
-        color: violetA.violetA12,
-      },
-      success: {
-        backgroundColor: '$green200',
-        color: '$white',
-      },
-      danger: {
-        backgroundColor: '$red200',
-        color: '$white',
       },
     },
   },
@@ -67,9 +53,11 @@ export const Tag: FC<TagProps> = ({
   color,
   onClose,
 }) => {
+  const textColor = getColorBasedOnBackground(color)
+
   return (
     <Container size={size} css={{ backgroundColor: color }}>
-      {label}
+      <span style={{ color: textColor }}>{label}</span>
 
       {onClose && (
         <CloseButton onClick={onClose}>

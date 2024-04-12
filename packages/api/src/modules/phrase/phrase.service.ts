@@ -154,6 +154,9 @@ export class PhraseService {
     const [phrases, count] = await Promise.all([
       this.prismaService.phrase.findMany({
         where,
+        include: {
+          taggables: { select: { tagId: true } },
+        },
         orderBy: {
           createdAt: 'desc',
         },

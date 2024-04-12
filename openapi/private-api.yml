@@ -902,6 +902,39 @@ paths:
                 required:
                   - items
                   - pagination
+  /GetReferenceableTags:
+    get:
+      operationId: getReferenceableTags
+      parameters:
+        - name: projectId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tags:
+                    type: object
+                    additionalProperties:
+                      type: object
+                      properties:
+                        label:
+                          type: string
+                        color:
+                          type: string
+                      additionalProperties: false
+                      required:
+                        - label
+                        - color
+                additionalProperties: false
+                required:
+                  - tags
   /CreateProjectTag:
     post:
       operationId: createProjectTag
@@ -987,9 +1020,31 @@ paths:
       responses:
         '204':
           description: OK
-  /ApplyProjectTag:
+  /ApplyTagsToPhrase:
     post:
-      operationId: applyProjectTag
+      operationId: applyTagsToPhrase
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                phraseId:
+                  type: string
+                tagIds:
+                  type: array
+                  items:
+                    type: string
+              additionalProperties: false
+              required:
+                - phraseId
+                - tagIds
+      responses:
+        '204':
+          description: OK
+  /BatchApplyProjectTag:
+    post:
+      operationId: batchApplyProjectTag
       requestBody:
         content:
           application/json:
@@ -1653,6 +1708,10 @@ components:
           type: string
         workspaceId:
           type: string
+        tags:
+          type: array
+          items:
+            type: string
         createdAt:
           type: string
           format: date-time
@@ -1671,6 +1730,7 @@ components:
         - revisionId
         - projectId
         - workspaceId
+        - tags
         - createdAt
         - updatedAt
         - createdBy

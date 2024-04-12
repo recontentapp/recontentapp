@@ -53,7 +53,17 @@ export class UpdateProjectTagDto {
   description: string | undefined | null
 }
 
-export class ApplyProjectTagDto {
+export class ApplyTagsToPhraseDto {
+  @IsString()
+  @IsNotEmpty()
+  phraseId: string
+
+  @IsArray()
+  @IsNotEmpty()
+  tagIds: string[]
+}
+
+export class BatchApplyProjectTagDto {
   @IsString()
   @IsNotEmpty()
   tagId: string
