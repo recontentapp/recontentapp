@@ -1055,8 +1055,10 @@ paths:
                   type: array
                   items:
                     type: string
-                tagId:
-                  type: string
+                tagIds:
+                  type: array
+                  items:
+                    type: string
                 recordType:
                   type: string
                   enum:
@@ -1064,7 +1066,7 @@ paths:
               additionalProperties: false
               required:
                 - recordIds
-                - tagId
+                - tagIds
                 - recordType
       responses:
         '204':

@@ -37,6 +37,7 @@ import routes from '../../../../../routing'
 import { ListTagsModal, ListTagsModalRef } from './ListTagsModal'
 import { useModals } from '../../../hooks/modals'
 import { TagsCell } from './TagsCell'
+import { ApplyTagsModal, ApplyTagsModalRef } from './ApplyTagsModal'
 
 interface State {
   translated: string | undefined
@@ -104,6 +105,7 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
   })
   const filterRef = useRef<FilterRef>(null!)
   const editPhraseKeyModalRef = useRef<EditPhraseKeyModalRef>(null!)
+  const applyTagsModalRef = useRef<ApplyTagsModalRef>(null!)
   const listTagsModalRef = useRef<ListTagsModalRef>(null!)
   const confirmationModalRef = useRef<ConfirmationModalRef>(null!)
   const [localKey, setLocalKey] = useState('')
@@ -285,6 +287,13 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
         onRequestCreate={() => openCreateTag(project)}
         onTagDeleted={() => {}}
       />
+      <ApplyTagsModal
+        ref={applyTagsModalRef}
+        projectId={project.id}
+        onApply={() => {
+          tableRef.current.resetSelection()
+        }}
+      />
       <EditPhraseKeyModal ref={editPhraseKeyModalRef} />
 
       <Stack direction="row" alignItems="center" justifyContent="space-between">
@@ -445,6 +454,19 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
               </Text>
 
               <Stack direction="row" spacing="$space60" alignItems="center">
+                <Button
+                  variation="primary"
+                  icon="local_offer"
+                  size="xsmall"
+                  isLoading={false}
+                  onAction={() =>
+                    applyTagsModalRef.current.open(
+                      selectedPhrases.map(phrase => phrase.id),
+                    )
+                  }
+                >
+                  Apply tags
+                </Button>
                 <Button
                   variation="danger"
                   icon="delete"

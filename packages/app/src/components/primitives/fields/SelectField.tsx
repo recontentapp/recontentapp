@@ -1,4 +1,4 @@
-import { CSSProperties, FC } from 'react'
+import { CSSProperties, FC, useState } from 'react'
 import * as Select from '@radix-ui/react-select'
 
 import { useId } from '../../../hooks/ids'
@@ -192,6 +192,9 @@ export const SelectField: FC<SelectFieldProps> = ({
   info,
   error,
 }) => {
+  // Manually re-render Select to clear value
+  // https://github.com/radix-ui/primitives/issues/1569
+  const [key, setKey] = useState(0)
   const ID = useId(id)
 
   const onSelect = (value: string) => {
@@ -199,10 +202,12 @@ export const SelectField: FC<SelectFieldProps> = ({
 
     if (!matchingOption) {
       onChange(undefined)
+      setKey(key + 1)
       return
     }
 
     onChange(matchingOption)
+    setKey(key + 1)
   }
 
   return (
@@ -219,7 +224,7 @@ export const SelectField: FC<SelectFieldProps> = ({
         isOptional={isOptional}
       />
 
-      <Select.Root value={value} name={name} onValueChange={onSelect}>
+      <Select.Root key={key} value={value} name={name} onValueChange={onSelect}>
         <Select.Trigger data-reach-listbox-button>
           <Select.Value onBlur={onBlur} placeholder={placeholder} />
           <Select.Icon data-reach-listbox-arrow />

@@ -43,7 +43,7 @@ interface DeleteTagParams {
 }
 
 interface BatchApplyTagParams {
-  tagId: string
+  tagIds: string[]
   recordIds: string[]
   recordType: 'phrase'
   requester: HumanRequester
@@ -84,7 +84,7 @@ export class TagService {
         take: limit,
         skip: offset,
       }),
-      this.prismaService.phrase.count({
+      this.prismaService.tag.count({
         where: {
           projectId,
         },
@@ -298,25 +298,58 @@ export class TagService {
     })
   }
 
-  async batchApplyTag({ tagId, recordIds, requester }: BatchApplyTagParams) {
-    const tag = await this.prismaService.tag.findUniqueOrThrow({
-      where: { id: tagId },
-    })
+  async batchApplyTag({ tagIds, recordIds, requester }: BatchApplyTagParams) {
+    if (tagIds.length === 0) {
+      const phrases = await this.prismaService.phrase.findMany({
+        where: { id: { in: recordIds } },
+      })
+      const allPhrasesBelongToSameWorkspace = phrases.every(
+        phrase => phrase.workspaceId === phrases[0].workspaceId,
+      )
 
-    if (!requester.canAccessWorkspace(tag.workspaceId)) {
+      if (!allPhrasesBelongToSameWorkspace) {
+        throw new BadRequestException(
+          'Phrases do not belong to the same workspace',
+        )
+      }
+
+      if (!requester.canAccessWorkspace(phrases[0].workspaceId)) {
+        throw new ForbiddenException('You do not have access to these phrases')
+      }
+
+      await this.prismaService.$transaction(async t => {
+        await t.taggable.deleteMany({
+          where: {
+            recordId: { in: recordIds },
+          },
+        })
+      })
+      return
+    }
+
+    const tags = await this.prismaService.tag.findMany({
+      where: { id: { in: tagIds } },
+    })
+    const allTagsBelongToSameWorkspace = tags.every(
+      tag => tag.workspaceId === tags[0].workspaceId,
+    )
+    if (!allTagsBelongToSameWorkspace) {
+      throw new BadRequestException('Tags do not belong to the same workspace')
+    }
+    if (!requester.canAccessWorkspace(tags[0].workspaceId)) {
       throw new ForbiddenException('You do not have access to this tag')
     }
 
-    const phrasesCountWithinWorkspace = await this.prismaService.phrase.count({
+    const phrasesCountWithinProject = await this.prismaService.phrase.count({
       where: {
         id: {
           in: recordIds,
         },
-        projectId: tag.projectId,
+        projectId: tags[0].projectId,
       },
     })
 
-    if (phrasesCountWithinWorkspace !== recordIds.length) {
+    if (phrasesCountWithinProject !== recordIds.length) {
       throw new BadRequestException(
         'Some phrases do not belong to this project',
       )
@@ -325,19 +358,24 @@ export class TagService {
     await this.prismaService.$transaction(async t => {
       await t.taggable.deleteMany({
         where: {
-          tagId,
           recordId: { in: recordIds },
         },
       })
 
       await t.taggable.createMany({
-        data: recordIds.map(recordId => ({
-          tagId,
-          recordId,
-          recordType: 'phrase',
-          workspaceId: tag.workspaceId,
-          createdBy: requester.getAccountIDForWorkspace(tag.workspaceId)!,
-        })),
+        data: recordIds
+          .map(recordId => {
+            return tagIds.map(tagId => ({
+              tagId,
+              recordId,
+              recordType: 'phrase' as const,
+              workspaceId: tags[0].workspaceId,
+              createdBy: requester.getAccountIDForWorkspace(
+                tags[0].workspaceId,
+              )!,
+            }))
+          })
+          .flat(),
       })
     })
   }

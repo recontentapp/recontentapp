@@ -1346,17 +1346,17 @@ export class PrivateApiController {
     return {}
   }
 
-  @Post('/BatchApplyProjectTagDto')
+  @Post('/BatchApplyProjectTag')
   async batchApplyProjectTag(
     @AuthenticatedRequester() requester: Requester,
-    @Body() { tagId, recordIds, recordType }: BatchApplyProjectTagDto,
+    @Body() { tagIds, recordIds, recordType }: BatchApplyProjectTagDto,
   ): Promise<Paths.BatchApplyProjectTag.Responses.$204> {
     if (requester.type !== 'human') {
       throw new BadRequestException('Invalid requester')
     }
 
     await this.tagService.batchApplyTag({
-      tagId,
+      tagIds,
       recordIds,
       recordType,
       requester,

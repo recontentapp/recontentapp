@@ -58,7 +58,7 @@ const Content: FC<ContentProps> = ({
   }
 
   return (
-    <ModalContent asForm contextTitle={project?.name} title="Tags">
+    <ModalContent contextTitle={project?.name} title="Tags">
       <Box paddingBottom="$space600">
         <Table
           items={tags?.items ?? []}

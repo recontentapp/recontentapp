@@ -64,9 +64,8 @@ export class ApplyTagsToPhraseDto {
 }
 
 export class BatchApplyProjectTagDto {
-  @IsString()
-  @IsNotEmpty()
-  tagId: string
+  @IsArray()
+  tagIds: string[]
 
   @IsString()
   @IsNotEmpty()

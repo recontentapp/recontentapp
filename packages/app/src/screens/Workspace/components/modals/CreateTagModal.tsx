@@ -8,7 +8,6 @@ import {
 } from 'react'
 
 import {
-  Box,
   Button,
   Modal,
   ModalContent,
