@@ -48,7 +48,7 @@ export const Phrases: FC = () => {
 
   const revisionId = params.revisionId!
 
-  const { data, refetch } = useListPhrases({
+  const { data } = useListPhrases({
     queryParams: {
       revisionId,
       key: state.key,
