@@ -32,10 +32,12 @@ export const Phrases: FC = () => {
     translated: string | undefined
     untranslated: string | undefined
     key: string
+    containsTags: string[]
   }>({
     initialState: {
       translated: undefined,
       untranslated: undefined,
+      containsTags: [],
       key: '',
     },
   })
@@ -46,12 +48,13 @@ export const Phrases: FC = () => {
 
   const revisionId = params.revisionId!
 
-  const { data } = useListPhrases({
+  const { data, refetch } = useListPhrases({
     queryParams: {
       revisionId,
       key: state.key,
       translated: state.translated,
       untranslated: state.untranslated,
+      tags: state.containsTags.length > 0 ? state.containsTags : undefined,
     },
   })
 
@@ -63,9 +66,16 @@ export const Phrases: FC = () => {
           key: state.key,
           translated: state.translated,
           untranslated: state.untranslated,
+          tags: state.containsTags.length > 0 ? state.containsTags : undefined,
         },
       }),
-    [revisionId, state.key, state.translated, state.untranslated],
+    [
+      revisionId,
+      state.key,
+      state.translated,
+      state.untranslated,
+      state.containsTags,
+    ],
   )
 
   const phrases = useMemo(() => data?.items ?? [], [data])
@@ -142,6 +152,7 @@ export const Phrases: FC = () => {
             setState={setState}
             translated={state.translated}
             untranslated={state.untranslated}
+            containsTags={state.containsTags}
             revisionId={revisionId}
             isLoading={isDeletingPhrase}
             phrasesQueryKey={phrasesQueryKey}

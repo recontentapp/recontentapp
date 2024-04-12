@@ -42,6 +42,7 @@ import { ApplyTagsModal, ApplyTagsModalRef } from './ApplyTagsModal'
 interface State {
   translated: string | undefined
   untranslated: string | undefined
+  containsTags: string[]
   key: string
 }
 
@@ -56,6 +57,7 @@ interface PhrasesTableProps {
   translated: string | undefined
   untranslated: string | undefined
   initialKey: string | undefined
+  containsTags: string[]
   phrasesQueryKey: QueryKey
   setState: (fn: StateFunction) => void
   onRequestAdd: () => void
@@ -73,6 +75,7 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
   phrasesQueryKey,
   initialKey,
   translated,
+  containsTags,
   untranslated,
   setState,
   onRequestAdd,
@@ -152,8 +155,13 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
       return
     }
 
+    if (containsTags.length > 0) {
+      filterRef.current.setValues('containsTags', containsTags[0])
+      return
+    }
+
     filterRef.current.setValues(undefined, undefined)
-  }, [translated, untranslated])
+  }, [translated, untranslated, containsTags])
 
   useDebouncedUpdate(
     () => {
@@ -270,7 +278,7 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
           ),
         },
       ],
-      [getName],
+      [getName, openCreateTag, phrasesQueryKey, project, onRequestDelete],
     )
 
   return (
@@ -377,6 +385,7 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
                   ...state,
                   translated: undefined,
                   untranslated: undefined,
+                  containsTags: [],
                 }))
                 return
               }
@@ -398,6 +407,14 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
                 }))
                 return
               }
+
+              if (value.firstValue === 'containsTags') {
+                setState(state => ({
+                  ...state,
+                  containsTags: [value.secondValue],
+                }))
+                return
+              }
             }}
             options={[
               {
@@ -416,6 +433,15 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
                 options: languages.map(locale => ({
                   label: locale.name,
                   value: locale.id,
+                })),
+              },
+              {
+                label: 'Contains tag',
+                value: 'containsTags',
+                text: '',
+                options: (tagsData?.items ?? []).map(tag => ({
+                  label: `${tag.key}:${tag.value}`,
+                  value: tag.id,
                 })),
               },
             ]}

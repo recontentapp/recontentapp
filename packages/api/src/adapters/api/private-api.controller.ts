@@ -820,6 +820,7 @@ export class PrivateApiController {
     @RequiredQuery('revisionId') revisionId: string,
     @AuthenticatedRequester() requester: Requester,
     @Pagination() pagination: PaginationParams,
+    @Query('tags') tags?: string,
     @Query('key') key?: string,
     @Query('translated') translated?: string,
     @Query('untranslated') untranslated?: string,
@@ -833,6 +834,7 @@ export class PrivateApiController {
       key,
       translated,
       untranslated,
+      tags: tags ? tags.split(',') : undefined,
       requester,
       pagination,
     })
