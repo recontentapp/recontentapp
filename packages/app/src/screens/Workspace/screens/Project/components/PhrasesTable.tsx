@@ -26,18 +26,23 @@ import { useReferenceableAccounts } from '../../../hooks/referenceable'
 import { EditPhraseKeyModal, EditPhraseKeyModalRef } from './EditPhraseKeyModal'
 import { Search } from './Search'
 import {
-  getListPhrasesQueryKey,
   useBatchDeletePhrase,
   useListProjectRevisions,
+  useListProjectTags,
   useListWorkspaceLanguages,
 } from '../../../../../generated/reactQuery'
 import { Components } from '../../../../../generated/typeDefinitions'
-import { useQueryClient } from '@tanstack/react-query'
+import { QueryKey, useQueryClient } from '@tanstack/react-query'
 import routes from '../../../../../routing'
+import { ListTagsModal, ListTagsModalRef } from './ListTagsModal'
+import { useModals } from '../../../hooks/modals'
+import { TagsCell } from './TagsCell'
+import { ApplyTagsModal, ApplyTagsModalRef } from './ApplyTagsModal'
 
 interface State {
   translated: string | undefined
   untranslated: string | undefined
+  containsTags: string[]
   key: string
 }
 
@@ -52,6 +57,8 @@ interface PhrasesTableProps {
   translated: string | undefined
   untranslated: string | undefined
   initialKey: string | undefined
+  containsTags: string[]
+  phrasesQueryKey: QueryKey
   setState: (fn: StateFunction) => void
   onRequestAdd: () => void
   onRequestTranslate: (index: number) => void
@@ -65,8 +72,10 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
   revisionId,
   phrases,
   phrasesTotalCount,
+  phrasesQueryKey,
   initialKey,
   translated,
+  containsTags,
   untranslated,
   setState,
   onRequestAdd,
@@ -78,13 +87,14 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
     Components.Schemas.PhraseItem[]
   >([])
   const queryClient = useQueryClient()
+  const { openCreateTag } = useModals()
   const tableRef = useRef<TableRef>(null!)
   const { getName } = useReferenceableAccounts()
   const { key: workspaceKey, id: workspaceId } = useCurrentWorkspace()
   const { mutateAsync: batchDeletePhrases } = useBatchDeletePhrase({
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: getListPhrasesQueryKey({ queryParams: { revisionId } }),
+        queryKey: phrasesQueryKey,
       })
     },
   })
@@ -98,8 +108,13 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
   })
   const filterRef = useRef<FilterRef>(null!)
   const editPhraseKeyModalRef = useRef<EditPhraseKeyModalRef>(null!)
+  const applyTagsModalRef = useRef<ApplyTagsModalRef>(null!)
+  const listTagsModalRef = useRef<ListTagsModalRef>(null!)
   const confirmationModalRef = useRef<ConfirmationModalRef>(null!)
   const [localKey, setLocalKey] = useState('')
+  const { data: tagsData } = useListProjectTags({
+    queryParams: { projectId: project.id },
+  })
 
   const onRequestEditKey = (phrase: Components.Schemas.PhraseItem) => {
     editPhraseKeyModalRef.current.open({ phrase })
@@ -140,8 +155,13 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
       return
     }
 
+    if (containsTags.length > 0) {
+      filterRef.current.setValues('containsTags', containsTags[0])
+      return
+    }
+
     filterRef.current.setValues(undefined, undefined)
-  }, [translated, untranslated])
+  }, [translated, untranslated, containsTags])
 
   useDebouncedUpdate(
     () => {
@@ -205,6 +225,19 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
           ),
         },
         {
+          headerCell: 'Tags',
+          key: 'tags',
+          width: 200,
+          withoutPadding: true,
+          bodyCell: phrase => (
+            <TagsCell
+              phrase={phrase}
+              phrasesQueryKey={phrasesQueryKey}
+              onRequestTagCreate={() => openCreateTag(project)}
+            />
+          ),
+        },
+        {
           headerCell: 'Last updated by',
           key: 'updatedBy',
           bodyCell: phrase => (
@@ -245,7 +278,7 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
           ),
         },
       ],
-      [getName],
+      [getName, openCreateTag, phrasesQueryKey, project, onRequestDelete],
     )
 
   return (
@@ -255,6 +288,19 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
         title="Are you sure about deleting these phrases"
         description="Once deleted, phrases can not be recovered."
         variation="danger"
+      />
+      <ListTagsModal
+        ref={listTagsModalRef}
+        projectId={project.id}
+        onRequestCreate={() => openCreateTag(project)}
+        onTagDeleted={() => {}}
+      />
+      <ApplyTagsModal
+        ref={applyTagsModalRef}
+        projectId={project.id}
+        onApply={() => {
+          tableRef.current.resetSelection()
+        }}
       />
       <EditPhraseKeyModal ref={editPhraseKeyModalRef} />
 
@@ -310,6 +356,24 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
               </Text>
             </Stack>
           </Stack>
+
+          <button
+            style={{ cursor: 'pointer' }}
+            onClick={() => listTagsModalRef.current.open()}
+          >
+            <Stack direction="row" spacing="$space40" alignItems="center">
+              <Icon src="local_offer" color="$gray12" size={16} />
+
+              <Stack direction="row" spacing="$space40" alignItems="center">
+                <Text size="$size80" color="$gray14" variation="bold">
+                  1
+                </Text>
+                <Text size="$size80" color="$gray11">
+                  {(tagsData?.pagination.itemsCount ?? 0) > 1 ? 'tags' : 'tag'}
+                </Text>
+              </Stack>
+            </Stack>
+          </button>
         </Stack>
 
         <Stack direction="row" alignItems="center" spacing="$space40">
@@ -321,6 +385,7 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
                   ...state,
                   translated: undefined,
                   untranslated: undefined,
+                  containsTags: [],
                 }))
                 return
               }
@@ -342,6 +407,14 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
                 }))
                 return
               }
+
+              if (value.firstValue === 'containsTags') {
+                setState(state => ({
+                  ...state,
+                  containsTags: [value.secondValue],
+                }))
+                return
+              }
             }}
             options={[
               {
@@ -360,6 +433,15 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
                 options: languages.map(locale => ({
                   label: locale.name,
                   value: locale.id,
+                })),
+              },
+              {
+                label: 'Contains tag',
+                value: 'containsTags',
+                text: '',
+                options: (tagsData?.items ?? []).map(tag => ({
+                  label: `${tag.key}:${tag.value}`,
+                  value: tag.id,
                 })),
               },
             ]}
@@ -398,6 +480,19 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
               </Text>
 
               <Stack direction="row" spacing="$space60" alignItems="center">
+                <Button
+                  variation="primary"
+                  icon="local_offer"
+                  size="xsmall"
+                  isLoading={false}
+                  onAction={() =>
+                    applyTagsModalRef.current.open(
+                      selectedPhrases.map(phrase => phrase.id),
+                    )
+                  }
+                >
+                  Apply tags
+                </Button>
                 <Button
                   variation="danger"
                   icon="delete"

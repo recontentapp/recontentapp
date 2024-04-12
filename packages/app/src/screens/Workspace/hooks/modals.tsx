@@ -20,10 +20,15 @@ import {
   CreateDestinationModal,
   CreateDestinationModalRef,
 } from '../components/modals/CreateDestinationModal'
+import {
+  CreateTagModal,
+  CreateTagModalRef,
+} from '../components/modals/CreateTagModal'
 
 interface ModalsContext {
   openCreateProject: CreateProjectModalRef['open']
   openCreatePhrase: CreatePhraseModalRef['open']
+  openCreateTag: CreateTagModalRef['open']
   openCreateDestination: CreateDestinationModalRef['open']
   closeAll: () => void
 }
@@ -36,9 +41,13 @@ export const ModalsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const createProjectModalRef = useRef<CreateProjectModalRef>(null!)
   const createPhraseModalRef = useRef<CreatePhraseModalRef>(null!)
   const createDestinationModalRef = useRef<CreateDestinationModalRef>(null!)
+  const createTagModalRef = useRef<CreateTagModalRef>(null!)
 
   const openCreateProject: CreateProjectModalRef['open'] = useCallback(() => {
     createProjectModalRef.current?.open()
+  }, [])
+  const openCreateTag: CreateTagModalRef['open'] = useCallback((...props) => {
+    createTagModalRef.current?.open(...props)
   }, [])
   const openCreatePhrase: CreatePhraseModalRef['open'] = useCallback(
     (...props) => {
@@ -57,6 +66,7 @@ export const ModalsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     createProjectModalRef.current.close()
     createPhraseModalRef.current.close()
     createDestinationModalRef.current.close()
+    createTagModalRef.current.close()
   }, [])
 
   const value = useMemo(
@@ -64,9 +74,16 @@ export const ModalsProvider: FC<{ children: ReactNode }> = ({ children }) => {
       openCreateProject,
       openCreatePhrase,
       openCreateDestination,
+      openCreateTag,
       closeAll,
     }),
-    [closeAll, openCreateProject, openCreatePhrase, openCreateDestination],
+    [
+      closeAll,
+      openCreateProject,
+      openCreateTag,
+      openCreatePhrase,
+      openCreateDestination,
+    ],
   )
 
   return (
@@ -74,6 +91,7 @@ export const ModalsProvider: FC<{ children: ReactNode }> = ({ children }) => {
       <CreateProjectModal ref={createProjectModalRef} />
       <CreatePhraseModal ref={createPhraseModalRef} />
       <CreateDestinationModal ref={createDestinationModalRef} />
+      <CreateTagModal ref={createTagModalRef} />
 
       {children}
     </modalsContext.Provider>

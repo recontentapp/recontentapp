@@ -156,6 +156,7 @@ export const Modal = forwardRef<ModalRef, ModalProps>(
         className={`modal ${!visibilityState ? 'modal--hidden' : ''}`}
         isOpen={isOpen}
         onDismiss={onRequestClose}
+        dangerouslyBypassFocusLock
       >
         <DialogContent
           className={`modal__content modal__content--${size} ${

@@ -46,6 +46,7 @@ import {
   PhraseTranslation,
   Project,
   ProjectRevision,
+  Tag,
   User,
   Workspace,
   WorkspaceAccount,
@@ -82,6 +83,14 @@ import {
   SyncDestinationDto,
 } from './dto/destination.dto'
 import { TranslateService } from 'src/modules/phrase/translate.service'
+import { TagService } from 'src/modules/project/tag.service'
+import {
+  ApplyTagsToPhraseDto,
+  BatchApplyProjectTagDto,
+  CreateProjectTagDto,
+  DeleteProjectTagDto,
+  UpdateProjectTagDto,
+} from './dto/tag.dto'
 
 @Controller('private-api')
 @UseGuards(JwtAuthGuard)
@@ -93,12 +102,33 @@ export class PrivateApiController {
     private readonly phraseService: PhraseService,
     private readonly destinationService: DestinationService,
     private readonly translateService: TranslateService,
+    private readonly tagService: TagService,
     private readonly prismaService: PrismaService,
     private readonly configService: ConfigService<Config, true>,
   ) {}
 
+  private static formatTag(tag: Tag): Components.Schemas.Tag {
+    return {
+      id: tag.id,
+      workspaceId: tag.workspaceId,
+      projectId: tag.projectId,
+      key: tag.key,
+      value: tag.value,
+      color: tag.color,
+      description: tag.description,
+      createdAt: tag.createdAt.toISOString(),
+      updatedAt: tag.updatedAt.toISOString(),
+      createdBy: tag.createdBy,
+      updatedBy: tag.updatedBy,
+    }
+  }
+
   private static formatPhraseItem(
-    phrase: Phrase,
+    phrase: Phrase & {
+      taggables: {
+        tagId: string
+      }[]
+    },
   ): Components.Schemas.PhraseItem {
     return {
       id: phrase.id,
@@ -106,6 +136,7 @@ export class PrivateApiController {
       revisionId: phrase.revisionId,
       projectId: phrase.projectId,
       workspaceId: phrase.workspaceId,
+      tags: phrase.taggables.map(t => t.tagId),
       createdAt: phrase.createdAt.toISOString(),
       updatedAt: phrase.updatedAt.toISOString(),
       createdBy: phrase.createdBy,
@@ -789,6 +820,7 @@ export class PrivateApiController {
     @RequiredQuery('revisionId') revisionId: string,
     @AuthenticatedRequester() requester: Requester,
     @Pagination() pagination: PaginationParams,
+    @Query('tags') tags?: string,
     @Query('key') key?: string,
     @Query('translated') translated?: string,
     @Query('untranslated') untranslated?: string,
@@ -802,6 +834,7 @@ export class PrivateApiController {
       key,
       translated,
       untranslated,
+      tags: tags ? tags.split(',') : undefined,
       requester,
       pagination,
     })
@@ -1191,6 +1224,143 @@ export class PrivateApiController {
 
     await this.destinationService.deleteDestination({
       destinationId,
+      requester,
+    })
+
+    return {}
+  }
+
+  @Get('/ListProjectTags')
+  async listProjectTags(
+    @RequiredQuery('projectId') projectId: string,
+    @AuthenticatedRequester() requester: Requester,
+    @Pagination() pagination: PaginationParams,
+  ): Promise<Paths.ListProjectTags.Responses.$200> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    const result = await this.tagService.listProjectTags({
+      projectId,
+      requester,
+      pagination,
+    })
+
+    return {
+      items: result.items.map(PrivateApiController.formatTag),
+      pagination: result.pagination,
+    }
+  }
+
+  @Get('/GetReferenceableTags')
+  async getReferenceableTags(
+    @RequiredQuery('projectId') projectId: string,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.GetReferenceableTags.Responses.$200> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    const tags = await this.tagService.getReferenceableTags({
+      projectId,
+      requester,
+    })
+
+    return {
+      tags,
+    }
+  }
+
+  @Post('/CreateProjectTag')
+  async createProjectTag(
+    @AuthenticatedRequester() requester: Requester,
+    @Body() { projectId, key, value, color, description }: CreateProjectTagDto,
+  ): Promise<Paths.CreateProjectTag.Responses.$201> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    const tag = await this.tagService.createTag({
+      projectId,
+      key,
+      value,
+      color,
+      description: description ?? undefined,
+      requester,
+    })
+
+    return PrivateApiController.formatTag(tag)
+  }
+
+  @Post('/UpdateProjectTag')
+  async updateProjectTag(
+    @AuthenticatedRequester() requester: Requester,
+    @Body() { tagId, key, value, color, description }: UpdateProjectTagDto,
+  ): Promise<Paths.UpdateProjectTag.Responses.$200> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    const tag = await this.tagService.updateTag({
+      id: tagId,
+      key,
+      value,
+      color,
+      description: description ?? undefined,
+      requester,
+    })
+
+    return PrivateApiController.formatTag(tag)
+  }
+
+  @Delete('/DeleteProjectTag')
+  async deleteProjectTag(
+    @AuthenticatedRequester() requester: Requester,
+    @Body() { tagId }: DeleteProjectTagDto,
+  ): Promise<Paths.DeleteProjectTag.Responses.$204> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    await this.tagService.deleteTag({
+      id: tagId,
+      requester,
+    })
+
+    return {}
+  }
+
+  @Post('/ApplyTagsToPhrase')
+  async applyProjectTag(
+    @AuthenticatedRequester() requester: Requester,
+    @Body() { tagIds, phraseId }: ApplyTagsToPhraseDto,
+  ): Promise<Paths.ApplyTagsToPhrase.Responses.$204> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    await this.tagService.applyTagsToPhrase({
+      tagIds,
+      phraseId,
+      requester,
+    })
+
+    return {}
+  }
+
+  @Post('/BatchApplyProjectTag')
+  async batchApplyProjectTag(
+    @AuthenticatedRequester() requester: Requester,
+    @Body() { tagIds, recordIds, recordType }: BatchApplyProjectTagDto,
+  ): Promise<Paths.BatchApplyProjectTag.Responses.$204> {
+    if (requester.type !== 'human') {
+      throw new BadRequestException('Invalid requester')
+    }
+
+    await this.tagService.batchApplyTag({
+      tagIds,
+      recordIds,
+      recordType,
       requester,
     })
 

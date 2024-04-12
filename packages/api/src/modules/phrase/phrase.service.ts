@@ -24,6 +24,7 @@ interface ListPhrasesParams {
   key?: string
   translated?: string
   untranslated?: string
+  tags?: string[]
   pagination: PaginationParams
   requester: Requester
 }
@@ -113,6 +114,7 @@ export class PhraseService {
     revisionId,
     pagination,
     requester,
+    tags,
     key,
     translated,
     untranslated,
@@ -132,6 +134,15 @@ export class PhraseService {
       ...(key && {
         key: {
           contains: key,
+        },
+      }),
+      ...(tags && {
+        taggables: {
+          some: {
+            tagId: {
+              in: tags,
+            },
+          },
         },
       }),
       ...(translated && {
@@ -154,6 +165,9 @@ export class PhraseService {
     const [phrases, count] = await Promise.all([
       this.prismaService.phrase.findMany({
         where,
+        include: {
+          taggables: { select: { tagId: true } },
+        },
         orderBy: {
           createdAt: 'desc',
         },
