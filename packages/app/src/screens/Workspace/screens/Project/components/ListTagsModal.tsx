@@ -12,10 +12,13 @@ import {
 } from '../../../../../components/primitives'
 import { formatRelative } from '../../../../../utils/dates'
 import {
+  getGetReferenceableTagsQueryKey,
+  getListProjectTagsQueryKey,
   useDeleteProjectTag,
   useGetProject,
   useListProjectTags,
 } from '../../../../../generated/reactQuery'
+import { useQueryClient } from '@tanstack/react-query'
 
 export interface ListTagsModalRef {
   open: () => void
@@ -38,9 +41,21 @@ const Content: FC<ContentProps> = ({
   onRequestCreate,
   onTagDeleted,
 }) => {
+  const queryClient = useQueryClient()
   const { data: tags } = useListProjectTags({ queryParams: { projectId } })
   const { data: project } = useGetProject({ queryParams: { id: projectId } })
-  const { mutateAsync: deleteTag } = useDeleteProjectTag()
+  const { mutateAsync: deleteTag } = useDeleteProjectTag({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: getListProjectTagsQueryKey({ queryParams: { projectId } }),
+      })
+      queryClient.invalidateQueries({
+        queryKey: getGetReferenceableTagsQueryKey({
+          queryParams: { projectId },
+        }),
+      })
+    },
+  })
 
   const onRequestDelete = (id: string) => {
     deleteTag({ body: { tagId: id } })

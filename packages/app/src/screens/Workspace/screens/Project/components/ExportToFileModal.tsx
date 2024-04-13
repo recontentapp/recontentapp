@@ -1,6 +1,8 @@
 import { FC, forwardRef, useImperativeHandle, useRef, useState } from 'react'
 
 import {
+  ComboboxField,
+  Icon,
   Modal,
   ModalContent,
   ModalRef,
@@ -10,7 +12,11 @@ import {
 } from '../../../../../components/primitives'
 import { Components } from '../../../../../generated/typeDefinitions'
 import { fileFormatLabels } from '../../../../../utils/files'
-import { useGeneratePhrasesExportLink } from '../../../../../generated/reactQuery'
+import {
+  useGeneratePhrasesExportLink,
+  useListProjectTags,
+} from '../../../../../generated/reactQuery'
+import { styled } from '../../../../../theme'
 
 interface OpenProps {
   project: Components.Schemas.Project
@@ -27,11 +33,47 @@ export interface ExportToFileModalRef {
 interface State {
   projectId: string
   languageId?: string
+  containsTagIds: string[]
   fileFormat: Components.Schemas.FileFormat
   includeEmptyTranslations: boolean
 }
 
+const SelectedOption = styled('div', {
+  display: 'inline-block',
+  backgroundColor: '$gray3',
+  borderRadius: '$radius200',
+  boxShadow: '$shadow200',
+  border: '1px solid $gray6',
+  color: '$gray14',
+  fontSize: '$size80',
+  fontWeight: 500,
+  paddingLeft: '$space60',
+  paddingRight: '$space40',
+  paddingY: '$space40',
+})
+
+const CloseButton = styled('button', {
+  cursor: 'pointer',
+  width: 18,
+  height: 18,
+  outline: 'none',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  borderRadius: '$radius100',
+  transition: 'all 0.2s ease-in-out',
+  '&:hover,&:focus': {
+    backgroundColor: '$gray6',
+  },
+  '&:active': {
+    backgroundColor: '$gray7',
+  },
+})
+
 const Content: FC<ContentProps> = ({ project, onRedirect }) => {
+  const { data: tagsData } = useListProjectTags({
+    queryParams: { projectId: project.id },
+  })
   const { isPending, mutateAsync: generateExportLink } =
     useGeneratePhrasesExportLink()
   const [state, setState] = useState<State>({
@@ -39,6 +81,7 @@ const Content: FC<ContentProps> = ({ project, onRedirect }) => {
     languageId: project.languages.at(0)?.id,
     fileFormat: 'json',
     includeEmptyTranslations: true,
+    containsTagIds: [],
   })
 
   const onSubmit = async () => {
@@ -52,6 +95,7 @@ const Content: FC<ContentProps> = ({ project, onRedirect }) => {
         languageId: state.languageId,
         fileFormat: state.fileFormat,
         includeEmptyTranslations: state.includeEmptyTranslations,
+        containsTagIds: state.containsTagIds,
       },
     }).catch(() => {
       toast('error', { title: 'Could not generate export link' })
@@ -66,6 +110,8 @@ const Content: FC<ContentProps> = ({ project, onRedirect }) => {
     onRedirect()
     toast('success', { title: 'Export link successfully generated' })
   }
+
+  console.log(state)
 
   return (
     <ModalContent
@@ -113,6 +159,73 @@ const Content: FC<ContentProps> = ({ project, onRedirect }) => {
             setState(state => ({ ...state, languageId: option.value }))
           }}
         />
+
+        <Stack direction="column" spacing="$space60">
+          <SelectField
+            width="100%"
+            label="Tags"
+            placeholder="Choose tags..."
+            options={(tagsData?.items ?? [])
+              .filter(item => {
+                return !state.containsTagIds.includes(item.id)
+              })
+              .map(tag => ({
+                label: `${tag.key}:${tag.value}`,
+                value: tag.id,
+              }))}
+            onChange={value => {
+              if (!value) {
+                return
+              }
+              setState(state => ({
+                ...state,
+                containsTagIds: [...state.containsTagIds, value.value],
+              }))
+            }}
+            value={undefined}
+          />
+
+          {state.containsTagIds.length > 0 && (
+            <Stack direction="row" spacing="$space60">
+              {state.containsTagIds.map(val => {
+                const matchingOption = (tagsData?.items ?? []).find(
+                  option => option.id === val,
+                )
+
+                if (!matchingOption) {
+                  return
+                }
+
+                return (
+                  <SelectedOption key={matchingOption.value}>
+                    <Stack
+                      renderAs="span"
+                      direction="row"
+                      spacing="$space40"
+                      alignItems="center"
+                    >
+                      {matchingOption.key}:{matchingOption.value}
+                      <CloseButton
+                        onClick={() => {
+                          setState(state => ({
+                            ...state,
+                            containsTagIds: state.containsTagIds.filter(
+                              tagId => tagId !== val,
+                            ),
+                          }))
+                        }}
+                        aria-label="Close"
+                        type="button"
+                      >
+                        <Icon src="close" color="$gray10" size={16} />
+                      </CloseButton>
+                    </Stack>
+                  </SelectedOption>
+                )
+              })}
+            </Stack>
+          )}
+        </Stack>
       </Stack>
     </ModalContent>
   )

@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction, useCallback, useEffect } from 'react'
 import {
   Box,
   Button,
+  ComboboxField,
   FileUpload,
   SelectField,
   Stack,
@@ -14,6 +15,7 @@ import {
   getFileType,
 } from '../../../../../utils/files'
 import { Components } from '../../../../../generated/typeDefinitions'
+import { useListProjectTags } from '../../../../../generated/reactQuery'
 
 interface Props {
   project: Components.Schemas.Project
@@ -32,6 +34,9 @@ export const Form = ({
   canMoveToNextStep,
   onSubmit,
 }: Props) => {
+  const { data: tagsData } = useListProjectTags({
+    queryParams: { projectId: project.id },
+  })
   useEffect(() => {
     if (state.language || project.languages.length === 0) {
       return
@@ -151,6 +156,24 @@ export const Form = ({
                   },
                 }))
               }}
+            />
+
+            <ComboboxField
+              width="100%"
+              label="Tags"
+              placeholder="Choose tags..."
+              isMultiple
+              options={(tagsData?.items ?? []).map(tag => ({
+                label: `${tag.key}:${tag.value}`,
+                value: tag.id,
+              }))}
+              onChange={tagIds =>
+                updateState(state => ({
+                  ...state,
+                  tagIds,
+                }))
+              }
+              value={state.tagIds}
             />
           </Stack>
 

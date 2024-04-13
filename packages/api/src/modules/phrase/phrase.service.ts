@@ -70,6 +70,7 @@ interface ImportPhrasesParams {
   fileFormat: Components.Schemas.FileFormat
   revisionId: string
   languageId: string
+  tagIds: string[]
   mappingSheetName?: string
   mappingRowStartIndex?: number
   mappingKeyColumnIndex?: number
@@ -80,6 +81,7 @@ interface ImportPhrasesParams {
 interface GeneratePhrasesExportTokenParams {
   revisionId: string
   languageId: string
+  containsTagIds: string[] | null
   fileFormat: Components.Schemas.FileFormat
   includeEmptyTranslations: boolean
   requester: HumanRequester
@@ -93,6 +95,7 @@ interface PhrasesExportTokenPayload {
   revisionId: string
   projectId: string
   languageId: string
+  containsTagIds: string[] | null
   fileFormat: Components.Schemas.FileFormat
   includeEmptyTranslations: boolean
 }
@@ -390,6 +393,11 @@ export class PhraseService {
           phraseId,
         },
       })
+      await t.taggable.deleteMany({
+        where: {
+          recordId: phraseId,
+        },
+      })
       await t.phrase.delete({
         where: {
           id: phraseId,
@@ -433,6 +441,13 @@ export class PhraseService {
           },
         },
       })
+      await t.taggable.deleteMany({
+        where: {
+          recordId: {
+            in: ids,
+          },
+        },
+      })
       await t.phrase.deleteMany({
         where: {
           id: {
@@ -449,6 +464,7 @@ export class PhraseService {
     revisionId,
     languageId,
     requester,
+    tagIds,
     ...mappingParams
   }: ImportPhrasesParams) {
     const revision = await this.prismaService.projectRevision.findUniqueOrThrow(
@@ -469,6 +485,29 @@ export class PhraseService {
       throw new BadRequestException(
         'Language does not belong to this workspace',
       )
+    }
+
+    if (tagIds.length > 0) {
+      const tags = await this.prismaService.tag.findMany({
+        where: {
+          id: {
+            in: tagIds,
+          },
+        },
+      })
+
+      if (tags.length !== tagIds.length) {
+        throw new BadRequestException('Some tags do not exist')
+      }
+
+      const allBelongToSameProject = tags.every(
+        tag => tag.projectId === revision.projectId,
+      )
+      if (!allBelongToSameProject) {
+        throw new BadRequestException(
+          'All tags must belong to the same project',
+        )
+      }
     }
 
     if (
@@ -523,6 +562,16 @@ export class PhraseService {
             createdBy: requester.getAccountIDForWorkspace(
               revision.workspaceId,
             )!,
+            taggables: {
+              create: tagIds.map(tagId => ({
+                tagId,
+                recordType: 'phrase',
+                createdBy: requester.getAccountIDForWorkspace(
+                  revision.workspaceId,
+                )!,
+                workspaceId: revision.workspaceId,
+              })),
+            },
             translations: {
               create: {
                 content: value,
@@ -544,6 +593,7 @@ export class PhraseService {
   async generatePhrasesExportToken({
     revisionId,
     languageId,
+    containsTagIds,
     fileFormat,
     includeEmptyTranslations,
     requester,
@@ -556,6 +606,29 @@ export class PhraseService {
 
     if (!requester.canAccessWorkspace(revision.workspaceId)) {
       throw new ForbiddenException('User is not part of this workspace')
+    }
+
+    if (containsTagIds && containsTagIds.length > 0) {
+      const tags = await this.prismaService.tag.findMany({
+        where: {
+          id: {
+            in: containsTagIds,
+          },
+        },
+      })
+
+      if (tags.length !== containsTagIds.length) {
+        throw new BadRequestException('Some tags do not exist')
+      }
+
+      const allBelongToSameProject = tags.every(
+        tag => tag.projectId === revision.projectId,
+      )
+      if (!allBelongToSameProject) {
+        throw new BadRequestException(
+          'All tags must belong to the same project',
+        )
+      }
     }
 
     const language = await this.prismaService.language.findUniqueOrThrow({
@@ -574,6 +647,7 @@ export class PhraseService {
       includeEmptyTranslations,
       revisionId,
       languageId,
+      containsTagIds,
     }
 
     try {
@@ -604,9 +678,7 @@ export class PhraseService {
           issuer: PhraseService.jwtIssuer,
         },
       ) as PhrasesExportTokenPayload
-    } catch (e) {
-      console.log(e)
-    }
+    } catch (e) {}
 
     if (!payload) {
       throw new BadRequestException('Invalid token')
@@ -617,6 +689,7 @@ export class PhraseService {
       projectId,
       languageId,
       fileFormat,
+      containsTagIds,
       includeEmptyTranslations,
     } = payload
 
@@ -635,9 +708,20 @@ export class PhraseService {
       }),
     ])
 
+    const tagIds = containsTagIds ?? []
+
     const phrases = await this.prismaService.phrase.findMany({
       where: {
         revisionId,
+        ...(tagIds.length > 0 && {
+          taggables: {
+            some: {
+              tagId: {
+                in: tagIds,
+              },
+            },
+          },
+        }),
       },
       select: {
         key: true,

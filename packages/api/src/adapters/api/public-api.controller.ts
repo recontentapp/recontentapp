@@ -287,7 +287,7 @@ export class PublicApiController {
   @Post('/phrase-exports')
   async createPhraseExport(
     @AuthenticatedRequester() requester: Requester,
-    @Body() { revisionId, languageId }: CreatePhraseExportDto,
+    @Body() { revisionId, languageId, containsTagIds }: CreatePhraseExportDto,
   ): Promise<Paths.ExportPhrases.Responses.$200> {
     if (requester.type !== 'service') {
       throw new BadRequestException('Invalid requester')
@@ -297,6 +297,16 @@ export class PublicApiController {
       where: {
         revisionId,
         workspaceId: requester.serviceWorkspaceId,
+        ...(containsTagIds &&
+          containsTagIds.length > 0 && {
+            taggables: {
+              some: {
+                tagId: {
+                  in: containsTagIds,
+                },
+              },
+            },
+          }),
       },
       select: {
         key: true,

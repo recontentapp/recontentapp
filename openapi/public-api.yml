@@ -183,6 +183,10 @@ paths:
                   type: string
                 languageId:
                   type: string
+                containsTagIds:
+                  type: array
+                  items:
+                    type: string
               additionalProperties: false
               required:
                 - revisionId

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator'
+import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator'
 
 export class CreatePhraseExportDto {
   @IsString()
@@ -8,4 +8,8 @@ export class CreatePhraseExportDto {
   @IsString()
   @IsNotEmpty()
   languageId: string
+
+  @IsArray()
+  @IsOptional()
+  containsTagIds: string[] | undefined
 }

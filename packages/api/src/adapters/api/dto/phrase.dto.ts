@@ -10,6 +10,7 @@ import {
 } from 'class-validator'
 import { FileFormatValidator } from './domain.dto'
 import { Components } from 'src/generated/typeDefinitions'
+import { IsNullable } from 'src/utils/class-validator'
 
 export class CreatePhraseDto {
   @IsString()
@@ -88,6 +89,10 @@ export class ImportPhrasesDto {
 
   @IsString()
   @IsOptional()
+  tagIds: string
+
+  @IsString()
+  @IsOptional()
   mappingSheetName?: string
 
   @IsNumberString()
@@ -111,6 +116,10 @@ export class GeneratePhrasesExportLinkDto {
   @IsString()
   @IsNotEmpty()
   languageId: string
+
+  @IsArray()
+  @IsNullable()
+  containsTagIds: string[] | null
 
   @Validate(FileFormatValidator)
   @IsNotEmpty()

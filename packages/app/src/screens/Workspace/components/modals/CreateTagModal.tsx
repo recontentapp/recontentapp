@@ -20,10 +20,13 @@ import {
 } from '../../../../components/primitives'
 import { Components } from '../../../../generated/typeDefinitions'
 import {
+  getGetReferenceableTagsQueryKey,
+  getListProjectTagsQueryKey,
   useCreateProjectTag,
   useGetProject,
 } from '../../../../generated/reactQuery'
 import { getRandomHexColor } from '../../../../utils/colors'
+import { useQueryClient } from '@tanstack/react-query'
 
 export interface CreateTagModalRef {
   open: (project: Components.Schemas.Project) => void
@@ -43,8 +46,20 @@ interface State {
 }
 
 const Content: FC<ContentProps> = ({ projectId, close }) => {
+  const queryClient = useQueryClient()
   const { data: project } = useGetProject({ queryParams: { id: projectId } })
-  const { mutateAsync, isPending } = useCreateProjectTag()
+  const { mutateAsync, isPending } = useCreateProjectTag({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: getListProjectTagsQueryKey({ queryParams: { projectId } }),
+      })
+      queryClient.invalidateQueries({
+        queryKey: getGetReferenceableTagsQueryKey({
+          queryParams: { projectId },
+        }),
+      })
+    },
+  })
   const [state, setState] = useState<State>({
     key: '',
     value: '',

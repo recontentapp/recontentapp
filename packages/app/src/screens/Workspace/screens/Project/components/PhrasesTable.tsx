@@ -366,7 +366,7 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
 
               <Stack direction="row" spacing="$space40" alignItems="center">
                 <Text size="$size80" color="$gray14" variation="bold">
-                  1
+                  {tagsData?.pagination.itemsCount ?? 0}
                 </Text>
                 <Text size="$size80" color="$gray11">
                   {(tagsData?.pagination.itemsCount ?? 0) > 1 ? 'tags' : 'tag'}

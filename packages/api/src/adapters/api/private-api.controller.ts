@@ -988,11 +988,14 @@ export class PrivateApiController {
       throw new BadRequestException('Invalid requester')
     }
 
+    const tagIds = body.tagIds ? body.tagIds.split(',') : []
+
     await this.phraseService.importPhrases({
       file: file.buffer,
       fileFormat: body.fileFormat,
       revisionId: body.revisionId,
       languageId: body.languageId,
+      tagIds,
       mappingSheetName: body.mappingSheetName,
       mappingKeyColumnIndex: body.mappingKeyColumnIndex
         ? Number(body.mappingKeyColumnIndex)
@@ -1017,6 +1020,7 @@ export class PrivateApiController {
       revisionId,
       languageId,
       fileFormat,
+      containsTagIds,
       includeEmptyTranslations,
     }: GeneratePhrasesExportLinkDto,
   ): Promise<Paths.GeneratePhrasesExportLink.Responses.$201> {
@@ -1028,6 +1032,7 @@ export class PrivateApiController {
       revisionId,
       languageId,
       fileFormat,
+      containsTagIds,
       includeEmptyTranslations,
       requester,
     })

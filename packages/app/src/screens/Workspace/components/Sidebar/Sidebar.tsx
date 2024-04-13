@@ -113,9 +113,10 @@ export const Sidebar: FC = () => {
           title="Projects"
           onAdd={() => openCreateProject()}
           items={
-            data?.items.map(({ name, id }) => ({
+            data?.items.map(({ name, id, masterRevisionId }) => ({
               name,
               id,
+              revisionId: masterRevisionId,
             })) ?? []
           }
         />

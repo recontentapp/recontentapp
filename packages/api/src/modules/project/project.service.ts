@@ -296,6 +296,18 @@ export class ProjectService {
           },
         },
       })
+      await t.taggable.deleteMany({
+        where: {
+          phrase: {
+            projectId,
+          },
+        },
+      })
+      await t.tag.deleteMany({
+        where: {
+          projectId,
+        },
+      })
       await t.phrase.deleteMany({
         where: {
           projectId,

@@ -8,6 +8,7 @@ export interface State {
     name: string
     id: string
   }
+  tagIds: string[]
   csvPreviewData?: CSVPreviewData
   excelPreviewData?: ExcelSheetPreviewData[]
   mapping?: {

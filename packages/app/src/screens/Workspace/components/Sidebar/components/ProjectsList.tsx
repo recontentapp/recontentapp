@@ -9,6 +9,7 @@ import routes from '../../../../../routing'
 interface ProjectsListItem {
   id: string
   name: string
+  revisionId: string
 }
 
 interface ProjectsListProps {
@@ -107,8 +108,12 @@ export const ProjectsList: FC<ProjectsListProps> = ({
                 active={match !== null && match.params.projectId === item.id}
                 onClick={() =>
                   navigate(
-                    routes.projectSettings.url({
-                      pathParams: { workspaceKey, projectId: item.id },
+                    routes.projectPhrases.url({
+                      pathParams: {
+                        workspaceKey,
+                        projectId: item.id,
+                        revisionId: item.revisionId,
+                      },
                     }),
                   )
                 }

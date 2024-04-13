@@ -25,6 +25,7 @@ export const ImportFromFile = () => {
   const [step, setStep] = useState<'form' | 'mapping'>('form')
   const [state, setState] = useState<State>({
     fileFormat: 'json',
+    tagIds: [],
   })
   const {
     data: project,
@@ -59,6 +60,10 @@ export const ImportFromFile = () => {
     formData.append('fileFormat', state.fileFormat)
     formData.append('revisionId', project.masterRevisionId)
     formData.append('languageId', state.language?.id)
+
+    if (state.tagIds.length > 0) {
+      formData.append('tagIds', state.tagIds.join(','))
+    }
 
     if (state.mapping && ['excel', 'csv'].includes(state.fileFormat)) {
       if (state.mapping.sheetName) {
