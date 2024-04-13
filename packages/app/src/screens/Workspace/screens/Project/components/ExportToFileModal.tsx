@@ -1,7 +1,6 @@
 import { FC, forwardRef, useImperativeHandle, useRef, useState } from 'react'
 
 import {
-  ComboboxField,
   Icon,
   Modal,
   ModalContent,
