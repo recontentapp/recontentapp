@@ -1,12 +1,21 @@
 import json from './json'
 import nestedJson from './nestedJson'
+import yaml from './yaml'
+import nestedYaml from './nestedYaml'
 import { Format, Formatter } from './types'
 
 export { isValidFormat } from './functions'
 
-const io: Record<Format, Formatter> = {
+export const formatters: Record<Format, Formatter> = {
+  yaml: yaml,
+  'nested-yaml': nestedYaml,
   json: json,
   'nested-json': nestedJson,
 }
 
-export default io
+export const fileExtensions: Record<Format, string> = {
+  yaml: '.yml',
+  'nested-yaml': '.yml',
+  json: '.json',
+  'nested-json': '.json',
+}

@@ -2,7 +2,7 @@ import { Command } from 'commander'
 import path from 'path'
 import { getApiClient } from '../utils/environment'
 import { writeFile } from '../utils/fs'
-import io, { isValidFormat } from '../io'
+import { formatters, fileExtensions, isValidFormat } from '../io'
 
 interface Flags {
   project: string
@@ -35,7 +35,9 @@ const exportCommand = new Command('export')
     const format = String(flags.format)
 
     if (!isValidFormat(format)) {
-      command.error('Invalid format, please use json or nested-json.')
+      command.error(
+        'Invalid format, please use json, nested-json, yaml or nested-yaml.',
+      )
     }
 
     const apiClient = getApiClient(command)
@@ -79,14 +81,15 @@ const exportCommand = new Command('export')
       ),
     )
 
-    const formatter = io[format]
+    const formatter = formatters[format]
+    const fileExtension = fileExtensions[format]
 
     for (const [index, file] of files.entries()) {
       if (file.status !== 'fulfilled' || !file.value.ok) {
         command.error('Failed to export phrases.')
       }
 
-      const fileName = `${languagesToExport[index].name}.json`
+      const fileName = [languagesToExport[index].name, fileExtension].join('')
 
       writeFile(
         path.resolve(process.cwd(), String(flags.output), fileName),
