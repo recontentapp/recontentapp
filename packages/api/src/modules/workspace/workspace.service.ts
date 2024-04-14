@@ -126,6 +126,14 @@ export class WorkspaceService {
         },
       })
 
+      await t.workspaceBillingSettings.create({
+        data: {
+          workspaceId: workspace.id,
+          plan: 'free',
+          createdBy: account.id,
+        },
+      })
+
       await t.workspace.update({
         where: { id: workspace.id },
         data: {

@@ -1510,6 +1510,10 @@ components:
         - updatedAt
         - createdBy
         - updatedBy
+    WorkspaceBillingPlan:
+      type: string
+      enum:
+        - free
     WorkspaceAccount:
       type: object
       properties:
