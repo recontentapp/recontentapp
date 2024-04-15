@@ -6,7 +6,7 @@ import {
 import { EventEmitter2 } from '@nestjs/event-emitter'
 import { ProjectRevisionState } from '@prisma/client'
 import { PrismaService } from 'src/utils/prisma.service'
-import { HumanRequester } from 'src/utils/requester'
+import { HumanRequester } from 'src/modules/auth/requester'
 import { ProjectCreatedEvent } from './events/project-created.event'
 import { PaginationParams } from 'src/utils/pagination'
 

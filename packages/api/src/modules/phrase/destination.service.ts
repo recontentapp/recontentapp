@@ -10,7 +10,7 @@ import { YAMLService } from '../io/yaml.service'
 import { ExcelService } from '../io/excel.service'
 import { ConfigService } from '@nestjs/config'
 import { Config } from 'src/utils/config'
-import { HumanRequester } from 'src/utils/requester'
+import { HumanRequester } from 'src/modules/auth/requester'
 import { Components } from 'src/generated/typeDefinitions'
 import {
   DeleteObjectsCommand,

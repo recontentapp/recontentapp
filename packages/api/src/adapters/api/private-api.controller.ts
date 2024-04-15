@@ -20,7 +20,7 @@ import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard'
 import { Public } from 'src/utils/is-public.decorator'
 import { Throttle } from '@nestjs/throttler'
 import { PrismaService } from 'src/utils/prisma.service'
-import { AuthenticatedRequester, Requester } from 'src/utils/requester'
+import { AuthenticatedRequester, Requester } from 'src/modules/auth/requester'
 import {
   ConfirmSignUpDto,
   LoginDto,

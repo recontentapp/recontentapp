@@ -1579,7 +1579,7 @@ components:
         - biller
         - member
         - guest
-    WorkspacePermission:
+    WorkspaceAbility:
       type: string
       enum:
         - 'billing:manage'

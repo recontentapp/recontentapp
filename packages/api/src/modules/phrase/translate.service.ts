@@ -7,7 +7,7 @@ import OpenAI from 'openai'
 import { PrismaService } from 'src/utils/prisma.service'
 import { ConfigService } from '@nestjs/config'
 import { Config } from 'src/utils/config'
-import { HumanRequester } from 'src/utils/requester'
+import { HumanRequester } from 'src/modules/auth/requester'
 import { Language, Phrase, PhraseTranslation } from '@prisma/client'
 import {
   TranslateClient,

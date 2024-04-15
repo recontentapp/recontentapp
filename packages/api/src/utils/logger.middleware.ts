@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express'
 
 import { MyLogger } from './logger'
 import { getRequestIdFromRequest } from './request-id.middleware'
-import { getRequesterOrNull } from './requester'
+import { getRequesterOrNull } from '../modules/auth/requester'
 
 const REQUEST_PROCESSED = 'Request processed'
 
@@ -29,8 +29,8 @@ export class LoggerMiddleware implements NestMiddleware {
       const service = path.startsWith('/public-api')
         ? 'public-api'
         : path.startsWith('/private-api')
-        ? 'private-api'
-        : 'worker'
+          ? 'private-api'
+          : 'worker'
 
       const params = {
         service,

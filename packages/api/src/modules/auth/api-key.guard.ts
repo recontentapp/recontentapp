@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common'
 import { PrismaService } from 'src/utils/prisma.service'
-import { RequestUser } from 'src/utils/requester'
+import { RequestUser } from './types'
 
 @Injectable()
 export class APIKeyGuard implements CanActivate {
@@ -29,6 +29,11 @@ export class APIKeyGuard implements CanActivate {
       where: { apiKey: value, blockedAt: null },
       include: {
         service: true,
+        workspace: {
+          include: {
+            billingSettings: true,
+          },
+        },
       },
     })
     if (!serviceAccount) {

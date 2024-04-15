@@ -4,7 +4,7 @@ import {
   Injectable,
 } from '@nestjs/common'
 import { PrismaService } from 'src/utils/prisma.service'
-import { HumanRequester } from 'src/utils/requester'
+import { HumanRequester } from 'src/modules/auth/requester'
 import { PaginationParams } from 'src/utils/pagination'
 import { isValidHexColor } from 'src/utils/colors'
 
