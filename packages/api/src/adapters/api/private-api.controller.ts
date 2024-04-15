@@ -20,7 +20,6 @@ import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard'
 import { Public } from 'src/utils/is-public.decorator'
 import { Throttle } from '@nestjs/throttler'
 import { PrismaService } from 'src/utils/prisma.service'
-import { AuthenticatedRequester, Requester } from 'src/modules/auth/requester'
 import {
   ConfirmSignUpDto,
   LoginDto,
@@ -91,6 +90,8 @@ import {
   DeleteProjectTagDto,
   UpdateProjectTagDto,
 } from './dto/tag.dto'
+import { AuthenticatedRequester } from 'src/modules/auth/requester.decorator'
+import { Requester } from 'src/modules/auth/requester.object'
 
 @Controller('private-api')
 @UseGuards(JwtAuthGuard)
@@ -416,12 +417,8 @@ export class PrivateApiController {
   async getCurrentUser(
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.GetCurrentUser.Responses.$200> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     const user = await this.prismaService.user.findUniqueOrThrow({
-      where: { id: requester.userId },
+      where: { id: requester.getUserID() },
       include: {
         accounts: {
           include: {
@@ -439,18 +436,14 @@ export class PrivateApiController {
     @Body() { firstName, lastName }: UpdateCurrentUserDto,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.UpdateCurrentUser.Responses.$200> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     await this.authService.updateUser({
-      id: requester.userId,
+      id: requester.getUserID(),
       firstName,
       lastName,
     })
 
     const user = await this.prismaService.user.findUniqueOrThrow({
-      where: { id: requester.userId },
+      where: { id: requester.getUserID() },
       include: {
         accounts: {
           include: {
@@ -461,6 +454,18 @@ export class PrivateApiController {
     })
 
     return PrivateApiController.formatCurrentUser(user)
+  }
+
+  @Get('/GetWorkspaceAbilities')
+  async getWorkspaceAbilities(
+    @AuthenticatedRequester() requester: Requester,
+    @RequiredQuery('workspaceId') workspaceId: string,
+  ): Promise<Paths.GetWorkspaceAbilities.Responses.$200> {
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(workspaceId)
+
+    return {
+      abilities: workspaceAccess.getAbilities(),
+    }
   }
 
   @Get('/GetWorkspaceAvailability')
@@ -479,10 +484,6 @@ export class PrivateApiController {
     @Body() { key, name }: CreateWorkspaceDto,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.CreateWorkspace.Responses.$201> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     const workspace = await this.workspaceService.createWorkspace({
       key,
       name,
@@ -510,10 +511,6 @@ export class PrivateApiController {
     @Body() { email, role, workspaceId }: InviteToWorkspaceDto,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.InviteToWorkspace.Responses.$201> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     await this.workspaceService.inviteToWorkspace({
       email,
       role,
@@ -529,10 +526,6 @@ export class PrivateApiController {
     @Body() { invitationCode }: JoinWorkspaceDto,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.JoinWorkspace.Responses.$201> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     await this.workspaceService.joinWorkspace({ invitationCode, requester })
     return {}
   }
@@ -543,10 +536,6 @@ export class PrivateApiController {
     @AuthenticatedRequester() requester: Requester,
     @Pagination() pagination: PaginationParams,
   ): Promise<Paths.ListWorkspaceInvitations.Responses.$200> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     const invitations = await this.workspaceService.listWorkspaceInvitations({
       workspaceId,
       requester,
@@ -563,7 +552,7 @@ export class PrivateApiController {
     @Pagination() pagination: PaginationParams,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.ListWorkspaceAccounts.Responses.$200> {
-    if (type !== 'human' && type !== 'service' && type !== 'all') {
+    if (!['all', 'service', 'human'].includes(type)) {
       throw new BadRequestException('Invalid type')
     }
 
@@ -571,7 +560,7 @@ export class PrivateApiController {
       workspaceId,
       requester,
       pagination,
-      type,
+      type: type as 'all' | 'service' | 'human',
     })
 
     return result
@@ -582,10 +571,6 @@ export class PrivateApiController {
     @Body() { workspaceId, name, role }: CreateWorkspaceServiceAccountDto,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.CreateWorkspaceServiceAccount.Responses.$201> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     const apiKey = await this.workspaceService.createWorkspaceServiceAccount({
       workspaceId,
       requester,
@@ -601,10 +586,6 @@ export class PrivateApiController {
     @Body() { id }: DeleteWorkspaceServiceAccountDto,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.DeleteWorkspaceServiceAccount.Responses.$204> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     await this.workspaceService.deleteWorkspaceServiceAccount({
       id,
       requester,
@@ -631,10 +612,6 @@ export class PrivateApiController {
     @Body() { workspaceId, languages }: AddLanguagesToWorkspaceDto,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.AddLanguagesToWorkspace.Responses.$201> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     await this.workspaceService.addLanguagesToWorkspace({
       workspaceId,
       requester,
@@ -649,10 +626,6 @@ export class PrivateApiController {
     @Body() { name, workspaceId, languageIds, description }: CreateProjectDto,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.CreateProject.Responses.$201> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     const project = await this.projectService.createProject({
       name,
       workspaceId,
@@ -669,10 +642,6 @@ export class PrivateApiController {
     @Body() { id, name, description }: UpdateProjectDto,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.UpdateProject.Responses.$200> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     const project = await this.projectService.updateProject({
       id,
       name,
@@ -688,10 +657,6 @@ export class PrivateApiController {
     @RequiredQuery('id') id: string,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.GetProject.Responses.$200> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     const project = await this.projectService.getProject({
       projectId: id,
       requester,
@@ -705,10 +670,6 @@ export class PrivateApiController {
     @Body() { projectId, languageIds }: AddLanguagesToProjectDto,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.AddLanguagesToProject.Responses.$201> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     await this.projectService.addLanguagesToProject({
       projectId,
       requester,
@@ -723,10 +684,6 @@ export class PrivateApiController {
     @Body() { projectId }: DeleteProjectDto,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.DeleteProject.Responses.$204> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     await this.projectService.deleteProject({
       projectId,
       requester,
@@ -741,10 +698,6 @@ export class PrivateApiController {
     @AuthenticatedRequester() requester: Requester,
     @Pagination() pagination: PaginationParams,
   ): Promise<Paths.ListProjects.Responses.$200> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     const result = await this.projectService.listProjects({
       workspaceId,
       requester,
@@ -764,10 +717,6 @@ export class PrivateApiController {
     @AuthenticatedRequester() requester: Requester,
     @Pagination() pagination: PaginationParams,
   ): Promise<Paths.ListProjectRevisions.Responses.$200> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     if (state !== 'open' && state !== 'closed') {
       throw new BadRequestException('Invalid state')
     }
@@ -790,10 +739,6 @@ export class PrivateApiController {
     @RequiredQuery('revisionId') revisionId: string,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.GetProjectRevision.Responses.$200> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     const revision = await this.projectService.getProjectRevision({
       revisionId,
       requester,
@@ -825,10 +770,6 @@ export class PrivateApiController {
     @Query('translated') translated?: string,
     @Query('untranslated') untranslated?: string,
   ): Promise<Paths.ListPhrases.Responses.$200> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     const result = await this.phraseService.listPhrases({
       revisionId,
       key,
@@ -850,10 +791,6 @@ export class PrivateApiController {
     @Body() { revisionId, key }: CreatePhraseDto,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.CreatePhrase.Responses.$201> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     const phrase = await this.phraseService.createPhrase({
       revisionId,
       key,
@@ -868,10 +805,6 @@ export class PrivateApiController {
     @RequiredQuery('phraseId') phraseId: string,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.GetPhrase.Responses.$200> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     const phrase = await this.phraseService.getPhrase({
       phraseId,
       requester,
@@ -885,10 +818,6 @@ export class PrivateApiController {
     @Body() { phraseId, key }: UpdatePhraseKeyDto,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.UpdatePhraseKey.Responses.$200> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     const phrase = await this.phraseService.updatePhraseKey({
       phraseId,
       key,
@@ -903,10 +832,6 @@ export class PrivateApiController {
     @Body() { phraseId, translations }: TranslatePhraseDto,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.TranslatePhrase.Responses.$200> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     const phrase = await this.phraseService.translatePhrase({
       phraseId,
       translations,
@@ -921,10 +846,6 @@ export class PrivateApiController {
     @Body() { phraseId, languageId }: AutoTranslatePhraseDto,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.AutoTranslatePhrase.Responses.$200> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     const phrase = await this.translateService.translatePhrase({
       phraseId,
       languageId,
@@ -939,10 +860,6 @@ export class PrivateApiController {
     @Body() { ids }: BatchDeletePhraseDto,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.BatchDeletePhrase.Responses.$204> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     await this.phraseService.batchDeletePhrases({
       ids,
       requester,
@@ -956,10 +873,6 @@ export class PrivateApiController {
     @Body() { phraseId }: DeletePhraseDto,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.DeleteProject.Responses.$204> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     await this.phraseService.deletePhrase({
       phraseId,
       requester,
@@ -984,10 +897,6 @@ export class PrivateApiController {
     )
     file: Express.Multer.File,
   ): Promise<Paths.ImportPhrases.Responses.$201> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     const tagIds = body.tagIds ? body.tagIds.split(',') : []
 
     await this.phraseService.importPhrases({
@@ -1024,10 +933,6 @@ export class PrivateApiController {
       includeEmptyTranslations,
     }: GeneratePhrasesExportLinkDto,
   ): Promise<Paths.GeneratePhrasesExportLink.Responses.$201> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     const token = await this.phraseService.generatePhrasesExportToken({
       revisionId,
       languageId,
@@ -1070,10 +975,6 @@ export class PrivateApiController {
     @AuthenticatedRequester() requester: Requester,
     @Pagination() pagination: PaginationParams,
   ): Promise<Paths.ListDestinations.Responses.$200> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     const result = await this.destinationService.listDestinations({
       projectId,
       revisionId,
@@ -1092,10 +993,6 @@ export class PrivateApiController {
     @RequiredQuery('destinationId') destinationId: string,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.GetDestination.Responses.$200> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     const destination = await this.destinationService.getDestination({
       destinationId,
       requester,
@@ -1115,10 +1012,6 @@ export class PrivateApiController {
       includeEmptyTranslations,
     }: CreateCDNDestinationDto,
   ): Promise<Paths.CreateCDNDestination.Responses.$201> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     const destination = await this.destinationService.createCDNDestination({
       name,
       revisionId,
@@ -1146,10 +1039,6 @@ export class PrivateApiController {
       awsSecretAccessKey,
     }: CreateAWSS3DestinationDto,
   ): Promise<Paths.CreateAWSS3Destination.Responses.$201> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     const destination = await this.destinationService.createAWSS3Destination({
       name,
       revisionId,
@@ -1181,10 +1070,6 @@ export class PrivateApiController {
       googleCloudProjectId,
     }: CreateGoogleCloudStorageDestinationDto,
   ): Promise<Paths.CreateGoogleCloudStorageDestination.Responses.$201> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     const destination =
       await this.destinationService.createGoogleCloudStorageDestination({
         name,
@@ -1206,10 +1091,6 @@ export class PrivateApiController {
     @AuthenticatedRequester() requester: Requester,
     @Body() { destinationId }: SyncDestinationDto,
   ): Promise<Paths.SyncDestination.Responses.$204> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     await this.destinationService.syncDestination({
       destinationId,
       requester,
@@ -1223,10 +1104,6 @@ export class PrivateApiController {
     @AuthenticatedRequester() requester: Requester,
     @Body() { destinationId }: DeleteDestinationDto,
   ): Promise<Paths.DeleteDestination.Responses.$204> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     await this.destinationService.deleteDestination({
       destinationId,
       requester,
@@ -1241,10 +1118,6 @@ export class PrivateApiController {
     @AuthenticatedRequester() requester: Requester,
     @Pagination() pagination: PaginationParams,
   ): Promise<Paths.ListProjectTags.Responses.$200> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     const result = await this.tagService.listProjectTags({
       projectId,
       requester,
@@ -1262,10 +1135,6 @@ export class PrivateApiController {
     @RequiredQuery('projectId') projectId: string,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.GetReferenceableTags.Responses.$200> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     const tags = await this.tagService.getReferenceableTags({
       projectId,
       requester,
@@ -1281,10 +1150,6 @@ export class PrivateApiController {
     @AuthenticatedRequester() requester: Requester,
     @Body() { projectId, key, value, color, description }: CreateProjectTagDto,
   ): Promise<Paths.CreateProjectTag.Responses.$201> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     const tag = await this.tagService.createTag({
       projectId,
       key,
@@ -1302,10 +1167,6 @@ export class PrivateApiController {
     @AuthenticatedRequester() requester: Requester,
     @Body() { tagId, key, value, color, description }: UpdateProjectTagDto,
   ): Promise<Paths.UpdateProjectTag.Responses.$200> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     const tag = await this.tagService.updateTag({
       id: tagId,
       key,
@@ -1323,10 +1184,6 @@ export class PrivateApiController {
     @AuthenticatedRequester() requester: Requester,
     @Body() { tagId }: DeleteProjectTagDto,
   ): Promise<Paths.DeleteProjectTag.Responses.$204> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     await this.tagService.deleteTag({
       id: tagId,
       requester,
@@ -1340,10 +1197,6 @@ export class PrivateApiController {
     @AuthenticatedRequester() requester: Requester,
     @Body() { tagIds, phraseId }: ApplyTagsToPhraseDto,
   ): Promise<Paths.ApplyTagsToPhrase.Responses.$204> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     await this.tagService.applyTagsToPhrase({
       tagIds,
       phraseId,
@@ -1358,10 +1211,6 @@ export class PrivateApiController {
     @AuthenticatedRequester() requester: Requester,
     @Body() { tagIds, recordIds, recordType }: BatchApplyProjectTagDto,
   ): Promise<Paths.BatchApplyProjectTag.Responses.$204> {
-    if (requester.type !== 'human') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     await this.tagService.batchApplyTag({
       tagIds,
       recordIds,

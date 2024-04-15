@@ -1,22 +1,18 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  Injectable,
-} from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/utils/prisma.service'
-import { HumanRequester } from 'src/modules/auth/requester'
 import { PaginationParams } from 'src/utils/pagination'
 import { isValidHexColor } from 'src/utils/colors'
+import { Requester } from '../auth/requester.object'
 
 interface ListProjectTagsParams {
   projectId: string
   pagination: PaginationParams
-  requester: HumanRequester
+  requester: Requester
 }
 
 interface GetReferenceableTagsParams {
   projectId: string
-  requester: HumanRequester
+  requester: Requester
 }
 
 interface CreateTagParams {
@@ -25,7 +21,7 @@ interface CreateTagParams {
   value: string
   color: string
   description?: string
-  requester: HumanRequester
+  requester: Requester
 }
 
 interface UpdateTagParams {
@@ -34,25 +30,25 @@ interface UpdateTagParams {
   value: string
   color: string
   description?: string
-  requester: HumanRequester
+  requester: Requester
 }
 
 interface DeleteTagParams {
   id: string
-  requester: HumanRequester
+  requester: Requester
 }
 
 interface BatchApplyTagParams {
   tagIds: string[]
   recordIds: string[]
   recordType: 'phrase'
-  requester: HumanRequester
+  requester: Requester
 }
 
 interface ApplyTagsToPhraseParams {
   phraseId: string
   tagIds: string[]
-  requester: HumanRequester
+  requester: Requester
 }
 
 @Injectable()
@@ -68,9 +64,10 @@ export class TagService {
       where: { id: projectId },
     })
 
-    if (!requester.canAccessWorkspace(project.workspaceId)) {
-      throw new ForbiddenException('You do not have access to this project')
-    }
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      project.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('workspace:read')
 
     const { limit, offset, pageSize, page } = pagination
     const [tags, count] = await Promise.all([
@@ -110,9 +107,10 @@ export class TagService {
       where: { id: projectId },
     })
 
-    if (!requester.canAccessWorkspace(project.workspaceId)) {
-      throw new ForbiddenException('You do not have access to this project')
-    }
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      project.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('workspace:read')
 
     const tags = await this.prismaService.tag.findMany({
       where: {
@@ -150,9 +148,10 @@ export class TagService {
       where: { id: projectId },
     })
 
-    if (!requester.canAccessWorkspace(project.workspaceId)) {
-      throw new ForbiddenException('You do not have access to this project')
-    }
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      project.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('workspace:write')
 
     if (key.length > 255) {
       throw new BadRequestException('Key is too long')
@@ -184,7 +183,7 @@ export class TagService {
         color,
         description,
         workspaceId: project.workspaceId,
-        createdBy: requester.getAccountIDForWorkspace(project.workspaceId)!,
+        createdBy: workspaceAccess.getAccountID(),
       },
     })
 
@@ -203,9 +202,8 @@ export class TagService {
       where: { id },
     })
 
-    if (!requester.canAccessWorkspace(tag.workspaceId)) {
-      throw new ForbiddenException('You do not have access to this tag')
-    }
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(tag.workspaceId)
+    workspaceAccess.hasAbilityOrThrow('workspace:write')
 
     if (key.length > 255) {
       throw new BadRequestException('Key is too long')
@@ -226,7 +224,7 @@ export class TagService {
         value,
         color,
         description,
-        updatedBy: requester.getAccountIDForWorkspace(tag.workspaceId)!,
+        updatedBy: workspaceAccess.getAccountID(),
       },
     })
 
@@ -238,9 +236,8 @@ export class TagService {
       where: { id },
     })
 
-    if (!requester.canAccessWorkspace(tag.workspaceId)) {
-      throw new ForbiddenException('You do not have access to this tag')
-    }
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(tag.workspaceId)
+    workspaceAccess.hasAbilityOrThrow('workspace:write')
 
     await this.prismaService.$transaction(async t => {
       await t.taggable.deleteMany({
@@ -264,9 +261,10 @@ export class TagService {
       where: { id: phraseId },
     })
 
-    if (!requester.canAccessWorkspace(phrase.workspaceId)) {
-      throw new ForbiddenException('You do not have access to this phrase')
-    }
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      phrase.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('workspace:write')
 
     const tagsCount = await this.prismaService.tag.count({
       where: {
@@ -292,7 +290,7 @@ export class TagService {
           recordId: phraseId,
           recordType: 'phrase',
           workspaceId: phrase.workspaceId,
-          createdBy: requester.getAccountIDForWorkspace(phrase.workspaceId)!,
+          createdBy: workspaceAccess.getAccountID(),
         })),
       })
     })
@@ -313,9 +311,10 @@ export class TagService {
         )
       }
 
-      if (!requester.canAccessWorkspace(phrases[0].workspaceId)) {
-        throw new ForbiddenException('You do not have access to these phrases')
-      }
+      const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+        phrases[0].workspaceId,
+      )
+      workspaceAccess.hasAbilityOrThrow('workspace:write')
 
       await this.prismaService.$transaction(async t => {
         await t.taggable.deleteMany({
@@ -336,9 +335,10 @@ export class TagService {
     if (!allTagsBelongToSameWorkspace) {
       throw new BadRequestException('Tags do not belong to the same workspace')
     }
-    if (!requester.canAccessWorkspace(tags[0].workspaceId)) {
-      throw new ForbiddenException('You do not have access to this tag')
-    }
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      tags[0].workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('workspace:write')
 
     const phrasesCountWithinProject = await this.prismaService.phrase.count({
       where: {
@@ -370,9 +370,7 @@ export class TagService {
               recordId,
               recordType: 'phrase' as const,
               workspaceId: tags[0].workspaceId,
-              createdBy: requester.getAccountIDForWorkspace(
-                tags[0].workspaceId,
-              )!,
+              createdBy: workspaceAccess.getAccountID(),
             }))
           })
           .flat(),

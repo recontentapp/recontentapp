@@ -168,6 +168,30 @@ paths:
                 additionalProperties: false
                 required:
                   - isAvailable
+  /GetWorkspaceAbilities:
+    get:
+      operationId: getWorkspaceAbilities
+      parameters:
+        - name: workspaceId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  abilities:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/WorkspaceAbility'
+                additionalProperties: false
+                required:
+                  - abilities
   /CreateWorkspace:
     post:
       operationId: createWorkspace
@@ -1582,12 +1606,13 @@ components:
     WorkspaceAbility:
       type: string
       enum:
+        - 'workspace:read'
+        - 'workspace:write'
         - 'billing:manage'
         - 'members:manage'
         - 'languages:manage'
         - 'api_keys:manage'
         - 'auto_translation:use'
-        - 'projects:manage'
         - 'projects:destinations:manage'
     WorkspaceAccountType:
       type: string

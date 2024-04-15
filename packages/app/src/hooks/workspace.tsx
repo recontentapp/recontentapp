@@ -13,6 +13,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useCurrentUser } from '../auth'
 import { Components } from '../generated/typeDefinitions'
 import routes from '../routing'
+import { useGetWorkspaceAbilities } from '../generated/reactQuery'
 
 type Workspace = Components.Schemas.Workspace
 type Account = Components.Schemas.CurrentUser['accounts'][number]
@@ -203,4 +204,20 @@ export const useCurrentAccount = () => {
     }),
     [currentAccount],
   )
+}
+
+export const useHasAbility = (ability: Components.Schemas.WorkspaceAbility) => {
+  const { id: workspaceId } = useCurrentWorkspace()
+  const { data } = useGetWorkspaceAbilities(
+    {
+      queryParams: {
+        workspaceId,
+      },
+    },
+    {
+      staleTime: Infinity,
+    },
+  )
+
+  return data?.abilities.includes(ability) ?? false
 }

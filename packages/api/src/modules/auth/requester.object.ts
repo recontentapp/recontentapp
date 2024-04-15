@@ -6,17 +6,48 @@ import {
 } from '@prisma/client'
 import { Components } from 'src/generated/typeDefinitions'
 import { HumanRequestUser, ServiceRequestUser } from './types'
+import getConfig from 'src/utils/config'
 
 export interface Requester {
+  getDefaultWorkspaceID: () => string
   getLoggingAttributes: () => Record<string, string>
   getWorkspaceAccessOrThrow: (workspaceId: string) => WorkspaceAccess
+  getUserID: () => string
+  getUserEmail: () => string
 }
 
 export class WorkspaceAccess {
   private abilities: Components.Schemas.WorkspaceAbility[] = []
 
   private resolveAbilities() {
-    // TODO: Implement this
+    const config = getConfig()
+    const abilities: Components.Schemas.WorkspaceAbility[] = ['workspace:read']
+
+    if (this.workspaceAccount.userId !== null) {
+      abilities.push('workspace:write')
+    }
+
+    if (
+      this.workspaceAccount.role === 'biller' ||
+      this.workspaceAccount.role === 'owner'
+    ) {
+      abilities.push('billing:manage')
+    }
+
+    if (this.workspaceAccount.role === 'owner') {
+      abilities.push(
+        'members:manage',
+        'languages:manage',
+        'api_keys:manage',
+        'projects:destinations:manage',
+      )
+    }
+
+    if (config.autoTranslate.provider !== null) {
+      abilities.push('auto_translation:use')
+    }
+
+    this.abilities = abilities
   }
 
   constructor(
@@ -27,14 +58,16 @@ export class WorkspaceAccess {
     this.resolveAbilities()
   }
 
+  getAbilities() {
+    return this.abilities
+  }
+
   getAccountID() {
     return this.workspaceAccount.id
   }
 
-  hasAbilityOrThrow(ability: Components.Schemas.WorkspaceAbility) {
-    if (!this.abilities.includes(ability)) {
-      throw new ForbiddenException('User do not have required ability')
-    }
+  getWorkspaceID() {
+    return this.workspace.id
   }
 
   getWorkspaceDetails() {
@@ -46,6 +79,18 @@ export class WorkspaceAccess {
       name,
     }
   }
+
+  hasAbility(ability: Components.Schemas.WorkspaceAbility) {
+    return this.abilities.includes(ability)
+  }
+
+  hasAbilityOrThrow(ability: Components.Schemas.WorkspaceAbility) {
+    if (!this.abilities.includes(ability)) {
+      throw new ForbiddenException(
+        `User do not have required ability: "${ability}"`,
+      )
+    }
+  }
 }
 
 export class HumanRequester implements Requester {
@@ -53,8 +98,27 @@ export class HumanRequester implements Requester {
 
   getLoggingAttributes() {
     return {
+      requesterType: 'human',
       userId: this.requestUser.user.id,
     }
+  }
+
+  getUserID() {
+    return this.requestUser.user.id
+  }
+
+  getUserEmail() {
+    return this.requestUser.user.email
+  }
+
+  getDefaultWorkspaceID() {
+    const account = this.requestUser.user.accounts.at(0)
+
+    if (!account) {
+      throw new ForbiddenException('User do not have access to workspace')
+    }
+
+    return account.workspaceId
   }
 
   getWorkspaceAccessOrThrow(workspaceId: string) {
@@ -83,8 +147,25 @@ export class ServiceRequester implements Requester {
 
   getLoggingAttributes() {
     return {
+      requesterType: 'service',
       serviceAccountId: this.requestUser.account.id,
     }
+  }
+
+  getUserID() {
+    throw new BadRequestException('Service account do not have user id')
+
+    return ''
+  }
+
+  getUserEmail() {
+    throw new BadRequestException('Service account do not have user email')
+
+    return ''
+  }
+
+  getDefaultWorkspaceID() {
+    return this.requestUser.account.workspaceId
   }
 
   getWorkspaceAccessOrThrow(workspaceId: string) {

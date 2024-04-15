@@ -1,13 +1,8 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  Injectable,
-} from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { Components } from 'src/generated/typeDefinitions'
 import { PaginationParams } from 'src/utils/pagination'
 import { PrismaService } from 'src/utils/prisma.service'
-import { HumanRequester, Requester } from 'src/modules/auth/requester'
 import * as jwt from 'jsonwebtoken'
 import { JSONService } from '../io/json.service'
 import { CSVService } from '../io/csv.service'
@@ -18,6 +13,7 @@ import { Data } from '../io/types'
 import { escapeFileName } from 'src/utils/security'
 import { ConfigService } from '@nestjs/config'
 import { Config } from 'src/utils/config'
+import { Requester } from '../auth/requester.object'
 
 interface ListPhrasesParams {
   revisionId: string
@@ -32,18 +28,18 @@ interface ListPhrasesParams {
 interface CreatePhraseParams {
   revisionId: string
   key: string
-  requester: HumanRequester
+  requester: Requester
 }
 
 interface UpdatePhraseKeyParams {
   phraseId: string
   key: string
-  requester: HumanRequester
+  requester: Requester
 }
 
 interface TranslatePhraseParams {
   phraseId: string
-  requester: HumanRequester
+  requester: Requester
   translations: Array<{
     languageId: string
     content: string
@@ -52,12 +48,12 @@ interface TranslatePhraseParams {
 
 interface DeletePhraseParams {
   phraseId: string
-  requester: HumanRequester
+  requester: Requester
 }
 
 interface BatchDeletePhrasesParams {
   ids: string[]
-  requester: HumanRequester
+  requester: Requester
 }
 
 interface GetPhraseParams {
@@ -75,7 +71,7 @@ interface ImportPhrasesParams {
   mappingRowStartIndex?: number
   mappingKeyColumnIndex?: number
   mappingTranslationColumnIndex?: number
-  requester: HumanRequester
+  requester: Requester
 }
 
 interface GeneratePhrasesExportTokenParams {
@@ -84,7 +80,7 @@ interface GeneratePhrasesExportTokenParams {
   containsTagIds: string[] | null
   fileFormat: Components.Schemas.FileFormat
   includeEmptyTranslations: boolean
-  requester: HumanRequester
+  requester: Requester
 }
 
 interface ExportPhrasesParams {
@@ -128,9 +124,10 @@ export class PhraseService {
       },
     )
 
-    if (!requester.canAccessWorkspace(revision.workspaceId)) {
-      throw new ForbiddenException('User is not part of this workspace')
-    }
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      revision.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('workspace:read')
 
     const where: Prisma.PhraseWhereInput = {
       revisionId,
@@ -200,9 +197,10 @@ export class PhraseService {
       },
     )
 
-    if (!requester.canAccessWorkspace(revision.workspaceId)) {
-      throw new ForbiddenException('User is not part of this workspace')
-    }
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      revision.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('workspace:write')
 
     const phrase = await this.prismaService.phrase.create({
       data: {
@@ -210,7 +208,7 @@ export class PhraseService {
         revisionId,
         projectId: revision.projectId,
         workspaceId: revision.workspaceId,
-        createdBy: requester.getAccountIDForWorkspace(revision.workspaceId)!,
+        createdBy: workspaceAccess.getAccountID(),
       },
       include: { translations: true },
     })
@@ -226,9 +224,10 @@ export class PhraseService {
       },
     })
 
-    if (!requester.canAccessWorkspace(phrase.workspaceId)) {
-      throw new ForbiddenException('User is not part of this workspace')
-    }
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      phrase.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('workspace:read')
 
     return phrase
   }
@@ -238,15 +237,16 @@ export class PhraseService {
       where: { id: phraseId },
     })
 
-    if (!requester.canAccessWorkspace(phrase.workspaceId)) {
-      throw new ForbiddenException('User is not part of this workspace')
-    }
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      phrase.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('workspace:write')
 
     const updatedPhrase = await this.prismaService.phrase.update({
       where: { id: phraseId },
       data: {
         key,
-        updatedBy: requester.getAccountIDForWorkspace(phrase.workspaceId)!,
+        updatedBy: workspaceAccess.getAccountID(),
       },
       include: {
         translations: true,
@@ -272,9 +272,10 @@ export class PhraseService {
       },
     })
 
-    if (!requester.canAccessWorkspace(phrase.workspaceId)) {
-      throw new ForbiddenException('User is not part of this workspace')
-    }
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      phrase.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('workspace:write')
 
     const availableLanguages = phrase.project.languages.map(
       language => language.id,
@@ -324,7 +325,7 @@ export class PhraseService {
       })
     }
 
-    const createdBy = requester.getAccountIDForWorkspace(phrase.workspaceId)!
+    const createdBy = workspaceAccess.getAccountID()
 
     await this.prismaService.$transaction([
       this.prismaService.phrase.update({
@@ -383,9 +384,10 @@ export class PhraseService {
       where: { id: phraseId },
     })
 
-    if (!requester.canAccessWorkspace(phrase.workspaceId)) {
-      throw new ForbiddenException('User is not part of this workspace')
-    }
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      phrase.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('workspace:write')
 
     await this.prismaService.$transaction(async t => {
       await t.phraseTranslation.deleteMany({
@@ -429,9 +431,9 @@ export class PhraseService {
     }
 
     const workspaceId = phrases[0].workspaceId
-    if (!requester.canAccessWorkspace(workspaceId)) {
-      throw new ForbiddenException('User is not part of this workspace')
-    }
+
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(workspaceId)
+    workspaceAccess.hasAbilityOrThrow('workspace:write')
 
     await this.prismaService.$transaction(async t => {
       await t.phraseTranslation.deleteMany({
@@ -473,9 +475,10 @@ export class PhraseService {
       },
     )
 
-    if (!requester.canAccessWorkspace(revision.workspaceId)) {
-      throw new ForbiddenException('User is not part of this workspace')
-    }
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      revision.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('workspace:write')
 
     const language = await this.prismaService.language.findUniqueOrThrow({
       where: { id: languageId },
@@ -559,16 +562,12 @@ export class PhraseService {
             revisionId,
             projectId: revision.projectId,
             workspaceId: revision.workspaceId,
-            createdBy: requester.getAccountIDForWorkspace(
-              revision.workspaceId,
-            )!,
+            createdBy: workspaceAccess.getAccountID(),
             taggables: {
               create: tagIds.map(tagId => ({
                 tagId,
                 recordType: 'phrase',
-                createdBy: requester.getAccountIDForWorkspace(
-                  revision.workspaceId,
-                )!,
+                createdBy: workspaceAccess.getAccountID(),
                 workspaceId: revision.workspaceId,
               })),
             },
@@ -578,9 +577,7 @@ export class PhraseService {
                 languageId,
                 workspaceId: revision.workspaceId,
                 revisionId,
-                createdBy: requester.getAccountIDForWorkspace(
-                  revision.workspaceId,
-                )!,
+                createdBy: workspaceAccess.getAccountID(),
               },
             },
           },
@@ -604,9 +601,10 @@ export class PhraseService {
       },
     )
 
-    if (!requester.canAccessWorkspace(revision.workspaceId)) {
-      throw new ForbiddenException('User is not part of this workspace')
-    }
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      revision.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('workspace:read')
 
     if (containsTagIds && containsTagIds.length > 0) {
       const tags = await this.prismaService.tag.findMany({

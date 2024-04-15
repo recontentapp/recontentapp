@@ -1,24 +1,20 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  Injectable,
-} from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import OpenAI from 'openai'
 import { PrismaService } from 'src/utils/prisma.service'
 import { ConfigService } from '@nestjs/config'
 import { Config } from 'src/utils/config'
-import { HumanRequester } from 'src/modules/auth/requester'
 import { Language, Phrase, PhraseTranslation } from '@prisma/client'
 import {
   TranslateClient,
   TranslateTextCommand,
 } from '@aws-sdk/client-translate'
 import { UsageLogger } from 'src/utils/usage-logger'
+import { Requester } from '../auth/requester.object'
 
 interface TranslatePhraseParams {
   phraseId: string
   languageId: string
-  requester: HumanRequester
+  requester: Requester
 }
 
 interface TranslateWithProviderParams {
@@ -279,13 +275,10 @@ export class TranslateService {
       where: { id: languageId },
     })
 
-    if (!requester.canAccessWorkspace(phrase.workspaceId)) {
-      throw new ForbiddenException('Requester cannot access workspace')
-    }
-
-    if (!requester.canAccessWorkspace(targetLanguage.workspaceId)) {
-      throw new ForbiddenException('Requester cannot access workspace')
-    }
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      phrase.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('auto_translation:use')
 
     if (phrase.workspaceId !== targetLanguage.workspaceId) {
       throw new BadRequestException(
@@ -343,11 +336,11 @@ export class TranslateService {
           revisionId: phrase.revisionId,
           workspaceId: phrase.workspaceId,
           content: translation,
-          createdBy: requester.getAccountIDForWorkspace(phrase.workspaceId)!,
+          createdBy: workspaceAccess.getAccountID(),
         },
         update: {
           content: translation,
-          updatedBy: requester.getAccountIDForWorkspace(phrase.workspaceId)!,
+          updatedBy: workspaceAccess.getAccountID(),
         },
       }),
       this.prismaService.phrase.update({
@@ -357,7 +350,7 @@ export class TranslateService {
         },
         data: {
           updatedAt: new Date(),
-          updatedBy: requester.getAccountIDForWorkspace(phrase.workspaceId)!,
+          updatedBy: workspaceAccess.getAccountID(),
         },
       }),
     ])
