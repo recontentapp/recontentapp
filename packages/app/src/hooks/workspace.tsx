@@ -196,14 +196,7 @@ export const useCurrentAccount = () => {
     throw new Error('No current account')
   }
 
-  return useMemo(
-    () => ({
-      ...currentAccount,
-      canAdmin: () =>
-        currentAccount.role === 'owner' || currentAccount.role === 'biller',
-    }),
-    [currentAccount],
-  )
+  return currentAccount
 }
 
 export const useHasAbility = (ability: Components.Schemas.WorkspaceAbility) => {

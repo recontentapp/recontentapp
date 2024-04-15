@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import { FullpageSpinner } from '../../../../components/FullpageSpinner'
 import { Head } from '../../../../components/Head'
-import { useCurrentWorkspace } from '../../../../hooks/workspace'
+import { useCurrentWorkspace, useHasAbility } from '../../../../hooks/workspace'
 import { Page } from '../../components/Page'
 import { ScreenWrapper } from '../../components/ScreenWrapper'
 import {
@@ -19,6 +19,7 @@ export const Dashboard: FC = () => {
     key: workspaceKey,
     id: workspaceId,
   } = useCurrentWorkspace()
+  const canManageLanguages = useHasAbility('languages:manage')
   const { data: languages, isPending: isLoadingLanguages } =
     useListWorkspaceLanguages({
       queryParams: {
@@ -38,7 +39,8 @@ export const Dashboard: FC = () => {
   }
 
   const shouldShowOnboarding =
-    projectsData?.items.length === 0 || languages?.length === 0
+    (projectsData?.items.length === 0 || languages?.length === 0) &&
+    canManageLanguages
 
   return (
     <ScreenWrapper

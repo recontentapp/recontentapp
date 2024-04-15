@@ -353,10 +353,6 @@ export class PrivateApiController {
     const cdnConfig = this.configService.get('cdn', {
       infer: true,
     })
-    const autoTranslateProvider = this.configService.get(
-      'autoTranslate.provider',
-      { infer: true },
-    )
 
     if (appConfig.signUpDisabled) {
       const user = await this.prismaService.user.findFirst()
@@ -370,7 +366,6 @@ export class PrivateApiController {
       settings: {
         signUpDisabled,
         cdnAvailable: cdnConfig.available,
-        autoTranslateAvailable: autoTranslateProvider !== null,
       },
     }
   }

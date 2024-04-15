@@ -28,12 +28,9 @@ paths:
                         type: boolean
                       cdnAvailable:
                         type: boolean
-                      autoTranslateAvailable:
-                        type: boolean
                     required:
                       - signUpDisabled
                       - cdnAvailable
-                      - autoTranslateAvailable
                 additionalProperties: false
                 required:
                   - version
