@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  Injectable,
-} from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/utils/prisma.service'
 import { JSONService } from '../io/json.service'
 import { CSVService } from '../io/csv.service'
@@ -10,7 +6,6 @@ import { YAMLService } from '../io/yaml.service'
 import { ExcelService } from '../io/excel.service'
 import { ConfigService } from '@nestjs/config'
 import { Config } from 'src/utils/config'
-import { HumanRequester } from 'src/utils/requester'
 import { Components } from 'src/generated/typeDefinitions'
 import {
   DeleteObjectsCommand,
@@ -30,11 +25,12 @@ import {
   Workspace,
 } from '@prisma/client'
 import { decrypt, encrypt } from 'src/utils/security'
+import { Requester } from '../auth/requester.object'
 
 interface CreateCDNDestinationParams {
   name: string
   revisionId: string
-  requester: HumanRequester
+  requester: Requester
   fileFormat: Components.Schemas.FileFormat
   includeEmptyTranslations: boolean
 }
@@ -42,7 +38,7 @@ interface CreateCDNDestinationParams {
 interface CreateAWSS3DestinationParams {
   name: string
   revisionId: string
-  requester: HumanRequester
+  requester: Requester
   fileFormat: Components.Schemas.FileFormat
   includeEmptyTranslations: boolean
   objectsPrefix?: string
@@ -55,7 +51,7 @@ interface CreateAWSS3DestinationParams {
 interface CreateGoogleCloudStorageDestinationParams {
   name: string
   revisionId: string
-  requester: HumanRequester
+  requester: Requester
   fileFormat: Components.Schemas.FileFormat
   includeEmptyTranslations: boolean
   objectsPrefix?: string
@@ -66,22 +62,22 @@ interface CreateGoogleCloudStorageDestinationParams {
 
 interface SyncDestinationParams {
   destinationId: string
-  requester: HumanRequester
+  requester: Requester
 }
 
 interface DeleteDestinationParams {
   destinationId: string
-  requester: HumanRequester
+  requester: Requester
 }
 
 interface GetDestinationParams {
   destinationId: string
-  requester: HumanRequester
+  requester: Requester
 }
 
 interface ListDestinationsParams {
   pagination: PaginationParams
-  requester: HumanRequester
+  requester: Requester
   projectId: string
   revisionId?: string
 }
@@ -171,9 +167,10 @@ export class DestinationService {
       },
     })
 
-    if (!requester.canAccessWorkspace(destination.workspaceId)) {
-      throw new ForbiddenException('You do not have access to this workspace')
-    }
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      destination.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('workspace:read')
 
     return destination
   }
@@ -190,10 +187,10 @@ export class DestinationService {
         revisions: true,
       },
     })
-
-    if (!requester.canAccessWorkspace(project.workspaceId)) {
-      throw new ForbiddenException('User is not part of this workspace')
-    }
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      project.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('workspace:read')
 
     const where: Prisma.DestinationWhereInput = {
       revisionId: revisionId ?? {
@@ -244,9 +241,10 @@ export class DestinationService {
         where: { id: revisionId },
       },
     )
-    if (!requester.canAccessWorkspace(revision.workspaceId)) {
-      throw new ForbiddenException('You do not have access to this workspace')
-    }
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      revision.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('projects:destinations:manage')
 
     const destination = await this.prismaService.destination.create({
       include: {
@@ -260,7 +258,7 @@ export class DestinationService {
         type: 'cdn',
         active: true,
         workspaceId: revision.workspaceId,
-        createdBy: requester.getAccountIDForWorkspace(revision.workspaceId)!,
+        createdBy: workspaceAccess.getAccountID(),
         configCDN: {
           create: {
             fileFormat,
@@ -295,9 +293,10 @@ export class DestinationService {
         where: { id: revisionId },
       },
     )
-    if (!requester.canAccessWorkspace(revision.workspaceId)) {
-      throw new ForbiddenException('You do not have access to this workspace')
-    }
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      revision.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('projects:destinations:manage')
 
     const destination = await this.prismaService.destination.create({
       include: {
@@ -311,7 +310,7 @@ export class DestinationService {
         type: 'aws_s3',
         active: true,
         workspaceId: revision.workspaceId,
-        createdBy: requester.getAccountIDForWorkspace(revision.workspaceId)!,
+        createdBy: workspaceAccess.getAccountID(),
         configAWSS3: {
           create: {
             fileFormat,
@@ -350,9 +349,10 @@ export class DestinationService {
         where: { id: revisionId },
       },
     )
-    if (!requester.canAccessWorkspace(revision.workspaceId)) {
-      throw new ForbiddenException('You do not have access to this workspace')
-    }
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      revision.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('projects:destinations:manage')
 
     const destination = await this.prismaService.destination.create({
       include: {
@@ -366,7 +366,7 @@ export class DestinationService {
         type: 'google_cloud_storage',
         active: true,
         workspaceId: revision.workspaceId,
-        createdBy: requester.getAccountIDForWorkspace(revision.workspaceId)!,
+        createdBy: workspaceAccess.getAccountID(),
         configGoogleCloudStorage: {
           create: {
             fileFormat,
@@ -398,9 +398,10 @@ export class DestinationService {
       },
     })
 
-    if (!requester.canAccessWorkspace(destination.workspaceId)) {
-      throw new ForbiddenException('You do not have access to this workspace')
-    }
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      destination.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('projects:destinations:manage')
 
     if (destination.type === 'cdn') {
       const client = new S3Client({
@@ -462,9 +463,10 @@ export class DestinationService {
       },
     })
 
-    if (!requester.canAccessWorkspace(destination.workspaceId)) {
-      throw new ForbiddenException('You do not have access to this workspace')
-    }
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      destination.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('projects:destinations:manage')
 
     if (!destination.active) {
       throw new BadRequestException('Destination is not active')
@@ -495,16 +497,24 @@ export class DestinationService {
 
     switch (destination.type) {
       case 'cdn':
-        await this.syncCDNDestination(destination, revision, requester)
+        await this.syncCDNDestination(
+          destination,
+          revision,
+          workspaceAccess.getAccountID(),
+        )
         break
       case 'aws_s3':
-        await this.syncAWSS3Destination(destination, revision, requester)
+        await this.syncAWSS3Destination(
+          destination,
+          revision,
+          workspaceAccess.getAccountID(),
+        )
         break
       case 'google_cloud_storage':
         await this.syncGoogleCloudStorageDestination(
           destination,
           revision,
-          requester,
+          workspaceAccess.getAccountID(),
         )
         break
     }
@@ -525,7 +535,7 @@ export class DestinationService {
         }[]
       }
     },
-    requester: HumanRequester,
+    accountId: string,
   ) {
     const encryptionKey = this.configService.get('security.encryptionKey', {
       infer: true,
@@ -606,9 +616,7 @@ export class DestinationService {
         data: {
           lastSyncAt: new Date(),
           lastSyncError: error,
-          updatedBy: requester.getAccountIDForWorkspace(
-            destination.workspaceId,
-          )!,
+          updatedBy: accountId,
         },
       })
       throw new BadRequestException(error)
@@ -620,7 +628,7 @@ export class DestinationService {
         lastSyncError: null,
         lastSuccessfulSyncAt: new Date(),
         lastSyncAt: new Date(),
-        updatedBy: requester.getAccountIDForWorkspace(destination.workspaceId)!,
+        updatedBy: accountId,
       },
     })
   }
@@ -640,7 +648,7 @@ export class DestinationService {
         }[]
       }
     },
-    requester: HumanRequester,
+    accountId: string,
   ) {
     const encryptionKey = this.configService.get('security.encryptionKey', {
       infer: true,
@@ -717,9 +725,7 @@ export class DestinationService {
         data: {
           lastSyncAt: new Date(),
           lastSyncError: error,
-          updatedBy: requester.getAccountIDForWorkspace(
-            destination.workspaceId,
-          )!,
+          updatedBy: accountId,
         },
       })
       throw new BadRequestException(error)
@@ -731,7 +737,7 @@ export class DestinationService {
         lastSyncError: null,
         lastSuccessfulSyncAt: new Date(),
         lastSyncAt: new Date(),
-        updatedBy: requester.getAccountIDForWorkspace(destination.workspaceId)!,
+        updatedBy: accountId,
       },
     })
   }
@@ -751,7 +757,7 @@ export class DestinationService {
         }[]
       }
     },
-    requester: HumanRequester,
+    accountId: string,
   ) {
     const cdnConfig = this.configService.get('cdn', { infer: true })
 
@@ -817,9 +823,7 @@ export class DestinationService {
         data: {
           lastSyncAt: new Date(),
           lastSyncError: error,
-          updatedBy: requester.getAccountIDForWorkspace(
-            destination.workspaceId,
-          )!,
+          updatedBy: accountId,
         },
       })
       throw new BadRequestException(error)
@@ -836,9 +840,7 @@ export class DestinationService {
           lastSuccessfulSyncAt: new Date(),
           lastSyncAt: new Date(),
           lastSyncError: null,
-          updatedBy: requester.getAccountIDForWorkspace(
-            destination.workspaceId,
-          )!,
+          updatedBy: accountId,
         },
       }),
     ])

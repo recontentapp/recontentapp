@@ -9,29 +9,46 @@ import { Form } from './steps/Form'
 import { Mapping } from './steps/Mapping'
 import { useCurrentWorkspace } from '../../../../hooks/workspace'
 import {
+  getListPhrasesQueryKey,
   useGetProject,
   useImportPhrases,
 } from '../../../../generated/reactQuery'
 import routes from '../../../../routing'
 import { toast } from '../../../../components/primitives'
+import { useQueryClient } from '@tanstack/react-query'
 
 export const ImportFromFile = () => {
+  const queryClient = useQueryClient()
   const navigate = useNavigate()
   const params = useParams<'projectId'>()
+  const {
+    data: project,
+    isLoading: projectLoading,
+    failureCount,
+  } = useGetProject({ queryParams: { id: params.projectId! } })
   const { key: workspaceKey, name: workspaceName } = useCurrentWorkspace()
   const { mutateAsync: importPhrases, isPending: isImporting } =
-    useImportPhrases()
+    useImportPhrases({
+      onSuccess: () => {
+        if (!project?.masterRevisionId) {
+          return
+        }
+
+        queryClient.invalidateQueries({
+          queryKey: getListPhrasesQueryKey({
+            queryParams: {
+              revisionId: project.masterRevisionId,
+            },
+          }),
+        })
+      },
+    })
 
   const [step, setStep] = useState<'form' | 'mapping'>('form')
   const [state, setState] = useState<State>({
     fileFormat: 'json',
     tagIds: [],
   })
-  const {
-    data: project,
-    isLoading: projectLoading,
-    failureCount,
-  } = useGetProject({ queryParams: { id: params.projectId! } })
 
   useEffect(() => {
     if (failureCount > 0) {

@@ -5,7 +5,11 @@ import { Data } from './types'
 @Injectable()
 export class CSVService {
   parse(buffer: Buffer): Data {
-    const { data, errors } = csvParse(buffer.toString(), { header: false })
+    const { data, errors } = csvParse(buffer.toString(), {
+      header: false,
+      delimiter: ',',
+    })
+
     if (errors.length > 0) {
       throw new BadRequestException('Invalid CSV')
     }

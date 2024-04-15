@@ -17,7 +17,6 @@ const systemContext = createContext<System>({
   settings: {
     signUpDisabled: false,
     cdnAvailable: false,
-    autoTranslateAvailable: false,
   },
 })
 
@@ -28,7 +27,6 @@ export const SystemProvider: FC<{ children: ReactNode }> = ({ children }) => {
     settings: {
       signUpDisabled: false,
       cdnAvailable: false,
-      autoTranslateAvailable: false,
     },
   })
 

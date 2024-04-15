@@ -28,8 +28,8 @@ import {
   useGetProject,
   useTranslatePhrase,
 } from '../../../../../generated/reactQuery'
-import { useSystem } from '../../../../../hooks/system'
 import { useQueryClient } from '@tanstack/react-query'
+import { useHasAbility } from '../../../../../hooks/workspace'
 
 export interface UpdatePhraseModalRef {
   open: () => void
@@ -64,9 +64,7 @@ const Content: FC<ContentProps> = ({
   onPrevious,
 }) => {
   const queryClient = useQueryClient()
-  const {
-    settings: { autoTranslateAvailable },
-  } = useSystem()
+  const hasAutoTranslate = useHasAbility('auto_translation:use')
   const { data: project } = useGetProject({ queryParams: { id: projectId } })
   const { data: phrase, isLoading: isLoadingPhrase } = useGetPhrase({
     queryParams: {
@@ -166,6 +164,7 @@ const Content: FC<ContentProps> = ({
     {
       preventDefault: true,
       enableOnFormTags: true,
+      enableOnContentEditable: true,
     },
     [onSubmit],
   )
@@ -175,7 +174,7 @@ const Content: FC<ContentProps> = ({
       ? phrase?.translations[0].languageId
       : undefined
   const hasAtLeastOneTranslation = (phrase?.translations ?? []).length > 0
-  const showAutoTranslate = autoTranslateAvailable && hasAtLeastOneTranslation
+  const showAutoTranslate = hasAutoTranslate && hasAtLeastOneTranslation
 
   return (
     <ModalContent

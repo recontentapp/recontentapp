@@ -22,7 +22,7 @@ import {
 } from './screens/WorkspaceSettings'
 import { ImportFromFile } from './screens/ImportFromFile'
 import { Destination } from './screens/Destination'
-import { useCurrentAccount, useCurrentWorkspace } from '../../hooks/workspace'
+import { useCurrentWorkspace, useHasAbility } from '../../hooks/workspace'
 import routes from '../../routing'
 
 const MainContainer = styled('div', {
@@ -49,7 +49,12 @@ const Main = styled('main', {
 
 export const Workspace = () => {
   const { key: workspaceKey } = useCurrentWorkspace()
-  const currentAccount = useCurrentAccount()
+  const canManageMembers = useHasAbility('members:manage')
+  const canManageLanguages = useHasAbility('languages:manage')
+  const canManageIntegrations = useHasAbility('api_keys:manage')
+
+  const canAdmin =
+    canManageMembers || canManageLanguages || canManageIntegrations
 
   return (
     <KBarProvider>
@@ -69,22 +74,31 @@ export const Workspace = () => {
                   element={<UserSettings />}
                 />
 
-                {currentAccount.canAdmin() && (
+                {canAdmin && (
                   <Route
                     path="/:workspaceKey/settings"
                     element={<WorkspaceSettings />}
                   >
-                    <Route path="members" element={<WorkspaceMembers />} />
-                    <Route path="languages" element={<WorkspaceLanguages />} />
-                    <Route
-                      path="integrations"
-                      element={<WorkspaceIntegrations />}
-                    />
+                    {canManageMembers && (
+                      <Route path="members" element={<WorkspaceMembers />} />
+                    )}
+                    {canManageLanguages && (
+                      <Route
+                        path="languages"
+                        element={<WorkspaceLanguages />}
+                      />
+                    )}
+                    {canManageIntegrations && (
+                      <Route
+                        path="integrations"
+                        element={<WorkspaceIntegrations />}
+                      />
+                    )}
                     <Route
                       index
                       element={
                         <Redirect
-                          to={routes.workspaceSettingsMembers.url({
+                          to={routes.dashboard.url({
                             pathParams: { workspaceKey },
                           })}
                         />

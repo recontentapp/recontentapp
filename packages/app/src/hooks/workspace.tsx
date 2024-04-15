@@ -13,6 +13,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useCurrentUser } from '../auth'
 import { Components } from '../generated/typeDefinitions'
 import routes from '../routing'
+import { useGetWorkspaceAbilities } from '../generated/reactQuery'
 
 type Workspace = Components.Schemas.Workspace
 type Account = Components.Schemas.CurrentUser['accounts'][number]
@@ -195,12 +196,21 @@ export const useCurrentAccount = () => {
     throw new Error('No current account')
   }
 
-  return useMemo(
-    () => ({
-      ...currentAccount,
-      canAdmin: () =>
-        currentAccount.role === 'owner' || currentAccount.role === 'biller',
-    }),
-    [currentAccount],
+  return currentAccount
+}
+
+export const useHasAbility = (ability: Components.Schemas.WorkspaceAbility) => {
+  const { id: workspaceId } = useCurrentWorkspace()
+  const { data } = useGetWorkspaceAbilities(
+    {
+      queryParams: {
+        workspaceId,
+      },
+    },
+    {
+      staleTime: Infinity,
+    },
   )
+
+  return data?.abilities.includes(ability) ?? false
 }

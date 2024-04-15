@@ -7,16 +7,16 @@ import { EventEmitter2 } from '@nestjs/event-emitter'
 import { WorkspaceAccountRole } from '@prisma/client'
 import { randomInt } from 'node:crypto'
 import { PrismaService } from 'src/utils/prisma.service'
-import { HumanRequester, Requester } from 'src/utils/requester'
 import { WorkspaceInvitationCreatedEvent } from './events/invitation-created.event'
 import { PaginationParams } from 'src/utils/pagination'
 import { generateAPIKey } from 'src/utils/security'
 import { LanguageLocale } from './locale'
+import { Requester } from '../auth/requester.object'
 
 interface CreateWorkspaceParams {
   key: string
   name: string
-  requester: HumanRequester
+  requester: Requester
 }
 
 interface ListUserWorkspacesParams {
@@ -37,12 +37,12 @@ interface InviteToWorkspaceParams {
   email: string
   workspaceId: string
   role: WorkspaceAccountRole
-  requester: HumanRequester
+  requester: Requester
 }
 
 interface JoinWorkspaceParams {
   invitationCode: string
-  requester: HumanRequester
+  requester: Requester
 }
 
 interface ListWorkspaceAccountsParams {
@@ -62,12 +62,12 @@ interface CreateWorkspaceServiceAccountParams {
   workspaceId: string
   name: string
   role: WorkspaceAccountRole
-  requester: HumanRequester
+  requester: Requester
 }
 
 interface DeleteWorkspaceServiceAccountParams {
   id: string
-  requester: HumanRequester
+  requester: Requester
 }
 
 interface AddLanguagesToWorkspaceParams {
@@ -76,7 +76,7 @@ interface AddLanguagesToWorkspaceParams {
     name: string
     locale: LanguageLocale
   }>
-  requester: HumanRequester
+  requester: Requester
 }
 
 interface ListWorkspaceLanguagesParams {
@@ -113,7 +113,7 @@ export class WorkspaceService {
         data: {
           key,
           name,
-          createdBy: requester.userId,
+          createdBy: requester.getUserID(),
         },
       })
 
@@ -122,7 +122,7 @@ export class WorkspaceService {
           type: 'human',
           workspaceId: workspace.id,
           role: 'owner',
-          userId: requester.userId,
+          userId: requester.getUserID(),
         },
       })
 
@@ -165,9 +165,8 @@ export class WorkspaceService {
   }
 
   async getWorkspace({ workspaceId, requester }: GetWorkspaceParams) {
-    if (!requester.canAccessWorkspace(workspaceId)) {
-      throw new ForbiddenException('User is not part of workspace')
-    }
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(workspaceId)
+    workspaceAccess.hasAbilityOrThrow('workspace:read')
 
     const workspace = await this.prismaService.workspace.findUniqueOrThrow({
       where: {
@@ -205,9 +204,10 @@ export class WorkspaceService {
   }
 
   async inviteToWorkspace(params: InviteToWorkspaceParams) {
-    if (!params.requester.canAdminWorkspace(params.workspaceId)) {
-      throw new ForbiddenException('User is not an admin')
-    }
+    const workspaceAccess = params.requester.getWorkspaceAccessOrThrow(
+      params.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('members:manage')
 
     const existingInvitation =
       await this.getValidPendingWorkspaceInvitationByEmail({
@@ -238,9 +238,7 @@ export class WorkspaceService {
         email: params.email,
         role: params.role,
         invitationCode: this.generateInvitationToken(),
-        createdBy: params.requester.getAccountIDForWorkspace(
-          params.workspaceId,
-        )!,
+        createdBy: workspaceAccess.getAccountID(),
         expiredAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
         workspace: {
           connect: {
@@ -271,7 +269,7 @@ export class WorkspaceService {
       throw new BadRequestException('Invalid invitation')
     }
 
-    if (invitation.email !== requester.userEmail) {
+    if (invitation.email !== requester.getUserEmail()) {
       throw new ForbiddenException('User is not invited')
     }
 
@@ -288,7 +286,7 @@ export class WorkspaceService {
       await t.workspaceAccount.create({
         data: {
           type: 'human',
-          userId: requester.userId,
+          userId: requester.getUserID(),
           workspaceId: invitation.workspaceId,
           role: invitation.role,
           invitedBy: invitation.createdBy,
@@ -303,9 +301,8 @@ export class WorkspaceService {
     requester,
     pagination,
   }: ListWorkspaceAccountsParams) {
-    if (!requester.canAccessWorkspace(workspaceId)) {
-      throw new ForbiddenException('User is not part of this workspace')
-    }
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(workspaceId)
+    workspaceAccess.hasAbilityOrThrow('members:manage')
 
     const { limit, offset, pageSize, page } = pagination
     const [accounts, count] = await Promise.all([
@@ -387,9 +384,8 @@ export class WorkspaceService {
     requester,
     pagination,
   }: ListWorkspaceInvitationsParams) {
-    if (!requester.canAccessWorkspace(workspaceId)) {
-      throw new ForbiddenException('User is not part of this workspace')
-    }
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(workspaceId)
+    workspaceAccess.hasAbilityOrThrow('members:manage')
 
     const { limit, offset, pageSize, page } = pagination
     const [invitations, count] = await Promise.all([
@@ -439,9 +435,8 @@ export class WorkspaceService {
     requester,
     role,
   }: CreateWorkspaceServiceAccountParams) {
-    if (!requester.canAdminWorkspace(workspaceId)) {
-      throw new ForbiddenException('User is not part of this workspace')
-    }
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(workspaceId)
+    workspaceAccess.hasAbilityOrThrow('api_keys:manage')
 
     const apiKey = generateAPIKey()
 
@@ -458,7 +453,7 @@ export class WorkspaceService {
           workspaceId,
           apiKey,
           serviceId: service.id,
-          invitedBy: requester.getAccountIDForWorkspace(workspaceId)!,
+          invitedBy: workspaceAccess.getAccountID(),
           role,
         },
       })
@@ -479,9 +474,10 @@ export class WorkspaceService {
       },
     )
 
-    if (!requester.canAdminWorkspace(account.workspaceId)) {
-      throw new ForbiddenException('User is not part of this workspace')
-    }
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      account.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('api_keys:manage')
 
     await this.prismaService.workspaceAccount.update({
       where: {
@@ -489,7 +485,7 @@ export class WorkspaceService {
       },
       data: {
         blockedAt: new Date(),
-        blockedBy: requester.getAccountIDForWorkspace(account.workspaceId)!,
+        blockedBy: workspaceAccess.getAccountID(),
       },
     })
   }
@@ -499,9 +495,8 @@ export class WorkspaceService {
     languages,
     requester,
   }: AddLanguagesToWorkspaceParams) {
-    if (!requester.canAdminWorkspace(workspaceId)) {
-      throw new ForbiddenException('User is not part of this workspace')
-    }
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(workspaceId)
+    workspaceAccess.hasAbilityOrThrow('languages:manage')
 
     const existingLanguages = await this.prismaService.language.findMany({
       where: {
@@ -526,7 +521,7 @@ export class WorkspaceService {
         workspaceId,
         locale: l.locale,
         name: l.name,
-        createdBy: requester.getAccountIDForWorkspace(workspaceId)!,
+        createdBy: workspaceAccess.getAccountID(),
       })),
     })
   }
@@ -535,9 +530,8 @@ export class WorkspaceService {
     workspaceId,
     requester,
   }: ListWorkspaceLanguagesParams) {
-    if (!requester.canAccessWorkspace(workspaceId)) {
-      throw new ForbiddenException('User is not part of this workspace')
-    }
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(workspaceId)
+    workspaceAccess.hasAbilityOrThrow('workspace:read')
 
     const languages = await this.prismaService.language.findMany({
       where: {
@@ -552,9 +546,8 @@ export class WorkspaceService {
     requester,
     workspaceId,
   }: GetReferenceableAccountsParams) {
-    if (!requester.canAccessWorkspace(workspaceId)) {
-      throw new ForbiddenException('User is not part of this workspace')
-    }
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(workspaceId)
+    workspaceAccess.hasAbilityOrThrow('workspace:read')
 
     const accounts = await this.prismaService.workspaceAccount.findMany({
       where: {

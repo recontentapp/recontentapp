@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
@@ -22,10 +21,11 @@ import { PhraseService } from 'src/modules/phrase/phrase.service'
 import { possibleLocales } from 'src/modules/workspace/locale'
 import { Pagination, PaginationParams } from 'src/utils/pagination'
 import { PrismaService } from 'src/utils/prisma.service'
-import { AuthenticatedRequester, Requester } from 'src/utils/requester'
 import { RequiredQuery } from 'src/utils/required-query'
 import { CreatePhraseExportDto } from './public-dto/phrase.dto'
 import { Throttle } from '@nestjs/throttler'
+import { AuthenticatedRequester } from 'src/modules/auth/requester.decorator'
+import { Requester } from 'src/modules/auth/requester.object'
 
 @Controller('public-api')
 @Throttle({ default: { limit: 10, ttl: 1000 } })
@@ -117,12 +117,14 @@ export class PublicApiController {
   async getWorkspacesMe(
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.GetWorkspace.Responses.$200> {
-    if (requester.type !== 'service') {
-      throw new BadRequestException('Invalid requester')
-    }
+    const workspaceId = requester.getDefaultWorkspaceID()
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(workspaceId)
+    workspaceAccess.hasAbilityOrThrow('workspace:read')
 
     const workspace = await this.prismaService.workspace.findUniqueOrThrow({
-      where: { id: requester.serviceWorkspaceId },
+      where: {
+        id: workspaceId,
+      },
     })
 
     return PublicApiController.formatWorkspace(workspace)
@@ -134,15 +136,15 @@ export class PublicApiController {
     @Pagination() pagination: PaginationParams,
     @Query('projectId') projectId?: string,
   ): Promise<Paths.ListLanguages.Responses.$200> {
-    if (requester.type !== 'service') {
-      throw new BadRequestException('Invalid requester')
-    }
+    const workspaceId = requester.getDefaultWorkspaceID()
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(workspaceId)
+    workspaceAccess.hasAbilityOrThrow('workspace:read')
 
     const { page, pageSize, limit, offset } = pagination
     const [languages, count] = await Promise.all([
       this.prismaService.language.findMany({
         where: {
-          workspaceId: requester.serviceWorkspaceId,
+          workspaceId,
           projects: projectId ? { some: { id: projectId } } : undefined,
         },
         take: limit,
@@ -150,7 +152,7 @@ export class PublicApiController {
       }),
       this.prismaService.language.count({
         where: {
-          workspaceId: requester.serviceWorkspaceId,
+          workspaceId,
           projects: projectId ? { some: { id: projectId } } : undefined,
         },
       }),
@@ -172,15 +174,15 @@ export class PublicApiController {
     @AuthenticatedRequester() requester: Requester,
     @Pagination() pagination: PaginationParams,
   ): Promise<Paths.ListProjects.Responses.$200> {
-    if (requester.type !== 'service') {
-      throw new BadRequestException('Invalid requester')
-    }
+    const workspaceId = requester.getDefaultWorkspaceID()
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(workspaceId)
+    workspaceAccess.hasAbilityOrThrow('workspace:read')
 
     const { page, pageSize, limit, offset } = pagination
     const [projects, count] = await Promise.all([
       this.prismaService.project.findMany({
         where: {
-          workspaceId: requester.serviceWorkspaceId,
+          workspaceId,
         },
         include: {
           revisions: {
@@ -192,7 +194,7 @@ export class PublicApiController {
       }),
       this.prismaService.project.count({
         where: {
-          workspaceId: requester.serviceWorkspaceId,
+          workspaceId,
         },
       }),
     ])
@@ -213,12 +215,15 @@ export class PublicApiController {
     @AuthenticatedRequester() requester: Requester,
     @Param('id') id: string,
   ): Promise<Paths.GetProject.Responses.$200> {
-    if (requester.type !== 'service') {
-      throw new BadRequestException('Invalid requester')
-    }
+    const workspaceId = requester.getDefaultWorkspaceID()
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(workspaceId)
+    workspaceAccess.hasAbilityOrThrow('workspace:read')
 
     const project = await this.prismaService.project.findUniqueOrThrow({
-      where: { id, workspaceId: requester.serviceWorkspaceId },
+      where: {
+        id,
+        workspaceId,
+      },
       include: {
         revisions: {
           where: { isMaster: true },
@@ -235,10 +240,6 @@ export class PublicApiController {
     @Pagination() pagination: PaginationParams,
     @RequiredQuery('revisionId') revisionId: string,
   ): Promise<Paths.ListPhrases.Responses.$200> {
-    if (requester.type !== 'service') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     const result = await this.phraseService.listPhrases({
       revisionId,
       requester,
@@ -256,10 +257,6 @@ export class PublicApiController {
     @AuthenticatedRequester() requester: Requester,
     @Param('id') id: string,
   ): Promise<Paths.GetPhrase.Responses.$200> {
-    if (requester.type !== 'service') {
-      throw new BadRequestException('Invalid requester')
-    }
-
     const phrase = await this.phraseService.getPhrase({
       phraseId: id,
       requester,
@@ -269,13 +266,7 @@ export class PublicApiController {
   }
 
   @Get('/possible-locales')
-  async getPossibleLocales(
-    @AuthenticatedRequester() requester: Requester,
-  ): Promise<Paths.ListPossibleLocales.Responses.$200> {
-    if (requester.type !== 'service') {
-      throw new BadRequestException('Invalid requester')
-    }
-
+  async getPossibleLocales(): Promise<Paths.ListPossibleLocales.Responses.$200> {
     return {
       items: possibleLocales.map(key => ({
         key,
@@ -289,14 +280,14 @@ export class PublicApiController {
     @AuthenticatedRequester() requester: Requester,
     @Body() { revisionId, languageId, containsTagIds }: CreatePhraseExportDto,
   ): Promise<Paths.ExportPhrases.Responses.$200> {
-    if (requester.type !== 'service') {
-      throw new BadRequestException('Invalid requester')
-    }
+    const workspaceId = requester.getDefaultWorkspaceID()
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(workspaceId)
+    workspaceAccess.hasAbilityOrThrow('workspace:read')
 
     const phrases = await this.prismaService.phrase.findMany({
       where: {
         revisionId,
-        workspaceId: requester.serviceWorkspaceId,
+        workspaceId,
         ...(containsTagIds &&
           containsTagIds.length > 0 && {
             taggables: {

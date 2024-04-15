@@ -9,10 +9,7 @@ import { Button } from './components/Button'
 import { ProjectsList } from './components/ProjectsList'
 import { WorkspaceDropdown } from './components/WorkspaceDropdown'
 import { useListProjects } from '../../../../generated/reactQuery'
-import {
-  useCurrentAccount,
-  useCurrentWorkspace,
-} from '../../../../hooks/workspace'
+import { useCurrentWorkspace, useHasAbility } from '../../../../hooks/workspace'
 import routes from '../../../../routing'
 import { useSystem } from '../../../../hooks/system'
 
@@ -73,12 +70,17 @@ export const Sidebar: FC = () => {
       pageSize: 50,
     },
   })
-  const account = useCurrentAccount()
+  const canManageLanguages = useHasAbility('languages:manage')
+  const canManageMembers = useHasAbility('members:manage')
+  const canManageIntegrations = useHasAbility('api_keys:manage')
+
+  const canAdmin =
+    canManageMembers || canManageLanguages || canManageIntegrations
 
   const actionsList = useMemo(() => {
     const list: ActionButtonProps[] = []
 
-    if (account.canAdmin()) {
+    if (canAdmin) {
       list.push({
         name: 'Settings & Members',
         icon: 'settings',
@@ -92,7 +94,7 @@ export const Sidebar: FC = () => {
     }
 
     return list
-  }, [account, navigate, workspaceKey])
+  }, [canAdmin, navigate, workspaceKey])
 
   return (
     <Container>

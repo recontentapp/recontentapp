@@ -2,9 +2,8 @@ import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { PassportStrategy } from '@nestjs/passport'
 import { ExtractJwt, Strategy } from 'passport-jwt'
 import { PrismaService } from 'src/utils/prisma.service'
-import { RequestUser } from 'src/utils/requester'
 
-import { TokenContent } from './types'
+import { RequestUser, TokenContent } from './types'
 import { ConfigService } from '@nestjs/config'
 import { Config } from 'src/utils/config'
 
@@ -29,6 +28,13 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         accounts: {
           where: {
             blockedAt: null,
+          },
+          include: {
+            workspace: {
+              include: {
+                billingSettings: true,
+              },
+            },
           },
         },
       },

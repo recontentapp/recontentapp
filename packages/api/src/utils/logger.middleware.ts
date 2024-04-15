@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express'
 
 import { MyLogger } from './logger'
 import { getRequestIdFromRequest } from './request-id.middleware'
-import { getRequesterOrNull } from './requester'
+import { getRequesterOrNull } from 'src/modules/auth/requester.resolver'
 
 const REQUEST_PROCESSED = 'Request processed'
 
@@ -29,8 +29,8 @@ export class LoggerMiddleware implements NestMiddleware {
       const service = path.startsWith('/public-api')
         ? 'public-api'
         : path.startsWith('/private-api')
-        ? 'private-api'
-        : 'worker'
+          ? 'private-api'
+          : 'worker'
 
       const params = {
         service,
@@ -40,17 +40,7 @@ export class LoggerMiddleware implements NestMiddleware {
         ipAddress,
         statusCode: res.statusCode,
         requestId: getRequestIdFromRequest(req),
-        ...(requester && {
-          requesterType: requester.type,
-          ...(requester.type === 'human'
-            ? {
-                userId: requester.userId,
-                userEmail: requester.userEmail,
-              }
-            : {
-                serviceAccountId: requester.serviceAccountId,
-              }),
-        }),
+        ...requester?.getLoggingAttributes(),
         duration: Date.now() - now,
       }
 
