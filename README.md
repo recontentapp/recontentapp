@@ -18,9 +18,9 @@
 
 ## Getting started
 
-Recontent.app is packaged as Docker images & only requires a Postgres database.
+Recontent.app is packaged using Docker. It can be deployed on any cloud provider that supports Docker containers & postgres databases.
 
-To learn more, visit [`docker/README.md`](https://github.com/recontentapp/recontentapp/blob/master/docker/README.md).
+To learn more about how to run Recontent.app on your machine or how to deploy it in the Cloud, visit the [`DEPLOYMENT.md`](https://github.com/recontentapp/recontentapp/blob/master/DEPLOYMENT.md) guide.
 
 ## Try it live!
 
@@ -32,7 +32,7 @@ Recontent.app is available as a software-as-a-service (SaaS) on [app.recontent.a
 
 ## Contributing
 
-To learn more about the technical stack used & how to contribute to Recontent.app, check out the [`CONTRIBUTING.md`](https://github.com/recontentapp/recontentapp/blob/master/CONTRIBUTING.md) file.
+You just discovered an issue, want to improve an existing feature or add a new one? To learn more about the technical stack used & how to contribute to Recontent.app, check out the [`CONTRIBUTING.md`](https://github.com/recontentapp/recontentapp/blob/master/CONTRIBUTING.md) guide.
 
 ## License
 
