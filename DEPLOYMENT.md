@@ -33,7 +33,7 @@ Apart from its database, Recontent.app is packaged as a single Docker image that
 docker pull ghcr.io/recontentapp/recontentapp:0.1.0
 
 # Run container
-docker run -p 127.0.0.1:8080:8080/tcp --env DATABASE_URL=postgres://postgres:postgres@host.docker.internal:6033/recontentapp ghcr.io/recontentapp/recontentapp:0.1.0
+docker run -p 127.0.0.1:8080:8080/tcp --env DATABASE_URL="postgres://postgres:postgres@host.docker.internal:6033/recontentapp" ghcr.io/recontentapp/recontentapp:0.1.0
 ```
 
 ### Environment variables
