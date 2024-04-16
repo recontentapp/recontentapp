@@ -39,7 +39,7 @@ import getConfig from 'src/utils/config'
       ignoreErrors: true,
     }),
     HealthModule,
-    ...(process.env.SERVE_STATIC_FILES === 'true'
+    ...(process.env.SERVE_STATIC_FILES !== 'false'
       ? [
           ServeStaticModule.forRoot({
             rootPath: join(__dirname, '..', '..', '..', '..', 'app', 'dist'),
