@@ -43,6 +43,7 @@ Here's the full list of environment variables that need to be passed to the appl
 | `DATABASE_URL`                 | Postgres connection string                               | `true`   |
 | `DATABASE_LOG_QUERIES`         | Log SQL queries                                          | `false`  |
 | `JWT_SECRET`                   | [JWT](https://jwt.io/) for authentication                | `true`   |
+| `ENCRYPTION_KEY`               | Encrypt/decrypt credentials stored in database           | `true`   |
 | `MAILER_HOST`                  | Mailer config                                            | `true`   |
 | `MAILER_PORT`                  | Mailer config                                            | `true`   |
 | `MAILER_SECURE`                | Mailer config                                            | `false`  |
@@ -54,6 +55,12 @@ Here's the full list of environment variables that need to be passed to the appl
 | `APP_URL`                      | Base URL for webapp                                      | `true`   |
 | `API_URL`                      | Base URL for API                                         | `true`   |
 | `WORKSPACE_INVITE_ONLY`        | Disable sign up after first registration                 | `false`  |
+| `AWS_ACCESS_KEY_ID`            | AWS credentials if CDN or AWS Translate is used          | `false`  |
+| `AWS_SECRET_ACCESS_KEY`        | AWS credentials if CDN or AWS Translate is used          | `false`  |
+| `AWS_DEFAULT_REGION`           | AWS setting if CDN or AWS Translate is used              | `false`  |
+| `AWS_S3_CDN_BUCKET`            | Bucket name in which CDN assets are stored               | `false`  |
+| `AWS_S3_CDN_BUCKET_URL`        | Public base URL for bucket objects                       | `false`  |
+| `AWS_S3_CUSTOM_ENDPOINT`       | Custom endpoint for S3 (used locally with Localstack)    | `false`  |
 | `AUTO_TRANSLATE_PROVIDER`      | Service used for machine translations. `aws` or `openai` | `false`  |
 | `OPENAI_API_KEY`               | OpenAI API key for ChatGPT completions                   | `false`  |
 
@@ -61,10 +68,66 @@ Here's the full list of environment variables that need to be passed to the appl
 
 You can choose to disable workspace creation on your Recontent.app instance. Once the first user signs up & creates a first workspace, it's no longer possible to create a new one for new users.
 
-### Autotranslation with AWS Translate or OpenAI
+### Auto translation with AWS Translate or OpenAI
 
-TO DO
+Recontent.app supports auto-translating phrases once a translation is available in at least one language for a given phrase. Auto translation can either be powered by [AWS Translate](https://aws.amazon.com/translate/) or [OpenAI](https://platform.openai.com/).
+
+#### Using AWS Translate
+
+The AWS Translate SDK is initialized using [standard AWS credentials retrieval mechanisms](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-credentials-node.html).
+
+Make sure `AUTO_TRANSLATE_PROVIDER` is set to `aws` & credentials are provided in one of the listed ways & that the AWS managed policy `TranslateReadOnly` or the following policy is used:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "translate:TranslateText",
+        "translate:TranslateDocument",
+        "translate:GetTerminology",
+        "translate:ListTerminologies",
+        "translate:ListTextTranslationJobs",
+        "translate:DescribeTextTranslationJob",
+        "translate:GetParallelData",
+        "translate:ListParallelData",
+        "comprehend:DetectDominantLanguage",
+        "cloudwatch:GetMetricStatistics",
+        "cloudwatch:ListMetrics"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+#### Using OpenAI
+
+OpenAI ChatGPT requests are authenticated using a standard API key. Make sure to pass the `OPENAI_API_KEY` environment variable & set `AUTO_TRANSLATE_PROVIDER` to `openai`.
 
 ### CDN with AWS S3
 
-TO DO
+Recontent.app has a built-in destination type called CDN which allows users to expose their translations on public URLs using various formats like JSON.
+
+An AWS S3 bucket is used to store generated files, which can then be accessed publicly behind AWS CloudFront for example.
+
+The environment variable `AWS_S3_CDN_BUCKET` is used to indicate which bucket to use & `AWS_S3_CDN_BUCKET_URL` defines the base URL for bucket objects. For example, if your S3 bucket points to `translations-cdn.my-app.com`, `https://translations-cdn.my-app.com` should be used.
+
+The AWS S3 SDK is initialized using [standard AWS credentials retrieval mechanisms](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-credentials-node.html).
+
+Make sure credentials are provided in one of the listed ways & that the following policy is used:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": ["s3:*"],
+      "Effect": "Allow",
+      "Resource": "arn:aws:s3:::example-bucket/*"
+    }
+  ]
+}
+```
