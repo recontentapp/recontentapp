@@ -53,9 +53,9 @@ Here's the full list of environment variables that need to be passed to the appl
 | `SERVE_STATIC_FILES`           | Wether or not web app should be served                   | `false`  |
 | `APP_URL`                      | Base URL for webapp                                      | `true`   |
 | `API_URL`                      | Base URL for API                                         | `true`   |
-| `SIGN_UP_DISABLED`             | Disable sign up after first registration                 | `false`  |
+| `WORKSPACE_INVITE_ONLY`        | Disable sign up after first registration                 | `false`  |
 | `AUTO_TRANSLATE_PROVIDER`      | Service used for machine translations. `aws` or `openai` | `false`  |
-| `OPENAI_API_KEY`               | OpenAI API key for ChatGPT completions                   | `false`  
+| `OPENAI_API_KEY`               | OpenAI API key for ChatGPT completions                   | `false`  |
 
 `APP_URL` & `API_URL` are usually the same. For example, if Recontent.app is hosted at `translations.my-app.com`, `https://translations.my-app.com` can be used for both environment variables.
 

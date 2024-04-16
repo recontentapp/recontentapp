@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom'
 import { passwordConfig } from '../../../auth/config'
 import { Logo } from '../../../components/Logo'
 import {
-  Banner,
   Box,
   Button,
   ExternalLink,
@@ -18,7 +17,6 @@ import {
 } from '../../../components/primitives'
 import { getAPIClient } from '../../../generated/apiClient'
 import routes from '../../../routing'
-import { useSystem } from '../../../hooks/system'
 
 interface State {
   email: string
@@ -26,7 +24,6 @@ interface State {
 }
 
 export const SignUp: FC = () => {
-  const { settings } = useSystem()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [state, setState] = useState<State>({
@@ -89,54 +86,47 @@ export const SignUp: FC = () => {
             </Text>
           </Stack>
 
-          {settings.signUpDisabled ? (
-            <Banner
-              variation="warning"
-              description="Sign up is disabled on this Recontent.app instance. Please contact your administrator."
-            />
-          ) : (
-            <Form onSubmit={onSignUpSubmit}>
-              <Stack direction="column" spacing="$space200">
-                <TextField
-                  label="Email"
-                  id="email"
-                  type="email"
-                  value={state.email}
-                  onChange={value =>
-                    setState(state => ({
-                      ...state,
-                      email: value,
-                    }))
-                  }
-                />
-                <TextField
-                  label="Password"
-                  id="password"
-                  type="password"
-                  info="At least 8 characters with uppercase, lowercase & digits"
-                  value={state.password}
-                  onChange={value =>
-                    setState(state => ({
-                      ...state,
-                      password: value,
-                    }))
-                  }
-                />
+          <Form onSubmit={onSignUpSubmit}>
+            <Stack direction="column" spacing="$space200">
+              <TextField
+                label="Email"
+                id="email"
+                type="email"
+                value={state.email}
+                onChange={value =>
+                  setState(state => ({
+                    ...state,
+                    email: value,
+                  }))
+                }
+              />
+              <TextField
+                label="Password"
+                id="password"
+                type="password"
+                info="At least 8 characters with uppercase, lowercase & digits"
+                value={state.password}
+                onChange={value =>
+                  setState(state => ({
+                    ...state,
+                    password: value,
+                  }))
+                }
+              />
 
-                <Stack direction="column" spacing="$space100">
-                  <Button
-                    variation="primary"
-                    type="submit"
-                    isFullwidth
-                    isLoading={loading}
-                    isDisabled={!canSignUpBeSubmitted}
-                  >
-                    Sign up with email
-                  </Button>
-                </Stack>
+              <Stack direction="column" spacing="$space100">
+                <Button
+                  variation="primary"
+                  type="submit"
+                  isFullwidth
+                  isLoading={loading}
+                  isDisabled={!canSignUpBeSubmitted}
+                >
+                  Sign up with email
+                </Button>
               </Stack>
-            </Form>
-          )}
+            </Stack>
+          </Form>
 
           <Box paddingTop="$space200">
             <Text size="$size80" color="$gray11" lineHeight="$lineHeight300">

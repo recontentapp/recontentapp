@@ -38,7 +38,7 @@ docker run -p 127.0.0.1:8080:8080/tcp --env PORT=8080 --env JWT_SECRET=HelloWorl
 | `SERVE_STATIC_FILES`           | Wether or not web app should be served                   | `false`  |
 | `APP_URL`                      | Base URL for webapp                                      | `true`   |
 | `API_URL`                      | Base URL for API                                         | `true`   |
-| `SIGN_UP_DISABLED`             | Disable sign up after first registration                 | `false`  |
+| `WORKSPACE_INVITE_ONLY`        | Disable sign up after first registration                 | `false`  |
 | `AUTO_TRANSLATE_PROVIDER`      | Service used for machine translations. `aws` or `openai` | `false`  |
 | `OPENAI_API_KEY`               | OpenAI API key for ChatGPT completions                   | `false`  |
 

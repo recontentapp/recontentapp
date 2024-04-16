@@ -12,6 +12,8 @@ import { PaginationParams } from 'src/utils/pagination'
 import { generateAPIKey } from 'src/utils/security'
 import { LanguageLocale } from './locale'
 import { Requester } from '../auth/requester.object'
+import { ConfigService } from '@nestjs/config'
+import { Config } from 'src/utils/config'
 
 interface CreateWorkspaceParams {
   key: string
@@ -94,7 +96,37 @@ export class WorkspaceService {
   constructor(
     private prismaService: PrismaService,
     private eventEmitter: EventEmitter2,
+    private configService: ConfigService<Config>,
   ) {}
+
+  private async checkWorkspaceInviteOnlyOrThrow(requester: Requester) {
+    const workspaceInviteOnly = this.configService.get(
+      'app.workspaceInviteOnly',
+      { infer: true },
+    )
+    if (!workspaceInviteOnly) {
+      return
+    }
+
+    const [existingWorkspacesCount, requesterExistingWorkspacesCount] =
+      await Promise.all([
+        this.prismaService.workspace.count(),
+        this.prismaService.workspaceAccount.count({
+          where: {
+            userId: requester.getUserID(),
+          },
+        }),
+      ])
+
+    const isNewUserOnWorkspaceInviteOnlyWhichHasWorkspaces =
+      requesterExistingWorkspacesCount === 0 && existingWorkspacesCount > 0
+
+    if (isNewUserOnWorkspaceInviteOnlyWhichHasWorkspaces) {
+      throw new BadRequestException(
+        'Cannot create a new workspace for new users on workspace invite only mode',
+      )
+    }
+  }
 
   async isWorkspaceKeyAvailable(key: string): Promise<boolean> {
     const workspace = await this.prismaService.workspace.findUnique({
@@ -107,6 +139,8 @@ export class WorkspaceService {
     if (!this.isWorkspaceKeyAvailable(key)) {
       throw new BadRequestException('Workspace key is not available')
     }
+
+    await this.checkWorkspaceInviteOnlyOrThrow(requester)
 
     const workspace = await this.prismaService.$transaction(async t => {
       const workspace = await t.workspace.create({

@@ -24,6 +24,7 @@ export class LoggerMiddleware implements NestMiddleware {
       const queryParams =
         Object.keys(req.query).length > 0 ? req.query : undefined
       const ipAddress = req.ip
+      const referer = req.headers.referer
       const requester = getRequesterOrNull(req)
       const statusCodeStartsWith = String(res.statusCode)[0]
       const service = path.startsWith('/public-api')
@@ -38,10 +39,11 @@ export class LoggerMiddleware implements NestMiddleware {
         path,
         queryParams,
         ipAddress,
+        referer,
         statusCode: res.statusCode,
+        duration: Date.now() - now,
         requestId: getRequestIdFromRequest(req),
         ...requester?.getLoggingAttributes(),
-        duration: Date.now() - now,
       }
 
       switch (statusCodeStartsWith) {

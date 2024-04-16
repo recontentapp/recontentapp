@@ -24,12 +24,12 @@ paths:
                     type: object
                     additionalProperties: false
                     properties:
-                      signUpDisabled:
+                      workspaceInviteOnly:
                         type: boolean
                       cdnAvailable:
                         type: boolean
                     required:
-                      - signUpDisabled
+                      - workspaceInviteOnly
                       - cdnAvailable
                 additionalProperties: false
                 required:

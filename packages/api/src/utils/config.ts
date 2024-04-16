@@ -40,7 +40,7 @@ const getConfig = () => {
     app: {
       version: process.env.APP_VERSION ?? '0.0.0',
       distribution: process.env.APP_DISTRIBUTION ?? 'self-hosted',
-      signUpDisabled: process.env.SIGN_UP_DISABLED === 'true',
+      workspaceInviteOnly: process.env.WORKSPACE_INVITE_ONLY === 'true',
       serveStaticFiles: process.env.SERVE_STATIC_FILES === 'true',
     },
     database: {

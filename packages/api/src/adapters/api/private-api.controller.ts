@@ -345,7 +345,7 @@ export class PrivateApiController {
   @Get('/system')
   @Public()
   async settings(): Promise<Paths.GetSystem.Responses.$200> {
-    let signUpDisabled = false
+    let workspaceInviteOnly = false
 
     const appConfig = this.configService.get('app', {
       infer: true,
@@ -354,9 +354,9 @@ export class PrivateApiController {
       infer: true,
     })
 
-    if (appConfig.signUpDisabled) {
-      const user = await this.prismaService.user.findFirst()
-      signUpDisabled = !!user
+    if (appConfig.workspaceInviteOnly) {
+      const workspacesCount = await this.prismaService.workspace.count()
+      workspaceInviteOnly = workspacesCount > 0
     }
 
     return {
@@ -364,7 +364,7 @@ export class PrivateApiController {
       // @ts-expect-error TODO
       distribution: appConfig.distribution,
       settings: {
-        signUpDisabled,
+        workspaceInviteOnly,
         cdnAvailable: cdnConfig.available,
       },
     }

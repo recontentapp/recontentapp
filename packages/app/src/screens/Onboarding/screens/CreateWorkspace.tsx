@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import slugify from 'slugify'
 
 import {
+  Banner,
   Box,
   Button,
   Form,
@@ -18,6 +19,7 @@ import { useDebounce } from '../../../utils/debounce'
 import { useAPIClient, useCreateWorkspace } from '../../../generated/reactQuery'
 import { useAuth } from '../../../auth'
 import routes from '../../../routing'
+import { useSystem } from '../../../hooks/system'
 
 interface State {
   name: string
@@ -33,6 +35,9 @@ const StyledLink = styled('span', {
 
 export const CreateWorkspace = () => {
   const { refetchUser } = useAuth()
+  const {
+    settings: { workspaceInviteOnly },
+  } = useSystem()
   const apiClient = useAPIClient()
   const { mutateAsync: createWorkspace, isPending: isCreatingWorkspace } =
     useCreateWorkspace()
@@ -91,7 +96,8 @@ export const CreateWorkspace = () => {
     state.name.length > 0 &&
     state.name.length <= 40 &&
     new RegExp('[a-z0-9]*').test(state.key) &&
-    workspaceKeyAvailable
+    workspaceKeyAvailable &&
+    !workspaceInviteOnly
 
   return (
     <Box paddingX="$space200" paddingY="$space600">
@@ -127,54 +133,66 @@ export const CreateWorkspace = () => {
 
           <Form width="100%" onSubmit={onSubmit}>
             <Stack direction="column" spacing="$space300">
-              <Stack width="100%" direction="column" spacing="$space200">
-                <TextField
-                  width="100%"
-                  label="Workspace name"
-                  autoFocus
-                  info={
-                    state.name.length > 0
-                      ? `Workspace URL: https://recontent.app/${state.key}`
-                      : undefined
-                  }
-                  value={state.name}
-                  error={
-                    !workspaceKeyAvailable
-                      ? `https://recontent.app/${state.key} is already used`
-                      : state.name.length > 40
-                        ? 'Workspace name must not exceed 40 characters'
-                        : undefined
-                  }
-                  onChange={name => {
-                    const key = slugify(name, {
-                      replacement: '',
-                      remove: undefined,
-                      lower: true,
-                      strict: true,
-                      locale: 'vi',
-                      trim: true,
-                    })
-
-                    setState(state => ({
-                      ...state,
-                      name,
-                      key,
-                    }))
-                  }}
+              {workspaceInviteOnly && (
+                <Banner
+                  variation="info"
+                  title="Invite-only mode"
+                  description="Only existing users with workspaces can create new ones. If you have an invitation, you can join a workspace instead."
                 />
-              </Stack>
+              )}
+
+              {!workspaceInviteOnly && (
+                <Stack width="100%" direction="column" spacing="$space200">
+                  <TextField
+                    width="100%"
+                    label="Workspace name"
+                    autoFocus
+                    info={
+                      state.name.length > 0
+                        ? `Workspace URL: https://recontent.app/${state.key}`
+                        : undefined
+                    }
+                    value={state.name}
+                    error={
+                      !workspaceKeyAvailable
+                        ? `https://recontent.app/${state.key} is already used`
+                        : state.name.length > 40
+                          ? 'Workspace name must not exceed 40 characters'
+                          : undefined
+                    }
+                    onChange={name => {
+                      const key = slugify(name, {
+                        replacement: '',
+                        remove: undefined,
+                        lower: true,
+                        strict: true,
+                        locale: 'vi',
+                        trim: true,
+                      })
+
+                      setState(state => ({
+                        ...state,
+                        name,
+                        key,
+                      }))
+                    }}
+                  />
+                </Stack>
+              )}
 
               <Stack direction="column" spacing="$space80">
-                <Box>
-                  <Button
-                    type="submit"
-                    variation="primary"
-                    isLoading={isCreatingWorkspace}
-                    isDisabled={!canBeSubmitted}
-                  >
-                    Create workspace
-                  </Button>
-                </Box>
+                {!workspaceInviteOnly && (
+                  <Box>
+                    <Button
+                      type="submit"
+                      variation="primary"
+                      isLoading={isCreatingWorkspace}
+                      isDisabled={!canBeSubmitted}
+                    >
+                      Create workspace
+                    </Button>
+                  </Box>
+                )}
 
                 <Stack direction="row">
                   <Text size="$size100" color="$gray11">

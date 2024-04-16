@@ -14,8 +14,12 @@ import {
 import { useAuth, useCurrentUser } from '../../../auth'
 import { useUpdateCurrentUser } from '../../../generated/reactQuery'
 import routes from '../../../routing'
+import { useSystem } from '../../../hooks/system'
 
 export const You: FC = () => {
+  const {
+    settings: { workspaceInviteOnly },
+  } = useSystem()
   const { refetchUser } = useAuth()
   const { firstName, lastName } = useCurrentUser()
   const { mutateAsync, isPending } = useUpdateCurrentUser()
@@ -27,9 +31,13 @@ export const You: FC = () => {
 
   useEffect(() => {
     if (firstName.length > 0 && lastName.length > 0) {
-      navigate(routes.onboardingCreateWorkspace.url({}))
+      if (workspaceInviteOnly) {
+        navigate(routes.onboardingJoinWorkspace.url({}))
+      } else {
+        navigate(routes.onboardingCreateWorkspace.url({}))
+      }
     }
-  }, [firstName, lastName])
+  }, [firstName, lastName, navigate, workspaceInviteOnly])
 
   const onSubmit = () => {
     if (isPending) {
@@ -39,7 +47,11 @@ export const You: FC = () => {
     mutateAsync({ body: state })
       .then(refetchUser)
       .then(() => {
-        navigate(routes.onboardingCreateWorkspace.url({}))
+        if (workspaceInviteOnly) {
+          navigate(routes.onboardingJoinWorkspace.url({}))
+        } else {
+          navigate(routes.onboardingCreateWorkspace.url({}))
+        }
       })
       .catch(() => {
         toast('error', {
