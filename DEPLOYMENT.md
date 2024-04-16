@@ -16,10 +16,13 @@ Recontent.app uses [Prisma](https://prisma.io/) to manage its DB schema & migrat
 docker pull ghcr.io/recontentapp/recontentapp-migrate:0.1.0
 
 # Run migrations against database
-docker run --env DATABASE_URL=postgres://postgres:postgres@host.docker.internal:6033/recontentapp recontentapp-migrate:0.1.0
+docker run --env DATABASE_URL="postgres://postgres:postgres@host.docker.internal:6033/recontentapp" ghcr.io/recontentapp/recontentapp-migrate:0.1.0
 ```
 
 If your database is accessible from the Internet, these commands can be run from your computer by making sure the `DATABASE_URL` environment variable is correct. For more advanced contexts, this Docker image can be used to spawn a container on each deployment or app restart.
+
+> [!NOTE]
+> On Apple Silicon processors, you might need to use `export DOCKER_DEFAULT_PLATFORM=linux/amd64`
 
 ## Running the app
 
@@ -30,7 +33,7 @@ Apart from its database, Recontent.app is packaged as a single Docker image that
 docker pull ghcr.io/recontentapp/recontentapp:0.1.0
 
 # Run container
-docker run -p 127.0.0.1:8080:8080/tcp --env DATABASE_URL=postgres://postgres:postgres@host.docker.internal:6033/recontentapp recontentapp:0.1.0
+docker run -p 127.0.0.1:8080:8080/tcp --env DATABASE_URL=postgres://postgres:postgres@host.docker.internal:6033/recontentapp ghcr.io/recontentapp/recontentapp:0.1.0
 ```
 
 ### Environment variables
@@ -131,3 +134,38 @@ Make sure credentials are provided in one of the listed ways & that the followin
   ]
 }
 ```
+
+## Deploying on Cloud providers
+
+### Digital Ocean
+
+**Create a new project**
+
+**Create a new database**
+
+- Go to Manage > Databases
+- Click "Create database"
+- Choose a datacenter region
+- Select "PostgreSQL" as database engine
+- Update database configuration based on your needs
+- Click "Create Database Cluster"
+
+**Start a `recontentapp-migrate` docker container as described in ["Setting up the database"](#setting-up-the-database)**
+
+- Make sure to use the connection string available on the database page
+
+**Create a new app**
+
+- Go to Manage > App Platform
+- Click "Create App"
+- Select "GitHub Container Registry" as service provider
+- Enter "recontentapp/recontentapp" as Repository
+- Enter "0.1.0" as Image tag
+- Click "Next"
+- Ensure "Web Service" is selected as Resource Type
+- Click "Next"
+- Add environment variables as described in ["Environment variables"](#environment-variables)
+  - Make sure to add `PORT` `8080`
+- Click "Next"
+- Review info & click "Next"
+- Once the app is started & its public URL has been generated, make sure to edit the `APP_URL` & `API_URL` environment variables. For example, if `clownfish-app-zbfol` is the name of your app, `https://clownfish-app-zbfol.ondigitalocean.app` should be used.
