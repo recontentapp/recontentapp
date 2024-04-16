@@ -1,8 +1,14 @@
 # Contributing to Recontent.app
 
-## Get started
+## Requirements
 
-In order to set up Recontent.app on your machine, git, docker, docker-compose, node.js & the AWS CLI need to be installed.
+- Git
+- Docker & Docker compose
+- Node.js & Yarn
+- AWS CLI
+- Localstack
+
+## Get started
 
 ```sh
 git clone git@github.com:recontentapp/recontentapp.git
@@ -28,6 +34,28 @@ yarn start:api
 yarn start:app
 ```
 
+## Tech stack
+
+Recontent.app is developed using Javascript on both the frontend & backend.
+
+The codebase is organized as a Yarn workspace with several packages:
+
+- `api`: Backend source code
+- `app`: Frontend source code
+- `cli`: CLI source code
+- `db`: DB schema & migrations
+- `email-templates`: MJML templates
+
+Nest.js is used on the backend with an express.js adapter.
+
+React.js is used on the frontend with Vite as bundler/dev server. Packages like `react-router`, `react-hook-form`, `zod` & `stitches` are used for various concerns like routing, forms, schema validation & CSS-in-js.
+
+OpenAPI is used to define data structure (objects, enums) used in request payloads & response bodies. These definitions allow to generate Typescript interfaces to ensure end-to-end static typing. [`openapi-kit`](https://github.com/greeeg/openapi-kit) is used for this.
+
+[Prisma](https://prisma.io/) is used as a database ORM & migrations tool.
+
+[MJML](https://mjml.io/) is used to generate email templates.
+
 ## AWS services locally with LocalStack
 
 Some Recontent.app features are based on AWS services like S3. In order to make them work locally without actually using AWS during development, [`localstack`](https://localstack.cloud) is used.
@@ -40,7 +68,9 @@ In order to set up `localstack` resources using the AWS CLI, you can define an A
 region=us-east-1
 output=json
 endpoint_url = http://localhost:4566
+```
 
+```sh
 # ~/.aws/credentials
 [recontent]
 aws_access_key_id=test
