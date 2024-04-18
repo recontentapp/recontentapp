@@ -21,7 +21,7 @@
     "@reach/popover": "0.18.0",
     "@reach/portal": "0.18.0",
     "@reach/tooltip": "0.18.0",
-    "@sentry/react": "7.109.0",
+    "@sentry/react": "7.111.0",
     "@sentry/tracing": "7.109.0",
     "@stitches/react": "1.2.8",
     "@tanstack/react-query": "5.28.14",
