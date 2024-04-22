@@ -20,7 +20,7 @@
     "localstack:s3": "aws --profile recontent --endpoint-url=http://localhost:4566 s3api create-bucket --bucket recontent-public --region us-east-1 && aws --profile recontent --endpoint-url=http://localhost:4566 s3api put-bucket-policy --bucket recontent-public --policy file://localstack/s3-bucket-policy.json"
   },
   "devDependencies": {
-    "eslint": "8.57.0",
+    "eslint": "9.1.0",
     "husky": "9.0.11",
     "lint-staged": "15.2.2",
     "openapi-format": "1.16.1",
