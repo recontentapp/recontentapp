@@ -2,6 +2,17 @@ name: Continuous deployment
 
 on:
   workflow_dispatch:
+    inputs:
+      app_image_tag:
+        description: 'App image tag'
+        required: true
+        default: 'recontentapp/recontentapp:latest'
+        type: string
+      migrate_image_tag:
+        description: 'Migrate image tag'
+        required: true
+        default: 'recontentapp/recontentapp-migrate:latest'
+        type: string
   push:
     tags:
       - '*'
@@ -40,7 +51,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ github.event_name == "workflow_dispatch" && inputs.app_image_tag || steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           file: docker/Dockerfile
   migrate:
@@ -72,6 +83,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ github.event_name == "workflow_dispatch" && inputs.migrate_image_tag || steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           file: docker/Dockerfile.migrate
