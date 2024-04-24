@@ -13,10 +13,10 @@ Recontent.app uses [Prisma](https://prisma.io/) to manage its DB schema & migrat
 
 ```sh
 # Pull Docker image
-docker pull ghcr.io/recontentapp/recontentapp-migrate:0.2.0
+docker pull recontentapp/recontentapp-migrate:0.2.0
 
 # Run migrations against database
-docker run --env DATABASE_URL="postgres://postgres:postgres@host.docker.internal:6033/recontentapp" ghcr.io/recontentapp/recontentapp-migrate:0.2.0
+docker run --env DATABASE_URL="postgres://postgres:postgres@host.docker.internal:6033/recontentapp" recontentapp/recontentapp-migrate:0.2.0
 ```
 
 If your database is accessible from the Internet, these commands can be run from your computer by making sure the `DATABASE_URL` environment variable is correct. For more advanced contexts, this Docker image can be used to spawn a container on each deployment or app restart.
@@ -30,10 +30,10 @@ Apart from its database, Recontent.app is packaged as a single Docker image that
 
 ```sh
 # Pull Docker image
-docker pull ghcr.io/recontentapp/recontentapp:0.2.0
+docker pull recontentapp/recontentapp:0.2.0
 
 # Run container
-docker run -p 127.0.0.1:8080:8080/tcp --env DATABASE_URL="postgres://postgres:postgres@host.docker.internal:6033/recontentapp" ghcr.io/recontentapp/recontentapp:0.2.0
+docker run -p 127.0.0.1:8080:8080/tcp --env DATABASE_URL="postgres://postgres:postgres@host.docker.internal:6033/recontentapp" recontentapp/recontentapp:0.2.0
 ```
 
 ### Environment variables
