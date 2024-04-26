@@ -47,7 +47,7 @@ FROM node:20-alpine As production
 WORKDIR /usr/src/app
 
 ENV NODE_ENV=production
-ENV APP_VERSION=0.2.0
+ENV APP_VERSION=0.3.0
 ENV APP_DISTRIBUTION=self-hosted
 
 COPY --chown=node:node package.json yarn.lock ./
