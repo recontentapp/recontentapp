@@ -21,7 +21,7 @@ jobs:
             ${{ runner.os }}-
       - uses: actions/setup-node@v3
         with:
-          node-version-file: '.tool-versions'
+          node-version: '20.x'
       - name: Install dependencies
         run: yarn install
       - name: Install Prisma Client

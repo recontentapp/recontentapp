@@ -1,5 +1,4 @@
 openapi
-.tool-versions
 .prettierrc
 .prettierignore
 .lintstagedrc
