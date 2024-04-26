@@ -404,15 +404,24 @@ export class DestinationService {
     workspaceAccess.hasAbilityOrThrow('projects:destinations:manage')
 
     if (destination.type === 'cdn') {
+      const cdnConfig = this.configService.get('cdn', { infer: true })
+      if (!cdnConfig.available) {
+        throw new BadRequestException('CDN is not available')
+      }
+
       const client = new S3Client({
-        region: process.env.AWS_DEFAULT_REGION,
-        endpoint: process.env.AWS_CUSTOM_ENDPOINT,
+        region: cdnConfig.region,
+        endpoint: cdnConfig.endpoint,
+        credentials: {
+          accessKeyId: cdnConfig.accessKeyId,
+          secretAccessKey: cdnConfig.secretAccessKey,
+        },
       })
 
       const objects = await client.send(
         new ListObjectsCommand({
           Prefix: [destination.workspace.key, destination.id].join('/'),
-          Bucket: this.configService.get('cdn.bucket', { infer: true }),
+          Bucket: cdnConfig.bucketName,
         }),
       )
 
@@ -422,7 +431,7 @@ export class DestinationService {
       if (keys.length > 0) {
         await client.send(
           new DeleteObjectsCommand({
-            Bucket: this.configService.get('cdn.bucket', { infer: true }),
+            Bucket: cdnConfig.bucketName,
             Delete: {
               Objects: keys.map(key => ({
                 Key: key,
@@ -760,14 +769,17 @@ export class DestinationService {
     accountId: string,
   ) {
     const cdnConfig = this.configService.get('cdn', { infer: true })
-
-    if (!destination.configCDN || !cdnConfig) {
+    if (!destination.configCDN || !cdnConfig.available) {
       throw new BadRequestException('Destination has no CDN configuration')
     }
 
     const client = new S3Client({
-      region: process.env.AWS_DEFAULT_REGION,
-      endpoint: process.env.AWS_CUSTOM_ENDPOINT,
+      region: cdnConfig.region,
+      endpoint: cdnConfig.endpoint,
+      credentials: {
+        accessKeyId: cdnConfig.accessKeyId,
+        secretAccessKey: cdnConfig.secretAccessKey,
+      },
     })
 
     let error: string | null = null
@@ -797,7 +809,7 @@ export class DestinationService {
       const result = await client
         .send(
           new PutObjectCommand({
-            Bucket: cdnConfig.bucket,
+            Bucket: cdnConfig.bucketName,
             ContentType:
               fileFormatContentType[
                 destination.configCDN

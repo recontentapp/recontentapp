@@ -69,9 +69,18 @@ const getConfig = () => {
     },
     cdn: {
       available:
-        !!process.env.AWS_S3_CDN_BUCKET && !!process.env.AWS_S3_CDN_BUCKET_URL,
-      bucket: process.env.AWS_S3_CDN_BUCKET,
-      bucketUrl: process.env.AWS_S3_CDN_BUCKET_URL,
+        !!process.env.S3_REGION &&
+        !!process.env.S3_ENDPOINT &&
+        !!process.env.S3_ACCESS_KEY_ID &&
+        !!process.env.S3_SECRET_ACCESS_KEY &&
+        !!process.env.S3_BUCKET_NAME &&
+        !!process.env.S3_BUCKET_URL,
+      region: String(process.env.S3_REGION),
+      endpoint: String(process.env.S3_ENDPOINT),
+      accessKeyId: String(process.env.S3_ACCESS_KEY_ID),
+      secretAccessKey: String(process.env.S3_SECRET_ACCESS_KEY),
+      bucketName: String(process.env.S3_BUCKET_NAME),
+      bucketUrl: String(process.env.S3_BUCKET_URL),
     },
     autoTranslate: {
       provider: getAutoTranslateProvider(),

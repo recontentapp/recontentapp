@@ -42,6 +42,7 @@ Here's the full list of environment variables that need to be passed to the appl
 
 | Name                           | Description                                              | Required |
 | ------------------------------ | -------------------------------------------------------- | -------- |
+| `WORKSPACE_INVITE_ONLY`        | Disable sign up after first registration                 | `false`  |
 | `PORT`                         | Port on which app runs                                   | `true`   |
 | `DATABASE_URL`                 | Postgres connection string                               | `true`   |
 | `DATABASE_LOG_QUERIES`         | Log SQL queries                                          | `false`  |
@@ -57,15 +58,17 @@ Here's the full list of environment variables that need to be passed to the appl
 | `SERVE_STATIC_FILES`           | Wether or not web app should be served                   | `false`  |
 | `APP_URL`                      | Base URL for webapp                                      | `true`   |
 | `API_URL`                      | Base URL for API                                         | `true`   |
-| `WORKSPACE_INVITE_ONLY`        | Disable sign up after first registration                 | `false`  |
-| `AWS_ACCESS_KEY_ID`            | AWS credentials if CDN or AWS Translate is used          | `false`  |
-| `AWS_SECRET_ACCESS_KEY`        | AWS credentials if CDN or AWS Translate is used          | `false`  |
-| `AWS_DEFAULT_REGION`           | AWS setting if CDN or AWS Translate is used              | `false`  |
-| `AWS_S3_CDN_BUCKET`            | Bucket name in which CDN assets are stored               | `false`  |
-| `AWS_S3_CDN_BUCKET_URL`        | Public base URL for bucket objects                       | `false`  |
-| `AWS_S3_CUSTOM_ENDPOINT`       | Custom endpoint for S3 (used locally with Localstack)    | `false`  |
+| `S3_REGION`                    | Region for S3-compatible object storage                  | `false`  |
+| `S3_ENDPOINT`                  | Endpoint URL for S3-compatible object storage            | `false`  |
+| `S3_ACCESS_KEY_ID`             | Credentials for S3-compatible object storage             | `false`  |
+| `S3_SECRET_ACCESS_KEY`         | Credentials for S3-compatible object storage             | `false`  |
+| `S3_BUCKET_NAME`               | Bucket name in which CDN assets are stored               | `false`  |
+| `S3_BUCKET_URL`                | Public base URL for bucket objects                       | `false`  |
 | `AUTO_TRANSLATE_PROVIDER`      | Service used for machine translations. `aws` or `openai` | `false`  |
 | `OPENAI_API_KEY`               | OpenAI API key for ChatGPT completions                   | `false`  |
+| `AWS_ACCESS_KEY_ID`            | AWS credentials if AWS Translate is used                 | `false`  |
+| `AWS_SECRET_ACCESS_KEY`        | AWS credentials if AWS Translate is used                 | `false`  |
+| `AWS_DEFAULT_REGION`           | AWS setting if AWS Translate is used                     | `false`  |
 
 `APP_URL` & `API_URL` are usually the same. For example, if Recontent.app is hosted at `translations.my-app.com`, `https://translations.my-app.com` can be used for both environment variables.
 
@@ -110,13 +113,13 @@ Make sure `AUTO_TRANSLATE_PROVIDER` is set to `aws` & credentials are provided i
 
 OpenAI ChatGPT requests are authenticated using a standard API key. Make sure to pass the `OPENAI_API_KEY` environment variable & set `AUTO_TRANSLATE_PROVIDER` to `openai`.
 
-### CDN with AWS S3
+### CDN with S3-compatible object storage
 
 Recontent.app has a built-in destination type called CDN which allows users to expose their translations on public URLs using various formats like JSON.
 
-An AWS S3 bucket is used to store generated files, which can then be accessed publicly behind AWS CloudFront for example.
+An S3-compatible object storage bucket (AWS S3, Cloudflare R2) is used to store generated files, which can then be accessed publicly behind AWS CloudFront for example.
 
-The environment variable `AWS_S3_CDN_BUCKET` is used to indicate which bucket to use & `AWS_S3_CDN_BUCKET_URL` defines the base URL for bucket objects. For example, if your S3 bucket points to `translations-cdn.my-app.com`, `https://translations-cdn.my-app.com` should be used.
+The environment variable `S3_BUCKET_NAME` is used to indicate which bucket to use & `S3_BUCKET_URL` defines the base URL for bucket objects. For example, if your S3 bucket points to `translations-cdn.my-app.com`, `https://translations-cdn.my-app.com` should be used.
 
 The AWS S3 SDK is initialized using [standard AWS credentials retrieval mechanisms](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-credentials-node.html).
 
