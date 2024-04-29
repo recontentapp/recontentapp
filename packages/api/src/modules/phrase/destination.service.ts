@@ -420,7 +420,11 @@ export class DestinationService {
 
       const objects = await client.send(
         new ListObjectsCommand({
-          Prefix: [destination.workspace.key, destination.id].join('/'),
+          Prefix: [
+            'workspaces',
+            destination.workspace.key,
+            destination.id,
+          ].join('/'),
           Bucket: cdnConfig.bucketName,
         }),
       )
@@ -801,6 +805,7 @@ export class DestinationService {
         ]
 
       const key = [
+        'workspaces',
         destination.workspace.key,
         destination.id,
         `${language.locale}${extension}`,
