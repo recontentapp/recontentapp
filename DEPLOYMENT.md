@@ -13,10 +13,10 @@ Recontent.app uses [Prisma](https://prisma.io/) to manage its DB schema & migrat
 
 ```sh
 # Pull Docker image
-docker pull recontentapp/recontentapp-migrate:0.3.0
+docker pull recontentapp/recontentapp-migrate:0.3.1
 
 # Run migrations against database
-docker run --env DATABASE_URL="postgres://postgres:postgres@host.docker.internal:6033/recontentapp" recontentapp/recontentapp-migrate:0.3.0
+docker run --env DATABASE_URL="postgres://postgres:postgres@host.docker.internal:6033/recontentapp" recontentapp/recontentapp-migrate:0.3.1
 ```
 
 If your database is accessible from the Internet, these commands can be run from your computer by making sure the `DATABASE_URL` environment variable is correct. For more advanced contexts, this Docker image can be used to spawn a container on each deployment or app restart.
@@ -30,10 +30,10 @@ Apart from its database, Recontent.app is packaged as a single Docker image that
 
 ```sh
 # Pull Docker image
-docker pull recontentapp/recontentapp:0.3.0
+docker pull recontentapp/recontentapp:0.3.1
 
 # Run container
-docker run -p 127.0.0.1:8080:8080/tcp --env DATABASE_URL="postgres://postgres:postgres@host.docker.internal:6033/recontentapp" recontentapp/recontentapp:0.3.0
+docker run -p 127.0.0.1:8080:8080/tcp --env DATABASE_URL="postgres://postgres:postgres@host.docker.internal:6033/recontentapp" recontentapp/recontentapp:0.3.1
 ```
 
 ### Environment variables
@@ -163,7 +163,7 @@ Make sure credentials are provided in one of the listed ways & that the followin
 - Click "Create App"
 - Select "GitHub Container Registry" as service provider
 - Enter "recontentapp/recontentapp" as Repository
-- Enter "0.3.0" as Image tag
+- Enter "0.3.1" as Image tag
 - Click "Next"
 - Ensure "Web Service" is selected as Resource Type
 - Click "Next"
