@@ -20,6 +20,7 @@ paths:
                     type: string
                     enum:
                       - self-hosted
+                      - cloud
                   settings:
                     type: object
                     additionalProperties: false
