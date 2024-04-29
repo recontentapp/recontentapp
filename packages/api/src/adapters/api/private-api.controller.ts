@@ -380,7 +380,7 @@ export class PrivateApiController {
     return { accessToken }
   }
 
-  @Throttle({ default: { limit: 1, ttl: 5000 } })
+  @Throttle({ default: { limit: 1, ttl: 10000 } })
   @Post('/SignUp')
   @Public()
   async signUp(

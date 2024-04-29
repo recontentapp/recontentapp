@@ -7,10 +7,10 @@ import { JwtService } from '@nestjs/jwt'
 import { EventEmitter2 } from '@nestjs/event-emitter'
 import { randomInt } from 'node:crypto'
 import { PrismaService } from 'src/utils/prisma.service'
+import { MailerService } from 'src/modules/notifications/mailer.service'
 import { hashPassword, isPasswordValid } from 'src/utils/security'
 
 import { TokenContent } from './types'
-import { UserCreatedEvent } from './events/user-created.event'
 import { Prisma } from '@prisma/client'
 import { ConfigService } from '@nestjs/config'
 import { Config } from 'src/utils/config'
@@ -46,6 +46,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private configService: ConfigService<Config, true>,
+    private mailerService: MailerService,
   ) {}
 
   private generateConfirmationCode() {
@@ -63,18 +64,38 @@ export class AuthService {
     const encryptedPassword = await hashPassword(password)
 
     try {
+      const confirmationCode = this.generateConfirmationCode()
+
       const user = await this.prisma.user.create({
         data: {
           firstName,
           lastName,
-          confirmationCode: this.generateConfirmationCode(),
+          confirmationCode,
           email,
           encryptedPassword,
           providerName: 'email',
           providerId: email,
         },
       })
-      this.eventEmitter.emit('user.created', new UserCreatedEvent(user.id))
+
+      await this.mailerService
+        .sendEmail({
+          name: 'confirmation-code',
+          params: {
+            to: user.email,
+            subject: 'Confirm your Recontent.app account',
+          },
+          data: {
+            confirmationCode,
+          },
+        })
+        .catch(async () => {
+          await this.prisma.user.delete({
+            where: { id: user.id },
+          })
+
+          throw new Error('Could not send confirmation email')
+        })
     } catch (e) {
       if (
         e instanceof Prisma.PrismaClientKnownRequestError &&

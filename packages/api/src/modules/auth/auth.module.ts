@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config'
 import { JwtModule } from '@nestjs/jwt'
 import { PassportModule } from '@nestjs/passport'
 import { PrismaService } from 'src/utils/prisma.service'
+import { MailerService } from 'src/modules/notifications/mailer.service'
 
 import { AuthService } from './auth.service'
 import { JwtStrategy } from './jwt.strategy'
@@ -16,7 +17,7 @@ import { JwtStrategy } from './jwt.strategy'
       signOptions: { expiresIn: '7d' },
     }),
   ],
-  providers: [AuthService, PrismaService, JwtStrategy],
+  providers: [AuthService, PrismaService, JwtStrategy, MailerService],
   exports: [AuthService],
 })
 export class AuthModule {}
