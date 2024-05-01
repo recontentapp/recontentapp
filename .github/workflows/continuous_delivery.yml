@@ -1,4 +1,4 @@
-name: Continuous deployment
+name: Continuous delivery
 
 on:
   workflow_dispatch:

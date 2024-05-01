@@ -1,0 +1,12 @@
+name: Cloud continuous deployment
+
+on:
+  workflow_dispatch:
+
+jobs:
+  trigger_webapp_deployment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger web app deployment
+        run: |
+          curl -X POST ${{ secrets.CLOUDFLARE_DEPLOY_HOOK }}
