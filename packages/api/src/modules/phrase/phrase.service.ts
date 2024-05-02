@@ -4,16 +4,26 @@ import { Components } from 'src/generated/typeDefinitions'
 import { PaginationParams } from 'src/utils/pagination'
 import { PrismaService } from 'src/utils/prisma.service'
 import * as jwt from 'jsonwebtoken'
-import { JSONService } from '../io/json.service'
-import { CSVService } from '../io/csv.service'
-import { YAMLService } from '../io/yaml.service'
-import { fileFormatContentType, fileFormatExtensions } from '../io/fileFormat'
-import { ExcelService } from '../io/excel.service'
-import { Data } from '../io/types'
 import { escapeFileName } from 'src/utils/security'
 import { ConfigService } from '@nestjs/config'
 import { Config } from 'src/utils/config'
 import { Requester } from '../auth/requester.object'
+import {
+  Dict,
+  FileFormat,
+  fileFormatContentTypes,
+  fileFormatExtensions,
+  parseCSV,
+  parseExcel,
+  parseJSON,
+  parseYAML,
+  renderCSV,
+  renderExcel,
+  renderJSON,
+  renderNestedJSON,
+  renderNestedYAML,
+  renderYAML,
+} from 'file-formats'
 
 interface ListPhrasesParams {
   revisionId: string
@@ -102,10 +112,6 @@ export class PhraseService {
 
   constructor(
     private prismaService: PrismaService,
-    private csvService: CSVService,
-    private jsonService: JSONService,
-    private yamlService: YAMLService,
-    private excelService: ExcelService,
     private configService: ConfigService<Config, true>,
   ) {}
 
@@ -523,23 +529,22 @@ export class PhraseService {
       throw new BadRequestException('Missing mapping parameters for Excel file')
     }
 
-    let data: Data = {}
+    let data: Dict = {}
 
     switch (fileFormat) {
       case 'json':
       case 'nested_json':
-        data = this.jsonService.parse(file)
+        data = await parseJSON(file)
         break
       case 'csv':
-        data = this.csvService.parse(file)
+        data = await parseCSV(file)
         break
       case 'yaml':
       case 'nested_yaml':
-        data = this.yamlService.parse(file)
+        data = await parseYAML(file)
         break
       case 'excel':
-        data = await this.excelService.parse({
-          buffer: file,
+        data = await parseExcel(file, {
           sheetName: mappingParams.mappingSheetName!,
           rowStartIndex: mappingParams.mappingRowStartIndex!,
           keyColumnIndex: mappingParams.mappingKeyColumnIndex!,
@@ -748,22 +753,22 @@ export class PhraseService {
 
     switch (fileFormat) {
       case 'json':
-        buffer = this.jsonService.render(data)
+        buffer = await renderJSON(data)
         break
       case 'nested_json':
-        buffer = this.jsonService.renderNested(data)
+        buffer = await renderNestedJSON(data)
         break
       case 'csv':
-        buffer = this.csvService.render(data)
+        buffer = await renderCSV(data)
         break
       case 'yaml':
-        buffer = this.yamlService.render(data)
+        buffer = await renderYAML(data)
         break
       case 'nested_yaml':
-        buffer = this.yamlService.renderNested(data)
+        buffer = await renderNestedYAML(data)
         break
       case 'excel':
-        buffer = await this.excelService.render(data)
+        buffer = await renderExcel(data)
         break
     }
 
@@ -773,8 +778,8 @@ export class PhraseService {
 
     return {
       buffer,
-      contentType: fileFormatContentType[fileFormat],
-      fileName: `${fileName}${fileFormatExtensions[fileFormat]}`,
+      contentType: fileFormatContentTypes[fileFormat as FileFormat],
+      fileName: `${fileName}${fileFormatExtensions[fileFormat as FileFormat]}`,
     }
   }
 }

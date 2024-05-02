@@ -41,6 +41,8 @@ jobs:
       - name: Build app
         run: yarn workspace app build
       - name: Build file-formats
+        run: yarn workspace file-formats typecheck
+      - name: Build file-formats
         run: yarn workspace file-formats build
       - name: Test file-formats
         run: yarn workspace file-formats test

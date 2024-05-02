@@ -1,21 +1,24 @@
 import * as Excel from 'exceljs'
 import { Dict, Parser } from '../../types'
 
-interface ParserOptions {
+export interface ExcelParserOptions {
   sheetName: string
   rowStartIndex: number
   keyColumnIndex: number
   translationColumnIndex: number
 }
 
-const defaultOptions: ParserOptions = {
+const defaultOptions: ExcelParserOptions = {
   sheetName: '',
   rowStartIndex: 0,
   keyColumnIndex: 0,
   translationColumnIndex: 0,
 }
 
-export const parseExcel: Parser<ParserOptions> = async (buffer, options) => {
+export const parseExcel: Parser<ExcelParserOptions> = async (
+  buffer,
+  options,
+) => {
   const { sheetName, rowStartIndex, keyColumnIndex, translationColumnIndex } =
     options ?? defaultOptions
 

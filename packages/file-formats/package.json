@@ -8,8 +8,9 @@
     "dist"
   ],
   "scripts": {
+    "typecheck": "tsc --noEmit",
     "build:src": "esbuild src/index.ts --bundle --platform=node --packages=external --sourcemap --analyze --outfile=dist/index.js",
-    "build:types": "tsc -p tsconfig.json --emitDeclarationOnly --declaration --declarationDir ./dist --skipLibCheck",
+    "build:types": "tsc --emitDeclarationOnly --declaration --declarationDir ./dist",
     "build": "rm -rf dist && yarn build:src && yarn build:types",
     "test": "jest"
   },
