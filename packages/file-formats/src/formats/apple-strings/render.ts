@@ -1,5 +1,13 @@
 import { Renderer } from '../../types'
 
-export const renderAppleStrings: Renderer = () => {
-  return Promise.resolve(Buffer.from(''))
+const escapeString = (str: string) => {
+  return str.replace(/\"/gim, '\\"')
+}
+
+export const renderAppleStrings: Renderer = data => {
+  const result = Object.entries(data).map(([key, value]) => {
+    return `"${key}" = "${escapeString(value)}";`
+  })
+
+  return Promise.resolve(Buffer.from(result.join('\n')))
 }

@@ -7,6 +7,8 @@ export const fileFormatContentTypes: Record<FileFormat, string> = {
   'nested-yaml': 'application/yaml',
   excel: 'application/vnd.ms-excel',
   csv: 'text/csv',
+  'android-xml': 'application/xml',
+  'apple-strings': 'text/plain',
 }
 
 export const fileFormatExtensions: Record<FileFormat, string> = {
@@ -16,4 +18,6 @@ export const fileFormatExtensions: Record<FileFormat, string> = {
   'nested-json': '.json',
   excel: '.xlsx',
   csv: '.csv',
+  'android-xml': '.xml',
+  'apple-strings': '.strings',
 }
