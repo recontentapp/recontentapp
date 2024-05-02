@@ -23,6 +23,7 @@
   "dependencies": {
     "ascii-table3": "0.9.0",
     "commander": "12.0.0",
+    "file-formats": "*",
     "fs-extra": "11.2.0",
     "query-string": "7.1.3",
     "yaml": "2.4.1"

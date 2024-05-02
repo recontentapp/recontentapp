@@ -2,7 +2,7 @@ import { Command } from 'commander'
 import path from 'path'
 import { getApiClient } from '../utils/environment'
 import { writeFile } from '../utils/fs'
-import { formatters, fileExtensions, isValidFormat } from '../io'
+import { formatters, fileExtensions, isValidFileFormat } from 'file-formats'
 
 interface Flags {
   project: string
@@ -34,7 +34,7 @@ const exportCommand = new Command('export')
 
     const format = String(flags.format)
 
-    if (!isValidFormat(format)) {
+    if (!isValidFileFormat(format)) {
       command.error(
         'Invalid format, please use json, nested-json, yaml or nested-yaml.',
       )

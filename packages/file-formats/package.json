@@ -1,0 +1,31 @@
+{
+  "name": "file-formats",
+  "version": "0.0.1",
+  "license": "AGPL-3.0-only",
+  "private": true,
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build:src": "esbuild src/index.ts --bundle --platform=node --packages=external --sourcemap --analyze --outfile=dist/index.js",
+    "build:types": "tsc -p tsconfig.json --emitDeclarationOnly --declaration --declarationDir ./dist --skipLibCheck",
+    "build": "rm -rf dist && yarn build:src && yarn build:types",
+    "test": "jest"
+  },
+  "dependencies": {
+    "exceljs": "4.4.0",
+    "fs-extra": "11.2.0",
+    "papaparse": "5.4.1",
+    "yaml": "2.4.1"
+  },
+  "devDependencies": {
+    "@types/jest": "29.5.12",
+    "@types/fs-extra": "11.0.4",
+    "@types/node": "20.12.7",
+    "esbuild": "0.20.2",
+    "jest": "29.7.0",
+    "ts-jest": "29.1.2",
+    "typescript": "5.4.3"
+  }
+}
