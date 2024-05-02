@@ -16,13 +16,14 @@
   },
   "dependencies": {
     "exceljs": "4.4.0",
+    "fast-xml-parser": "4.3.6",
     "fs-extra": "11.2.0",
     "papaparse": "5.4.1",
     "yaml": "2.4.1"
   },
   "devDependencies": {
-    "@types/jest": "29.5.12",
     "@types/fs-extra": "11.0.4",
+    "@types/jest": "29.5.12",
     "@types/node": "20.12.7",
     "esbuild": "0.20.2",
     "jest": "29.7.0",

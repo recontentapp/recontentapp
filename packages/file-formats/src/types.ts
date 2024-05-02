@@ -7,6 +7,8 @@ export type FileFormat =
   | 'nested-yaml'
   | 'csv'
   | 'excel'
+  | 'apple-strings'
+  | 'android-xml'
 
 export type Renderer = (data: Dict) => Promise<Buffer>
 
