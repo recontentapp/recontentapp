@@ -1,12 +1,22 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/utils/prisma.service'
-import { JSONService } from '../io/json.service'
-import { CSVService } from '../io/csv.service'
-import { YAMLService } from '../io/yaml.service'
-import { ExcelService } from '../io/excel.service'
 import { ConfigService } from '@nestjs/config'
 import { Config } from 'src/utils/config'
 import { Components } from 'src/generated/typeDefinitions'
+import {
+  FileFormat,
+  fileFormatContentTypes,
+  fileFormatExtensions,
+  renderAndroidXML,
+  renderAppleStrings,
+  renderCSV,
+  renderExcel,
+  renderJSON,
+  renderNestedJSON,
+  renderNestedYAML,
+  renderPHPArrays,
+  renderYAML,
+} from 'file-formats'
 import {
   DeleteObjectsCommand,
   ListObjectsCommand,
@@ -14,7 +24,6 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3'
 import { Storage as GoogleCloudStorage } from '@google-cloud/storage'
-import { fileFormatContentType, fileFormatExtensions } from '../io/fileFormat'
 import { PaginationParams } from 'src/utils/pagination'
 import {
   Destination,
@@ -86,10 +95,6 @@ interface ListDestinationsParams {
 export class DestinationService {
   constructor(
     private prismaService: PrismaService,
-    private csvService: CSVService,
-    private jsonService: JSONService,
-    private yamlService: YAMLService,
-    private excelService: ExcelService,
     private configService: ConfigService<Config, true>,
   ) {}
 
@@ -135,23 +140,34 @@ export class DestinationService {
 
     switch (fileFormat) {
       case 'json':
-        buffer = this.jsonService.render(data)
+        buffer = await renderJSON(data)
         break
       case 'nested_json':
-        buffer = this.jsonService.renderNested(data)
+        buffer = await renderNestedJSON(data)
         break
       case 'csv':
-        buffer = this.csvService.render(data)
+        buffer = await renderCSV(data)
         break
       case 'yaml':
-        buffer = this.yamlService.render(data)
+        buffer = await renderYAML(data)
         break
       case 'nested_yaml':
-        buffer = this.yamlService.renderNested(data)
+        buffer = await renderNestedYAML(data)
         break
       case 'excel':
-        buffer = await this.excelService.render(data)
+        buffer = await renderExcel(data)
         break
+      case 'android_xml':
+        buffer = await renderAndroidXML(data)
+        break
+      case 'apple_strings':
+        buffer = await renderAppleStrings(data)
+        break
+      case 'php_arrays':
+        buffer = await renderPHPArrays(data)
+        break
+      default:
+        throw new BadRequestException('Unsupported file format')
     }
 
     return buffer
@@ -591,9 +607,7 @@ export class DestinationService {
       })
 
       const extension =
-        fileFormatExtensions[
-          destination.configAWSS3.fileFormat as Components.Schemas.FileFormat
-        ]
+        fileFormatExtensions[destination.configAWSS3.fileFormat as FileFormat]
 
       const key = [
         (destination.configAWSS3.objectsPrefix ?? '').replace(/\/$/, ''),
@@ -607,9 +621,8 @@ export class DestinationService {
           new PutObjectCommand({
             Bucket: destination.configAWSS3.awsBucketId,
             ContentType:
-              fileFormatContentType[
-                destination.configAWSS3
-                  .fileFormat as Components.Schemas.FileFormat
+              fileFormatContentTypes[
+                destination.configAWSS3.fileFormat as FileFormat
               ],
             Key: key,
             Body: buffer,
@@ -701,8 +714,7 @@ export class DestinationService {
 
       const extension =
         fileFormatExtensions[
-          destination.configGoogleCloudStorage
-            .fileFormat as Components.Schemas.FileFormat
+          destination.configGoogleCloudStorage.fileFormat as FileFormat
         ]
 
       const key = [
@@ -719,9 +731,8 @@ export class DestinationService {
         .file(key)
         .save(buffer, {
           contentType:
-            fileFormatContentType[
-              destination.configGoogleCloudStorage
-                .fileFormat as Components.Schemas.FileFormat
+            fileFormatContentTypes[
+              destination.configGoogleCloudStorage.fileFormat as FileFormat
             ],
         })
         .catch(err => err.message ?? 'Unknown Google Cloud Storage error')
@@ -800,9 +811,7 @@ export class DestinationService {
       })
 
       const extension =
-        fileFormatExtensions[
-          destination.configCDN.fileFormat as Components.Schemas.FileFormat
-        ]
+        fileFormatExtensions[destination.configCDN.fileFormat as FileFormat]
 
       const key = [
         'workspaces',
@@ -816,9 +825,8 @@ export class DestinationService {
           new PutObjectCommand({
             Bucket: cdnConfig.bucketName,
             ContentType:
-              fileFormatContentType[
-                destination.configCDN
-                  .fileFormat as Components.Schemas.FileFormat
+              fileFormatContentTypes[
+                destination.configCDN.fileFormat as FileFormat
               ],
             Key: key,
             Body: buffer,

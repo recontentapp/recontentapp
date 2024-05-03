@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`androidXML matches snapshot 1`] = `
+"<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="title">Hello World</string>
+  <string name="dashboard.title">Welcome to your dashboard</string>
+  <string name="dashboard.description">Here you can find all the information you need to get started</string>
+</resources>
+"
+`;

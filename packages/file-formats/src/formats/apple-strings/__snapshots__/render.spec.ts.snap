@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`appleStrings matches snapshot 1`] = `
+""title" = "Hello World";
+"dashboard.title" = "Welcome to your dashboard";
+"dashboard.description" = "Here you can find all the information you need to get started";"
+`;

@@ -2,7 +2,20 @@ import { Command } from 'commander'
 import path from 'path'
 import { getApiClient } from '../utils/environment'
 import { writeFile } from '../utils/fs'
-import { formatters, fileExtensions, isValidFormat } from '../io'
+import {
+  fileFormats,
+  renderCSV,
+  renderJSON,
+  renderNestedJSON,
+  renderNestedYAML,
+  renderYAML,
+  fileFormatContentTypes,
+  isValidFileFormat,
+  renderExcel,
+  renderAndroidXML,
+  renderAppleStrings,
+  renderPHPArrays,
+} from 'file-formats'
 
 interface Flags {
   project: string
@@ -34,9 +47,9 @@ const exportCommand = new Command('export')
 
     const format = String(flags.format)
 
-    if (!isValidFormat(format)) {
+    if (!isValidFileFormat(format)) {
       command.error(
-        'Invalid format, please use json, nested-json, yaml or nested-yaml.',
+        `Invalid format, possible values: ${fileFormats.join(', ')}`,
       )
     }
 
@@ -81,8 +94,7 @@ const exportCommand = new Command('export')
       ),
     )
 
-    const formatter = formatters[format]
-    const fileExtension = fileExtensions[format]
+    const fileExtension = fileFormatContentTypes[format]
 
     for (const [index, file] of files.entries()) {
       if (file.status !== 'fulfilled' || !file.value.ok) {
@@ -91,9 +103,41 @@ const exportCommand = new Command('export')
 
       const fileName = [languagesToExport[index].name, fileExtension].join('')
 
+      let output = Buffer.from('')
+
+      switch (format) {
+        case 'json':
+          output = await renderJSON(file.value.data.data)
+          break
+        case 'nested_json':
+          output = await renderNestedJSON(file.value.data.data)
+          break
+        case 'csv':
+          output = await renderCSV(file.value.data.data)
+          break
+        case 'yaml':
+          output = await renderYAML(file.value.data.data)
+          break
+        case 'nested_yaml':
+          output = await renderNestedYAML(file.value.data.data)
+          break
+        case 'excel':
+          output = await renderExcel(file.value.data.data)
+          break
+        case 'android_xml':
+          output = await renderAndroidXML(file.value.data.data)
+          break
+        case 'apple_strings':
+          output = await renderAppleStrings(file.value.data.data)
+          break
+        case 'php_arrays':
+          output = await renderPHPArrays(file.value.data.data)
+          break
+      }
+
       writeFile(
         path.resolve(process.cwd(), String(flags.output), fileName),
-        formatter(file.value.data.data),
+        output.toString(),
       )
     }
   })

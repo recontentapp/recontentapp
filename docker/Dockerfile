@@ -8,6 +8,7 @@ COPY --chown=node:node ./packages/api/package.json ./packages/api/package.json
 COPY --chown=node:node ./packages/db/package.json ./packages/db/package.json
 COPY --chown=node:node ./packages/db/schema.prisma ./packages/db/schema.prisma
 COPY --chown=node:node ./packages/email-templates/package.json ./packages/email-templates/package.json
+COPY --chown=node:node ./packages/file-formats/package.json ./packages/file-formats/package.json
 COPY --chown=node:node ./packages/app/package.json ./packages/app/package.json
 
 RUN yarn install --frozen-lockfile
@@ -30,14 +31,16 @@ COPY --chown=node:node --from=development /usr/src/app/node_modules ./node_modul
 COPY --chown=node:node --from=development /usr/src/app/packages/app/node_modules ./packages/app/node_modules
 COPY --chown=node:node --from=development /usr/src/app/packages/api/node_modules ./packages/api/node_modules
 COPY --chown=node:node --from=development /usr/src/app/packages/email-templates/node_modules ./packages/email-templates/node_modules
+COPY --chown=node:node --from=development /usr/src/app/packages/file-formats/node_modules ./packages/file-formats/node_modules
 COPY --chown=node:node --from=development /usr/src/app/packages/db/node_modules ./packages/db/node_modules
 
 COPY --chown=node:node . .
 
 RUN yarn openapi:generate
+RUN yarn workspace file-formats build
+RUN yarn workspace email-templates build
 RUN yarn workspace api build
 RUN yarn workspace app build
-RUN yarn workspace email-templates build
 
 USER node
 
@@ -52,6 +55,7 @@ ENV APP_DISTRIBUTION=self-hosted
 
 COPY --chown=node:node package.json yarn.lock ./
 COPY --chown=node:node ./packages/api/package.json ./packages/api/package.json
+COPY --chown=node:node ./packages/file-formats/package.json ./packages/file-formats/package.json
 COPY --chown=node:node ./packages/db/package.json ./packages/db/package.json
 COPY --chown=node:node ./packages/db/schema.prisma ./packages/db/schema.prisma
 
@@ -64,6 +68,7 @@ USER node
 COPY --chown=node:node --from=build /usr/src/app/packages/api/dist ./packages/api/dist
 COPY --chown=node:node --from=build /usr/src/app/packages/app/dist ./packages/app/dist
 COPY --chown=node:node --from=build /usr/src/app/packages/email-templates/dist ./packages/email-templates/dist
+COPY --chown=node:node --from=build /usr/src/app/packages/file-formats/dist ./packages/file-formats/dist
 COPY --chown=node:node --from=build /usr/src/app/packages/db ./packages/db
 
 CMD ["node", "packages/api/dist/api.js"]

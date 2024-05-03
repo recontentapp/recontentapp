@@ -2,7 +2,7 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator'
-import { isValidFileFormat } from 'src/modules/io/fileFormat'
+import { isValidFileFormat } from 'file-formats'
 import { isValidLanguageLocale } from 'src/modules/workspace/locale'
 
 @ValidatorConstraint({ name: 'languageLocale', async: false })

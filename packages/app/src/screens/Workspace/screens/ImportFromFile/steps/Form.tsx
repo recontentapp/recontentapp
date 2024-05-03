@@ -51,73 +51,55 @@ export const Form = ({
     }))
   }, [state.language])
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    const file = acceptedFiles.at(0)
-    updateState(state => ({
-      ...state,
-      file,
-      ...(!file && {
-        excelPreviewData: undefined,
-        csvPreviewData: undefined,
-      }),
-    }))
-
-    if (!file) {
-      return
-    }
-
-    const fileType = getFileType(file)
-    if (!fileType) {
-      return
-    }
-
-    switch (fileType) {
-      case 'yaml': {
-        updateState(state => ({
-          ...state,
-          fileFormat: 'yaml',
-        }))
-        break
+  const onDrop = useCallback(
+    async (acceptedFiles: File[]) => {
+      const file = acceptedFiles.at(0)
+      if (!file) {
+        return
       }
-      case 'csv': {
-        const csvPreviewData = await getCSVPreviewData(file)
-        updateState(state => ({
+
+      const fileType = getFileType(file)
+      if (!fileType) {
+        return
+      }
+
+      const csvPreviewData =
+        fileType === 'csv' ? await getCSVPreviewData(file) : undefined
+      const excelPreviewData =
+        fileType === 'excel' ? await getExcelPreviewData(file) : undefined
+
+      updateState(state => {
+        const newState = {
           ...state,
-          fileFormat: 'csv',
-          mapping: {
+          file,
+          fileFormat: fileType,
+        }
+
+        if (fileType === 'csv') {
+          newState.csvPreviewData = csvPreviewData
+          newState.mapping = {
             sheetName: undefined,
             rowStartIndex: 0,
             keyColumnIndex: 0,
             translationColumnIndex: 1,
-          },
-          csvPreviewData,
-        }))
-        break
-      }
-      case 'json': {
-        updateState(state => ({
-          ...state,
-          fileFormat: 'json',
-        }))
-        break
-      }
-      case 'excel': {
-        const excelPreviewData = await getExcelPreviewData(file)
-        updateState(state => ({
-          ...state,
-          excelPreviewData,
-          mapping: {
-            sheetName: excelPreviewData.at(0)?.name,
+          }
+        }
+
+        if (fileType === 'excel') {
+          newState.excelPreviewData = excelPreviewData
+          newState.mapping = {
+            sheetName: excelPreviewData!.at(0)?.name,
             rowStartIndex: 0,
             keyColumnIndex: 0,
             translationColumnIndex: 1,
-          },
-          fileFormat: 'excel',
-        }))
-        break
-      }
-    }
-  }, [])
+          }
+        }
+
+        return newState
+      })
+    },
+    [updateState],
+  )
 
   const nextLabel =
     ['excel', 'csv'].includes(state.fileFormat) && !state.mapping

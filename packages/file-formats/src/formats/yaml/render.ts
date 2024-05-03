@@ -1,7 +1,11 @@
 import { stringify as yamlStringify } from 'yaml'
-import { Data } from './types'
+import { Renderer } from '../../types'
 
-const nestedYaml = (data: Data): string => {
+export const renderYAML: Renderer = data => {
+  return Promise.resolve(Buffer.from(yamlStringify(data)))
+}
+
+export const renderNestedYAML: Renderer = data => {
   const obj = Object.keys(data).reduce((result, key) => {
     key.split('.').reduce((res, k, i, arr) => {
       // @ts-expect-error TODO
@@ -10,7 +14,5 @@ const nestedYaml = (data: Data): string => {
     return result
   }, {})
 
-  return yamlStringify(obj)
+  return Promise.resolve(Buffer.from(yamlStringify(obj)))
 }
-
-export default nestedYaml

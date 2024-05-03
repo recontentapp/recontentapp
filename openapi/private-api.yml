@@ -1626,11 +1626,14 @@ components:
       type: string
       enum:
         - json
-        - yaml
         - nested_json
+        - yaml
         - nested_yaml
         - excel
         - csv
+        - android_xml
+        - apple_strings
+        - php_arrays
     Project:
       type: object
       properties:

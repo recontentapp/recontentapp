@@ -26,8 +26,8 @@ jobs:
         run: yarn install
       - name: Install Prisma Client
         run: yarn workspace db generate
-      - name: Autogenerate files
-        run: yarn openapi:generate
+      - name: Setup
+        run: yarn setup
       - name: Typecheck api
         run: yarn workspace api typecheck
       - name: Lint api
@@ -40,3 +40,9 @@ jobs:
         run: yarn workspace app lint
       - name: Build app
         run: yarn workspace app build
+      - name: Build file-formats
+        run: yarn workspace file-formats typecheck
+      - name: Build file-formats
+        run: yarn workspace file-formats build
+      - name: Test file-formats
+        run: yarn workspace file-formats test
