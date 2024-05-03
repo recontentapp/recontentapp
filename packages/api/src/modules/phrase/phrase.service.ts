@@ -13,15 +13,21 @@ import {
   FileFormat,
   fileFormatContentTypes,
   fileFormatExtensions,
+  parseAndroidXML,
+  parseAppleStrings,
   parseCSV,
   parseExcel,
   parseJSON,
+  parsePHPArrays,
   parseYAML,
+  renderAndroidXML,
+  renderAppleStrings,
   renderCSV,
   renderExcel,
   renderJSON,
   renderNestedJSON,
   renderNestedYAML,
+  renderPHPArrays,
   renderYAML,
 } from 'file-formats'
 
@@ -551,6 +557,17 @@ export class PhraseService {
           translationColumnIndex: mappingParams.mappingTranslationColumnIndex!,
         })
         break
+      case 'android_xml':
+        data = await parseAndroidXML(file)
+        break
+      case 'apple_strings':
+        data = await parseAppleStrings(file)
+        break
+      case 'php_arrays':
+        data = await parsePHPArrays(file)
+        break
+      default:
+        throw new BadRequestException('Unsupported file format')
     }
 
     await this.prismaService.$transaction(
@@ -770,6 +787,17 @@ export class PhraseService {
       case 'excel':
         buffer = await renderExcel(data)
         break
+      case 'android_xml':
+        buffer = await renderAndroidXML(data)
+        break
+      case 'apple_strings':
+        buffer = await renderAppleStrings(data)
+        break
+      case 'php_arrays':
+        buffer = await renderPHPArrays(data)
+        break
+      default:
+        throw new BadRequestException('Unsupported file format')
     }
 
     const fileName = escapeFileName(

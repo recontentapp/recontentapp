@@ -3,6 +3,7 @@ import path from 'path'
 import { getApiClient } from '../utils/environment'
 import { writeFile } from '../utils/fs'
 import {
+  fileFormats,
   renderCSV,
   renderJSON,
   renderNestedJSON,
@@ -10,6 +11,10 @@ import {
   renderYAML,
   fileFormatContentTypes,
   isValidFileFormat,
+  renderExcel,
+  renderAndroidXML,
+  renderAppleStrings,
+  renderPHPArrays,
 } from 'file-formats'
 
 interface Flags {
@@ -44,7 +49,7 @@ const exportCommand = new Command('export')
 
     if (!isValidFileFormat(format)) {
       command.error(
-        'Invalid format, please use json, nested-json, csv, yaml or nested-yaml.',
+        `Invalid format, possible values: ${fileFormats.join(', ')}`,
       )
     }
 
@@ -104,7 +109,7 @@ const exportCommand = new Command('export')
         case 'json':
           output = await renderJSON(file.value.data.data)
           break
-        case 'nested-json':
+        case 'nested_json':
           output = await renderNestedJSON(file.value.data.data)
           break
         case 'csv':
@@ -113,8 +118,20 @@ const exportCommand = new Command('export')
         case 'yaml':
           output = await renderYAML(file.value.data.data)
           break
-        case 'nested-yaml':
+        case 'nested_yaml':
           output = await renderNestedYAML(file.value.data.data)
+          break
+        case 'excel':
+          output = await renderExcel(file.value.data.data)
+          break
+        case 'android_xml':
+          output = await renderAndroidXML(file.value.data.data)
+          break
+        case 'apple_strings':
+          output = await renderAppleStrings(file.value.data.data)
+          break
+        case 'php_arrays':
+          output = await renderPHPArrays(file.value.data.data)
           break
       }
 

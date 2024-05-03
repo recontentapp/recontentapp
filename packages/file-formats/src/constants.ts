@@ -2,36 +2,36 @@ import { FileFormat } from './types'
 
 export const fileFormats: FileFormat[] = [
   'json',
-  'nested-json',
+  'nested_json',
   'yaml',
-  'nested-yaml',
+  'nested_yaml',
   'excel',
   'csv',
-  'android-xml',
-  'apple-strings',
-  'php-arrays',
+  'android_xml',
+  'apple_strings',
+  'php_arrays',
 ]
 
 export const fileFormatContentTypes: Record<FileFormat, string> = {
   json: 'application/json',
-  'nested-json': 'application/json',
+  nested_json: 'application/json',
   yaml: 'application/yaml',
-  'nested-yaml': 'application/yaml',
+  nested_yaml: 'application/yaml',
   excel: 'application/vnd.ms-excel',
   csv: 'text/csv',
-  'android-xml': 'application/xml',
-  'apple-strings': 'text/plain',
-  'php-arrays': 'text/plain',
+  android_xml: 'application/xml',
+  apple_strings: 'text/plain',
+  php_arrays: 'text/plain',
 }
 
 export const fileFormatExtensions: Record<FileFormat, string> = {
   yaml: '.yml',
-  'nested-yaml': '.yml',
+  nested_yaml: '.yml',
   json: '.json',
-  'nested-json': '.json',
+  nested_json: '.json',
   excel: '.xlsx',
   csv: '.csv',
-  'android-xml': '.xml',
-  'apple-strings': '.strings',
-  'php-arrays': '.php',
+  android_xml: '.xml',
+  apple_strings: '.strings',
+  php_arrays: '.php',
 }

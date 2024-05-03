@@ -2,14 +2,14 @@ export type Dict = Record<string, string>
 
 export type FileFormat =
   | 'json'
-  | 'nested-json'
+  | 'nested_json'
   | 'yaml'
-  | 'nested-yaml'
+  | 'nested_yaml'
   | 'csv'
   | 'excel'
-  | 'apple-strings'
-  | 'android-xml'
-  | 'php-arrays'
+  | 'apple_strings'
+  | 'android_xml'
+  | 'php_arrays'
 
 export type Renderer = (data: Dict) => Promise<Buffer>
 

@@ -7,11 +7,14 @@ import {
   FileFormat,
   fileFormatContentTypes,
   fileFormatExtensions,
+  renderAndroidXML,
+  renderAppleStrings,
   renderCSV,
   renderExcel,
   renderJSON,
   renderNestedJSON,
   renderNestedYAML,
+  renderPHPArrays,
   renderYAML,
 } from 'file-formats'
 import {
@@ -154,6 +157,17 @@ export class DestinationService {
       case 'excel':
         buffer = await renderExcel(data)
         break
+      case 'android_xml':
+        buffer = await renderAndroidXML(data)
+        break
+      case 'apple_strings':
+        buffer = await renderAppleStrings(data)
+        break
+      case 'php_arrays':
+        buffer = await renderPHPArrays(data)
+        break
+      default:
+        throw new BadRequestException('Unsupported file format')
     }
 
     return buffer

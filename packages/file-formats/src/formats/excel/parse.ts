@@ -39,7 +39,7 @@ export const parseExcel: Parser<ExcelParserOptions> = async (
   const data: Dict = {}
 
   sheet.eachRow((row, rowNumber) => {
-    if (rowNumber < rowStartIndex) {
+    if (rowNumber < rowStartIndex + 1) {
       return
     }
 
