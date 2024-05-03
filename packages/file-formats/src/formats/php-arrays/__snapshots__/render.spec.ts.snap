@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`phpArrays matches snapshot 1`] = `
+"<?php
+
+$lang["title"] = "Hello World";
+$lang["dashboard.title"] = "Welcome to your dashboard";
+$lang["dashboard.description"] = "Here you can find all the information you need to get started";
+"
+`;

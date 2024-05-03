@@ -1,5 +1,17 @@
 import { FileFormat } from './types'
 
+export const fileFormats: FileFormat[] = [
+  'json',
+  'nested-json',
+  'yaml',
+  'nested-yaml',
+  'excel',
+  'csv',
+  'android-xml',
+  'apple-strings',
+  'php-arrays',
+]
+
 export const fileFormatContentTypes: Record<FileFormat, string> = {
   json: 'application/json',
   'nested-json': 'application/json',
@@ -9,6 +21,7 @@ export const fileFormatContentTypes: Record<FileFormat, string> = {
   csv: 'text/csv',
   'android-xml': 'application/xml',
   'apple-strings': 'text/plain',
+  'php-arrays': 'text/plain',
 }
 
 export const fileFormatExtensions: Record<FileFormat, string> = {
@@ -20,4 +33,5 @@ export const fileFormatExtensions: Record<FileFormat, string> = {
   csv: '.csv',
   'android-xml': '.xml',
   'apple-strings': '.strings',
+  'php-arrays': '.php',
 }

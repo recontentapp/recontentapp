@@ -19,6 +19,7 @@
     "fast-xml-parser": "4.3.6",
     "fs-extra": "11.2.0",
     "papaparse": "5.4.1",
+    "php-parser": "3.1.5",
     "yaml": "2.4.1"
   },
   "devDependencies": {

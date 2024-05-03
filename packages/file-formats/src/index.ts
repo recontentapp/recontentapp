@@ -1,6 +1,10 @@
 export type { FileFormat, Dict } from './types'
 export { isValidFileFormat } from './functions'
-export { fileFormatContentTypes, fileFormatExtensions } from './constants'
+export {
+  fileFormats,
+  fileFormatContentTypes,
+  fileFormatExtensions,
+} from './constants'
 
 export { parseYAML } from './formats/yaml/parse'
 export { renderNestedYAML, renderYAML } from './formats/yaml/render'
@@ -14,3 +18,5 @@ export { parseAndroidXML } from './formats/android-xml/parse'
 export { renderAndroidXML } from './formats/android-xml/render'
 export { parseAppleStrings } from './formats/apple-strings/parse'
 export { renderAppleStrings } from './formats/apple-strings/render'
+export { parsePHPArrays } from './formats/php-arrays/parse'
+export { renderPHPArrays } from './formats/php-arrays/render'

@@ -9,6 +9,7 @@ export type FileFormat =
   | 'excel'
   | 'apple-strings'
   | 'android-xml'
+  | 'php-arrays'
 
 export type Renderer = (data: Dict) => Promise<Buffer>
 
