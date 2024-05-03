@@ -2,4 +2,4 @@
 . "$(dirname "$0")/_/husky.sh"
 
 yarn install --frozen-lockfile
-yarn openapi:generate
+yarn setup
