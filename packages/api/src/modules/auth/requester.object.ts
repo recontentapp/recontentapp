@@ -6,7 +6,7 @@ import {
 } from '@prisma/client'
 import { Components } from 'src/generated/typeDefinitions'
 import { HumanRequestUser, ServiceRequestUser } from './types'
-import getConfig from 'src/utils/config'
+import getConfig, { Config } from 'src/utils/config'
 
 export interface Requester {
   getDefaultWorkspaceID: () => string
@@ -16,11 +16,16 @@ export interface Requester {
   getUserEmail: () => string
 }
 
+interface Limits {
+  projectsCount: number
+  phrasesCount: number
+}
+
 export class WorkspaceAccess {
+  private limits: Limits
   private abilities: Components.Schemas.WorkspaceAbility[] = []
 
   private resolveAbilities() {
-    const config = getConfig()
     const abilities: Components.Schemas.WorkspaceAbility[] = ['workspace:read']
 
     if (this.workspaceAccount.userId !== null) {
@@ -43,19 +48,55 @@ export class WorkspaceAccess {
       )
     }
 
-    if (config.autoTranslate.provider !== null) {
-      abilities.push('auto_translation:use')
+    if (this.systemConfig.autoTranslate.provider !== null) {
+      if (this.systemConfig.app.distribution === 'self-hosted') {
+        abilities.push('auto_translation:use')
+      }
+
+      if (
+        this.systemConfig.app.distribution === 'cloud' &&
+        this.workspaceBillingSettings.plan === 'pro'
+      ) {
+        abilities.push('auto_translation:use')
+      }
     }
 
-    this.abilities = abilities
+    return abilities
+  }
+
+  private resolveLimits() {
+    if (this.systemConfig.app.distribution === 'self-hosted') {
+      return {
+        projectsCount: Infinity,
+        phrasesCount: Infinity,
+      }
+    }
+
+    if (this.workspaceBillingSettings.plan === 'free') {
+      return {
+        projectsCount: 1,
+        phrasesCount: 1000,
+      }
+    }
+
+    return {
+      projectsCount: Infinity,
+      phrasesCount: Infinity,
+    }
   }
 
   constructor(
+    private systemConfig: Pick<Config, 'autoTranslate' | 'app'>,
     private workspaceAccount: PrismaWorkspaceAccount,
     private workspace: PrismaWorkspace,
     private workspaceBillingSettings: PrismaWorkspaceBillingSettings,
   ) {
-    this.resolveAbilities()
+    this.abilities = this.resolveAbilities()
+    this.limits = this.resolveLimits()
+  }
+
+  getLimits() {
+    return this.limits
   }
 
   getAbilities() {
@@ -135,6 +176,7 @@ export class HumanRequester implements Requester {
     }
 
     return new WorkspaceAccess(
+      getConfig(),
       account,
       account.workspace,
       account.workspace.billingSettings,
@@ -178,6 +220,7 @@ export class ServiceRequester implements Requester {
     }
 
     return new WorkspaceAccess(
+      getConfig(),
       this.requestUser.account,
       this.requestUser.account.workspace,
       this.requestUser.account.workspace.billingSettings,

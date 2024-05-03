@@ -361,7 +361,6 @@ export class PrivateApiController {
 
     return {
       version: appConfig.version,
-      // @ts-expect-error TODO
       distribution: appConfig.distribution,
       settings: {
         workspaceInviteOnly,

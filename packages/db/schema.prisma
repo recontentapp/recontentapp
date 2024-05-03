@@ -9,6 +9,7 @@ generator client {
 
 enum WorkspaceBillingPlan {
   free @map("free")
+  pro  @map("pro")
 }
 
 enum WorkspaceAccountRole {

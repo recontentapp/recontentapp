@@ -24,6 +24,14 @@ const getAutoTranslateProvider = (): 'aws' | 'openai' | null => {
   return null
 }
 
+const getDistribution = (): 'cloud' | 'self-hosted' => {
+  if (process.env.APP_DISTRIBUTION === 'cloud') {
+    return 'cloud'
+  }
+
+  return 'self-hosted'
+}
+
 const getConfig = () => {
   /**
    * Check if all required environment variables are set
@@ -39,7 +47,7 @@ const getConfig = () => {
   return {
     app: {
       version: process.env.APP_VERSION ?? '0.0.0',
-      distribution: process.env.APP_DISTRIBUTION ?? 'self-hosted',
+      distribution: getDistribution(),
       workspaceInviteOnly: process.env.WORKSPACE_INVITE_ONLY === 'true',
       serveStaticFiles: process.env.SERVE_STATIC_FILES === 'true',
     },
