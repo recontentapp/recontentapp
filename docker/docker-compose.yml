@@ -10,18 +10,28 @@ services:
     ports:
       - '3000:3000'
     environment:
-      - PORT=3000
-      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/recontentapp
+      - S3_BUCKET_NAME=
       - DATABASE_LOG_QUERIES=false
-      - JWT_SECRET=xM7jGWpRdeZutWQS6Jmg
-      - MAILER_HOST=host.com
-      - MAILER_PORT=587
-      - MAILER_SECURE=true
-      - MAILER_USER=example
-      - MAILER_PASSWORD=password
-      - MAILER_FROM_EMAIL=hello@recontent.app
-      - NODE_TLS_REJECT_UNAUTHORIZED=false
-      - SERVE_STATIC_FILES=true
+      - S3_SECRET_ACCESS_KEY=
+      - APP_URL=
+      - S3_BUCKET_URL=
+      - DATABASE_URL=postgresql://postgres:postgres@localhost:5432/recontentapp
+      - WORKSPACE_INVITE_ONLY=false
+      - APP_VERSION=0.3.1
+      - S3_ENDPOINT=
+      - API_URL=
+      - MAILER_USER=
+      - S3_ACCESS_KEY_ID=
+      - PORT=3000
+      - MAILER_SECURE=false
+      - MAILER_PASSWORD=
+      - S3_REGION=
+      - MAILER_FROM_EMAIL=
+      - JWT_SECRET=
+      - MAILER_PORT=
+      - ENCRYPTION_KEY=
+      - MAILER_HOST=
+      - NODE_ENV=production
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:3000/healthz']
       interval: 30s
