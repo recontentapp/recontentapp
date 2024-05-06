@@ -213,6 +213,17 @@ export class PhraseService {
       revision.workspaceId,
     )
     workspaceAccess.hasAbilityOrThrow('workspace:write')
+    const { phrasesCount } = workspaceAccess.getLimits()
+    const existingPhraseCount = await this.prismaService.phrase.count({
+      where: {
+        workspaceId: revision.workspaceId,
+      },
+    })
+    if (existingPhraseCount >= phrasesCount) {
+      throw new BadRequestException(
+        'Workspace has reached phrases limit with current plan',
+      )
+    }
 
     const phrase = await this.prismaService.phrase.create({
       data: {
@@ -491,6 +502,17 @@ export class PhraseService {
       revision.workspaceId,
     )
     workspaceAccess.hasAbilityOrThrow('workspace:write')
+    const { phrasesCount } = workspaceAccess.getLimits()
+    const existingPhraseCount = await this.prismaService.phrase.count({
+      where: {
+        workspaceId: revision.workspaceId,
+      },
+    })
+    if (existingPhraseCount >= phrasesCount) {
+      throw new BadRequestException(
+        'Workspace has reached phrases limit with current plan',
+      )
+    }
 
     const language = await this.prismaService.language.findUniqueOrThrow({
       where: { id: languageId },

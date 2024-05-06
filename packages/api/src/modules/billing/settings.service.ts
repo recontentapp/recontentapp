@@ -4,6 +4,7 @@ import { Config } from 'src/utils/config'
 import { PrismaService } from 'src/utils/prisma.service'
 import Stripe from 'stripe'
 import { Requester } from '../auth/requester.object'
+import { escapeTrailingSlash } from 'src/utils/strings'
 
 interface GetSettingsParams {
   workspaceId: string
@@ -156,9 +157,8 @@ export class SettingsService {
 
     const session = await this.stripe.billingPortal.sessions.create({
       customer: config.stripeCustomerId,
-      return_url: `${appUrl.replace(
-        /\/$/,
-        '',
+      return_url: `${escapeTrailingSlash(
+        appUrl,
       )}/${workspaceKey}/settings/billing`,
     })
 

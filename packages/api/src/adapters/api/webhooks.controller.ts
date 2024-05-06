@@ -35,7 +35,6 @@ export class WebhooksController {
 
     const signature = req.headers['stripe-signature']
     const rawBody = req.rawBody
-    console.log('HELLO', signature, webhookSigningSecret, rawBody)
 
     if (!rawBody || !signature || !webhookSigningSecret) {
       throw new BadRequestException(
@@ -50,7 +49,6 @@ export class WebhooksController {
         webhookSigningSecret,
       )
     } catch (err) {
-      console.log(err)
       throw new BadRequestException('Invalid Stripe webhook signature')
     }
   }

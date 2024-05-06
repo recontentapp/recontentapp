@@ -16,7 +16,7 @@ export interface Requester {
   getUserEmail: () => string
 }
 
-interface Limits {
+export interface Limits {
   projectsCount: number
   phrasesCount: number
 }
@@ -55,7 +55,8 @@ export class WorkspaceAccess {
 
       if (
         this.systemConfig.app.distribution === 'cloud' &&
-        this.workspaceBillingSettings.plan === 'pro'
+        this.workspaceBillingSettings.plan === 'pro' &&
+        this.workspaceBillingSettings.status === 'active'
       ) {
         abilities.push('auto_translation:use')
       }

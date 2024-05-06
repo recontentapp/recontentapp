@@ -42,6 +42,7 @@ const getWorkspaceBillingSettings = (
   stripeCustomerId: null,
   stripeSubscriptionId: null,
   plan: 'free',
+  status: 'active',
   createdAt: new Date(),
   updatedAt: new Date(),
   createdBy: '1',

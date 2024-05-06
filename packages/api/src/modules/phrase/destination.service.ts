@@ -35,6 +35,7 @@ import {
 } from '@prisma/client'
 import { decrypt, encrypt } from 'src/utils/security'
 import { Requester } from '../auth/requester.object'
+import { escapeTrailingSlash } from 'src/utils/strings'
 
 interface CreateCDNDestinationParams {
   name: string
@@ -610,7 +611,7 @@ export class DestinationService {
         fileFormatExtensions[destination.configAWSS3.fileFormat as FileFormat]
 
       const key = [
-        (destination.configAWSS3.objectsPrefix ?? '').replace(/\/$/, ''),
+        escapeTrailingSlash(destination.configAWSS3.objectsPrefix ?? ''),
         `${language.locale}${extension}`,
       ]
         .filter(Boolean)
@@ -718,9 +719,8 @@ export class DestinationService {
         ]
 
       const key = [
-        (destination.configGoogleCloudStorage.objectsPrefix ?? '').replace(
-          /\/$/,
-          '',
+        escapeTrailingSlash(
+          destination.configGoogleCloudStorage.objectsPrefix ?? '',
         ),
         `${language.locale}${extension}`,
       ]
