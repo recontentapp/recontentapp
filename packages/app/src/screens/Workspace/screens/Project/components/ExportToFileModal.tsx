@@ -110,8 +110,6 @@ const Content: FC<ContentProps> = ({ project, onRedirect }) => {
     toast('success', { title: 'Export link successfully generated' })
   }
 
-  console.log(state)
-
   return (
     <ModalContent
       asForm

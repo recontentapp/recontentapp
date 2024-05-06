@@ -682,7 +682,6 @@ export class PhraseService {
 
       return token
     } catch (e) {
-      console.log(e)
       throw new BadRequestException('Could not generate token')
     }
   }

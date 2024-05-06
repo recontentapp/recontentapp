@@ -142,7 +142,6 @@ export const SignIn: FC = () => {
     // completeNewPasswordChallenge({
     //   password: state.newPassword,
     // }).catch(err => {
-    //   console.log(err)
     //   setIsLoading(false)
     //   toast('error', {
     //     title: 'Could not confirm your account',

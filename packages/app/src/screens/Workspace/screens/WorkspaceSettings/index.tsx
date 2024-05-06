@@ -1,4 +1,5 @@
 export { Integrations } from './sections/Integrations'
 export { Languages } from './sections/Languages'
 export { Members } from './sections/Members'
+export { Billing } from './sections/Billing'
 export { WorkspaceSettings } from './WorkspaceSettings'

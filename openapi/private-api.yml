@@ -230,6 +230,31 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Workspace'
+  /GetWorkspaceBillingStatus:
+    get:
+      operationId: getWorkspaceBillingStatus
+      parameters:
+        - name: workspaceId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  plan:
+                    $ref: '#/components/schemas/WorkspaceBillingPlan'
+                  status:
+                    $ref: '#/components/schemas/WorkspaceBillingStatus'
+                additionalProperties: false
+                required:
+                  - plan
+                  - status
   /InviteToWorkspace:
     post:
       operationId: inviteToWorkspace
@@ -1437,6 +1462,299 @@ paths:
       responses:
         '204':
           description: OK
+  /GetBillingSettings:
+    get:
+      operationId: getBillingSettings
+      parameters:
+        - name: workspaceId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                    nullable: true
+                  email:
+                    type: string
+                    nullable: true
+                  address:
+                    type: object
+                    additionalProperties: false
+                    nullable: true
+                    properties:
+                      city:
+                        type: string
+                        nullable: true
+                      country:
+                        type: string
+                        nullable: true
+                      line1:
+                        type: string
+                        nullable: true
+                      line2:
+                        type: string
+                        nullable: true
+                      postalCode:
+                        type: string
+                        nullable: true
+                      state:
+                        type: string
+                        nullable: true
+                    required:
+                      - city
+                      - country
+                      - line1
+                      - line2
+                      - postalCode
+                      - state
+                  hasPaymentMethod:
+                    type: boolean
+                additionalProperties: false
+                required:
+                  - id
+                  - name
+                  - email
+                  - address
+                  - hasPaymentMethod
+  /SetupBillingSettings:
+    post:
+      operationId: setupBillingSettings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                workspaceId:
+                  type: string
+              additionalProperties: false
+              required:
+                - name
+                - email
+                - workspaceId
+      responses:
+        '201':
+          description: OK
+  /GenerateBillingPortalSession:
+    post:
+      operationId: generateBillingPortalSession
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                workspaceId:
+                  type: string
+              additionalProperties: false
+              required:
+                - workspaceId
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
+                additionalProperties: false
+                required:
+                  - url
+  /ListBillingInvoices:
+    get:
+      operationId: listBillingInvoices
+      parameters:
+        - name: workspaceId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: false
+                      required:
+                        - id
+                        - number
+                        - paid
+                        - dueDate
+                        - status
+                        - amount
+                        - currency
+                        - url
+                      properties:
+                        id:
+                          type: string
+                        number:
+                          type: string
+                        paid:
+                          type: boolean
+                        dueDate:
+                          type: string
+                          format: date-time
+                          nullable: true
+                        status:
+                          type: string
+                          nullable: true
+                        amount:
+                          type: number
+                        currency:
+                          type: string
+                        url:
+                          type: string
+                          nullable: true
+                additionalProperties: false
+                required:
+                  - items
+  /GetBillingActiveSubscription:
+    get:
+      operationId: getBillingActiveSubscription
+      parameters:
+        - name: workspaceId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  status:
+                    $ref: '#/components/schemas/WorkspaceBillingStatus'
+                  plan:
+                    $ref: '#/components/schemas/WorkspaceBillingPlan'
+                  cancellation:
+                    type: object
+                    additionalProperties: false
+                    nullable: true
+                    properties:
+                      plannedDate:
+                        type: string
+                        format: date-time
+                        nullable: true
+                      date:
+                        type: string
+                        format: date-time
+                        nullable: true
+                    required:
+                      - plannedDate
+                      - date
+                  startDate:
+                    type: string
+                    format: date-time
+                  endDate:
+                    type: string
+                    format: date-time
+                    nullable: true
+                  currentPeriod:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      start:
+                        type: string
+                        format: date-time
+                      end:
+                        type: string
+                        format: date-time
+                    required:
+                      - start
+                      - end
+                additionalProperties: false
+                nullable: true
+                required:
+                  - id
+                  - status
+                  - plan
+                  - cancellation
+                  - startDate
+                  - endDate
+                  - currentPeriod
+  /SubscribeToBillingPlan:
+    post:
+      operationId: subscribeToBillingPlan
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                workspaceId:
+                  type: string
+                plan:
+                  $ref: '#/components/schemas/WorkspaceBillingPlan'
+              additionalProperties: false
+              required:
+                - workspaceId
+                - plan
+      responses:
+        '201':
+          description: OK
+  /UnsubscribeFromBillingPlan:
+    post:
+      operationId: unsubscribeFromBillingPlan
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                workspaceId:
+                  type: string
+              additionalProperties: false
+              required:
+                - workspaceId
+      responses:
+        '204':
+          description: OK
+  /ResetBillingSubscription:
+    post:
+      operationId: resetBillingSubscription
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                workspaceId:
+                  type: string
+              additionalProperties: false
+              required:
+                - workspaceId
+      responses:
+        '204':
+          description: OK
 components:
   schemas:
     Empty:
@@ -1532,10 +1850,18 @@ components:
         - updatedAt
         - createdBy
         - updatedBy
+        - billing
     WorkspaceBillingPlan:
       type: string
       enum:
         - free
+        - pro
+    WorkspaceBillingStatus:
+      type: string
+      enum:
+        - active
+        - inactive
+        - payment_required
     WorkspaceAccount:
       type: object
       properties:

@@ -78,9 +78,7 @@ export const parsePHPArrays: Parser = data => {
       .replace(/\?>/g, '')
 
     program = parser.parseEval(normalizedData)
-  } catch (e) {
-    console.log(e, program)
-  }
+  } catch (e) {}
 
   if (!program || program.errors.length > 0) {
     return Promise.reject(new Error('Failed to parse PHP'))

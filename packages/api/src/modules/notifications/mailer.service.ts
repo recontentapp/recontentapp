@@ -74,7 +74,6 @@ export class MailerService {
       const template = ejs.compile(templateContent)
       return template(data as ejs.Data)
     } catch (e) {
-      console.log(e)
       return null
     }
   }

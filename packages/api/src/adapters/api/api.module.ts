@@ -12,12 +12,14 @@ import { AuthModule } from 'src/modules/auth/auth.module'
 
 import { PrivateApiController } from './private-api.controller'
 import { PublicApiController } from './public-api.controller'
+import { WebhooksController } from './webhooks.controller'
 import { NotificationsModule } from 'src/modules/notifications/notifications.module'
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
 import { APP_GUARD } from '@nestjs/core'
 import { WorkspaceModule } from 'src/modules/workspace/workspace.module'
 import { ProjectModule } from 'src/modules/project/project.module'
 import { PhraseModule } from 'src/modules/phrase/phrase.module'
+import { BillingModule } from 'src/modules/billing/billing.module'
 import getConfig from 'src/utils/config'
 
 @Module({
@@ -42,7 +44,11 @@ import getConfig from 'src/utils/config'
       ? [
           ServeStaticModule.forRoot({
             rootPath: join(__dirname, '..', '..', '..', '..', 'app', 'dist'),
-            exclude: ['/private-api/(.*)', '/public-api/(.*)'],
+            exclude: [
+              '/private-api/(.*)',
+              '/public-api/(.*)',
+              '/webhooks/(.*)',
+            ],
           }),
         ]
       : []),
@@ -51,8 +57,9 @@ import getConfig from 'src/utils/config'
     WorkspaceModule,
     ProjectModule,
     PhraseModule,
+    BillingModule,
   ],
-  controllers: [PrivateApiController, PublicApiController],
+  controllers: [PrivateApiController, PublicApiController, WebhooksController],
   providers: [
     MyLogger,
     PrismaService,
@@ -64,7 +71,11 @@ import getConfig from 'src/utils/config'
 })
 export class ApiModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(RequestIdMiddleware).forRoutes('private-api', 'public-api')
-    consumer.apply(LoggerMiddleware).forRoutes('private-api', 'public-api')
+    consumer
+      .apply(RequestIdMiddleware)
+      .forRoutes('private-api', 'public-api', 'webhooks')
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes('private-api', 'public-api', 'webhooks')
   }
 }

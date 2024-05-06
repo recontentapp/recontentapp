@@ -31,6 +31,10 @@ const Container = styled('span', {
         backgroundColor: '$purple100',
         color: '$purple800',
       },
+      neutral: {
+        backgroundColor: '$gray4',
+        color: '$gray14',
+      },
       success: {
         backgroundColor: '$green200',
         color: '$white',
@@ -45,7 +49,7 @@ const Container = styled('span', {
 
 interface BadgeProps {
   size?: 'xsmall' | 'small' | 'medium'
-  variation: 'primary' | 'success' | 'danger'
+  variation: 'primary' | 'success' | 'danger' | 'neutral'
   children: ReactNode
 }
 

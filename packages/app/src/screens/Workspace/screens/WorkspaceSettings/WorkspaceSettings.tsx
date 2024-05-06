@@ -4,11 +4,12 @@ import { Outlet } from 'react-router-dom'
 import { Head } from '../../../../components/Head'
 import { Page } from '../../components/Page'
 import { ScreenWrapper } from '../../components/ScreenWrapper'
-import { useCurrentWorkspace } from '../../../../hooks/workspace'
+import { useCurrentWorkspace, useHasAbility } from '../../../../hooks/workspace'
 import routes from '../../../../routing'
 
 export const WorkspaceSettings: FC = () => {
   const { key: workspaceKey, name: workspaceName } = useCurrentWorkspace()
+  const canManageBilling = useHasAbility('billing:manage')
 
   return (
     <ScreenWrapper
@@ -47,6 +48,16 @@ export const WorkspaceSettings: FC = () => {
               pathParams: { workspaceKey },
             }),
           },
+          ...(canManageBilling
+            ? [
+                {
+                  label: 'Billing',
+                  to: routes.workspaceSettingsBilling.url({
+                    pathParams: { workspaceKey },
+                  }),
+                },
+              ]
+            : []),
         ]}
       >
         <Outlet />

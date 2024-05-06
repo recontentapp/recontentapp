@@ -12,6 +12,16 @@ export interface DashboardParams {
   }
 }
 
+export interface WorkspacesettingsbillingParams {
+  pathParams: {
+    workspaceKey: string
+    [k: string]: string | undefined
+  }
+  queryParams?: {
+    [k: string]: string | undefined
+  }
+}
+
 export interface WorkspacesettingslanguagesParams {
   pathParams: {
     workspaceKey: string
@@ -184,6 +194,20 @@ const routes = {
       return queryParams ? `${path}?${queryParams}` : path
     },
     path: '/:workspaceKey',
+    metadata: {},
+  },
+  workspaceSettingsBilling: {
+    url: (params: WorkspacesettingsbillingParams) => {
+      const path = generatePath(
+        '/:workspaceKey/settings/billing',
+        params.pathParams,
+      )
+      const queryParams = params.queryParams
+        ? QueryString.stringify(params.queryParams)
+        : undefined
+      return queryParams ? `${path}?${queryParams}` : path
+    },
+    path: '/:workspaceKey/settings/billing',
     metadata: {},
   },
   workspaceSettingsLanguages: {

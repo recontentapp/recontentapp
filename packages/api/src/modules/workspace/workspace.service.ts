@@ -164,6 +164,7 @@ export class WorkspaceService {
         data: {
           workspaceId: workspace.id,
           plan: 'free',
+          status: 'active',
           createdBy: account.id,
         },
       })
@@ -177,6 +178,9 @@ export class WorkspaceService {
 
       return t.workspace.findUniqueOrThrow({
         where: { id: workspace.id },
+        include: {
+          billingSettings: true,
+        },
       })
     })
 
@@ -193,6 +197,9 @@ export class WorkspaceService {
           },
         },
       },
+      include: {
+        billingSettings: true,
+      },
     })
 
     return workspaces
@@ -205,6 +212,9 @@ export class WorkspaceService {
     const workspace = await this.prismaService.workspace.findUniqueOrThrow({
       where: {
         id: workspaceId,
+      },
+      include: {
+        billingSettings: true,
       },
     })
 

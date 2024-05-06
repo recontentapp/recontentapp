@@ -119,8 +119,7 @@ export const ImportFromFile = () => {
           }),
         )
       })
-      .catch(err => {
-        console.log(err)
+      .catch(() => {
         toast('error', {
           title: 'Could not import phrases',
         })

@@ -33,8 +33,8 @@ export class WorkspaceAccess {
     }
 
     if (
-      this.workspaceAccount.role === 'biller' ||
-      this.workspaceAccount.role === 'owner'
+      this.systemConfig.app.distribution === 'cloud' &&
+      ['owner', 'biller'].includes(this.workspaceAccount.role)
     ) {
       abilities.push('billing:manage')
     }

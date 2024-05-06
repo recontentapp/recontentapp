@@ -12,6 +12,12 @@ enum WorkspaceBillingPlan {
   pro  @map("pro")
 }
 
+enum WorkspaceBillingStatus {
+  active           @map("active")
+  inactive         @map("inactive")
+  payment_required @map("payment_required")
+}
+
 enum WorkspaceAccountRole {
   owner  @map("owner")
   biller @map("biller")
@@ -97,12 +103,13 @@ model Workspace {
 }
 
 model WorkspaceBillingSettings {
-  id                   String               @id @default(uuid()) @db.VarChar()
-  workspaceId          String               @db.VarChar()
-  stripeCustomerId     String?              @db.VarChar()
-  stripeSubscriptionId String?              @db.VarChar()
-  plan                 WorkspaceBillingPlan
-  workspace            Workspace            @relation(fields: [workspaceId], references: [id])
+  id                   String                 @id @default(uuid()) @db.VarChar()
+  workspaceId          String                 @db.VarChar()
+  stripeCustomerId     String?                @db.VarChar()
+  stripeSubscriptionId String?                @db.VarChar()
+  plan                 WorkspaceBillingPlan   @default(free)
+  status               WorkspaceBillingStatus @default(active)
+  workspace            Workspace              @relation(fields: [workspaceId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -110,6 +117,8 @@ model WorkspaceBillingSettings {
   updatedBy String?  @db.VarChar()
 
   @@unique([workspaceId])
+  @@unique([stripeCustomerId])
+  @@unique([stripeSubscriptionId])
   @@map("workspace_billing_settings")
 }
 
