@@ -8,6 +8,8 @@ import {
   PutLogEventsCommand,
   StartQueryCommand,
 } from '@aws-sdk/client-cloudwatch-logs'
+import { PrismaService } from 'src/utils/prisma.service'
+import Stripe from 'stripe'
 
 type Metric = 'token'
 
@@ -27,17 +29,61 @@ interface GetUsageForPeriodParams {
   metric: Metric
 }
 
+interface ReportPhrasesUsageParams {
+  workspaceId: string
+}
+
+interface ReportDailyAutotranslationUsageParams {
+  workspaceId: string
+}
+
+type BuildIdentifierParams =
+  | {
+      id: string
+      start: Date
+      end: Date
+    }
+  | {
+      id: string
+      date: Date
+    }
+
 @Injectable()
 export class MeteredService {
   private active: boolean
   private groupName: string
   private streamName: string
   private logsClient: CloudWatchLogsClient
+  private stripe: Stripe | null
 
-  constructor(private readonly configService: ConfigService<Config, true>) {
+  private static notAvailableMessage: string =
+    'Billing is not available for self-hosted distribution'
+
+  constructor(
+    private readonly configService: ConfigService<Config, true>,
+    private readonly prismaService: PrismaService,
+  ) {
+    const distribution = this.configService.get('app.distribution', {
+      infer: true,
+    })
     const { cloudWatchLogsGroupName, cloudWatchLogsStreamName } =
       this.configService.get('billing', { infer: true })
-    this.active = !!cloudWatchLogsGroupName && !!cloudWatchLogsStreamName
+    this.active =
+      distribution === 'cloud' &&
+      !!cloudWatchLogsGroupName &&
+      !!cloudWatchLogsStreamName
+
+    const stripeAPIKey = this.configService.get('billing.stripeKey', {
+      infer: true,
+    })
+    if (!stripeAPIKey || distribution === 'self-hosted') {
+      return
+    }
+
+    this.stripe = new Stripe(stripeAPIKey, {
+      typescript: true,
+      apiVersion: '2024-04-10',
+    })
 
     if (!this.active) {
       return
@@ -145,5 +191,126 @@ export class MeteredService {
     }
 
     return total
+  }
+
+  private buildIdentifier(params: BuildIdentifierParams) {
+    if ('date' in params) {
+      return [params.id, params.date.toISOString().split('T')[0]].join('_')
+    }
+
+    return [
+      params.id,
+      params.start.toISOString().split('T')[0],
+      params.end.toISOString().split('T')[0],
+    ].join('_')
+  }
+
+  private getYesterdayUTCBounds() {
+    const now = new Date()
+    const yesterday = new Date(now)
+    yesterday.setDate(now.getDate() - 1)
+    yesterday.setUTCHours(0, 0, 0, 0)
+
+    const startTime = new Date(yesterday)
+    const endTime = new Date(yesterday)
+    endTime.setUTCHours(23, 59, 59, 999)
+
+    return { startTime, endTime }
+  }
+
+  async reportDailyAutotranslationUsage({
+    workspaceId,
+  }: ReportDailyAutotranslationUsageParams) {
+    if (!this.stripe) {
+      throw new BadRequestException(MeteredService.notAvailableMessage)
+    }
+
+    const billingSettings =
+      await this.prismaService.workspaceBillingSettings.findUniqueOrThrow({
+        where: { workspaceId },
+      })
+
+    if (
+      !billingSettings.stripeCustomerId ||
+      !billingSettings.stripeSubscriptionId ||
+      billingSettings.status !== 'active'
+    ) {
+      return
+    }
+
+    const { startTime, endTime } = this.getYesterdayUTCBounds()
+    const usage = await this.getUsageForPeriod({
+      startTime,
+      endTime,
+      workspaceId,
+      metric: 'token',
+    })
+
+    await this.stripe.billing.meterEvents
+      .create({
+        event_name: 'autotranslation_usage_1',
+        payload: {
+          value: String(usage),
+          stripe_customer_id: billingSettings.stripeCustomerId,
+        },
+        identifier: this.buildIdentifier({
+          id: billingSettings.stripeSubscriptionId,
+          start: startTime,
+          end: endTime,
+        }),
+      })
+      .catch(e => {
+        // Ignore invalid request errors due to duplicate events
+        if (e.type !== 'StripeInvalidRequestError') {
+          throw e
+        }
+      })
+  }
+
+  async reportPhrasesUsage({ workspaceId }: ReportPhrasesUsageParams) {
+    if (!this.stripe) {
+      throw new BadRequestException(MeteredService.notAvailableMessage)
+    }
+
+    const billingSettings =
+      await this.prismaService.workspaceBillingSettings.findUniqueOrThrow({
+        where: { workspaceId },
+      })
+
+    if (
+      !billingSettings.stripeCustomerId ||
+      !billingSettings.stripeSubscriptionId ||
+      billingSettings.status !== 'active'
+    ) {
+      return
+    }
+
+    const subscription = await this.stripe.subscriptions.retrieve(
+      billingSettings.stripeSubscriptionId,
+    )
+
+    const phrasesCount = await this.prismaService.phrase.count({
+      where: { workspaceId },
+    })
+
+    await this.stripe.billing.meterEvents
+      .create({
+        event_name: 'phrases_usage_1',
+        payload: {
+          value: String(phrasesCount),
+          stripe_customer_id: billingSettings.stripeCustomerId,
+        },
+        identifier: this.buildIdentifier({
+          id: billingSettings.stripeSubscriptionId,
+          start: new Date(subscription.current_period_start * 1000),
+          end: new Date(subscription.current_period_end * 1000),
+        }),
+      })
+      .catch(e => {
+        // Ignore invalid request errors due to duplicate events
+        if (e.type !== 'StripeInvalidRequestError') {
+          throw e
+        }
+      })
   }
 }

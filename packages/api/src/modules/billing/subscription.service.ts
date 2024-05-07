@@ -6,6 +6,7 @@ import { PrismaService } from 'src/utils/prisma.service'
 import Stripe from 'stripe'
 import { PayingPlan, payingPlans } from './plan'
 import { Requester } from '../auth/requester.object'
+import { SQSService } from 'src/utils/sqs.service'
 
 interface GetActiveSubscriptionParams {
   workspaceId: string
@@ -86,6 +87,10 @@ export class SubscriptionService {
     }
   }
 
+  public static webhookInvoiceEvents: Stripe.Event['type'][] = [
+    'invoice.upcoming',
+  ]
+
   public static webhookSubscriptionEvents: Stripe.Event['type'][] = [
     'customer.subscription.created',
     'customer.subscription.deleted',
@@ -100,6 +105,7 @@ export class SubscriptionService {
   constructor(
     private readonly configService: ConfigService<Config, true>,
     private readonly prismaService: PrismaService,
+    private readonly sqsService: SQSService,
   ) {
     const distribution = this.configService.get('app.distribution', {
       infer: true,
@@ -348,6 +354,35 @@ export class SubscriptionService {
             }
           : null,
     }
+  }
+
+  async onWebhookInvoiceUpcoming(id: string) {
+    if (!this.stripe) {
+      throw new BadRequestException(SubscriptionService.notAvailableMessage)
+    }
+
+    const invoice = await this.stripe.invoices.retrieve(id)
+    if (!invoice.subscription) {
+      return
+    }
+
+    const subscription = await this.stripe.subscriptions.retrieve(
+      typeof invoice.subscription === 'string'
+        ? invoice.subscription
+        : invoice.subscription.id,
+    )
+    if (!subscription) {
+      return
+    }
+
+    const metadata = SubscriptionService.parseSubscriptionMetadata(
+      subscription.metadata,
+    )
+
+    await this.sqsService.sendMessage({
+      type: 'phrase-usage',
+      workspaceId: metadata.workspaceId,
+    })
   }
 
   async onWebhookSubscriptionChange(id: string) {

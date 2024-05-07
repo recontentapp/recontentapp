@@ -2,12 +2,14 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 import { EventEmitterModule } from '@nestjs/event-emitter'
 import { ServeStaticModule } from '@nestjs/serve-static'
+import { ScheduleModule } from '@nestjs/schedule'
 import { join } from 'path'
 import { HealthModule } from 'src/modules/health/health.module'
 import { MyLogger } from 'src/utils/logger'
 import { LoggerMiddleware } from 'src/utils/logger.middleware'
 import { RequestIdMiddleware } from 'src/utils/request-id.middleware'
 import { PrismaService } from 'src/utils/prisma.service'
+import { SQSService } from 'src/utils/sqs.service'
 import { AuthModule } from 'src/modules/auth/auth.module'
 
 import { PrivateApiController } from './private-api.controller'
@@ -24,6 +26,7 @@ import getConfig from 'src/utils/config'
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
       load: [getConfig],
@@ -62,6 +65,7 @@ import getConfig from 'src/utils/config'
   controllers: [PrivateApiController, PublicApiController, WebhooksController],
   providers: [
     MyLogger,
+    SQSService,
     PrismaService,
     {
       provide: APP_GUARD,

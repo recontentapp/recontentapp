@@ -25,6 +25,12 @@ export class WebhooksController {
     return object.object === 'subscription'
   }
 
+  private static isStripeInvoiceObject(
+    object: Stripe.Event['data']['object'],
+  ): object is Stripe.Invoice {
+    return object.object === 'invoice'
+  }
+
   private getValidStripeEventOrThrow(
     req: RawBodyRequest<Request>,
   ): stripe.Event {
@@ -63,7 +69,19 @@ export class WebhooksController {
         throw new BadRequestException('Invalid Stripe subscription object')
       }
 
-      this.subscriptionService.onWebhookSubscriptionChange(event.data.object.id)
+      await this.subscriptionService.onWebhookSubscriptionChange(
+        event.data.object.id,
+      )
+    }
+
+    if (SubscriptionService.webhookInvoiceEvents.includes(event.type)) {
+      if (!WebhooksController.isStripeInvoiceObject(event.data.object)) {
+        throw new BadRequestException('Invalid Stripe invoice object')
+      }
+
+      await this.subscriptionService.onWebhookInvoiceUpcoming(
+        event.data.object.id,
+      )
     }
   }
 }

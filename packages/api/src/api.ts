@@ -29,6 +29,8 @@ async function bootstrap() {
     new ValidationPipe({ disableErrorMessages: true, transform: true }),
   )
   app.useGlobalFilters(new PrismaExceptionFilter())
+  app.enableShutdownHooks()
+
   await app.listen(process.env.PORT ?? 3000)
 }
 

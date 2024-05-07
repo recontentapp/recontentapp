@@ -90,6 +90,9 @@ const getConfig = () => {
       provider: getAutoTranslateProvider(),
       openAIKey: process.env.OPENAI_API_KEY,
     },
+    worker: {
+      sqsQueueUrl: process.env.SQS_QUEUE_URL,
+    },
     billing: {
       stripeKey: process.env.STRIPE_API_KEY,
       stripeWebhookSigningSecret: process.env.STRIPE_WEBHOOK_SIGNING_SECRET,
