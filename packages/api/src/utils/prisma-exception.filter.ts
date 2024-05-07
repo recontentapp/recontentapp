@@ -82,9 +82,14 @@ export class PrismaExceptionFilter implements ExceptionFilter {
       } catch (e) {}
     }
 
+    const errorMessage =
+      process.env.NODE_ENV === 'production'
+        ? statusCodes[httpStatus]
+        : exception.message
+
     response.status(httpStatus).json({
       statusCode: httpStatus,
-      error: statusCodes[httpStatus],
+      error: errorMessage,
     })
   }
 }

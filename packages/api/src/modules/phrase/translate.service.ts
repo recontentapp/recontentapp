@@ -133,6 +133,13 @@ export class TranslateService {
     phrase,
     targetLanguage,
   }: TranslateWithProviderParams) {
+    const apiKey = this.configService.get('autoTranslate.openAIKey', {
+      infer: true,
+    })
+    if (!apiKey) {
+      throw new BadRequestException('OpenAI API key not set')
+    }
+
     const sourceLocale =
       TranslateService.preferredSourceLocales.find(locale => {
         return phrase.translations.find(
@@ -151,9 +158,7 @@ export class TranslateService {
     const textToTranslate = sourceTranslation.content
 
     const client = new OpenAI({
-      apiKey: this.configService.get('openAIKey', {
-        infer: true,
-      }),
+      apiKey,
     })
 
     const chatCompletion = await client.chat.completions.create({

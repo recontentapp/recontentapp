@@ -117,16 +117,42 @@ export class SubscriptionService {
     })
   }
 
-  private async getProPlanPrices() {
+  private async resolvePrices() {
     if (!this.stripe) {
       throw new BadRequestException(SubscriptionService.notAvailableMessage)
     }
 
-    const prices = await this.stripe.prices.search({
-      query: 'metadata["plan"]:"pro"',
-    })
+    // TODO: Make dynamic once multiple plans are introduced
+    const [subscriptionPrice, phrasesUsagePrice, autotranslationUsagePrice] =
+      await Promise.all([
+        this.stripe.prices.search({
+          query: 'metadata["id"]:"pro_subscription_monthly_1"',
+        }),
+        this.stripe.prices.search({
+          query: 'metadata["id"]:"pro_phrases_usage_monthly_1"',
+        }),
+        this.stripe.prices.search({
+          query: 'metadata["id"]:"pro_autotranslation_usage_monthly_1"',
+        }),
+      ])
 
-    return prices.data.map(p => p.id)
+    if (
+      subscriptionPrice.data.length === 0 ||
+      phrasesUsagePrice.data.length === 0 ||
+      autotranslationUsagePrice.data.length === 0
+    ) {
+      throw new BadRequestException('Prices not found')
+    }
+
+    const subscriptionId = subscriptionPrice.data[0].id
+    const phrasesUsageId = phrasesUsagePrice.data[0].id
+    const autotranslationUsageId = autotranslationUsagePrice.data[0].id
+
+    return [
+      { price: subscriptionId },
+      { price: phrasesUsageId },
+      { price: autotranslationUsageId },
+    ]
   }
 
   async subscribe({ workspaceId, plan, requester }: SubscribeParams) {
@@ -172,7 +198,7 @@ export class SubscriptionService {
       throw new BadRequestException('Default source needs to be set up first')
     }
 
-    const priceIds = await this.getProPlanPrices()
+    const priceItems = await this.resolvePrices()
 
     const metadata: SubscriptionMetadata = {
       plan,
@@ -183,7 +209,7 @@ export class SubscriptionService {
       customer: config.stripeCustomerId,
       collection_method: 'charge_automatically',
       metadata,
-      items: priceIds.map(id => ({ price: id })),
+      items: priceItems,
     })
 
     await this.prismaService.workspaceBillingSettings.update({

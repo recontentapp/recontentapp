@@ -88,12 +88,14 @@ const getConfig = () => {
     },
     autoTranslate: {
       provider: getAutoTranslateProvider(),
+      openAIKey: process.env.OPENAI_API_KEY,
     },
-    openAIKey: process.env.OPENAI_API_KEY,
     billing: {
       stripeKey: process.env.STRIPE_API_KEY,
       stripeWebhookSigningSecret: process.env.STRIPE_WEBHOOK_SIGNING_SECRET,
       stripeTestClockId: process.env.STRIPE_TEST_CLOCK_ID,
+      cloudWatchLogsGroupName: process.env.CLOUDWATCH_LOGS_BILLING_GROUP_NAME,
+      cloudWatchLogsStreamName: process.env.CLOUDWATCH_LOGS_BILLING_STREAM_NAME,
     },
   }
 }

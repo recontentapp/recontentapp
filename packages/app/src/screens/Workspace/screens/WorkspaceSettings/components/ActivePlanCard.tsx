@@ -16,10 +16,10 @@ import {
   workspaceBillingStatusLabels,
   workspaceBillingStatusVariations,
 } from '../../../../../utils/billing'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import {
+  useGenerateBillingPortalSession,
   useResetBillingSubscription,
-  useUnsubscribeFromBillingPlan,
 } from '../../../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
 
@@ -62,36 +62,38 @@ export const ActivePlanCard = ({
   onChange,
 }: Props) => {
   const { id: workspaceId } = useCurrentWorkspace()
+  const [isGeneratingPortalSession, setIsGeneratingPortalSession] =
+    useState(false)
 
+  const { mutateAsync: generatePortalSession } =
+    useGenerateBillingPortalSession()
   const { mutateAsync: reset, isPending: isResetting } =
     useResetBillingSubscription({
-      onSuccess: onChange,
-    })
-  const { mutateAsync: unsubscribe, isPending: isUnsubscribing } =
-    useUnsubscribeFromBillingPlan({
       onSuccess: onChange,
     })
   const confirmationModalRef = useRef<ConfirmationModalRef>(null!)
 
   const onRequestCancel = () => {
-    confirmationModalRef.current.confirm().then(res => {
-      if (!res) {
-        return
-      }
+    setIsGeneratingPortalSession(true)
 
-      unsubscribe({
-        body: {
-          workspaceId,
-        },
-      })
+    generatePortalSession({
+      body: {
+        workspaceId,
+      },
     })
+      .then(res => {
+        window.location.href = res.url
+      })
+      .catch(() => {
+        setIsGeneratingPortalSession(false)
+      })
   }
 
   const cancelSubscriptionAction = {
     label: 'Cancel subscription',
     variation: 'secondary' as const,
     onAction: onRequestCancel,
-    isLoading: isUnsubscribing,
+    isLoading: isGeneratingPortalSession,
   }
 
   const downgradeAction = {
