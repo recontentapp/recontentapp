@@ -1,6 +1,6 @@
 import dotenv from 'dotenv'
-import { Plan } from 'src/modules/billing/plan'
 import Stripe from 'stripe'
+import { Plan } from '../src/modules/billing/plan'
 
 dotenv.config()
 

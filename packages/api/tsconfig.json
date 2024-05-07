@@ -15,5 +15,5 @@
     "skipLibCheck": true,
     "strict": true
   },
-  "include": ["src/**/*", "scripts/**/*"]
+  "include": ["src/**/*"]
 }
