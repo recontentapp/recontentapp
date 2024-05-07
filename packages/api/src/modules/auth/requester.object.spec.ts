@@ -65,6 +65,7 @@ describe('WorkspaceAccess', () => {
           app: selfHostedAppConfig,
           autoTranslate: {
             provider: null,
+            openAIKey: undefined,
           },
         },
         getWorkspaceAccount({
@@ -86,6 +87,7 @@ describe('WorkspaceAccess', () => {
           app: selfHostedAppConfig,
           autoTranslate: {
             provider: null,
+            openAIKey: undefined,
           },
         },
         getWorkspaceAccount({ role: 'biller' }),
@@ -102,6 +104,7 @@ describe('WorkspaceAccess', () => {
           app: selfHostedAppConfig,
           autoTranslate: {
             provider: 'aws',
+            openAIKey: undefined,
           },
         },
         getWorkspaceAccount({ role: 'biller' }),
@@ -127,6 +130,7 @@ describe('WorkspaceAccess', () => {
           app: cloudAppConfig,
           autoTranslate: {
             provider: 'aws',
+            openAIKey: undefined,
           },
         },
         getWorkspaceAccount({ role: 'biller' }),
@@ -143,6 +147,7 @@ describe('WorkspaceAccess', () => {
           app: cloudAppConfig,
           autoTranslate: {
             provider: 'aws',
+            openAIKey: undefined,
           },
         },
         getWorkspaceAccount({ role: 'biller' }),
