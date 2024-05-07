@@ -45,7 +45,6 @@ export class SQSService {
       new SendMessageCommand({
         QueueUrl: this.queueUrl,
         MessageBody: JSON.stringify(message),
-        MessageGroupId: message.workspaceId,
       }),
     )
   }

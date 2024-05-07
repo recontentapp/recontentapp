@@ -106,24 +106,26 @@ export class MeteredService {
       return
     }
 
-    await this.logsClient.send(
-      new PutLogEventsCommand({
-        logGroupName: this.groupName,
-        logStreamName: this.streamName,
-        logEvents: [
-          {
-            timestamp: timestamp.getTime(),
-            message: JSON.stringify({
-              workspaceId,
-              accountId,
-              externalId,
-              metric,
-              quantity,
-            }),
-          },
-        ],
-      }),
-    )
+    await this.logsClient
+      .send(
+        new PutLogEventsCommand({
+          logGroupName: this.groupName,
+          logStreamName: this.streamName,
+          logEvents: [
+            {
+              timestamp: timestamp.getTime(),
+              message: JSON.stringify({
+                workspaceId,
+                accountId,
+                externalId,
+                metric,
+                quantity,
+              }),
+            },
+          ],
+        }),
+      )
+      .catch(() => {})
   }
 
   async getUsageForPeriod({
@@ -215,7 +217,10 @@ export class MeteredService {
     const endTime = new Date(yesterday)
     endTime.setUTCHours(23, 59, 59, 999)
 
-    return { startTime, endTime }
+    return {
+      startTime,
+      endTime,
+    }
   }
 
   async reportDailyAutotranslationUsage({

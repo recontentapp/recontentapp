@@ -67,7 +67,7 @@ Here's the full list of environment variables that need to be passed to the appl
 | `OPENAI_API_KEY`          | OpenAI API key for ChatGPT completions                   | `false`  |
 | `AWS_ACCESS_KEY_ID`       | AWS credentials if AWS Translate is used                 | `false`  |
 | `AWS_SECRET_ACCESS_KEY`   | AWS credentials if AWS Translate is used                 | `false`  |
-| `AWS_DEFAULT_REGION`      | AWS setting if AWS Translate is used                     | `false`  |
+| `AWS_REGION`              | AWS setting if AWS Translate is used                     | `false`  |
 
 `APP_URL` & `API_URL` are usually the same. For example, if Recontent.app is hosted at `translations.my-app.com`, `https://translations.my-app.com` can be used for both environment variables.
 

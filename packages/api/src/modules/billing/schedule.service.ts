@@ -39,6 +39,18 @@ export class ScheduleService implements BeforeApplicationShutdown {
       sqs: this.sqsService.getClient(),
     })
 
+    this.sqsConsumer.on('error', err => {
+      console.error(err.message)
+    })
+
+    this.sqsConsumer.on('processing_error', err => {
+      console.error(err.message)
+    })
+
+    this.sqsConsumer.on('timeout_error', err => {
+      console.error(err.message)
+    })
+
     this.sqsConsumer.start()
   }
 

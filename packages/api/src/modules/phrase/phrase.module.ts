@@ -4,6 +4,7 @@ import { PrismaService } from 'src/utils/prisma.service'
 import { PhraseService } from './phrase.service'
 import { DestinationService } from './destination.service'
 import { TranslateService } from './translate.service'
+import { MeteredService } from '../billing/metered.service'
 
 @Module({
   providers: [
@@ -11,6 +12,7 @@ import { TranslateService } from './translate.service'
     PhraseService,
     DestinationService,
     TranslateService,
+    MeteredService,
   ],
   exports: [PhraseService, TranslateService, DestinationService],
 })

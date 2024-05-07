@@ -6,6 +6,7 @@ import { PlanCard } from '../components/PlanCard'
 import {
   getGetBillingActiveSubscriptionQueryKey,
   getGetBillingSettingsQueryKey,
+  getGetWorkspaceAbilitiesQueryKey,
   getGetWorkspaceBillingStatusQueryKey,
   useGenerateBillingPortalSession,
   useGetBillingActiveSubscription,
@@ -45,6 +46,11 @@ export const Billing: FC = () => {
         queryParams: {
           workspaceId,
         },
+      }),
+    })
+    queryClient.invalidateQueries({
+      queryKey: getGetWorkspaceAbilitiesQueryKey({
+        queryParams: { workspaceId },
       }),
     })
   }
