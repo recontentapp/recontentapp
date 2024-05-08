@@ -7,11 +7,13 @@ import { PrismaService } from 'src/utils/prisma.service'
 import { Message, SQSService } from 'src/utils/sqs.service'
 import { MeteredService } from './metered.service'
 import { Cron } from '@nestjs/schedule'
+import { MyLogger } from 'src/utils/logger'
 
 @Injectable()
 export class ScheduleService implements BeforeApplicationShutdown {
   private active: boolean
   private sqsConsumer: Consumer
+  private logger: MyLogger
 
   constructor(
     private readonly configService: ConfigService<Config, true>,
@@ -19,6 +21,8 @@ export class ScheduleService implements BeforeApplicationShutdown {
     private readonly prismaService: PrismaService,
     private readonly meteredService: MeteredService,
   ) {
+    this.logger = new MyLogger()
+
     this.active =
       this.configService.get('app.distribution', { infer: true }) === 'cloud'
     if (!this.active) {
@@ -39,16 +43,23 @@ export class ScheduleService implements BeforeApplicationShutdown {
       sqs: this.sqsService.getClient(),
     })
 
-    this.sqsConsumer.on('error', err => {
-      console.error(err.message)
+    this.sqsConsumer.on('message_processed', message => {
+      this.logger.log('Message processed', {
+        service: 'worker',
+        statusCode: 200,
+        messageId: message.MessageId,
+        messageBody: message.Body,
+      })
     })
 
-    this.sqsConsumer.on('processing_error', err => {
-      console.error(err.message)
-    })
-
-    this.sqsConsumer.on('timeout_error', err => {
-      console.error(err.message)
+    this.sqsConsumer.on('processing_error', (error, message) => {
+      this.logger.error('Message processed', {
+        service: 'worker',
+        statusCode: 500,
+        messageId: message.MessageId,
+        errorMessage: error.message,
+        messageBody: message.Body,
+      })
     })
 
     this.sqsConsumer.start()
