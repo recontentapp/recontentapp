@@ -1,12 +1,8 @@
-/*
-  Warnings:
-
-  - A unique constraint covering the columns `[stripeCustomerId]` on the table `workspace_billing_settings` will be added. If there are existing duplicate values, this will fail.
-  - A unique constraint covering the columns `[stripeSubscriptionId]` on the table `workspace_billing_settings` will be added. If there are existing duplicate values, this will fail.
-
-*/
 -- CreateEnum
 CREATE TYPE "WorkspaceBillingStatus" AS ENUM ('active', 'inactive', 'payment_required');
+
+-- AlterEnum
+ALTER TYPE "WorkspaceBillingPlan" ADD VALUE 'pro';
 
 -- AlterTable
 ALTER TABLE "workspace_billing_settings" ADD COLUMN     "status" "WorkspaceBillingStatus" NOT NULL DEFAULT 'active',
