@@ -140,7 +140,7 @@ const upsertPhrasesUsagePrice = async (
 
   const phrasesUsagePrice = await stripe.prices.create({
     product: phrasesUsageProductId,
-    nickname: 'Pro Phrases Usage',
+    nickname: 'Monthly Pro Phrases Usage',
     tax_behavior: 'exclusive',
     currency: 'USD',
     tiers_mode: 'graduated',
@@ -202,7 +202,7 @@ const upsertAutotranslationUsagePrice = async (
 
   const autotranslationUsagePrice = await stripe.prices.create({
     product: autotranslationUsageProductId,
-    nickname: 'Pro Autotranslation Usage',
+    nickname: 'Monthly Pro Autotranslation Usage',
     tax_behavior: 'exclusive',
     billing_scheme: 'tiered',
     tiers_mode: 'graduated',

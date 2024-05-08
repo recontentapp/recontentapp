@@ -1,7 +1,14 @@
-export type Plan = 'free' | 'pro'
-export type PayingPlan = Exclude<Plan, 'free'>
+import { Components } from 'src/generated/typeDefinitions'
 
-export const allPlans: Plan[] = ['free', 'pro']
+export type PayingPlan = Exclude<
+  Components.Schemas.WorkspaceBillingPlan,
+  'free'
+>
+
+export const allPlans: Components.Schemas.WorkspaceBillingPlan[] = [
+  'free',
+  'pro',
+]
 export const payingPlans: PayingPlan[] = ['pro']
 
 // https://docs.stripe.com/api/subscriptions/object#subscription_object-status
@@ -13,6 +20,8 @@ export type SubscriptionStatus =
   // `incomplete` | `past_due`
   | 'payment_required'
 
-export const isValidPlan = (plan: string): plan is Plan => {
+export const isValidPlan = (
+  plan: string,
+): plan is Components.Schemas.WorkspaceBillingPlan => {
   return allPlans.map(String).includes(plan)
 }

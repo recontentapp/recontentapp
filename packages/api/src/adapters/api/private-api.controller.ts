@@ -100,7 +100,6 @@ import {
   ResetBillingSubscriptionDto,
   SetupBillingSettingsDto,
   SubscribeToBillingPlanDto,
-  UnsubscribeFromBillingPlanDto,
 } from './dto/billing.dto'
 
 @Controller('private-api')
@@ -1326,20 +1325,6 @@ export class PrivateApiController {
     await this.billingSubscriptionService.subscribe({
       workspaceId,
       plan,
-      requester,
-    })
-
-    return {}
-  }
-
-  @Post('/UnsubscribeFromBillingPlan')
-  @HttpCode(204)
-  async unsubscribeFromBillingPlan(
-    @AuthenticatedRequester() requester: Requester,
-    @Body() { workspaceId }: UnsubscribeFromBillingPlanDto,
-  ): Promise<Paths.UnsubscribeFromBillingPlan.Responses.$204> {
-    await this.billingSubscriptionService.unsubscribe({
-      workspaceId,
       requester,
     })
 

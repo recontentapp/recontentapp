@@ -23,8 +23,10 @@ export class ScheduleService implements BeforeApplicationShutdown {
   ) {
     this.logger = new MyLogger()
 
-    this.active =
-      this.configService.get('app.distribution', { infer: true }) === 'cloud'
+    const distribution = this.configService.get('app.distribution', {
+      infer: true,
+    })
+    this.active = distribution === 'cloud'
     if (!this.active) {
       return
     }
@@ -81,6 +83,10 @@ export class ScheduleService implements BeforeApplicationShutdown {
   // `0 4 * * *` Every day at 4:00 AM
   @Cron('0 4 * * *')
   async everyDay() {
+    if (!this.active) {
+      return
+    }
+
     const workspacesWhichShouldReportUsage =
       await this.prismaService.workspaceBillingSettings.findMany({
         where: {

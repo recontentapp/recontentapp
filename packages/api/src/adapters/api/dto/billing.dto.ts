@@ -1,6 +1,6 @@
 import { IsEmail, IsNotEmpty, IsString, Validate } from 'class-validator'
-import { Plan } from 'src/modules/billing/plan'
 import { WorkspaceBillingPlanValidator } from './domain.dto'
+import { Components } from 'src/generated/typeDefinitions'
 
 export class SetupBillingSettingsDto {
   @IsString()
@@ -29,13 +29,7 @@ export class SubscribeToBillingPlanDto {
 
   @Validate(WorkspaceBillingPlanValidator)
   @IsNotEmpty()
-  plan: Plan
-}
-
-export class UnsubscribeFromBillingPlanDto {
-  @IsString()
-  @IsNotEmpty()
-  workspaceId: string
+  plan: Components.Schemas.WorkspaceBillingPlan
 }
 
 export class ResetBillingSubscriptionDto {

@@ -1721,23 +1721,6 @@ paths:
       responses:
         '201':
           description: OK
-  /UnsubscribeFromBillingPlan:
-    post:
-      operationId: unsubscribeFromBillingPlan
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                workspaceId:
-                  type: string
-              additionalProperties: false
-              required:
-                - workspaceId
-      responses:
-        '204':
-          description: OK
   /ResetBillingSubscription:
     post:
       operationId: resetBillingSubscription

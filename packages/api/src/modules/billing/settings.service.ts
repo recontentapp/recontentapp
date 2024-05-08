@@ -68,7 +68,7 @@ export class SettingsService {
     const stripeAPIKey = this.configService.get('billing.stripeKey', {
       infer: true,
     })
-    if (!stripeAPIKey || distribution === 'self-hosted') {
+    if (!stripeAPIKey || distribution !== 'cloud') {
       return
     }
 
@@ -82,10 +82,6 @@ export class SettingsService {
     if (!this.stripe) {
       throw new BadRequestException(SettingsService.notAvailableMessage)
     }
-
-    const testClockId = this.configService.get('billing.stripeTestClockId', {
-      infer: true,
-    })
 
     const workspaceAccess = requester.getWorkspaceAccessOrThrow(workspaceId)
     workspaceAccess.hasAbilityOrThrow('billing:manage')
@@ -106,6 +102,10 @@ export class SettingsService {
         throw new BadRequestException('Billing is already set up')
       }
     }
+
+    const testClockId = this.configService.get('billing.stripeTestClockId', {
+      infer: true,
+    })
 
     const metadata: CustomerMetadata = {
       workspaceId,

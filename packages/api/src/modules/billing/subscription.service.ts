@@ -13,11 +13,6 @@ interface GetActiveSubscriptionParams {
   requester: Requester
 }
 
-interface UnsubscribeParams {
-  workspaceId: string
-  requester: Requester
-}
-
 interface ResetParams {
   workspaceId: string
   requester: Requester
@@ -81,6 +76,10 @@ export class SubscriptionService {
       throw new BadRequestException('Invalid metadata')
     }
 
+    if (!metadata.workspaceId) {
+      throw new BadRequestException('Invalid metadata')
+    }
+
     return {
       plan: metadata.plan as PayingPlan,
       workspaceId: String(metadata.workspaceId),
@@ -113,7 +112,7 @@ export class SubscriptionService {
     const stripeAPIKey = this.configService.get('billing.stripeKey', {
       infer: true,
     })
-    if (!stripeAPIKey || distribution === 'self-hosted') {
+    if (!stripeAPIKey || distribution !== 'cloud') {
       return
     }
 
@@ -228,28 +227,6 @@ export class SubscriptionService {
     })
   }
 
-  async unsubscribe({ workspaceId, requester }: UnsubscribeParams) {
-    if (!this.stripe) {
-      throw new BadRequestException(SubscriptionService.notAvailableMessage)
-    }
-
-    const workspaceAccess = requester.getWorkspaceAccessOrThrow(workspaceId)
-    workspaceAccess.hasAbilityOrThrow('billing:manage')
-
-    const config =
-      await this.prismaService.workspaceBillingSettings.findUniqueOrThrow({
-        where: {
-          workspaceId,
-        },
-      })
-
-    if (!config.stripeSubscriptionId) {
-      throw new BadRequestException('No active subscription')
-    }
-
-    await this.stripe.subscriptions.cancel(config.stripeSubscriptionId)
-  }
-
   async reset({ workspaceId, requester }: ResetParams) {
     if (!this.stripe) {
       throw new BadRequestException(SubscriptionService.notAvailableMessage)
@@ -276,6 +253,8 @@ export class SubscriptionService {
     const status = SubscriptionService.parseSubscriptionStatus(
       subscription.status,
     )
+
+    // Subscription first need to be canceled on Stripe portal
     if (status !== 'inactive') {
       throw new BadRequestException('Subscription is still active')
     }

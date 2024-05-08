@@ -66,32 +66,30 @@ export class MeteredService {
     const distribution = this.configService.get('app.distribution', {
       infer: true,
     })
-    const { cloudWatchLogsGroupName, cloudWatchLogsStreamName } =
-      this.configService.get('billing', { infer: true })
-    this.active =
-      distribution === 'cloud' &&
-      !!cloudWatchLogsGroupName &&
-      !!cloudWatchLogsStreamName
+
+    this.active = distribution === 'cloud'
+
+    if (!this.active) {
+      this.stripe = null
+      return
+    }
 
     const stripeAPIKey = this.configService.get('billing.stripeKey', {
       infer: true,
     })
-    if (!stripeAPIKey || distribution === 'self-hosted') {
-      return
-    }
-
-    this.stripe = new Stripe(stripeAPIKey, {
+    this.stripe = new Stripe(String(stripeAPIKey), {
       typescript: true,
       apiVersion: '2024-04-10',
     })
 
-    if (!this.active) {
-      return
-    }
+    const {
+      cloudWatchLogsGroupName: groupName,
+      cloudWatchLogsStreamName: streamName,
+    } = this.configService.get('billing', { infer: true })
 
     this.logsClient = new CloudWatchLogsClient()
-    this.groupName = String(cloudWatchLogsGroupName)
-    this.streamName = String(cloudWatchLogsStreamName)
+    this.groupName = String(groupName)
+    this.streamName = String(streamName)
   }
 
   async log({
@@ -106,26 +104,24 @@ export class MeteredService {
       return
     }
 
-    await this.logsClient
-      .send(
-        new PutLogEventsCommand({
-          logGroupName: this.groupName,
-          logStreamName: this.streamName,
-          logEvents: [
-            {
-              timestamp: timestamp.getTime(),
-              message: JSON.stringify({
-                workspaceId,
-                accountId,
-                externalId,
-                metric,
-                quantity,
-              }),
-            },
-          ],
-        }),
-      )
-      .catch(() => {})
+    await this.logsClient.send(
+      new PutLogEventsCommand({
+        logGroupName: this.groupName,
+        logStreamName: this.streamName,
+        logEvents: [
+          {
+            timestamp: timestamp.getTime(),
+            message: JSON.stringify({
+              workspaceId,
+              accountId,
+              externalId,
+              metric,
+              quantity,
+            }),
+          },
+        ],
+      }),
+    )
   }
 
   async getUsageForPeriod({
@@ -238,7 +234,8 @@ export class MeteredService {
     if (
       !billingSettings.stripeCustomerId ||
       !billingSettings.stripeSubscriptionId ||
-      billingSettings.status !== 'active'
+      billingSettings.status !== 'active' ||
+      billingSettings.plan === 'free'
     ) {
       return
     }
@@ -285,6 +282,7 @@ export class MeteredService {
     if (
       !billingSettings.stripeCustomerId ||
       !billingSettings.stripeSubscriptionId ||
+      billingSettings.plan === 'free' ||
       billingSettings.status !== 'active'
     ) {
       return
@@ -313,6 +311,7 @@ export class MeteredService {
       })
       .catch(e => {
         // Ignore invalid request errors due to duplicate events
+        // https://docs.stripe.com/error-handling?lang=node
         if (e.type !== 'StripeInvalidRequestError') {
           throw e
         }
