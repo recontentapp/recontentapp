@@ -11,7 +11,9 @@ import {
   PrismaClientUnknownRequestError,
   PrismaClientValidationError,
 } from '@prisma/client/runtime/library'
-import { Response } from 'express'
+import { Request, Response } from 'express'
+import { MyLogger } from './logger'
+import { getRequestIdFromRequest } from './request-id.middleware'
 
 const statusCodes: Record<number, string> = {
   200: 'OK',
@@ -59,8 +61,15 @@ const statusCodes: Record<number, string> = {
 
 @Catch()
 export class PrismaExceptionFilter implements ExceptionFilter {
+  private logger: MyLogger
+
+  constructor() {
+    this.logger = new MyLogger()
+  }
+
   catch(exception: HttpException, host: ArgumentsHost): void {
     const ctx = host.switchToHttp()
+    const request = ctx.getRequest<Request>()
     const response = ctx.getResponse<Response>()
 
     let httpStatus = 500
@@ -80,6 +89,14 @@ export class PrismaExceptionFilter implements ExceptionFilter {
         const status = exception.getStatus()
         httpStatus = status
       } catch (e) {}
+    }
+
+    if (httpStatus >= 500) {
+      this.logger.error('Exception thrown', {
+        errorMessage: exception.message,
+        errorStack: exception.stack,
+        requestId: getRequestIdFromRequest(request),
+      })
     }
 
     const errorMessage =

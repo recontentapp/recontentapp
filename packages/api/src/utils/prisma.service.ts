@@ -23,7 +23,7 @@ export class PrismaService
     const logger = new MyLogger()
 
     this.$on('query', ({ query, params, duration }) => {
-      logger.log('Database query', {
+      logger.log('Database query processed', {
         service: 'database',
         query,
         params,

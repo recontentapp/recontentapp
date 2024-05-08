@@ -356,21 +356,12 @@ export class SubscriptionService {
     }
   }
 
-  async onWebhookInvoiceUpcoming(id: string) {
+  async onWebhookSubscriptionInvoiceUpcoming(id: string) {
     if (!this.stripe) {
       throw new BadRequestException(SubscriptionService.notAvailableMessage)
     }
 
-    const invoice = await this.stripe.invoices.retrieve(id)
-    if (!invoice.subscription) {
-      return
-    }
-
-    const subscription = await this.stripe.subscriptions.retrieve(
-      typeof invoice.subscription === 'string'
-        ? invoice.subscription
-        : invoice.subscription.id,
-    )
+    const subscription = await this.stripe.subscriptions.retrieve(id)
     if (!subscription) {
       return
     }

@@ -79,8 +79,12 @@ export class WebhooksController {
         throw new BadRequestException('Invalid Stripe invoice object')
       }
 
-      await this.subscriptionService.onWebhookInvoiceUpcoming(
-        event.data.object.id,
+      if (typeof event.data.object.subscription !== 'string') {
+        throw new BadRequestException('Invalid Stripe invoice subscription')
+      }
+
+      await this.subscriptionService.onWebhookSubscriptionInvoiceUpcoming(
+        event.data.object.subscription,
       )
     }
   }
