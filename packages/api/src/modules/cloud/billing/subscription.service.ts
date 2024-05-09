@@ -5,8 +5,8 @@ import { Config } from 'src/utils/config'
 import { PrismaService } from 'src/utils/prisma.service'
 import Stripe from 'stripe'
 import { PayingPlan, payingPlans } from './plan'
-import { Requester } from '../auth/requester.object'
 import { SQSService } from 'src/utils/sqs.service'
+import { Requester } from 'src/modules/auth/requester.object'
 
 interface GetActiveSubscriptionParams {
   workspaceId: string

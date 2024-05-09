@@ -93,14 +93,14 @@ import {
 } from './dto/tag.dto'
 import { AuthenticatedRequester } from 'src/modules/auth/requester.decorator'
 import { Requester } from 'src/modules/auth/requester.object'
-import { SettingsService } from 'src/modules/billing/settings.service'
-import { SubscriptionService } from 'src/modules/billing/subscription.service'
 import {
   GenerateBillingPortalSessionDto,
   ResetBillingSubscriptionDto,
   SetupBillingSettingsDto,
   SubscribeToBillingPlanDto,
 } from './dto/billing.dto'
+import { SettingsService } from 'src/modules/cloud/billing/settings.service'
+import { SubscriptionService } from 'src/modules/cloud/billing/subscription.service'
 
 @Controller('private-api')
 @UseGuards(JwtAuthGuard)

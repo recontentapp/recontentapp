@@ -10,7 +10,7 @@ import { Request } from 'express'
 import stripe, { Stripe } from 'stripe'
 import { ConfigService } from '@nestjs/config'
 import { Config } from 'src/utils/config'
-import { SubscriptionService } from 'src/modules/billing/subscription.service'
+import { SubscriptionService } from 'src/modules/cloud/billing/subscription.service'
 
 @Controller('webhooks')
 export class WebhooksController {

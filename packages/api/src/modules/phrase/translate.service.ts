@@ -9,7 +9,7 @@ import {
   TranslateTextCommand,
 } from '@aws-sdk/client-translate'
 import { Requester, WorkspaceAccess } from '../auth/requester.object'
-import { MeteredService } from '../billing/metered.service'
+import { MeteredService } from '../cloud/billing/metered.service'
 
 interface TranslatePhraseParams {
   phraseId: string
