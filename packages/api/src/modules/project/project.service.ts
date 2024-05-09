@@ -100,6 +100,18 @@ export class ProjectService {
     const workspaceAccess = requester.getWorkspaceAccessOrThrow(workspaceId)
     workspaceAccess.hasAbilityOrThrow('workspace:write')
 
+    const { projectsCount } = workspaceAccess.getLimits()
+    const existingProjectsCount = await this.prismaService.project.count({
+      where: {
+        workspaceId,
+      },
+    })
+    if (existingProjectsCount >= projectsCount) {
+      throw new BadRequestException(
+        'Workspace has reached projects limit with current plan',
+      )
+    }
+
     if (languageIds.length > 0) {
       const languages = await this.prismaService.language.findMany({
         where: {

@@ -100,7 +100,6 @@ const Content: FC<ContentProps> = ({ projectId, phraseIds, onApply }) => {
           placeholder="Select a tag..."
           value={undefined}
           onChange={value => {
-            console.log(value)
             if (!value) {
               return
             }

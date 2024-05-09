@@ -4,6 +4,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   HttpStatus,
   ParseFilePipeBuilder,
   Post,
@@ -92,6 +93,14 @@ import {
 } from './dto/tag.dto'
 import { AuthenticatedRequester } from 'src/modules/auth/requester.decorator'
 import { Requester } from 'src/modules/auth/requester.object'
+import {
+  GenerateBillingPortalSessionDto,
+  ResetBillingSubscriptionDto,
+  SetupBillingSettingsDto,
+  SubscribeToBillingPlanDto,
+} from './dto/billing.dto'
+import { SettingsService } from 'src/modules/cloud/billing/settings.service'
+import { SubscriptionService } from 'src/modules/cloud/billing/subscription.service'
 
 @Controller('private-api')
 @UseGuards(JwtAuthGuard)
@@ -106,6 +115,8 @@ export class PrivateApiController {
     private readonly tagService: TagService,
     private readonly prismaService: PrismaService,
     private readonly configService: ConfigService<Config, true>,
+    private readonly billingSettingsService: SettingsService,
+    private readonly billingSubscriptionService: SubscriptionService,
   ) {}
 
   private static formatTag(tag: Tag): Components.Schemas.Tag {
@@ -186,7 +197,11 @@ export class PrivateApiController {
 
   private static formatCurrentUser(
     user: User & {
-      accounts: Array<WorkspaceAccount & { workspace: Workspace }>
+      accounts: Array<
+        WorkspaceAccount & {
+          workspace: Workspace
+        }
+      >
     },
   ): Components.Schemas.CurrentUser {
     return {
@@ -361,7 +376,6 @@ export class PrivateApiController {
 
     return {
       version: appConfig.version,
-      // @ts-expect-error TODO
       distribution: appConfig.distribution,
       settings: {
         workspaceInviteOnly,
@@ -486,6 +500,19 @@ export class PrivateApiController {
     })
 
     return PrivateApiController.formatWorkspace(workspace)
+  }
+
+  @Get('/GetWorkspaceBillingStatus')
+  async getWorkspaceBillingStatus(
+    @RequiredQuery('workspaceId') workspaceId: string,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.GetWorkspaceBillingStatus.Responses.$200> {
+    const status = await this.billingSettingsService.getStatus({
+      workspaceId,
+      requester,
+    })
+
+    return status
   }
 
   @Get('/GetWorkspace')
@@ -1210,6 +1237,108 @@ export class PrivateApiController {
       tagIds,
       recordIds,
       recordType,
+      requester,
+    })
+
+    return {}
+  }
+
+  @Get('/GetBillingSettings')
+  async getBillingSettings(
+    @AuthenticatedRequester() requester: Requester,
+    @RequiredQuery('workspaceId') workspaceId: string,
+  ): Promise<Paths.GetBillingSettings.Responses.$200> {
+    const settings = await this.billingSettingsService.get({
+      workspaceId,
+      requester,
+    })
+
+    return settings
+  }
+
+  @Post('/SetupBillingSettings')
+  async setupBillingSettings(
+    @AuthenticatedRequester() requester: Requester,
+    @Body() { workspaceId, name, email }: SetupBillingSettingsDto,
+  ): Promise<Paths.SetupBillingSettings.Responses.$201> {
+    await this.billingSettingsService.setup({
+      workspaceId,
+      name,
+      email,
+      requester,
+    })
+
+    return {}
+  }
+
+  @Post('/GenerateBillingPortalSession')
+  async generateBillingPortalSession(
+    @AuthenticatedRequester() requester: Requester,
+    @Body() { workspaceId }: GenerateBillingPortalSessionDto,
+  ): Promise<Paths.GenerateBillingPortalSession.Responses.$201> {
+    const session = await this.billingSettingsService.generatePortalSession({
+      workspaceId,
+      requester,
+    })
+
+    return session
+  }
+
+  @Get('/ListBillingInvoices')
+  async listBillingInvoices(
+    @AuthenticatedRequester() requester: Requester,
+    @RequiredQuery('workspaceId') workspaceId: string,
+  ): Promise<Paths.ListBillingInvoices.Responses.$200> {
+    const invoices = await this.billingSettingsService.listInvoices({
+      workspaceId,
+      requester,
+    })
+
+    return {
+      items: invoices,
+    }
+  }
+
+  @Get('/GetBillingActiveSubscription')
+  async getBillingActiveSubscription(
+    @AuthenticatedRequester() requester: Requester,
+    @RequiredQuery('workspaceId') workspaceId: string,
+  ): Promise<Paths.GetBillingActiveSubscription.Responses.$200> {
+    const subscription =
+      await this.billingSubscriptionService.getActiveSubscription({
+        workspaceId,
+        requester,
+      })
+
+    return subscription
+  }
+
+  @Post('/SubscribeToBillingPlan')
+  async subscribeToBillingPlan(
+    @AuthenticatedRequester() requester: Requester,
+    @Body() { workspaceId, plan }: SubscribeToBillingPlanDto,
+  ): Promise<Paths.SubscribeToBillingPlan.Responses.$201> {
+    if (plan === 'free') {
+      throw new BadRequestException('Cannot subscribe to free plan')
+    }
+
+    await this.billingSubscriptionService.subscribe({
+      workspaceId,
+      plan,
+      requester,
+    })
+
+    return {}
+  }
+
+  @Post('/ResetBillingSubscription')
+  @HttpCode(204)
+  async resetBillingSubscription(
+    @AuthenticatedRequester() requester: Requester,
+    @Body() { workspaceId }: ResetBillingSubscriptionDto,
+  ): Promise<Paths.ResetBillingSubscription.Responses.$204> {
+    await this.billingSubscriptionService.reset({
+      workspaceId,
       requester,
     })
 

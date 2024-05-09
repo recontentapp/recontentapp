@@ -3,6 +3,7 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator'
 import { isValidFileFormat } from 'file-formats'
+import { isValidPlan } from 'src/modules/cloud/billing/plan'
 import { isValidLanguageLocale } from 'src/modules/workspace/locale'
 
 @ValidatorConstraint({ name: 'languageLocale', async: false })
@@ -24,5 +25,18 @@ export class FileFormatValidator implements ValidatorConstraintInterface {
 
   defaultMessage() {
     return 'File format "$value" is not valid'
+  }
+}
+
+@ValidatorConstraint({ name: 'workspaceBillingPlan', async: false })
+export class WorkspaceBillingPlanValidator
+  implements ValidatorConstraintInterface
+{
+  validate(format: string) {
+    return isValidPlan(format)
+  }
+
+  defaultMessage() {
+    return 'Workspace billing plan "$value" is not valid'
   }
 }

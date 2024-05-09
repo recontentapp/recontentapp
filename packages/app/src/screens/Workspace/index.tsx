@@ -18,12 +18,16 @@ import {
   Integrations as WorkspaceIntegrations,
   Languages as WorkspaceLanguages,
   Members as WorkspaceMembers,
+  Billing as WorkspaceBilling,
   WorkspaceSettings,
 } from './screens/WorkspaceSettings'
 import { ImportFromFile } from './screens/ImportFromFile'
 import { Destination } from './screens/Destination'
 import { useCurrentWorkspace, useHasAbility } from '../../hooks/workspace'
 import routes from '../../routing'
+import { useGetWorkspaceAbilities } from '../../generated/reactQuery'
+import { FullpageSpinner } from '../../components/FullpageSpinner'
+import { BillingBanner } from './components/BillingBanner'
 
 const MainContainer = styled('div', {
   height: '100vh',
@@ -48,13 +52,32 @@ const Main = styled('main', {
 })
 
 export const Workspace = () => {
-  const { key: workspaceKey } = useCurrentWorkspace()
+  const { key: workspaceKey, id: workspaceId } = useCurrentWorkspace()
+  const { isPending: isLoadingAbilities } = useGetWorkspaceAbilities(
+    {
+      queryParams: {
+        workspaceId,
+      },
+    },
+    {
+      staleTime: Infinity,
+    },
+  )
+
   const canManageMembers = useHasAbility('members:manage')
   const canManageLanguages = useHasAbility('languages:manage')
   const canManageIntegrations = useHasAbility('api_keys:manage')
+  const canManageBilling = useHasAbility('billing:manage')
 
-  const canAdmin =
-    canManageMembers || canManageLanguages || canManageIntegrations
+  const canAccessSettings =
+    canManageMembers ||
+    canManageLanguages ||
+    canManageIntegrations ||
+    canManageBilling
+
+  if (isLoadingAbilities) {
+    return <FullpageSpinner variation="primary" />
+  }
 
   return (
     <KBarProvider>
@@ -62,6 +85,8 @@ export const Workspace = () => {
         <KBar />
 
         <MainContainer>
+          <BillingBanner />
+
           <Inner>
             <Sidebar />
 
@@ -74,7 +99,7 @@ export const Workspace = () => {
                   element={<UserSettings />}
                 />
 
-                {canAdmin && (
+                {canAccessSettings && (
                   <Route
                     path="/:workspaceKey/settings"
                     element={<WorkspaceSettings />}
@@ -93,6 +118,9 @@ export const Workspace = () => {
                         path="integrations"
                         element={<WorkspaceIntegrations />}
                       />
+                    )}
+                    {canManageBilling && (
+                      <Route path="billing" element={<WorkspaceBilling />} />
                     )}
                     <Route
                       index

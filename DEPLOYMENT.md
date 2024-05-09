@@ -40,35 +40,34 @@ docker run -p 127.0.0.1:8080:8080/tcp --env DATABASE_URL="postgres://postgres:po
 
 Here's the full list of environment variables that need to be passed to the application container to run successfully.
 
-| Name                           | Description                                              | Required |
-| ------------------------------ | -------------------------------------------------------- | -------- |
-| `WORKSPACE_INVITE_ONLY`        | Disable sign up after first registration                 | `false`  |
-| `PORT`                         | Port on which app runs                                   | `true`   |
-| `DATABASE_URL`                 | Postgres connection string                               | `true`   |
-| `DATABASE_LOG_QUERIES`         | Log SQL queries                                          | `false`  |
-| `JWT_SECRET`                   | [JWT](https://jwt.io/) for authentication                | `true`   |
-| `ENCRYPTION_KEY`               | Encrypt/decrypt credentials stored in database           | `true`   |
-| `MAILER_HOST`                  | Mailer config                                            | `true`   |
-| `MAILER_PORT`                  | Mailer config                                            | `true`   |
-| `MAILER_SECURE`                | Mailer config                                            | `false`  |
-| `MAILER_USER`                  | Mailer config                                            | `false`  |
-| `MAILER_PASSWORD`              | Mailer config                                            | `false`  |
-| `MAILER_FROM_EMAIL`            | Email address used to send emails                        | `true`   |
-| `NODE_TLS_REJECT_UNAUTHORIZED` | Bypass mailer security checks                            | `false`  |
-| `SERVE_STATIC_FILES`           | Wether or not web app should be served                   | `false`  |
-| `APP_URL`                      | Base URL for webapp                                      | `true`   |
-| `API_URL`                      | Base URL for API                                         | `true`   |
-| `S3_REGION`                    | Region for S3-compatible object storage                  | `false`  |
-| `S3_ENDPOINT`                  | Endpoint URL for S3-compatible object storage            | `false`  |
-| `S3_ACCESS_KEY_ID`             | Credentials for S3-compatible object storage             | `false`  |
-| `S3_SECRET_ACCESS_KEY`         | Credentials for S3-compatible object storage             | `false`  |
-| `S3_BUCKET_NAME`               | Bucket name in which CDN assets are stored               | `false`  |
-| `S3_BUCKET_URL`                | Public base URL for bucket objects                       | `false`  |
-| `AUTO_TRANSLATE_PROVIDER`      | Service used for machine translations. `aws` or `openai` | `false`  |
-| `OPENAI_API_KEY`               | OpenAI API key for ChatGPT completions                   | `false`  |
-| `AWS_ACCESS_KEY_ID`            | AWS credentials if AWS Translate is used                 | `false`  |
-| `AWS_SECRET_ACCESS_KEY`        | AWS credentials if AWS Translate is used                 | `false`  |
-| `AWS_DEFAULT_REGION`           | AWS setting if AWS Translate is used                     | `false`  |
+| Name                      | Description                                              | Required |
+| ------------------------- | -------------------------------------------------------- | -------- |
+| `WORKSPACE_INVITE_ONLY`   | Disable sign up after first registration                 | `false`  |
+| `PORT`                    | Port on which app runs                                   | `true`   |
+| `DATABASE_URL`            | Postgres connection string                               | `true`   |
+| `DATABASE_LOG_QUERIES`    | Log SQL queries                                          | `false`  |
+| `JWT_SECRET`              | [JWT](https://jwt.io/) for authentication                | `true`   |
+| `ENCRYPTION_KEY`          | Encrypt/decrypt credentials stored in database           | `true`   |
+| `MAILER_HOST`             | Mailer config                                            | `true`   |
+| `MAILER_PORT`             | Mailer config                                            | `true`   |
+| `MAILER_SECURE`           | Mailer config                                            | `false`  |
+| `MAILER_USER`             | Mailer config                                            | `false`  |
+| `MAILER_PASSWORD`         | Mailer config                                            | `false`  |
+| `MAILER_FROM_EMAIL`       | Email address used to send emails                        | `true`   |
+| `SERVE_STATIC_FILES`      | Wether or not web app should be served                   | `false`  |
+| `APP_URL`                 | Base URL for webapp                                      | `true`   |
+| `API_URL`                 | Base URL for API                                         | `true`   |
+| `S3_REGION`               | Region for S3-compatible object storage                  | `false`  |
+| `S3_ENDPOINT`             | Endpoint URL for S3-compatible object storage            | `false`  |
+| `S3_ACCESS_KEY_ID`        | Credentials for S3-compatible object storage             | `false`  |
+| `S3_SECRET_ACCESS_KEY`    | Credentials for S3-compatible object storage             | `false`  |
+| `S3_BUCKET_NAME`          | Bucket name in which CDN assets are stored               | `false`  |
+| `S3_BUCKET_URL`           | Public base URL for bucket objects                       | `false`  |
+| `AUTO_TRANSLATE_PROVIDER` | Service used for machine translations. `aws` or `openai` | `false`  |
+| `OPENAI_API_KEY`          | OpenAI API key for ChatGPT completions                   | `false`  |
+| `AWS_ACCESS_KEY_ID`       | AWS credentials if AWS Translate is used                 | `false`  |
+| `AWS_SECRET_ACCESS_KEY`   | AWS credentials if AWS Translate is used                 | `false`  |
+| `AWS_REGION`              | AWS setting if AWS Translate is used                     | `false`  |
 
 `APP_URL` & `API_URL` are usually the same. For example, if Recontent.app is hosted at `translations.my-app.com`, `https://translations.my-app.com` can be used for both environment variables.
 

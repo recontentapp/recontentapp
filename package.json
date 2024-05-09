@@ -20,7 +20,8 @@
     "start:app": "yarn workspace app start",
     "start:api": "yarn workspace api start",
     "localstack:start": "yarn localstack:s3",
-    "localstack:s3": "aws --profile recontent --endpoint-url=http://localhost:4566 s3api create-bucket --bucket recontent-public --region us-east-1 && aws --profile recontent --endpoint-url=http://localhost:4566 s3api put-bucket-policy --bucket recontent-public --policy file://localstack/s3-bucket-policy.json"
+    "localstack:s3": "aws --profile recontent --endpoint-url=http://localhost:4566 s3api create-bucket --bucket recontent-public --region us-east-1 && aws --profile recontent --endpoint-url=http://localhost:4566 s3api put-bucket-policy --bucket recontent-public --policy file://localstack/s3-bucket-policy.json",
+    "stripe:listen": "stripe listen --forward-to localhost:3000/webhooks/stripe --events customer.subscription.created,customer.subscription.trial_will_end,customer.subscription.updated,customer.subscription.deleted,invoice.upcoming"
   },
   "devDependencies": {
     "eslint": "8.57.0",

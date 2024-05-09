@@ -127,7 +127,6 @@ export const CreatePhraseModal = forwardRef<CreatePhraseModalRef>(
         modalRef.current.open()
       },
       close: () => {
-        console.log(revisionId)
         if (revisionId) {
           queryClient.invalidateQueries({
             queryKey: getListPhrasesQueryKey({

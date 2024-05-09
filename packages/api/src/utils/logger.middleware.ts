@@ -15,6 +15,18 @@ export class LoggerMiddleware implements NestMiddleware {
     this.logger = new MyLogger()
   }
 
+  private resolveService(path: string) {
+    if (path.startsWith('/public-api')) {
+      return 'public-api'
+    }
+
+    if (path.startsWith('/private-api')) {
+      return 'private-api'
+    }
+
+    return 'webhooks'
+  }
+
   use(req: Request, res: Response, next: NextFunction) {
     const now = Date.now()
 
@@ -27,11 +39,7 @@ export class LoggerMiddleware implements NestMiddleware {
       const referer = req.headers.referer
       const requester = getRequesterOrNull(req)
       const statusCodeStartsWith = String(res.statusCode)[0]
-      const service = path.startsWith('/public-api')
-        ? 'public-api'
-        : path.startsWith('/private-api')
-          ? 'private-api'
-          : 'worker'
+      const service = this.resolveService(path)
 
       const params = {
         service,

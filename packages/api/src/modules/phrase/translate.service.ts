@@ -8,8 +8,8 @@ import {
   TranslateClient,
   TranslateTextCommand,
 } from '@aws-sdk/client-translate'
-import { UsageLogger } from 'src/utils/usage-logger'
-import { Requester } from '../auth/requester.object'
+import { Requester, WorkspaceAccess } from '../auth/requester.object'
+import { MeteredService } from '../cloud/billing/metered.service'
 
 interface TranslatePhraseParams {
   phraseId: string
@@ -22,15 +22,15 @@ interface TranslateWithProviderParams {
     translations: Array<PhraseTranslation & { language: Language }>
   }
   targetLanguage: Language
+  workspaceAccess: WorkspaceAccess
 }
 
 @Injectable()
 export class TranslateService {
-  private usageLogger = new UsageLogger()
-
   constructor(
     private prismaService: PrismaService,
     private configService: ConfigService<Config, true>,
+    private meteredService: MeteredService,
   ) {}
 
   private static preferredSourceLocales = ['en', 'zh', 'es', 'fr', 'ar', 'pt']
@@ -132,7 +132,15 @@ export class TranslateService {
   private async translateWithOpenAI({
     phrase,
     targetLanguage,
+    workspaceAccess,
   }: TranslateWithProviderParams) {
+    const apiKey = this.configService.get('autoTranslate.openAIKey', {
+      infer: true,
+    })
+    if (!apiKey) {
+      throw new BadRequestException('OpenAI API key not set')
+    }
+
     const sourceLocale =
       TranslateService.preferredSourceLocales.find(locale => {
         return phrase.translations.find(
@@ -151,9 +159,7 @@ export class TranslateService {
     const textToTranslate = sourceTranslation.content
 
     const client = new OpenAI({
-      apiKey: this.configService.get('openAIKey', {
-        infer: true,
-      }),
+      apiKey,
     })
 
     const chatCompletion = await client.chat.completions.create({
@@ -182,11 +188,12 @@ export class TranslateService {
       return null
     }
 
-    this.usageLogger.log({
-      metric: 'openai_token',
+    this.meteredService.log({
+      workspaceId: workspaceAccess.getWorkspaceID(),
+      accountId: workspaceAccess.getAccountID(),
+      metric: 'token',
       quantity: chatCompletion.usage?.total_tokens ?? 0,
       externalId: chatCompletion.id,
-      workspaceId: phrase.workspaceId,
       timestamp: new Date(chatCompletion.created),
     })
 
@@ -201,15 +208,8 @@ export class TranslateService {
   private async translateWithAWSTranslate({
     phrase,
     targetLanguage,
+    workspaceAccess,
   }: TranslateWithProviderParams) {
-    /**
-     * AWS Translate is not supported by LocalStack
-     * in development environment
-     */
-    if (process.env.AWS_CUSTOM_ENDPOINT) {
-      return 'Auto translation'
-    }
-
     if (
       TranslateService.awsTranslateSupportedLocales.indexOf(
         targetLanguage.locale,
@@ -237,10 +237,7 @@ export class TranslateService {
     )!
     const targetLocale = targetLanguage.locale
 
-    const client = new TranslateClient({
-      region: 'us-east-1',
-      endpoint: 'https://translate.us-east-1.amazonaws.com',
-    })
+    const client = new TranslateClient()
 
     const result = await client
       .send(
@@ -251,6 +248,15 @@ export class TranslateService {
         }),
       )
       .catch(() => null)
+
+    this.meteredService.log({
+      workspaceId: workspaceAccess.getWorkspaceID(),
+      accountId: workspaceAccess.getAccountID(),
+      metric: 'token',
+      quantity: sourceTranslation.content.length,
+      externalId: result?.$metadata.requestId ?? 'unknown',
+      timestamp: new Date(),
+    })
 
     return result?.TranslatedText ?? null
   }
@@ -307,12 +313,14 @@ export class TranslateService {
         translation = await this.translateWithAWSTranslate({
           phrase,
           targetLanguage,
+          workspaceAccess,
         })
         break
       case 'openai':
         translation = await this.translateWithOpenAI({
           phrase,
           targetLanguage,
+          workspaceAccess,
         })
         break
     }

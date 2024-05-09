@@ -3,6 +3,22 @@ name: Continuous integration
 on: push
 
 jobs:
+  docker_build:
+    name: Docker build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          file: docker/Dockerfile
   continuous_integration:
     name: Continuous integration
     runs-on: ubuntu-latest
@@ -34,6 +50,8 @@ jobs:
         run: yarn workspace api lint
       - name: Build api
         run: yarn workspace api build
+      - name: Test api
+        run: yarn workspace api test
       - name: Typecheck app
         run: yarn workspace app typecheck
       - name: Lint app

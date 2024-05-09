@@ -1,11 +1,11 @@
-import { Injectable, OnModuleInit } from '@nestjs/common'
+import { Injectable, OnApplicationShutdown, OnModuleInit } from '@nestjs/common'
 import { Prisma, PrismaClient } from '@prisma/client'
 import { MyLogger } from './logger'
 
 @Injectable()
 export class PrismaService
   extends PrismaClient<Prisma.PrismaClientOptions, 'query'>
-  implements OnModuleInit
+  implements OnModuleInit, OnApplicationShutdown
 {
   constructor() {
     super({
@@ -23,7 +23,7 @@ export class PrismaService
     const logger = new MyLogger()
 
     this.$on('query', ({ query, params, duration }) => {
-      logger.log('Database query', {
+      logger.log('Database query processed', {
         service: 'database',
         query,
         params,
@@ -34,5 +34,9 @@ export class PrismaService
 
   async onModuleInit() {
     await this.$connect()
+  }
+
+  async onApplicationShutdown() {
+    await this.$disconnect()
   }
 }

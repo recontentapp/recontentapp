@@ -48,9 +48,9 @@ const Button = styled('button', {
   variants: {
     variation: {
       info: {
-        color: '$gray10',
+        color: '$blue900',
         '&:hover': {
-          color: '$gray11',
+          color: '$blue700',
         },
       },
       warning: {

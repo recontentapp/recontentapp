@@ -4,6 +4,9 @@ const routes: RoutesCollection = {
   '/:workspaceKey': {
     name: 'dashboard',
   },
+  '/:workspaceKey/settings/billing': {
+    name: 'workspaceSettingsBilling',
+  },
   '/:workspaceKey/settings/languages': {
     name: 'workspaceSettingsLanguages',
   },

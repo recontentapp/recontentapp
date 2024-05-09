@@ -24,6 +24,14 @@ const getAutoTranslateProvider = (): 'aws' | 'openai' | null => {
   return null
 }
 
+const getDistribution = (): 'cloud' | 'self-hosted' => {
+  if (process.env.APP_DISTRIBUTION === 'cloud') {
+    return 'cloud'
+  }
+
+  return 'self-hosted'
+}
+
 const getConfig = () => {
   /**
    * Check if all required environment variables are set
@@ -39,7 +47,7 @@ const getConfig = () => {
   return {
     app: {
       version: process.env.APP_VERSION ?? '0.0.0',
-      distribution: process.env.APP_DISTRIBUTION ?? 'self-hosted',
+      distribution: getDistribution(),
       workspaceInviteOnly: process.env.WORKSPACE_INVITE_ONLY === 'true',
       serveStaticFiles: process.env.SERVE_STATIC_FILES === 'true',
     },
@@ -56,16 +64,12 @@ const getConfig = () => {
       fromEmail: String(process.env.MAILER_FROM_EMAIL),
     },
     urls: {
-      app: process.env.APP_URL,
-      api: process.env.API_URL,
+      app: String(process.env.APP_URL),
+      api: String(process.env.API_URL),
     },
     security: {
       jwtSecret: String(process.env.JWT_SECRET),
       encryptionKey: String(process.env.ENCRYPTION_KEY),
-      nodeTlsRejectUnauthorized: parseInt(
-        process.env.NODE_TLS_REJECT_UNAUTHORIZED ?? '1',
-        10,
-      ),
     },
     cdn: {
       available:
@@ -84,8 +88,18 @@ const getConfig = () => {
     },
     autoTranslate: {
       provider: getAutoTranslateProvider(),
+      openAIKey: process.env.OPENAI_API_KEY,
     },
-    openAIKey: process.env.OPENAI_API_KEY,
+    worker: {
+      sqsQueueUrl: process.env.SQS_QUEUE_URL,
+    },
+    billing: {
+      stripeKey: process.env.STRIPE_API_KEY,
+      stripeWebhookSigningSecret: process.env.STRIPE_WEBHOOK_SIGNING_SECRET,
+      stripeTestClockId: process.env.STRIPE_TEST_CLOCK_ID,
+      cloudWatchLogsGroupName: process.env.CLOUDWATCH_LOGS_BILLING_GROUP_NAME,
+      cloudWatchLogsStreamName: process.env.CLOUDWATCH_LOGS_BILLING_STREAM_NAME,
+    },
   }
 }
 
