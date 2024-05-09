@@ -1,0 +1,9 @@
+{
+  "name": "Recontent.app",
+  "id": "1222442375491446608",
+  "api": "1.0.0",
+  "editorType": ["figma"],
+  "permissions": [],
+  "main": "index.js",
+  "ui": "index.html"
+}

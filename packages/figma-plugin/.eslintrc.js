@@ -1,0 +1,43 @@
+module.exports = {
+  parser: '@typescript-eslint/parser',
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:import/errors',
+    'plugin:import/warnings',
+    'plugin:import/typescript',
+    'plugin:react/recommended',
+    'plugin:jsx-a11y/recommended',
+    'prettier',
+  ],
+  plugins: ['react-hooks'],
+  env: {
+    node: true,
+    browser: true,
+    es6: true,
+  },
+  settings: {
+    react: {
+      version: 'detect',
+    },
+  },
+  ignorePatterns: ['node_modules/', '*.d.ts', '.eslintrc.js'],
+  rules: {
+    'react/prop-types': 'off',
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
+    '@typescript-eslint/explicit-function-return-type': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/ban-ts-comment': 'off',
+    'react/display-name': 'off',
+    'react/jsx-key': 'warn',
+    'jsx-a11y/anchor-is-valid': 'warn',
+    'react/react-in-jsx-scope': 'off',
+    '@typescript-eslint/no-empty-function': 'off',
+    'react/jsx-key': 'off',
+    'jsx-a11y/no-autofocus': 'warn',
+    'react/no-unescaped-entities': 'off',
+    'jsx-a11y/click-events-have-key-events': 'off',
+    '@typescript-eslint/no-non-null-assertion': 'off',
+    'jsx-a11y/no-autofocus': 'off',
+  },
+}
