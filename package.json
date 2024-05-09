@@ -24,7 +24,7 @@
     "stripe:listen": "stripe listen --forward-to localhost:3000/webhooks/stripe --events customer.subscription.created,customer.subscription.trial_will_end,customer.subscription.updated,customer.subscription.deleted,invoice.upcoming"
   },
   "devDependencies": {
-    "eslint": "8.57.0",
+    "eslint": "9.2.0",
     "husky": "9.0.11",
     "lint-staged": "15.2.2",
     "openapi-format": "1.16.1",
