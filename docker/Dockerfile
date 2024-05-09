@@ -52,6 +52,7 @@ WORKDIR /usr/src/app
 ENV NODE_ENV=production
 ENV APP_VERSION=0.3.1
 ENV APP_DISTRIBUTION=self-hosted
+ENV SERVE_STATIC_FILES=true
 
 COPY --chown=node:node package.json yarn.lock ./
 COPY --chown=node:node ./packages/api/package.json ./packages/api/package.json

@@ -4,6 +4,7 @@ on: push
 
 jobs:
   docker_build:
+    name: Docker build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
