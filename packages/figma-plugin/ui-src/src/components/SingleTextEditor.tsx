@@ -12,18 +12,13 @@ import {
 import { diffChars } from 'diff'
 import { FigmaText } from '../types'
 
-import {
-  FigmaDocument,
-  useCreatePhrase,
-  useUpdatePhraseForDocument,
-} from '../api'
 import { useContext } from '../context'
 import { styled } from '../theme'
 import { ConnectPhrase } from './ConnectPhrase'
 
 interface SingleTextEditorProps {
   text: FigmaText
-  document?: FigmaDocument
+  document?: any
 }
 
 const Border = styled('div', {
@@ -36,10 +31,10 @@ const Border = styled('div', {
 export const SingleTextEditor = ({ text, document }: SingleTextEditorProps) => {
   const [isSearching, setIsSearching] = useState(false)
   const { id, emit } = useContext()
-  const { mutateAsync: updatePhraseForDocument, isLoading: isUpdatingPhrase } =
-    useUpdatePhraseForDocument()
-  const { mutateAsync: createPhrase, isLoading: isCreatingPhrase } =
-    useCreatePhrase()
+  // const { mutateAsync: updatePhraseForDocument, isLoading: isUpdatingPhrase } =
+  //   useUpdatePhraseForDocument()
+  // const { mutateAsync: createPhrase, isLoading: isCreatingPhrase } =
+  //   useCreatePhrase()
   const [key, setKey] = useState('')
   const parts = diffChars(text.recontentContent ?? text.content, text.content)
 
@@ -47,40 +42,39 @@ export const SingleTextEditor = ({ text, document }: SingleTextEditorProps) => {
     phraseId: string,
     content: string,
   ) => {
-    const result = await updatePhraseForDocument({
-      document_id: id!,
-      phrase_content: content,
-
-      id: phraseId,
-    })
-
-    emit({
-      type: 'phraseUpdated',
-      data: {
-        recontentId: result.id,
-        translation: result.phrase_translation,
-        key: result.phrase_key,
-      },
-    })
+    // const result = await updatePhraseForDocument({
+    //   document_id: id!,
+    //   phrase_content: content,
+    //   id: phraseId,
+    // })
+    // emit({
+    //   type: 'phraseUpdated',
+    //   data: {
+    //     recontentId: result.id,
+    //     translation: result.phrase_translation,
+    //     key: result.phrase_key,
+    //   },
+    // })
   }
 
   const onRequestCreatePhrase = async (content: string, figmaId: string) => {
-    const result = await createPhrase({
-      document_id: id!,
-      phrase_content: content,
-      phrase_key: key.length > 0 ? key : undefined,
-    })
-
-    emit({
-      type: 'phraseCreated',
-      data: {
-        recontentId: result.id,
-        key: result.phrase_key,
-        figmaId,
-      },
-    })
+    // const result = await createPhrase({
+    //   document_id: id!,
+    //   phrase_content: content,
+    //   phrase_key: key.length > 0 ? key : undefined,
+    // })
+    // emit({
+    //   type: 'phraseCreated',
+    //   data: {
+    //     recontentId: result.id,
+    //     key: result.phrase_key,
+    //     figmaId,
+    //   },
+    // })
   }
 
+  const isCreatingPhrase = false
+  const isUpdatingPhrase = false
   const isDiff =
     text.recontentContent !== null && text.recontentContent !== text.content
 
@@ -112,8 +106,8 @@ export const SingleTextEditor = ({ text, document }: SingleTextEditorProps) => {
             const color = part.added
               ? 'var(--figma-color-text-success)'
               : part.removed
-              ? 'var(--figma-color-text-danger)'
-              : undefined
+                ? 'var(--figma-color-text-danger)'
+                : undefined
 
             return (
               <Text

@@ -1,5 +1,3 @@
-import React from 'react'
-import { useFigmaDocument } from '../api'
 import { MultipleTextsEditor } from '../components/MultipleTextsEditor'
 import { Placeholder } from '../components/Placeholder'
 import { SingleTextEditor } from '../components/SingleTextEditor'
@@ -21,11 +19,10 @@ const MainContainer = styled('div', {
 
 export const Main = () => {
   const { selectedTexts, traversed, id } = useContext()
-  const { data: document, isError } = useFigmaDocument(id!)
 
-  if (isError) {
-    return <Error />
-  }
+  // if (isError) {
+  //   return <Error />
+  // }
 
   return (
     <Container>
@@ -41,7 +38,7 @@ export const Main = () => {
         )}
       </MainContainer>
 
-      {document && <SyncFooter document={document} />}
+      {/* {document && <SyncFooter document={document} />} */}
     </Container>
   )
 }

@@ -1,12 +1,10 @@
-import React from 'react'
 import { Button, Muted, Section, Stack } from 'figma-ui-kit'
 import { FigmaText } from '../types'
-import { FigmaDocument, useBatchCreatePhrase } from '../api'
 import { useContext } from '../context'
 
 interface MultipleTextsEditorProps {
   texts: FigmaText[]
-  document: FigmaDocument
+  document: any
 }
 
 export const MultipleTextsEditor = ({
@@ -14,7 +12,6 @@ export const MultipleTextsEditor = ({
   document,
 }: MultipleTextsEditorProps) => {
   const { emit } = useContext()
-  const { mutateAsync, isLoading } = useBatchCreatePhrase()
 
   const textsWithoutRecontentId = texts.filter(
     text => text.recontentId === null,
@@ -22,20 +19,22 @@ export const MultipleTextsEditor = ({
 
   const requestBatchCreate = async () => {
     const textsToCreate = [...textsWithoutRecontentId]
-    const phrases = await mutateAsync({
-      document_id: document.id,
-      texts: textsToCreate.map(text => text.content),
-    })
+    // const phrases = await mutateAsync({
+    //   document_id: document.id,
+    //   texts: textsToCreate.map(text => text.content),
+    // })
 
-    emit({
-      type: 'batchPhraseCreated',
-      data: phrases.map((phrase, index) => ({
-        figmaId: textsToCreate[index].figmaId,
-        recontentId: phrase.id,
-        key: phrase.phrase_key,
-      })),
-    })
+    // emit({
+    //   type: 'batchPhraseCreated',
+    //   data: phrases.map((phrase, index) => ({
+    //     figmaId: textsToCreate[index].figmaId,
+    //     recontentId: phrase.id,
+    //     key: phrase.phrase_key,
+    //   })),
+    // })
   }
+
+  const isLoading = false
 
   return (
     <Stack direction="column" spacing="$medium">

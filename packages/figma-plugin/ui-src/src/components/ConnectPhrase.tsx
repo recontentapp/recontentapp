@@ -7,11 +7,6 @@ import {
   Section,
   Textbox,
 } from 'figma-ui-kit'
-import {
-  PhraseTranslationDTO,
-  useConnectPhrase,
-  useSearchPhrases,
-} from '../api'
 import { FigmaText } from '../types'
 import { useContext } from '../context'
 
@@ -23,26 +18,28 @@ interface ConnectPhraseProps {
 export const ConnectPhrase = ({ documentId, text }: ConnectPhraseProps) => {
   const { emit } = useContext()
   const [searchTerm, setSearchTerm] = useState('')
-  const { mutateAsync, isLoading: isConnecting } = useConnectPhrase()
-  const { data = [], isLoading: isSearching } = useSearchPhrases({
-    documentId,
-    term: searchTerm,
-  })
+  const data: any[] = []
+  const isSearching = false
+  const isConnecting = false
+  // const { mutateAsync, isLoading: isConnecting } = useConnectPhrase()
+  // const { data = [], isLoading: isSearching } = useSearchPhrases({
+  //   documentId,
+  //   term: searchTerm,
+  // })
 
-  const onRequestConnect = async (phrase: PhraseTranslationDTO) => {
-    const result = await mutateAsync({
-      document_id: documentId,
-      phrase_key: phrase.phrase_key,
-    })
-
-    emit({
-      type: 'phraseCreated',
-      data: {
-        recontentId: result.id,
-        key: result.phrase_key,
-        figmaId: text.figmaId,
-      },
-    })
+  const onRequestConnect = async (phrase: any) => {
+    // const result = await mutateAsync({
+    //   document_id: documentId,
+    //   phrase_key: phrase.phrase_key,
+    // })
+    // emit({
+    //   type: 'phraseCreated',
+    //   data: {
+    //     recontentId: result.id,
+    //     key: result.phrase_key,
+    //     figmaId: text.figmaId,
+    //   },
+    // })
   }
 
   return (

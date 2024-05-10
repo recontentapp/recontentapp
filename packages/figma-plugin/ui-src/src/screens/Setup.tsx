@@ -6,16 +6,9 @@ import {
   Link,
   Muted,
   Stack,
-  Text,
   Textbox,
 } from 'figma-ui-kit'
-import React, { FormEvent, useState } from 'react'
-import {
-  useCreateFigmaDocument,
-  useLanguagesByProject,
-  useProjects,
-  useRevisionsByProject,
-} from '../api'
+import { FormEvent, useState } from 'react'
 import { getAppURL } from '../config'
 import { useContext } from '../context'
 
@@ -34,7 +27,7 @@ interface LanguageSelectProps {
 }
 
 const LanguageSelect = ({ projectId, onSelect }: LanguageSelectProps) => {
-  const { data = [] } = useLanguagesByProject(projectId)
+  const data: any[] = []
   const [value, setValue] = useState<string | null>(null)
 
   return (
@@ -56,38 +49,9 @@ const LanguageSelect = ({ projectId, onSelect }: LanguageSelectProps) => {
   )
 }
 
-interface RevisionSelectProps {
-  projectId: string
-  onSelect: (revisionId: string) => void
-}
-
-const RevisionSelect = ({ projectId, onSelect }: RevisionSelectProps) => {
-  const { data = [] } = useRevisionsByProject(projectId)
-  const [value, setValue] = useState<string | null>(null)
-
-  return (
-    <Dropdown
-      name="revision"
-      id="revision"
-      value={value}
-      onChange={e => {
-        onSelect(e.target.value)
-        setValue(e.target.value)
-      }}
-      variant="border"
-      placeholder="Master"
-      options={[
-        { value: DEFAULT_REVISION, text: 'Master' },
-        ...data.map(revision => ({ value: revision.id, text: revision.name })),
-      ]}
-    />
-  )
-}
-
 export const Setup = () => {
   const { name, emit } = useContext()
-  const { data = [], isLoading: isLoadingProjects } = useProjects()
-  const { mutateAsync, isLoading } = useCreateFigmaDocument()
+  const data: any[] = []
   const [state, setState] = useState<State>({
     fileURL: '',
     projectId: null,
@@ -108,26 +72,27 @@ export const Setup = () => {
       return
     }
 
-    mutateAsync({
-      name,
-      url: state.fileURL,
-      project_id: state.projectId!,
-      revision_id: state.revisionId!,
-      language_id: state.languageId!,
-    })
-      .then(id => {
-        emit({ type: 'projectCreated', data: { id } })
-      })
-      .catch(() => {
-        emit({
-          type: 'notificationRequested',
-          data: { message: 'Could not connect file to Recontent.app' },
-        })
-      })
+    // mutateAsync({
+    //   name,
+    //   url: state.fileURL,
+    //   project_id: state.projectId!,
+    //   revision_id: state.revisionId!,
+    //   language_id: state.languageId!,
+    // })
+    //   .then(id => {
+    //     emit({ type: 'projectCreated', data: { id } })
+    //   })
+    //   .catch(() => {
+    //     emit({
+    //       type: 'notificationRequested',
+    //       data: { message: 'Could not connect file to Recontent.app' },
+    //     })
+    //   })
   }
 
   const help = 'Click "Share" > "Copy link"'
-  const doesNotHaveProjects = !isLoadingProjects && data.length === 0
+  const doesNotHaveProjects = data.length === 0
+  const isLoading = false
 
   if (doesNotHaveProjects) {
     return (

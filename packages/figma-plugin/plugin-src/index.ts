@@ -34,6 +34,8 @@ figma.showUI(__html__, { themeColors: true, height: 340 })
 
 const emit = $emit<Emittable>()
 
+console.log('Hello', figma.root.getPluginData('uuid'), figma.currentPage)
+
 const getSelectedTexts = (): {
   selectedTexts: FigmaText[]
   traversed: boolean

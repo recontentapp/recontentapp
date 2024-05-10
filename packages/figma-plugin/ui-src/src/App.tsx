@@ -1,15 +1,11 @@
-import React, { useCallback } from 'react'
-import { QueryClientProvider } from 'react-query'
 import { useContext, Screen } from './context'
-import { queryClient } from './queryClient'
-import { RequestProvider } from './request'
 import { Main } from './screens/Main'
 import { Onboarding } from './screens/Onboarding'
 import { Settings } from './screens/Settings'
 import { Setup } from './screens/Setup'
-import { Error } from './request/types'
 import { Tabs } from 'figma-ui-kit'
-import { getAPIBaseEndpoint } from './config'
+import { APIClientProvider } from './generated/reactQuery'
+import { HTTPRequestError } from './generated/apiClient'
 
 const AuthenticatedApp = () => {
   const { screen, id, updateScreen } = useContext()
@@ -34,25 +30,29 @@ const AuthenticatedApp = () => {
 
 export const App = () => {
   const { apiKey, resetAPIKey } = useContext()
-  const onError = useCallback((error: Error) => {
-    if (error.statusCode === 401) {
-      resetAPIKey()
-    }
-  }, [])
 
   if (!apiKey) {
     return <Onboarding />
   }
 
   return (
-    <RequestProvider
-      baseUrl={getAPIBaseEndpoint()}
-      headers={{ Authorization: `Bearer ${apiKey}` }}
-      onError={onError}
+    <APIClientProvider
+      config={{
+        baseUrl: import.meta.env.VITE_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+        },
+        onError: error => {
+          if (
+            error instanceof HTTPRequestError &&
+            [401, 403].includes(error.statusCode)
+          ) {
+            resetAPIKey()
+          }
+        },
+      }}
     >
-      <QueryClientProvider client={queryClient}>
-        <AuthenticatedApp />
-      </QueryClientProvider>
-    </RequestProvider>
+      <AuthenticatedApp />
+    </APIClientProvider>
   )
 }

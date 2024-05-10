@@ -1,27 +1,23 @@
 import { Button, Link, Text, Stack, Section } from 'figma-ui-kit'
-import React from 'react'
-import { useDeleteFigmaDocument } from '../api'
 import { APIKeyForm } from '../components/APIKeyForm'
 import { getAppURL } from '../config'
 import { useContext } from '../context'
 
 export const Settings = () => {
   const { emit, id, updateScreen } = useContext()
-  const { mutateAsync: deleteFigmaDocument, isLoading: isDeleting } =
-    useDeleteFigmaDocument()
 
   const reset = () => {
-    deleteFigmaDocument(id!)
-      .then(() => {
-        emit({ type: 'resetRequested' })
-        updateScreen('Inspect')
-      })
-      .catch(() => {
-        emit({
-          type: 'notificationRequested',
-          data: { message: 'Could not reset file', error: true },
-        })
-      })
+    // deleteFigmaDocument(id!)
+    //   .then(() => {
+    //     emit({ type: 'resetRequested' })
+    //     updateScreen('Inspect')
+    //   })
+    //   .catch(() => {
+    //     emit({
+    //       type: 'notificationRequested',
+    //       data: { message: 'Could not reset file', error: true },
+    //     })
+    //   })
   }
 
   return (
@@ -42,7 +38,7 @@ export const Settings = () => {
 
       <Section title="This file">
         <div>
-          <Button onClick={reset} secondary danger loading={isDeleting}>
+          <Button onClick={reset} secondary danger>
             Disconnect from Recontent.app
           </Button>
         </div>
