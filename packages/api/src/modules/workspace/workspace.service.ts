@@ -91,6 +91,11 @@ interface GetReferenceableAccountsParams {
   requester: Requester
 }
 
+interface GenerateUserWorkspaceAccountAPIKeyParams {
+  workspaceId: string
+  requester: Requester
+}
+
 @Injectable()
 export class WorkspaceService {
   constructor(
@@ -471,6 +476,30 @@ export class WorkspaceService {
         itemsCount: count,
       },
     }
+  }
+
+  async generateUserWorkspaceAccountAPIKey({
+    requester,
+    workspaceId,
+  }: GenerateUserWorkspaceAccountAPIKeyParams) {
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(workspaceId)
+    workspaceAccess.hasAbilityOrThrow('workspace:write')
+
+    const apiKey = generateAPIKey()
+
+    await this.prismaService.workspaceAccount.update({
+      where: {
+        userId_workspaceId: {
+          userId: requester.getUserID(),
+          workspaceId,
+        },
+      },
+      data: {
+        apiKey,
+      },
+    })
+
+    return apiKey
   }
 
   async createWorkspaceServiceAccount({

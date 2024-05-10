@@ -12,16 +12,15 @@ interface ExternalLinkProps extends Pick<CSSProperties, 'fontSize'> {
   title: string
   icon?: boolean
   children: string
-  target?: '_blank'
 }
 
 const styles = {
   display: 'inline-flex',
   flexDirection: 'row',
+  alignItems: 'flex-end',
   gap: '$space40',
   color: '$blue900',
   fontWeight: 500,
-  fontSize: '$size100',
   lineHeight: '$lineHeight200',
   transition: 'all 0.2s ease-in-out',
   '& path': {
@@ -33,7 +32,7 @@ const styles = {
 } as const
 
 const IconContainer = styled('span', {
-  transform: 'translateY(2px)',
+  transform: 'translateY(3px)',
 })
 
 const ExternalContainer = styled('a', styles)
@@ -41,13 +40,12 @@ const ExternalContainer = styled('a', styles)
 export const ExternalLink: FC<ExternalLinkProps> = ({
   href,
   title,
-  target,
   icon = true,
   children,
   ...props
 }) => {
   return (
-    <ExternalContainer href={href} title={title} target={target} css={props}>
+    <ExternalContainer href={href} title={title} target="_blank" css={props}>
       {icon && (
         <IconContainer>
           <Icon src="open_in_new" size={16} color="$blue900" />

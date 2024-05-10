@@ -286,7 +286,6 @@ export const SignIn: FC = () => {
                 <ExternalLink
                   title="Terms of use"
                   fontSize="$size80"
-                  target="_blank"
                   icon={false}
                   href="https://recontent.app/terms"
                 >
@@ -296,7 +295,6 @@ export const SignIn: FC = () => {
                 <ExternalLink
                   title="Privacy policy"
                   fontSize="$size80"
-                  target="_blank"
                   icon={false}
                   href="https://recontent.app/privacy"
                 >

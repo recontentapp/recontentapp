@@ -296,6 +296,33 @@ paths:
       responses:
         '201':
           description: OK
+  /GenerateUserWorkspaceAccountAPIKey:
+    post:
+      operationId: generateUserWorkspaceAccountAPIKey
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                workspaceId:
+                  type: string
+              additionalProperties: false
+              required:
+                - workspaceId
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  apiKey:
+                    type: string
+                additionalProperties: false
+                required:
+                  - apiKey
   /ListWorkspaceInvitations:
     get:
       operationId: listWorkspaceInvitations
@@ -1788,11 +1815,14 @@ components:
               - id
               - role
               - workspace
+              - hasAPIKey
             properties:
               id:
                 type: string
               role:
                 $ref: '#/components/schemas/WorkspaceAccountRole'
+              hasAPIKey:
+                type: boolean
               workspace:
                 $ref: '#/components/schemas/Workspace'
       additionalProperties: false

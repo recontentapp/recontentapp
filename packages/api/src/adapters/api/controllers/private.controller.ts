@@ -69,6 +69,7 @@ import {
   CreateWorkspaceDto,
   CreateWorkspaceServiceAccountDto,
   DeleteWorkspaceServiceAccountDto,
+  GenerateUserWorkspaceAccountAPIKeyDto,
   InviteToWorkspaceDto,
   JoinWorkspaceDto,
 } from '../dto/private/workspace.dto'
@@ -214,6 +215,7 @@ export class PrivateApiController {
       accounts: user.accounts.map(account => ({
         id: account.id,
         role: account.role,
+        hasAPIKey: !!account.apiKey,
         workspace: PrivateApiController.formatWorkspace(account.workspace),
       })),
     }
@@ -550,6 +552,22 @@ export class PrivateApiController {
   ): Promise<Paths.JoinWorkspace.Responses.$201> {
     await this.workspaceService.joinWorkspace({ invitationCode, requester })
     return {}
+  }
+
+  @Post('/GenerateUserWorkspaceAccountAPIKey')
+  async generateUserWorkspaceAccountAPIKey(
+    @AuthenticatedRequester() requester: Requester,
+    @Body() { workspaceId }: GenerateUserWorkspaceAccountAPIKeyDto,
+  ): Promise<Paths.GenerateUserWorkspaceAccountAPIKey.Responses.$201> {
+    const apiKey =
+      await this.workspaceService.generateUserWorkspaceAccountAPIKey({
+        workspaceId,
+        requester,
+      })
+
+    return {
+      apiKey,
+    }
   }
 
   @Get('/ListWorkspaceInvitations')

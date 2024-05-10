@@ -44,6 +44,12 @@ export class JoinWorkspaceDto {
   invitationCode: string
 }
 
+export class GenerateUserWorkspaceAccountAPIKeyDto {
+  @IsString()
+  @IsNotEmpty()
+  workspaceId: string
+}
+
 export class CreateWorkspaceServiceAccountDto {
   @IsString()
   @IsNotEmpty()

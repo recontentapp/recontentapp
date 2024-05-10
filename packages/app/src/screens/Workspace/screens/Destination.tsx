@@ -307,7 +307,7 @@ export const Destination: FC = () => {
                 <Stack renderAs="ul" direction="column" spacing="$space60">
                   {destination.configCDN.urls.map(url => (
                     <li key={url}>
-                      <ExternalLink title={url} href={url} target="_blank">
+                      <ExternalLink title={url} href={url}>
                         {url}
                       </ExternalLink>
                     </li>
