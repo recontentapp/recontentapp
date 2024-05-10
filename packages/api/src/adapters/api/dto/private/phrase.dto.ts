@@ -8,9 +8,9 @@ import {
   Validate,
   ValidateNested,
 } from 'class-validator'
-import { FileFormatValidator } from './domain.dto'
 import { Components } from 'src/generated/typeDefinitions'
 import { IsNullable } from 'src/utils/class-validator'
+import { FileFormatValidator } from './domain.dto'
 
 export class CreatePhraseDto {
   @IsString()

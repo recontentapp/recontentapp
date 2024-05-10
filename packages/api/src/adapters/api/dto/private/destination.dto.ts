@@ -5,8 +5,8 @@ import {
   IsString,
   Validate,
 } from 'class-validator'
-import { FileFormatValidator } from './domain.dto'
 import { Components } from 'src/generated/typeDefinitions'
+import { FileFormatValidator } from './domain.dto'
 
 export class CreateCDNDestinationDto {
   @IsString()

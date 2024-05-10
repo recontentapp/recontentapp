@@ -21,20 +21,6 @@ import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard'
 import { Public } from 'src/utils/is-public.decorator'
 import { Throttle } from '@nestjs/throttler'
 import { PrismaService } from 'src/utils/prisma.service'
-import {
-  ConfirmSignUpDto,
-  LoginDto,
-  SignUpDto,
-  UpdateCurrentUserDto,
-} from './dto/authentication.dto'
-import {
-  AddLanguagesToWorkspaceDto,
-  CreateWorkspaceDto,
-  CreateWorkspaceServiceAccountDto,
-  DeleteWorkspaceServiceAccountDto,
-  InviteToWorkspaceDto,
-  JoinWorkspaceDto,
-} from './dto/workspace.dto'
 import { WorkspaceService } from 'src/modules/workspace/workspace.service'
 import {
   Destination,
@@ -52,14 +38,46 @@ import {
   WorkspaceAccount,
 } from '@prisma/client'
 import { Pagination, PaginationParams } from 'src/utils/pagination'
+import { ProjectService } from 'src/modules/project/project.service'
+import { PhraseService } from 'src/modules/phrase/phrase.service'
+import { RequiredQuery } from 'src/utils/required-query'
+import { FileInterceptor } from '@nestjs/platform-express'
+import { ConfigService } from '@nestjs/config'
+import { Config } from 'src/utils/config'
+import { DestinationService } from 'src/modules/phrase/destination.service'
+import { TranslateService } from 'src/modules/phrase/translate.service'
+import { TagService } from 'src/modules/project/tag.service'
+import {
+  ApplyTagsToPhraseDto,
+  BatchApplyProjectTagDto,
+  CreateProjectTagDto,
+  DeleteProjectTagDto,
+  UpdateProjectTagDto,
+} from '../dto/private/tag.dto'
+import { AuthenticatedRequester } from 'src/modules/auth/requester.decorator'
+import { Requester } from 'src/modules/auth/requester.object'
+import { SettingsService } from 'src/modules/cloud/billing/settings.service'
+import { SubscriptionService } from 'src/modules/cloud/billing/subscription.service'
+import {
+  ConfirmSignUpDto,
+  LoginDto,
+  SignUpDto,
+  UpdateCurrentUserDto,
+} from '../dto/private/authentication.dto'
+import {
+  AddLanguagesToWorkspaceDto,
+  CreateWorkspaceDto,
+  CreateWorkspaceServiceAccountDto,
+  DeleteWorkspaceServiceAccountDto,
+  InviteToWorkspaceDto,
+  JoinWorkspaceDto,
+} from '../dto/private/workspace.dto'
 import {
   AddLanguagesToProjectDto,
   CreateProjectDto,
   DeleteProjectDto,
   UpdateProjectDto,
-} from './dto/project.dto'
-import { ProjectService } from 'src/modules/project/project.service'
-import { PhraseService } from 'src/modules/phrase/phrase.service'
+} from '../dto/private/project.dto'
 import {
   AutoTranslatePhraseDto,
   BatchDeletePhraseDto,
@@ -69,38 +87,20 @@ import {
   ImportPhrasesDto,
   TranslatePhraseDto,
   UpdatePhraseKeyDto,
-} from './dto/phrase.dto'
-import { RequiredQuery } from 'src/utils/required-query'
-import { FileInterceptor } from '@nestjs/platform-express'
-import { ConfigService } from '@nestjs/config'
-import { Config } from 'src/utils/config'
-import { DestinationService } from 'src/modules/phrase/destination.service'
+} from '../dto/private/phrase.dto'
 import {
   CreateAWSS3DestinationDto,
   CreateCDNDestinationDto,
   CreateGoogleCloudStorageDestinationDto,
   DeleteDestinationDto,
   SyncDestinationDto,
-} from './dto/destination.dto'
-import { TranslateService } from 'src/modules/phrase/translate.service'
-import { TagService } from 'src/modules/project/tag.service'
-import {
-  ApplyTagsToPhraseDto,
-  BatchApplyProjectTagDto,
-  CreateProjectTagDto,
-  DeleteProjectTagDto,
-  UpdateProjectTagDto,
-} from './dto/tag.dto'
-import { AuthenticatedRequester } from 'src/modules/auth/requester.decorator'
-import { Requester } from 'src/modules/auth/requester.object'
+} from '../dto/private/destination.dto'
 import {
   GenerateBillingPortalSessionDto,
   ResetBillingSubscriptionDto,
   SetupBillingSettingsDto,
   SubscribeToBillingPlanDto,
-} from './dto/billing.dto'
-import { SettingsService } from 'src/modules/cloud/billing/settings.service'
-import { SubscriptionService } from 'src/modules/cloud/billing/subscription.service'
+} from '../dto/private/billing.dto'
 
 @Controller('private')
 @UseGuards(JwtAuthGuard)

@@ -1,6 +1,6 @@
 import { IsEmail, IsNotEmpty, IsString, Validate } from 'class-validator'
-import { WorkspaceBillingPlanValidator } from './domain.dto'
 import { Components } from 'src/generated/typeDefinitions'
+import { WorkspaceBillingPlanValidator } from './domain.dto'
 
 export class SetupBillingSettingsDto {
   @IsString()
