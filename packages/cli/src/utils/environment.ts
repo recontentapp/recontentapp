@@ -1,7 +1,7 @@
 import { Command } from 'commander'
-import { getAPIClient } from '../generated/apiClient'
+import { HTTPRequestError, getAPIClient } from '../generated/apiClient'
 
-const DEFAULT_API_URL = 'https://api.recontent.app'
+const DEFAULT_API_URL = 'https://api.recontent.app/public-api'
 
 export const API_KEY_ENV = 'RECONTENT_API_KEY'
 export const API_URL_ENV = 'RECONTENT_API_URL'
@@ -20,8 +20,12 @@ export const getApiClient = (command: Command) => {
     headers: {
       Authorization: `Bearer ${apiKey}`,
     },
-    onError: () => {
-      command.error('API request failed.')
+    onError: error => {
+      if (error instanceof HTTPRequestError) {
+        command.error(`API request error: ${error.statusCode}`)
+      }
+
+      command.error(`Unknown API request error: ${String(error)}`)
     },
   })
 
