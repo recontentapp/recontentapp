@@ -199,6 +199,18 @@ export const getFileType = (
   const extension = nameParts[nameParts.length - 1]
 
   switch (extension) {
+    case 'yaml':
+    case 'yml':
+      return 'yaml'
+    case 'json':
+      return 'json'
+    case 'xls':
+    case 'xlsx':
+      return 'excel'
+    case 'csv':
+      return 'csv'
+    case 'xml':
+      return 'android_xml'
     case 'php':
       return 'php_arrays'
     case 'strings':

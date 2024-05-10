@@ -166,7 +166,7 @@ export const ImportFromFile = () => {
             project={project}
             canMoveToNextStep={canBeSubmitted}
             onSubmit={onFormNext}
-            isLoading={false}
+            isLoading={isImporting}
           />
         )}
 
@@ -175,7 +175,7 @@ export const ImportFromFile = () => {
             state={state}
             updateState={setState}
             onSubmit={onSubmit}
-            isLoading={false}
+            isLoading={isImporting}
           />
         )}
       </Page>
