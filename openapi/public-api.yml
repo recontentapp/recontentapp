@@ -2,6 +2,11 @@ openapi: 3.0.3
 info:
   title: Public API
   version: 1.0.0
+servers:
+  - url: '{server}/public-api'
+    variables:
+      server:
+        default: 'https://api.recontent.app'
 paths:
   /workspaces/me:
     get:
@@ -412,3 +417,9 @@ components:
         - translations
         - createdAt
         - updatedAt
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+security:
+  - BearerAuth: []
