@@ -14,12 +14,12 @@ import {
   getListPhrasesQueryKey,
   useDeletePhrase,
   useGetProject,
-  useListPhrases,
   useListWorkspaceLanguages,
 } from '../../../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
 import { useQueryClient } from '@tanstack/react-query'
 import routes from '../../../../../routing'
+import { useInfiniteListPhrases } from '../hooks'
 
 export const Phrases: FC = () => {
   const queryClient = useQueryClient()
@@ -48,14 +48,12 @@ export const Phrases: FC = () => {
 
   const revisionId = params.revisionId!
 
-  const { data } = useListPhrases({
-    queryParams: {
-      revisionId,
-      key: state.key,
-      translated: state.translated,
-      untranslated: state.untranslated,
-      tags: state.containsTags.length > 0 ? state.containsTags : undefined,
-    },
+  const { data, fetchNextPage, hasNextPage } = useInfiniteListPhrases({
+    revisionId,
+    key: state.key,
+    translated: state.translated,
+    untranslated: state.untranslated,
+    tags: state.containsTags.length > 0 ? state.containsTags : undefined,
   })
 
   const phrasesQueryKey = useMemo(
@@ -78,7 +76,10 @@ export const Phrases: FC = () => {
     ],
   )
 
-  const phrases = useMemo(() => data?.items ?? [], [data])
+  const phrases = useMemo(
+    () => data?.pages.map(page => page.items).flat() ?? [],
+    [data],
+  )
 
   const { data: project } = useGetProject({
     queryParams: {
@@ -147,7 +148,7 @@ export const Phrases: FC = () => {
           <PhrasesTable
             project={project}
             phrases={phrases}
-            phrasesTotalCount={data?.pagination.itemsCount ?? 0}
+            phrasesTotalCount={data?.pages.at(0)?.pagination.itemsCount ?? 0}
             initialKey={state.key}
             setState={setState}
             translated={state.translated}
@@ -164,7 +165,7 @@ export const Phrases: FC = () => {
               setEditingPhraseIndex(undefined)
               deletePhrase({ body: { phraseId } })
             }}
-            onLoadMore={undefined}
+            onLoadMore={hasNextPage ? fetchNextPage : undefined}
             onRequestAdd={() => openCreatePhrase(project, revisionId)}
           />
         </Suspense>

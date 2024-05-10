@@ -130,9 +130,14 @@ export const TagsCell: FC<TagsCellProps> = ({
   const [isVisible, setIsVisible] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null!)
   const popoverRef = useRef<HTMLDivElement>(null!)
-  const { data } = useListProjectTags({
-    queryParams: { projectId: params.projectId! },
-  })
+  const { data } = useListProjectTags(
+    {
+      queryParams: { projectId: params.projectId! },
+    },
+    {
+      staleTime: Infinity,
+    },
+  )
   const { get } = useReferenceableTags(params.projectId!)
 
   const onRequestEdit = () => {
