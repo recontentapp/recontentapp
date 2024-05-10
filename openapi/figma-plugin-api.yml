@@ -1,11 +1,11 @@
 openapi: 3.0.3
 info:
-  title: Private API
+  title: Figma plugin API
   version: 1.0.0
 paths:
-  /hello-world:
+  /Ping:
     get:
-      summary: Hello World
+      operationId: getPing
       responses:
         '200':
           description: OK
@@ -14,6 +14,8 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
+                  name:
                     type: string
-                    example: 'Hello, World!'
+                additionalProperties: false
+                required:
+                  - name

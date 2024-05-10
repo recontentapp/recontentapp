@@ -1,5 +1,10 @@
 import { Request } from 'express'
-import { HumanRequester, Requester, ServiceRequester } from './requester.object'
+import {
+  HumanRequester,
+  Requester,
+  ScopedHumanRequester,
+  ServiceRequester,
+} from './requester.object'
 import { RequestUser } from './types'
 
 export const getRequesterOrNull = (req: Request): Requester | null => {
@@ -11,6 +16,10 @@ export const getRequesterOrNull = (req: Request): Requester | null => {
 
   if (user.type === 'service') {
     return new ServiceRequester(user)
+  }
+
+  if (user.type === 'scoped-human') {
+    return new ScopedHumanRequester(user)
   }
 
   return new HumanRequester(user)

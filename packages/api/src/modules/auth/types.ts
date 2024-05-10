@@ -10,6 +10,16 @@ export interface TokenContent {
   userId: string
 }
 
+export type ScopedHumanRequestUser = {
+  type: 'scoped-human'
+  account: PrismaWorkspaceAccount & {
+    user: PrismaUser | null
+    workspace: PrismaWorkspace & {
+      billingSettings: PrismaWorkspaceBillingSettings | null
+    }
+  }
+}
+
 export type HumanRequestUser = {
   type: 'human'
   user: PrismaUser & {
@@ -33,4 +43,7 @@ export type ServiceRequestUser = {
   }
 }
 
-export type RequestUser = HumanRequestUser | ServiceRequestUser
+export type RequestUser =
+  | HumanRequestUser
+  | ScopedHumanRequestUser
+  | ServiceRequestUser
