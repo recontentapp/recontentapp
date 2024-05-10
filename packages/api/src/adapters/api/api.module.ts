@@ -47,11 +47,7 @@ import { BillingModule } from 'src/modules/cloud/billing/billing.module'
       ? [
           ServeStaticModule.forRoot({
             rootPath: join(__dirname, '..', '..', '..', '..', 'app', 'dist'),
-            exclude: [
-              '/private-api/(.*)',
-              '/public-api/(.*)',
-              '/webhooks/(.*)',
-            ],
+            exclude: ['/private/(.*)', '/public/(.*)', '/webhooks/(.*)'],
           }),
         ]
       : []),
@@ -77,9 +73,7 @@ export class ApiModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(RequestIdMiddleware)
-      .forRoutes('private-api', 'public-api', 'webhooks')
-    consumer
-      .apply(LoggerMiddleware)
-      .forRoutes('private-api', 'public-api', 'webhooks')
+      .forRoutes('private', 'public', 'webhooks')
+    consumer.apply(LoggerMiddleware).forRoutes('private', 'public', 'webhooks')
   }
 }

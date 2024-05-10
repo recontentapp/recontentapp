@@ -3,7 +3,7 @@ info:
   title: Public API
   version: 1.0.0
 servers:
-  - url: '{server}/public-api'
+  - url: '{server}/public'
     variables:
       server:
         default: 'https://api.recontent.app'

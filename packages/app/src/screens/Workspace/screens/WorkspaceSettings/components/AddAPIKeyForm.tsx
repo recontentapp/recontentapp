@@ -3,6 +3,7 @@ import { FC, useState } from 'react'
 import {
   Box,
   Button,
+  Form,
   Stack,
   TextField,
   toast,
@@ -63,28 +64,30 @@ export const AddAPIKeyForm: FC<AddAPIKeyFormProps> = ({ onClose }) => {
 
   return (
     <Box paddingTop="$space60" paddingBottom="$space60">
-      <Stack direction="row" alignItems="flex-start" spacing="$space60">
-        <TextField
-          hideLabel
-          label="Name"
-          placeholder="Local development"
-          autoFocus
-          value={name}
-          onChange={setName}
-        />
+      <Form onSubmit={onSubmit}>
+        <Stack direction="row" alignItems="flex-start" spacing="$space60">
+          <TextField
+            hideLabel
+            label="Name"
+            placeholder="Local development"
+            autoFocus
+            value={name}
+            onChange={setName}
+          />
 
-        <Button
-          variation="primary"
-          isDisabled={!canBeSubmitted}
-          onAction={onSubmit}
-        >
-          Add
-        </Button>
+          <Button
+            variation="primary"
+            isDisabled={!canBeSubmitted}
+            type="submit"
+          >
+            Add
+          </Button>
 
-        <Button variation="secondary" onAction={onClose}>
-          Close
-        </Button>
-      </Stack>
+          <Button variation="secondary" type="button" onAction={onClose}>
+            Close
+          </Button>
+        </Stack>
+      </Form>
     </Box>
   )
 }

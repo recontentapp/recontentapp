@@ -102,7 +102,7 @@ import {
 import { SettingsService } from 'src/modules/cloud/billing/settings.service'
 import { SubscriptionService } from 'src/modules/cloud/billing/subscription.service'
 
-@Controller('private-api')
+@Controller('private')
 @UseGuards(JwtAuthGuard)
 export class PrivateApiController {
   constructor(

@@ -27,7 +27,7 @@ import { Throttle } from '@nestjs/throttler'
 import { AuthenticatedRequester } from 'src/modules/auth/requester.decorator'
 import { Requester } from 'src/modules/auth/requester.object'
 
-@Controller('public-api')
+@Controller('public')
 @Throttle({ default: { limit: 10, ttl: 1000 } })
 @UseGuards(APIKeyGuard)
 export class PublicApiController {

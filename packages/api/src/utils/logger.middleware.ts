@@ -16,11 +16,11 @@ export class LoggerMiddleware implements NestMiddleware {
   }
 
   private resolveService(path: string) {
-    if (path.startsWith('/public-api')) {
+    if (path.startsWith('/public')) {
       return 'public-api'
     }
 
-    if (path.startsWith('/private-api')) {
+    if (path.startsWith('/private')) {
       return 'private-api'
     }
 

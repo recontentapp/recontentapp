@@ -70,7 +70,7 @@ describe('private-api', () => {
 
     const uncovered: Route[] = []
     Object.keys(openAPIFile.paths).forEach(path => {
-      const prefixedPath = `/private-api${path}`
+      const prefixedPath = `/private${path}`
       const methods = Object.keys(openAPIFile.paths[path])
 
       const covered = methods.every(method => {
@@ -108,7 +108,7 @@ describe('public-api', () => {
 
     const uncovered: Route[] = []
     Object.keys(openAPIFile.paths).forEach(path => {
-      const prefixedPath = `/public-api${path}`
+      const prefixedPath = `/public${path}`
       const methods = Object.keys(openAPIFile.paths[path])
 
       const covered = methods.every(method => {

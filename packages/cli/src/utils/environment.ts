@@ -1,7 +1,7 @@
 import { Command } from 'commander'
 import { HTTPRequestError, getAPIClient } from '../generated/apiClient'
 
-const DEFAULT_API_URL = 'https://api.recontent.app/public-api'
+const DEFAULT_API_URL = 'https://api.recontent.app/public'
 
 export const API_KEY_ENV = 'RECONTENT_API_KEY'
 export const API_URL_ENV = 'RECONTENT_API_URL'

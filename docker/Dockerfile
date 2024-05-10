@@ -23,7 +23,7 @@ FROM node:20-alpine As build
 
 WORKDIR /usr/src/app
 
-ENV VITE_APP_API_URL /private-api
+ENV VITE_APP_API_URL /private
 
 COPY --chown=node:node package.json yarn.lock ./
 
