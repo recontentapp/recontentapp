@@ -3,9 +3,9 @@ info:
   title: Figma plugin API
   version: 1.0.0
 paths:
-  /Ping:
+  /me:
     get:
-      operationId: getPing
+      operationId: getMe
       responses:
         '200':
           description: OK
@@ -14,8 +14,437 @@ paths:
               schema:
                 type: object
                 properties:
-                  name:
+                  id:
+                    type: string
+                  firstName:
+                    type: string
+                  lastName:
                     type: string
                 additionalProperties: false
                 required:
-                  - name
+                  - id
+                  - firstName
+                  - lastName
+  /languages:
+    get:
+      operationId: listLanguages
+      parameters:
+        - name: projectId
+          in: query
+          description: Project ID
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of languages
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Language'
+                additionalProperties: false
+                required:
+                  - pagination
+                  - items
+  /projects:
+    get:
+      operationId: listProjects
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of projects
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Project'
+                additionalProperties: false
+                required:
+                  - pagination
+                  - items
+  /figma-files:
+    post:
+      operationId: createFigmaFile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                revisionId:
+                  type: string
+                languageId:
+                  type: string
+                url:
+                  type: string
+                name:
+                  type: string
+              additionalProperties: false
+              required:
+                - revisionId
+                - languageId
+                - url
+                - name
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FigmaFile'
+  '/figma-files/{id}':
+    get:
+      operationId: getFigmaFile
+      parameters:
+        - name: id
+          in: path
+          description: Figma file ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FigmaFile'
+    delete:
+      operationId: deleteFigmaFile
+      parameters:
+        - name: id
+          in: path
+          description: Figma file ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No content
+  '/figma-files/{id}/available-phrases':
+    get:
+      operationId: listFigmaFileAvailablePhrases
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of phrases
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AvailablePhrase'
+                additionalProperties: false
+                required:
+                  - items
+  '/figma-files/{id}/texts':
+    get:
+      operationId: listFigmaTexts
+      parameters:
+        - name: id
+          in: path
+          description: Figma file ID
+          required: true
+          schema:
+            type: string
+        - name: pageNodeId
+          in: query
+          description: Page node ID
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  texts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FigmaText'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                additionalProperties: false
+                required:
+                  - texts
+                  - pagination
+    post:
+      operationId: createFigmaText
+      parameters:
+        - name: id
+          in: path
+          description: Figma file ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    oneOf:
+                      - $ref: '#/components/schemas/CreateFigmaTextAndCreatePhrase'
+                      - $ref: '#/components/schemas/CreateFigmaTextAndConnectPhrase'
+              additionalProperties: false
+              required:
+                - items
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FigmaText'
+components:
+  schemas:
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        pagesCount:
+          type: integer
+        itemsCount:
+          type: integer
+      additionalProperties: false
+      required:
+        - page
+        - pageSize
+        - pagesCount
+        - itemsCount
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+        workspaceId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        masterRevisionId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      additionalProperties: false
+      required:
+        - id
+        - workspaceId
+        - masterRevisionId
+        - name
+        - description
+        - createdAt
+        - updatedAt
+    Language:
+      type: object
+      properties:
+        id:
+          type: string
+        workspaceId:
+          type: string
+        locale:
+          type: string
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      additionalProperties: false
+      required:
+        - id
+        - workspaceId
+        - locale
+        - name
+        - createdAt
+        - updatedAt
+    AvailablePhrase:
+      type: object
+      properties:
+        id:
+          type: string
+        key:
+          type: string
+        content:
+          nullable: true
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      additionalProperties: false
+      required:
+        - id
+        - key
+        - content
+        - createdAt
+        - updatedAt
+    FigmaFile:
+      type: object
+      properties:
+        id:
+          type: string
+        workspaceId:
+          type: string
+        revisionId:
+          type: string
+        languageId:
+          type: string
+        key:
+          type: string
+        url:
+          type: string
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      additionalProperties: false
+      required:
+        - id
+        - workspaceId
+        - revisionId
+        - languageId
+        - key
+        - url
+        - name
+        - createdAt
+        - updatedAt
+    FigmaText:
+      type: object
+      properties:
+        id:
+          type: string
+        fileId:
+          type: string
+        workspaceId:
+          type: string
+        phraseId:
+          type: string
+        phraseKey:
+          type: string
+        textNodeId:
+          type: string
+        pageNodeId:
+          type: string
+        content:
+          nullable: true
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      additionalProperties: false
+      required:
+        - id
+        - fileId
+        - workspaceId
+        - phraseId
+        - phraseKey
+        - textNodeId
+        - pageNodeId
+        - content
+        - createdAt
+        - updatedAt
+    CreateFigmaTextAndCreatePhrase:
+      type: object
+      properties:
+        phraseKey:
+          type: string
+          nullable: true
+        content:
+          type: string
+        textNodeId:
+          type: string
+        pageNodeId:
+          type: string
+      additionalProperties: false
+      required:
+        - phraseKey
+        - textNodeId
+        - pageNodeId
+        - content
+    CreateFigmaTextAndConnectPhrase:
+      type: object
+      properties:
+        phraseId:
+          type: string
+        textNodeId:
+          type: string
+        pageNodeId:
+          type: string
+      additionalProperties: false
+      required:
+        - phraseId
+        - textNodeId
+        - pageNodeId
