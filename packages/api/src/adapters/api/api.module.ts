@@ -17,8 +17,9 @@ import { NotificationsModule } from 'src/modules/notifications/notifications.mod
 import { WorkspaceModule } from 'src/modules/workspace/workspace.module'
 import { ProjectModule } from 'src/modules/project/project.module'
 import { PhraseModule } from 'src/modules/phrase/phrase.module'
-import getConfig from 'src/utils/config'
+import { FigmaModule } from 'src/modules/figma/figma.module'
 import { BillingModule } from 'src/modules/cloud/billing/billing.module'
+import getConfig from 'src/utils/config'
 
 import { PrivateApiController } from './controllers/private.controller'
 import { PublicApiController } from './controllers/public.controller'
@@ -63,6 +64,7 @@ import { FigmaPluginController } from './controllers/figma-plugin.controller'
     ProjectModule,
     PhraseModule,
     BillingModule,
+    FigmaModule,
   ],
   controllers: [
     PrivateApiController,

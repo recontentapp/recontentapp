@@ -32,7 +32,7 @@ paths:
         - name: projectId
           in: query
           description: Project ID
-          required: false
+          required: true
           schema:
             type: string
         - name: page
@@ -178,7 +178,7 @@ paths:
                   - items
   '/figma-files/{id}/texts':
     get:
-      operationId: listFigmaTexts
+      operationId: listFigmaFileTexts
       parameters:
         - name: id
           in: path
@@ -206,7 +206,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  texts:
+                  items:
                     type: array
                     items:
                       $ref: '#/components/schemas/FigmaText'
@@ -214,10 +214,10 @@ paths:
                     $ref: '#/components/schemas/Pagination'
                 additionalProperties: false
                 required:
-                  - texts
+                  - items
                   - pagination
     post:
-      operationId: createFigmaText
+      operationId: createFigmaFileText
       parameters:
         - name: id
           in: path
@@ -247,7 +247,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FigmaText'
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FigmaText'
+                additionalProperties: false
+                required:
+                  - items
 components:
   schemas:
     Pagination:

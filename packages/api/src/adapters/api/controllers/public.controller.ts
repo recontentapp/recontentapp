@@ -104,7 +104,6 @@ export class PublicApiController {
     return {
       id: project.id,
       workspaceId: project.workspaceId,
-      // TODO: How to enforce presence?
       masterRevisionId: project.revisions.find(r => r.isMaster)?.id ?? '',
       name: project.name,
       description: project.description,

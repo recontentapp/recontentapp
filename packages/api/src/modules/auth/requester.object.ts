@@ -16,7 +16,7 @@ export interface Requester {
   getDefaultWorkspaceID: () => string
   getLoggingAttributes: () => Record<string, string>
   getWorkspaceAccessOrThrow: (workspaceId: string) => WorkspaceAccess
-  getUserName: () => string
+  getUserDetails: () => { firstName: string; lastName: string }
   getUserID: () => string
   getUserEmail: () => string
 }
@@ -150,8 +150,11 @@ export class HumanRequester implements Requester {
     }
   }
 
-  getUserName() {
-    return `${this.requestUser.user.firstName} ${this.requestUser.user.lastName}`
+  getUserDetails() {
+    return {
+      firstName: this.requestUser.user.firstName,
+      lastName: this.requestUser.user.lastName,
+    }
   }
 
   getUserID() {
@@ -208,8 +211,11 @@ export class ScopedHumanRequester implements Requester {
     return this.requestUser.account.user!.id
   }
 
-  getUserName() {
-    return `${this.requestUser.account.user!.firstName} ${this.requestUser.account.user!.lastName}`
+  getUserDetails() {
+    return {
+      firstName: this.requestUser.account.user!.firstName,
+      lastName: this.requestUser.account.user!.lastName,
+    }
   }
 
   getUserEmail() {
@@ -254,10 +260,13 @@ export class ServiceRequester implements Requester {
     return ''
   }
 
-  getUserName() {
+  getUserDetails() {
     throw new BadRequestException('Service account do not have user name')
 
-    return ''
+    return {
+      firstName: '',
+      lastName: '',
+    }
   }
 
   getUserEmail() {
