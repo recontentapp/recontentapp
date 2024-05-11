@@ -16,7 +16,7 @@ export function OneOf(
 ): PropertyDecorator {
   return function (target: object, propertyName: PropertyKey) {
     registerDecorator({
-      name: 'wrongType',
+      name: 'OneOf',
       target: target.constructor,
       propertyName: propertyName.toString(),
       options: {},
