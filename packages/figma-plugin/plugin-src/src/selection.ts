@@ -1,4 +1,4 @@
-import { TEXT_ID_KEY } from './storage'
+const TEXT_ID_KEY = 'id'
 
 /**
  * Returns directly selected text nodes

@@ -1,58 +1,53 @@
-import { useContext, Screen } from './context'
-import { Main } from './screens/Main'
-import { Onboarding } from './screens/Onboarding'
-import { Settings } from './screens/Settings'
-import { Setup } from './screens/Setup'
-import { Tabs } from 'figma-ui-kit'
+import { useContext } from './context'
+import { Credentials } from './screens/Credentials/Credentials'
 import { APIClientProvider } from './generated/reactQuery'
-import { HTTPRequestError } from './generated/apiClient'
+import { useMemo, useState } from 'react'
+import { Welcome } from './screens/Welcome'
 
-const AuthenticatedApp = () => {
-  const { screen, id, updateScreen } = useContext()
-
-  if (!id) {
-    return <Setup />
-  }
-
+const AuthenticatedAppWrapper = () => {
   return (
-    <Tabs<Screen>
-      value={screen}
-      onValueChange={value => {
-        updateScreen(value as Screen)
+    <APIClientProvider
+      config={{
+        baseUrl: '',
+        headers: {
+          Authorization: '',
+        },
       }}
-      options={[
-        { value: 'Inspect', children: <Main /> },
-        { value: 'Settings', children: <Settings /> },
-      ]}
-    />
+    >
+      <div />
+    </APIClientProvider>
   )
 }
 
 export const App = () => {
-  const { apiKey, resetAPIKey } = useContext()
+  const [acceptedWelcome, setAcceptedWelcome] = useState(false)
+  const { fileConfig, userConfig } = useContext()
 
-  if (!apiKey) {
-    return <Onboarding />
+  const hasCredentialsForFile = useMemo(() => {
+    if (!userConfig) {
+      return false
+    }
+
+    if (fileConfig) {
+      if (fileConfig.customOrigin) {
+        return userConfig.credentials.some(
+          c => c.customOrigin === fileConfig.customOrigin,
+        )
+      }
+
+      return userConfig.credentials.some(c => c.customOrigin === null)
+    }
+
+    return userConfig.credentials.length > 0
+  }, [fileConfig, userConfig])
+
+  if (!userConfig && !acceptedWelcome) {
+    return <Welcome onGetStarted={() => setAcceptedWelcome(true)} />
   }
 
-  return (
-    <APIClientProvider
-      config={{
-        baseUrl: import.meta.env.VITE_APP_API_URL,
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-        },
-        onError: error => {
-          if (
-            error instanceof HTTPRequestError &&
-            [401, 403].includes(error.statusCode)
-          ) {
-            resetAPIKey()
-          }
-        },
-      }}
-    >
-      <AuthenticatedApp />
-    </APIClientProvider>
-  )
+  if (!hasCredentialsForFile) {
+    return <Credentials />
+  }
+
+  return <AuthenticatedAppWrapper />
 }

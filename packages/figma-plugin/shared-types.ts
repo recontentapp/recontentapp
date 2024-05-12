@@ -1,0 +1,64 @@
+/**
+ * This file is shared between the Figma plugin and the Figma plugin UI.
+ */
+
+/**
+ * Recontent.app can be self-hosted
+ * users can provide custom origins
+ * to make API requests
+ */
+export type CustomOrigin = string | null
+
+export interface UserCredentials {
+  customOrigin: CustomOrigin
+  workspaceId: string
+  workspaceKey: string
+  apiKey: string
+}
+
+export interface UserConfig {
+  credentials: UserCredentials[]
+}
+
+export interface FileConfig {
+  id: string
+  workspaceId: string
+  workspaceKey: string
+  customOrigin: CustomOrigin
+}
+
+export interface Text {
+  figma: {
+    pageNodeId: string
+    nodeId: string
+    content: string
+  }
+  app: {
+    id: string
+    phraseId: string
+    phraseKey: string
+    content: string | null
+  } | null
+  appLastSyncedAt: string
+}
+
+export interface PluginInitialized {
+  type: 'plugin-initialized'
+  data: {
+    userConfig: UserConfig | null
+    fileConfig: FileConfig | null
+    fileName: string
+    selection: {
+      texts: Text[]
+      traversed: boolean
+    }
+  }
+}
+
+export interface FileConfigResetRequested {
+  type: 'file-config-reset-requested'
+}
+
+export interface UserConfigResetRequested {
+  type: 'user-config-reset-requested'
+}

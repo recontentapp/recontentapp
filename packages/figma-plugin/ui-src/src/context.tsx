@@ -1,90 +1,97 @@
-import React, {
+import {
   createContext,
-  FC,
   useCallback,
   useContext as useReactContext,
   useMemo,
   useState,
+  ReactNode,
 } from 'react'
 import { useEmit, useOn } from './io'
 import {
-  Emittable,
-  FigmaText,
-  Initialized,
-  Receivable,
-  TextsSelected,
-} from './types'
+  Text,
+  PluginInitialized,
+  UserConfig,
+  FileConfig,
+} from '../../shared-types'
+import { Emittable, Receivable } from './types'
 
 export type Screen = 'Inspect' | 'Settings'
+type State = Pick<
+  Context,
+  'screen' | 'fileConfig' | 'fileName' | 'userConfig' | 'selection'
+>
+
+const defaultState: State = {
+  screen: 'Inspect',
+  fileConfig: null,
+  fileName: '',
+  userConfig: null,
+  selection: {
+    texts: [],
+    traversed: false,
+  },
+}
 
 interface Context {
   screen: Screen
-  apiKey: string | null
-  id: string | null
-  name: string
-  traversed: boolean
-  selectedTexts: FigmaText[]
   updateScreen: (screen: Screen) => void
-  resetAPIKey: () => void
+  fileConfig: FileConfig | null
+  fileName: string
+  userConfig: UserConfig | null
+  selection: {
+    texts: Text[]
+    traversed: boolean
+  }
   emit: (data: Emittable) => void
 }
 
 const context = createContext<Context>({
-  screen: 'Inspect',
-  apiKey: null,
-  id: null,
-  name: '',
-  traversed: false,
-  selectedTexts: [],
+  ...defaultState,
   updateScreen: () => {},
   emit: () => {},
-  resetAPIKey: () => {},
 })
 
 export const useContext = () => useReactContext(context)
 
-export const ContextProvider: FC = ({ children }) => {
-  const [screen, updateScreen] = useState<Screen>('Inspect')
+interface ContextProviderProps {
+  children: ReactNode
+}
+
+export const ContextProvider = ({ children }: ContextProviderProps) => {
   const [isReady, setIsReady] = useState(false)
-  const [traversed, setTraversed] = useState(false)
-  const [id, setId] = useState<string | null>(null)
-  const [apiKey, setApiKey] = useState<string | null>(null)
-  const [name, setName] = useState<string>('')
-  const [selectedTexts, setSelectedTexts] = useState<FigmaText[]>([])
+  const [state, setState] = useState<State>(defaultState)
 
   const emit = useEmit<Emittable>()
   useOn<Receivable>({
-    initialized: (message: Initialized) => {
-      const { apiToken, id, selectedTexts, name, traversed } = message.data
-      setApiKey(apiToken)
-      setName(name)
-      setId(id)
-      setSelectedTexts(selectedTexts)
-      setTraversed(traversed)
+    'plugin-initialized': (message: PluginInitialized) => {
+      const { userConfig, fileConfig, fileName, selection } = message.data
+      setState({
+        screen: 'Inspect',
+        fileConfig,
+        fileName,
+        userConfig,
+        selection,
+      })
       setIsReady(true)
-    },
-    textsSelected: (message: TextsSelected) => {
-      setSelectedTexts(message.data.selectedTexts)
-      setTraversed(message.data.traversed)
     },
   })
 
-  const resetAPIKey = useCallback(() => setApiKey(null), [])
+  const updateScreen = useCallback(
+    (screen: Screen) =>
+      setState(state => ({
+        ...state,
+        screen,
+      })),
+    [],
+  )
 
-  const value = useMemo(
+  const value: Context = useMemo(
     () => ({
-      id,
+      ...state,
       emit,
-      apiKey,
-      traversed,
-      name,
-      screen,
-      selectedTexts,
       updateScreen,
-      isReady,
-      resetAPIKey,
     }),
-    [id, selectedTexts, name, traversed, apiKey, screen, emit, resetAPIKey],
+    [state, emit, updateScreen],
   )
 
   if (!isReady) {

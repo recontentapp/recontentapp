@@ -7,7 +7,7 @@
     "build:plugin": "esbuild plugin-src/index.ts --bundle --outfile=dist/index.js",
     "build:ui": "npx vite build --minify esbuild --emptyOutDir=false",
     "prebuild": "rm -rf ./dist && mkdir ./dist && cp -fr ./manifest.json ./dist/manifest.json",
-    "build": "yarn build:ui -m production && yarn build:plugin --minify",
+    "build": "yarn build:ui -m production && yarn build:plugin",
     "start": "mkdir -p dist && cp -fr ./manifest.json ./dist/manifest.json && concurrently -n plugin,ui \"yarn build:plugin --watch\" \"yarn build:ui -m development --watch\""
   },
   "dependencies": {
