@@ -3,6 +3,7 @@ import { Credentials } from './screens/Credentials/Credentials'
 import { APIClientProvider } from './generated/reactQuery'
 import { useMemo, useState } from 'react'
 import { Welcome } from './screens/Welcome'
+import { normalize } from './theme'
 
 const AuthenticatedAppWrapper = () => {
   return (
@@ -22,6 +23,7 @@ const AuthenticatedAppWrapper = () => {
 export const App = () => {
   const [acceptedWelcome, setAcceptedWelcome] = useState(false)
   const { fileConfig, userConfig } = useContext()
+  normalize()
 
   const hasCredentialsForFile = useMemo(() => {
     if (!userConfig) {

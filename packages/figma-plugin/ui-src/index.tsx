@@ -1,13 +1,14 @@
 import ReactDOM from 'react-dom'
+import { GlobalStyles, Toast } from 'design-system'
 import { App } from './src/App'
 import { ContextProvider } from './src/context'
 
-import 'figma-ui-kit/lib/css/theme.css'
-import 'figma-ui-kit/lib/css/base.css'
-import 'figma-ui-kit/lib/css/menu.module.css'
+import 'design-system/dist/styles.css'
 
 ReactDOM.render(
   <ContextProvider>
+    <GlobalStyles />
+    <Toast />
     <App />
   </ContextProvider>,
   document.getElementById('root'),

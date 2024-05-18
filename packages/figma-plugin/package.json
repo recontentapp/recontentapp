@@ -14,8 +14,9 @@
     "@stitches/react": "1.2.8",
     "diff": "5.1.0",
     "figma-ui-kit": "0.3.1",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
+    "design-system": "*",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
     "@tanstack/react-query": "5.28.14"
   },
   "devDependencies": {
