@@ -16,7 +16,11 @@ export const Icon: FC<IconProps> = ({ src, size, color }) => {
 
   return (
     <Box display="inline-flex">
-      <Component size={size} color={theme.colors[strippedColor].value} />
+      <Component
+        width={size}
+        height={size}
+        fill={theme.colors[strippedColor]}
+      />
     </Box>
   )
 }

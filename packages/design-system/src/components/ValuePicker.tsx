@@ -1,5 +1,5 @@
 import { useId } from '../hooks/ids'
-import { styled } from '../theme'
+import { styled } from '../stitches'
 import { Box } from './Box'
 
 interface Option<T> {

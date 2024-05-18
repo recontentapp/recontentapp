@@ -1,6 +1,5 @@
+import { FieldProps } from 'design-system'
 import { CSSProperties } from 'react'
-
-import { FieldProps } from '../primitives/fields/types'
 
 export interface PhraseEditorProps
   extends FieldProps,

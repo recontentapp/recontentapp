@@ -9,7 +9,7 @@ import {
   Stack,
   TextField,
   toast,
-} from '../../../../../components/primitives'
+} from 'design-system'
 
 export const Global = () => {
   const { firstName: initialFirstName, lastName: initialLastName } =

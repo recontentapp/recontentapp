@@ -8,7 +8,7 @@ import {
 } from 'react'
 
 import { useOutsideClick } from '../hooks/outsideClick'
-import { styled } from '../theme'
+import { styled } from '../stitches'
 import { MinimalButton } from './MinimalButton'
 import { Stack } from './Stack'
 import { Text } from './Text'

@@ -15,7 +15,8 @@ import {
 } from 'react'
 
 import { useId } from '../../hooks/ids'
-import { globalCss, keyframes, styled, theme } from '../../theme'
+import { globalCss, keyframes, styled } from '../../stitches'
+import { theme } from '../../theme'
 import { Icon } from '../Icon'
 import { Stack } from '../Stack'
 import { Label } from './components/Label'

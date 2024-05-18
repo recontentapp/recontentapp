@@ -10,8 +10,8 @@ export const getRandomHexColor = () => {
  * https://stackoverflow.com/questions/3942878/how-to-decide-font-color-in-white-or-black-depending-on-background-color
  */
 export const getColorBasedOnBackground = (bgColor: string) => {
-  const lightColor = theme.colors.gray1.value
-  const darkColor = theme.colors.gray14.value
+  const lightColor = theme.colors.gray1
+  const darkColor = theme.colors.gray14
 
   const color = bgColor.charAt(0) === '#' ? bgColor.substring(1, 7) : bgColor
 

@@ -1,9 +1,10 @@
 import { FC } from 'react'
 
-import { ColorValue, styled } from '../theme'
+import { ColorValue } from '../theme'
 import { Icon, IconName } from './Icon'
 import { Stack } from './Stack'
 import { Text } from './Text'
+import { styled } from '../stitches'
 
 type MinimalButtonVariation = 'minimal' | 'primary' | 'danger'
 

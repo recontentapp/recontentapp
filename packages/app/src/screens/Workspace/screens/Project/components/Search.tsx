@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { TextField } from '../../../../../components/primitives'
+import { TextField } from 'design-system'
 
 interface SearchProps {
   initialValue: string | undefined

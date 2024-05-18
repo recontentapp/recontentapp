@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { Stack } from '../../../../../components/primitives'
+import { Stack } from 'design-system'
 import { useModals } from '../../../hooks/modals'
 import { StepCard } from './StepCard'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'

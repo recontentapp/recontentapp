@@ -14,7 +14,7 @@ import {
   Text,
   TextField,
   toast,
-} from '../../../components/primitives'
+} from 'design-system'
 import { getAPIClient } from '../../../generated/apiClient'
 import routes from '../../../routing'
 

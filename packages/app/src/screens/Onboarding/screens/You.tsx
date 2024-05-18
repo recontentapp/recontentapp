@@ -10,7 +10,7 @@ import {
   Text,
   TextField,
   toast,
-} from '../../../components/primitives'
+} from 'design-system'
 import { useAuth, useCurrentUser } from '../../../auth'
 import { useUpdateCurrentUser } from '../../../generated/reactQuery'
 import routes from '../../../routing'

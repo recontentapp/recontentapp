@@ -1,8 +1,8 @@
 import { FC, useMemo } from 'react'
-import { Box, Heading, Stack, Text } from '../../../../../components/primitives'
-import { styled } from '../../../../../theme'
+import { Box, Heading, Stack, Text } from 'design-system'
 import { Components } from '../../../../../generated/typeDefinitions'
 import { DestinationBadge } from '../../../components/DestinationBadge'
+import { styled } from '../../../../../theme'
 
 export interface DestinationCardProps {
   destination: Components.Schemas.DestinationItem

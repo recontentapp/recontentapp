@@ -1,7 +1,6 @@
 import { Position, Tooltip as ReachTooltip } from '@reach/tooltip'
 import { FC, ReactElement } from 'react'
-
-import { globalCss } from '../theme'
+import { globalCss } from '../stitches'
 
 interface TooltipProps {
   position: 'top' | 'right' | 'bottom' | 'left'

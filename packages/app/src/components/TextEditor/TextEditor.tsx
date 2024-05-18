@@ -2,25 +2,15 @@ import { EditorContent, useEditor } from '@tiptap/react'
 import { forwardRef, useImperativeHandle } from 'react'
 
 import { useId } from '../../hooks/ids'
-import { Box, Icon, Label, Stack, Text as UIText, theme } from 'design-system'
-import { PhraseEditorProps, PhraseEditorRef } from './types'
-import { styled } from '../../theme'
-import { usePhraseExtensions } from '../../tiptap/hooks'
+import { styled, theme } from '../../theme'
+import { SelectionMenu } from './components/SelectionMenu'
+import { TextEditorProps, TextEditorRef } from './types'
+import { useExtensions } from '../../tiptap/hooks'
+import { findChildrenByType } from '../../tiptap/utils'
+import { Box, Icon, Label, Stack, Text as UIText } from 'design-system'
 
 const Container = styled('div', {
   variants: {
-    direction: {
-      rtl: {
-        '& .ProseMirror': {
-          direction: 'rtl',
-        },
-      },
-      ltr: {
-        '& .ProseMirror': {
-          direction: 'ltr',
-        },
-      },
-    },
     variation: {
       error: {
         '& .ProseMirror': {
@@ -89,17 +79,16 @@ const Container = styled('div', {
   },
 })
 
-const PhraseEditor = forwardRef<PhraseEditorRef, PhraseEditorProps>(
+const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(
   (
     {
       label,
       hideLabel = false,
       autoFocus = false,
-      direction = 'ltr',
       placeholder,
       onChange,
       onBlur,
-      initialValue,
+      value,
       error,
       info,
       id,
@@ -107,28 +96,26 @@ const PhraseEditor = forwardRef<PhraseEditorRef, PhraseEditorProps>(
       hint,
       isDisabled,
       isOptional,
-      width,
-      maxWidth,
+      ...props
     },
     ref,
   ) => {
     const ID = useId(id)
-    const extensions = usePhraseExtensions({ placeholder })
+    const extensions = useExtensions({ placeholder })
     const editor = useEditor(
       {
         autofocus: autoFocus,
-        // TODO: create custom parser/transformer
-        content: initialValue?.replaceAll('\n', '<br>'),
+        content: value,
         editable: !isDisabled,
         onBlur: ({ event }) => {
           onBlur?.(event)
         },
         onUpdate: ({ editor }) => {
-          onChange?.(editor.getText())
+          onChange?.(editor.getHTML())
         },
         extensions,
       },
-      [extensions, initialValue, isDisabled],
+      [extensions],
     )
 
     useImperativeHandle(ref, () => ({
@@ -139,15 +126,28 @@ const PhraseEditor = forwardRef<PhraseEditorRef, PhraseEditorProps>(
 
         editor.commands.clearContent(true)
       },
+      getValueWithMentionedAccounts: () => {
+        if (!editor) {
+          return {
+            value: '',
+            mentionedAccounts: [],
+          }
+        }
+
+        const nodes = findChildrenByType(editor.state.doc, 'mention', true)
+
+        return {
+          value: editor.getHTML(),
+          mentionedAccounts: nodes
+            .map(({ node }) => node.attrs.id)
+            .filter(Boolean),
+        }
+      },
     }))
 
     return (
-      <Container
-        variation={error ? 'error' : undefined}
-        direction={direction}
-        css={{ width, maxWidth }}
-      >
-        <Stack direction="column">
+      <Container variation={error ? 'error' : undefined}>
+        <Stack direction="column" {...props}>
           <Box marginBottom={hideLabel ? undefined : '$space60'}>
             <Label
               id={ID}
@@ -157,6 +157,8 @@ const PhraseEditor = forwardRef<PhraseEditorRef, PhraseEditorProps>(
               isOptional={isOptional}
             />
           </Box>
+
+          <SelectionMenu editor={editor} />
 
           <EditorContent
             editor={editor}
@@ -188,4 +190,4 @@ const PhraseEditor = forwardRef<PhraseEditorRef, PhraseEditorProps>(
   },
 )
 
-export default PhraseEditor
+export default TextEditor

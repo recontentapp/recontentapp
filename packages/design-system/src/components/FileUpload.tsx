@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react'
 import { Accept, useDropzone } from 'react-dropzone'
 
-import { styled } from '../theme'
+import { styled } from '../stitches'
 import { formatFileSize } from '../utils/files'
 import { Icon } from './Icon'
 import { MinimalButton } from './MinimalButton'

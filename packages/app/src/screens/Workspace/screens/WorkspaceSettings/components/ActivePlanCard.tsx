@@ -7,8 +7,7 @@ import {
   Heading,
   Stack,
   Text,
-} from '../../../../../components/primitives'
-import { styled } from '../../../../../theme'
+} from 'design-system'
 import { format, formatShort } from '../../../../../utils/dates'
 import { capitalizeFirstLetter } from '../../../../../utils/text'
 import { Paths } from '../../../../../generated/typeDefinitions'
@@ -22,6 +21,7 @@ import {
   useResetBillingSubscription,
 } from '../../../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
+import { styled } from '../../../../../theme'
 
 const Container = styled('div', {
   display: 'flex',

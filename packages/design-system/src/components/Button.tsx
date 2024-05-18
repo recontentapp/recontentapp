@@ -1,6 +1,6 @@
 import { FC, ReactNode } from 'react'
 
-import { styled } from '../theme'
+import { styled } from '../stitches'
 import { Box } from './Box'
 import { Icon, IconName } from './Icon'
 import { Spinner } from './Spinner'

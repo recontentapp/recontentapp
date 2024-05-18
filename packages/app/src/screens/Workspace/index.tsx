@@ -1,6 +1,5 @@
 import { Route, Routes } from 'react-router-dom'
 
-import { styled } from '../../theme'
 import { Redirect } from '../Redirect'
 import { KBar, KBarProvider } from './components/KBar'
 import { Sidebar } from './components/Sidebar'
@@ -28,6 +27,7 @@ import routes from '../../routing'
 import { useGetWorkspaceAbilities } from '../../generated/reactQuery'
 import { FullpageSpinner } from '../../components/FullpageSpinner'
 import { BillingBanner } from './components/BillingBanner'
+import { styled } from '../../theme'
 
 const MainContainer = styled('div', {
   height: '100vh',

@@ -4,8 +4,9 @@ import {
   LinkProps as ReactRouterLinkProps,
 } from 'react-router-dom'
 
-import { FontSizeValue, styled } from '../theme'
+import { FontSizeValue } from '../theme'
 import { Icon } from './Icon'
+import { styled } from '../stitches'
 
 interface ExternalLinkProps extends Pick<CSSProperties, 'fontSize'> {
   href: string

@@ -8,7 +8,7 @@ import {
   ExternalLink,
   Link,
   Heading,
-} from '../../../../../components/primitives'
+} from 'design-system'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
 import {
   ExportToFileModal,

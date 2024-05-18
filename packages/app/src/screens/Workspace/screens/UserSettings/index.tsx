@@ -1,7 +1,7 @@
 import { FC } from 'react'
 
 import { Head } from '../../../../components/Head'
-import { Stack } from '../../../../components/primitives'
+import { Stack } from 'design-system'
 import { Page } from '../../components/Page'
 import { ScreenWrapper } from '../../components/ScreenWrapper'
 import { useCurrentWorkspace } from '../../../../hooks/workspace'

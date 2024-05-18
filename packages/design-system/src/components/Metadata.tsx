@@ -1,6 +1,6 @@
 import { FC } from 'react'
 
-import { styled } from '../theme'
+import { styled } from '../stitches'
 import { Box } from './Box'
 import { Stack } from './Stack'
 import { Text } from './Text'

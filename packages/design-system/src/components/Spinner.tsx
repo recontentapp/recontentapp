@@ -1,6 +1,7 @@
 import { FC } from 'react'
 
-import { ColorValue, keyframes, styled } from '../theme'
+import { ColorValue } from '../theme'
+import { keyframes, styled } from '../stitches'
 
 const Container = styled('div', {
   display: 'inline-flex',

@@ -1,7 +1,7 @@
 import { FC, ReactNode } from 'react'
 import { Link, LinkProps, useMatch, useResolvedPath } from 'react-router-dom'
 
-import { Box, Heading, Stack, Text } from '../../../components/primitives'
+import { Box, Heading, Stack, Text } from 'design-system'
 import { styled } from '../../../theme'
 
 interface PageTab {

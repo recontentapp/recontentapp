@@ -14,8 +14,7 @@ import {
   Metadata,
   Stack,
   toast,
-} from '../../../components/primitives'
-import { styled } from '../../../theme'
+} from 'design-system'
 import { formatRelative } from '../../../utils/dates'
 import { Page } from '../components/Page'
 import { ScreenWrapper } from '../components/ScreenWrapper'
@@ -32,6 +31,7 @@ import routes from '../../../routing'
 import { destinationTypeLabels } from '../../../utils/destinations'
 import { fileFormatLabels } from '../../../utils/files'
 import { useQueryClient } from '@tanstack/react-query'
+import { styled } from '../../../theme'
 
 const ErrorMessage = styled('span', {
   display: 'inline-block',

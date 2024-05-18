@@ -15,7 +15,7 @@ import {
   useState,
 } from 'react'
 
-import { styled } from '../../theme'
+import { styled } from '../../stitches'
 import { Button } from '../Button'
 import { Checkbox } from '../Checkbox'
 import { Icon } from '../Icon'

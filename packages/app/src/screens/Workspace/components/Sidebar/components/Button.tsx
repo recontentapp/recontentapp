@@ -1,6 +1,6 @@
-import { Icon, Stack } from '../../../../../components/primitives'
-import { styled } from '../../../../../theme'
+import { Icon, Stack } from 'design-system'
 import { useKBarContext } from '../../KBar'
+import { styled } from '../../../../../theme'
 
 const Indication = styled('span', {
   fontSize: 10,

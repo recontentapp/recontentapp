@@ -7,7 +7,7 @@ import {
   Stack,
   TextField,
   toast,
-} from '../../../../../components/primitives'
+} from 'design-system'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
 import { useInviteToWorkspace } from '../../../../../generated/reactQuery'
 import { Components } from '../../../../../generated/typeDefinitions'

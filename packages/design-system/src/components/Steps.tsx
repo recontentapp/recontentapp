@@ -1,6 +1,6 @@
 import { FC, useMemo } from 'react'
 
-import { styled } from '../theme'
+import { styled } from '../stitches'
 import { Box } from './Box'
 import { Icon } from './Icon'
 import { Stack } from './Stack'

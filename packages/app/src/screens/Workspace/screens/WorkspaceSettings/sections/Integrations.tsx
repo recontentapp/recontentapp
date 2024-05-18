@@ -11,7 +11,7 @@ import {
   Heading,
   Stack,
   Table,
-} from '../../../../../components/primitives'
+} from 'design-system'
 import { formatRelative } from '../../../../../utils/dates'
 import { useReferenceableAccounts } from '../../../hooks/referenceable'
 import { AddAPIKeyForm } from '../components/AddAPIKeyForm'

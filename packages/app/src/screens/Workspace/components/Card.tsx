@@ -1,9 +1,9 @@
 import { FC } from 'react'
 import { Link } from 'react-router-dom'
 
-import { Avatar, Heading, Stack, Text } from '../../../components/primitives'
-import { styled } from '../../../theme'
+import { Avatar, Heading, Stack, Text } from 'design-system'
 import { formatRelative } from '../../../utils/dates'
+import { styled } from '../../../theme'
 
 interface CardProps {
   id: string

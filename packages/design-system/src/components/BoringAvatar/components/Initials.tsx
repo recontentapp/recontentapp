@@ -1,6 +1,6 @@
 import { FC } from 'react'
 
-import { styled } from '../../../theme'
+import { styled } from '../../../stitches'
 import { AvatarProps } from '../types'
 import { getNumber, getRandomColor } from '../utilities'
 

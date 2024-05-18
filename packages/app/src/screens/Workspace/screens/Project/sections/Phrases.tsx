@@ -2,7 +2,7 @@ import { FC, Suspense, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { HorizontalSpinner } from '../../../../../components/HorizontalSpinner'
-import { Banner, Box, Stack } from '../../../../../components/primitives'
+import { Banner, Box, Stack } from 'design-system'
 import { useURLState } from '../../../../../hooks/urlState'
 import { useModals } from '../../../hooks/modals'
 import { PhrasesTable } from '../components/PhrasesTable'

@@ -19,18 +19,18 @@ export const Toast = () => (
       position: 'top-center',
       style: {
         border: `1px solid ${theme.colors.gray7}`,
-        boxShadow: theme.shadows.shadow400.value,
+        boxShadow: theme.shadows.shadow400,
       },
       success: {
         iconTheme: {
-          primary: theme.colors.green100.value,
-          secondary: theme.colors.white.value,
+          primary: theme.colors.green100,
+          secondary: theme.colors.white,
         },
       },
       error: {
         iconTheme: {
-          primary: theme.colors.red100.value,
-          secondary: theme.colors.white.value,
+          primary: theme.colors.red100,
+          secondary: theme.colors.white,
         },
       },
     }}

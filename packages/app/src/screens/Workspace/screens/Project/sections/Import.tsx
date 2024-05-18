@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Stack } from '../../../../../components/primitives'
+import { Stack } from 'design-system'
 import { ImportCard } from '../components/ImportCard'
 import routes from '../../../../../routing'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'

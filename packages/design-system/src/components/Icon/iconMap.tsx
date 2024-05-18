@@ -1,92 +1,199 @@
-import {
-  MdAdd,
-  MdAddCircle,
-  MdAddCircleOutline,
-  MdMerge,
-  MdClose,
-  MdCloudUpload,
-  MdDelete,
-  MdDoneAll,
-  MdEdit,
-  MdOutlineFilterList,
-  MdHelp,
-  MdInfo,
-  MdOpenInFull,
-  MdKeyboardArrowDown,
-  MdKeyboardArrowUp,
-  MdOutlineMoreHoriz,
-  MdSettings,
-  MdOutlineSettings,
-  MdOutlineImportExport,
-  MdTranslate,
-  MdInsertDriveFile,
-  MdOpenInNew,
-  MdMenu,
-  MdOutlineKeyboardArrowLeft,
-  MdOutlineKeyboardArrowRight,
-  MdInbox,
-  MdLaunch,
-  MdFormatBold,
-  MdFormatItalic,
-  MdFormatStrikethrough,
-  MdLink,
-  MdStyle,
-  MdCheckCircle,
-  MdQuestionAnswer,
-  MdLocalOffer,
-  MdExitToApp,
-  MdChevronRight,
-  MdArrowRightAlt,
-  MdContentCopy,
-  MdTimeline,
-} from 'react-icons/md'
-import { BiLogoGoogleCloud, BiLogoAws, BiLogoGithub } from 'react-icons/bi'
-
+import { SVGProps } from 'react'
 import { IconName } from './types'
-import { IconType } from 'react-icons/lib'
 
-export const iconMap: Record<IconName, IconType> = {
-  google_cloud: BiLogoGoogleCloud,
-  aws: BiLogoAws,
-  github: BiLogoGithub,
-  add: MdAdd,
-  add_circle: MdAddCircle,
-  add_circle_outline: MdAddCircleOutline,
-  close: MdClose,
-  import_outlined: MdOutlineImportExport,
-  copy: MdContentCopy,
-  stats: MdTimeline,
-  delete: MdDelete,
-  edit: MdEdit,
-  filter: MdOutlineFilterList,
-  help: MdHelp,
-  info: MdInfo,
-  fullscreen: MdOpenInFull,
-  keyboard_arrow_down: MdKeyboardArrowDown,
-  keyboard_arrow_up: MdKeyboardArrowUp,
-  more: MdOutlineMoreHoriz,
-  settings: MdSettings,
-  settings_outlined: MdOutlineSettings,
-  merge: MdMerge,
-  translate: MdTranslate,
-  cloud_upload: MdCloudUpload,
-  file: MdInsertDriveFile,
-  arrow_right: MdArrowRightAlt,
-  open_in_new: MdOpenInNew,
-  menu: MdMenu,
-  keyboard_arrow_left: MdOutlineKeyboardArrowLeft,
-  keyboard_arrow_right: MdOutlineKeyboardArrowRight,
-  done_all: MdDoneAll,
-  inbox: MdInbox,
-  launch: MdLaunch,
-  format_bold: MdFormatBold,
-  format_italic: MdFormatItalic,
-  format_strikethrough: MdFormatStrikethrough,
-  link: MdLink,
-  style: MdStyle,
-  check_circle: MdCheckCircle,
-  question_answer: MdQuestionAnswer,
-  local_offer: MdLocalOffer,
-  exit_to_app: MdExitToApp,
-  chevron_right: MdChevronRight,
+type SVGComponent = (props: SVGProps<SVGSVGElement>) => JSX.Element
+
+/**
+ * To add a new icon:
+ * - Visit https://fonts.google.com/icons?selected=Material+Symbols+Outlined:rocket_launch:FILL@0;wght@400;GRAD@0;opsz@24&icon.query=launch&icon.size=24&icon.color=%23e8eaed
+ * - Click on the icon you want to add
+ * - Click on "Copy to clipboard" button
+ * - Paste the copied SVG code in the `iconMap` object below
+ */
+export const iconMap: Record<IconName, SVGComponent> = {
+  add_circle: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
+    </svg>
+  ),
+  exit_to_app: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="M200-120q-33 0-56.5-23.5T120-200v-160h80v160h560v-560H200v160h-80v-160q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm220-160-56-58 102-102H120v-80h346L364-622l56-58 200 200-200 200Z" />
+    </svg>
+  ),
+  chevron_right: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z" />
+    </svg>
+  ),
+  add: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
+    </svg>
+  ),
+  close: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" />
+    </svg>
+  ),
+  delete: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z" />
+    </svg>
+  ),
+  edit: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z" />
+    </svg>
+  ),
+  filter: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="M440-160q-17 0-28.5-11.5T400-200v-240L168-736q-15-20-4.5-42t36.5-22h560q26 0 36.5 22t-4.5 42L560-440v240q0 17-11.5 28.5T520-160h-80Zm40-308 198-252H282l198 252Zm0 0Z" />
+    </svg>
+  ),
+  help: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="M478-240q21 0 35.5-14.5T528-290q0-21-14.5-35.5T478-340q-21 0-35.5 14.5T428-290q0 21 14.5 35.5T478-240Zm-36-154h74q0-33 7.5-52t42.5-52q26-26 41-49.5t15-56.5q0-56-41-86t-97-30q-57 0-92.5 30T342-618l66 26q5-18 22.5-39t53.5-21q32 0 48 17.5t16 38.5q0 20-12 37.5T506-526q-44 39-54 59t-10 73Zm38 314q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" />
+    </svg>
+  ),
+  fullscreen: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="M120-120v-320h80v184l504-504H520v-80h320v320h-80v-184L256-200h184v80H120Z" />
+    </svg>
+  ),
+  info: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" />
+    </svg>
+  ),
+  copy: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z" />
+    </svg>
+  ),
+  stats: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="m140-220-60-60 300-300 160 160 284-320 56 56-340 384-160-160-240 240Z" />
+    </svg>
+  ),
+  keyboard_arrow_down: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z" />
+    </svg>
+  ),
+  keyboard_arrow_up: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="M480-528 296-344l-56-56 240-240 240 240-56 56-184-184Z" />
+    </svg>
+  ),
+  keyboard_arrow_left: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z" />
+    </svg>
+  ),
+  keyboard_arrow_right: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z" />
+    </svg>
+  ),
+  more: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="M240-400q-33 0-56.5-23.5T160-480q0-33 23.5-56.5T240-560q33 0 56.5 23.5T320-480q0 33-23.5 56.5T240-400Zm240 0q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm240 0q-33 0-56.5-23.5T640-480q0-33 23.5-56.5T720-560q33 0 56.5 23.5T800-480q0 33-23.5 56.5T720-400Z" />
+    </svg>
+  ),
+  settings: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="m370-80-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-103 78q1 7 1 13.5v27q0 6.5-2 13.5l103 78-110 190-118-50q-11 8-23 15t-24 12L590-80H370Zm70-80h79l14-106q31-8 57.5-23.5T639-327l99 41 39-68-86-65q5-14 7-29.5t2-31.5q0-16-2-31.5t-7-29.5l86-65-39-68-99 42q-22-23-48.5-38.5T533-694l-13-106h-79l-14 106q-31 8-57.5 23.5T321-633l-99-41-39 68 86 64q-5 15-7 30t-2 32q0 16 2 31t7 30l-86 65 39 68 99-42q22 23 48.5 38.5T427-266l13 106Zm42-180q58 0 99-41t41-99q0-58-41-99t-99-41q-59 0-99.5 41T342-480q0 58 40.5 99t99.5 41Zm-2-140Z" />
+    </svg>
+  ),
+  import_outlined: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="M440-160v-326L336-382l-56-58 200-200 200 200-56 58-104-104v326h-80ZM160-600v-120q0-33 23.5-56.5T240-800h480q33 0 56.5 23.5T800-720v120h-80v-120H240v120h-80Z" />
+    </svg>
+  ),
+  merge: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="m256-120-56-56 193-194q23-23 35-52t12-61v-204l-64 63-56-56 160-160 160 160-56 56-64-63v204q0 32 12 61t35 52l193 194-56 56-224-224-224 224Z" />
+    </svg>
+  ),
+  translate: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="m476-80 182-480h84L924-80h-84l-43-122H603L560-80h-84ZM160-200l-56-56 202-202q-35-35-63.5-80T190-640h84q20 39 40 68t48 58q33-33 68.5-92.5T484-720H40v-80h280v-80h80v80h280v80H564q-21 72-63 148t-83 116l96 98-30 82-122-125-202 201Zm468-72h144l-72-204-72 204Z" />
+    </svg>
+  ),
+  cloud_upload: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="M260-160q-91 0-155.5-63T40-377q0-78 47-139t123-78q25-92 100-149t170-57q117 0 198.5 81.5T760-520q69 8 114.5 59.5T920-340q0 75-52.5 127.5T740-160H520q-33 0-56.5-23.5T440-240v-206l-64 62-56-56 160-160 160 160-56 56-64-62v206h220q42 0 71-29t29-71q0-42-29-71t-71-29h-60v-80q0-83-58.5-141.5T480-720q-83 0-141.5 58.5T280-520h-20q-58 0-99 41t-41 99q0 58 41 99t99 41h100v80H260Zm220-280Z" />
+    </svg>
+  ),
+  file: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="M240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520ZM240-800v200-200 640-640Z" />
+    </svg>
+  ),
+  open_in_new: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z" />
+    </svg>
+  ),
+  menu: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z" />
+    </svg>
+  ),
+  done_all: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="M268-240 42-466l57-56 170 170 56 56-57 56Zm226 0L268-466l56-57 170 170 368-368 56 57-424 424Zm0-226-57-56 198-198 57 56-198 198Z" />
+    </svg>
+  ),
+  inbox: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-120H640q-30 38-71.5 59T480-240q-47 0-88.5-21T320-320H200v120Zm280-120q38 0 69-22t43-58h168v-360H200v360h168q12 36 43 58t69 22ZM200-200h560-560Z" />
+    </svg>
+  ),
+  format_bold: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="M272-200v-560h221q65 0 120 40t55 111q0 51-23 78.5T602-491q25 11 55.5 41t30.5 90q0 89-65 124.5T501-200H272Zm121-112h104q48 0 58.5-24.5T566-372q0-11-10.5-35.5T494-432H393v120Zm0-228h93q33 0 48-17t15-38q0-24-17-39t-44-15h-95v109Z" />
+    </svg>
+  ),
+  format_italic: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="M200-200v-100h160l120-360H320v-100h400v100H580L460-300h140v100H200Z" />
+    </svg>
+  ),
+  format_strikethrough: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="M80-400v-80h800v80H80Zm340-160v-120H200v-120h560v120H540v120H420Zm0 400v-160h120v160H420Z" />
+    </svg>
+  ),
+  link: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="M440-280H280q-83 0-141.5-58.5T80-480q0-83 58.5-141.5T280-680h160v80H280q-50 0-85 35t-35 85q0 50 35 85t85 35h160v80ZM320-440v-80h320v80H320Zm200 160v-80h160q50 0 85-35t35-85q0-50-35-85t-85-35H520v-80h160q83 0 141.5 58.5T880-480q0 83-58.5 141.5T680-280H520Z" />
+    </svg>
+  ),
+  style: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="m159-168-34-14q-31-13-41.5-45t3.5-63l72-156v278Zm160 88q-33 0-56.5-23.5T239-160v-240l106 294q3 7 6 13.5t8 12.5h-40Zm206-4q-32 12-62-3t-42-47L243-622q-12-32 2-62.5t46-41.5l302-110q32-12 62 3t42 47l178 488q12 32-2 62.5T827-194L525-84Zm-86-476q17 0 28.5-11.5T479-600q0-17-11.5-28.5T439-640q-17 0-28.5 11.5T399-600q0 17 11.5 28.5T439-560Zm58 400 302-110-178-490-302 110 178 490ZM319-650l302-110-302 110Z" />
+    </svg>
+  ),
+  check_circle: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="m424-296 282-282-56-56-226 226-114-114-56 56 170 170Zm56 216q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" />
+    </svg>
+  ),
+  question_answer: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="M560-360q17 0 29.5-12.5T602-402q0-17-12.5-29.5T560-444q-17 0-29.5 12.5T518-402q0 17 12.5 29.5T560-360Zm-30-128h60q0-29 6-42.5t28-35.5q30-30 40-48.5t10-43.5q0-45-31.5-73.5T560-760q-41 0-71.5 23T446-676l54 22q9-25 24.5-37.5T560-704q24 0 39 13.5t15 36.5q0 14-8 26.5T578-596q-33 29-40.5 45.5T530-488ZM320-240q-33 0-56.5-23.5T240-320v-480q0-33 23.5-56.5T320-880h480q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H320Zm0-80h480v-480H320v480ZM160-80q-33 0-56.5-23.5T80-160v-560h80v560h560v80H160Zm160-720v480-480Z" />
+    </svg>
+  ),
+  local_offer: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="M446-80q-15 0-30-6t-27-18L103-390q-12-12-17.5-26.5T80-446q0-15 5.5-30t17.5-27l352-353q11-11 26-17.5t31-6.5h287q33 0 56.5 23.5T879-800v287q0 16-6 30.5T856-457L503-104q-12 12-27 18t-30 6Zm0-80 353-354v-286H513L160-446l286 286Zm253-480q25 0 42.5-17.5T759-700q0-25-17.5-42.5T699-760q-25 0-42.5 17.5T639-700q0 25 17.5 42.5T699-640ZM480-480Z" />
+    </svg>
+  ),
+  launch: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="m226-559 78 33q14-28 29-54t33-52l-56-11-84 84Zm142 83 114 113q42-16 90-49t90-75q70-70 109.5-155.5T806-800q-72-5-158 34.5T492-656q-42 42-75 90t-49 90Zm178-65q-23-23-23-56.5t23-56.5q23-23 57-23t57 23q23 23 23 56.5T660-541q-23 23-57 23t-57-23Zm19 321 84-84-11-56q-26 18-52 32.5T532-299l33 79Zm313-653q19 121-23.5 235.5T708-419l20 99q4 20-2 39t-20 33L538-80l-84-197-171-171-197-84 167-168q14-14 33.5-20t39.5-2l99 20q104-104 218-147t235-24ZM157-321q35-35 85.5-35.5T328-322q35 35 34.5 85.5T327-151q-25 25-83.5 43T82-76q14-103 32-161.5t43-83.5Zm57 56q-10 10-20 36.5T180-175q27-4 53.5-13.5T270-208q12-12 13-29t-11-29q-12-12-29-11.5T214-265Z" />
+    </svg>
+  ),
 }

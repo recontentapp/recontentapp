@@ -16,7 +16,7 @@ import {
   Text,
   TextField,
   toast,
-} from '../../../../../components/primitives'
+} from 'design-system'
 import { formatRelative } from '../../../../../utils/dates'
 import { SettingsSection } from '../../../components/SettingsSection'
 import { useReferenceableAccounts } from '../../../hooks/referenceable'

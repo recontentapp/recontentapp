@@ -1,8 +1,8 @@
 import { FC } from 'react'
-import { Icon, IconName } from '../../../components/primitives'
-import { styled } from '../../../theme'
+import { Icon, IconName } from 'design-system'
 import { Components } from '../../../generated/typeDefinitions'
 import { destinationTypeLabels } from '../../../utils/destinations'
+import { styled } from '../../../theme'
 
 const Container = styled('span', {
   display: 'flex',
@@ -25,8 +25,8 @@ interface DestinationBadgeProps {
 }
 
 const iconMap: Record<Components.Schemas.DestinationType, IconName> = {
-  google_cloud_storage: 'google_cloud',
-  aws_s3: 'aws',
+  google_cloud_storage: 'cloud_upload',
+  aws_s3: 'cloud_upload',
   cdn: 'cloud_upload',
 }
 

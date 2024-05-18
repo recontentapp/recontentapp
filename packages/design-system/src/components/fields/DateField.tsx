@@ -2,7 +2,7 @@ import { CSSProperties, FC } from 'react'
 import DatePicker from 'react-datepicker'
 
 import { useId } from '../../hooks/ids'
-import { globalCss } from '../../theme'
+import { globalCss } from '../../stitches'
 import { Stack } from '../Stack'
 import { Label } from './components/Label'
 import { Message } from './components/Message'

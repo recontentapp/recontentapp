@@ -2,7 +2,6 @@ import { MentionOptions } from '@tiptap/extension-mention'
 import { ReactRenderer } from '@tiptap/react'
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
 import tippy from 'tippy.js'
-
 import { styled } from '../../theme'
 
 type MentionListProps = MentionOptions['suggestion']

@@ -10,7 +10,7 @@ import {
   Stack,
   Text,
   TextField,
-} from '../../../components/primitives'
+} from 'design-system'
 import routes from '../../../routing'
 
 interface RequestState {

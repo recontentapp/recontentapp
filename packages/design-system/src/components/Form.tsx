@@ -1,6 +1,6 @@
 import { FC, ReactNode } from 'react'
 
-import { styled } from '../theme'
+import { styled } from '../stitches'
 
 interface FormProps {
   width?: string

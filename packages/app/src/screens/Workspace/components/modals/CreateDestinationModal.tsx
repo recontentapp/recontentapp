@@ -19,7 +19,7 @@ import {
   Switch,
   TextField,
   toast,
-} from '../../../../components/primitives'
+} from 'design-system'
 import { Components } from '../../../../generated/typeDefinitions'
 import {
   getListDestinationsQueryKey,
@@ -29,9 +29,9 @@ import {
 } from '../../../../generated/reactQuery'
 import { fileFormatLabels } from '../../../../utils/files'
 import { useQueryClient } from '@tanstack/react-query'
-import { styled } from '../../../../theme'
 import { destinationTypeLabels } from '../../../../utils/destinations'
 import { useSystem } from '../../../../hooks/system'
+import { styled } from '../../../../theme'
 
 export interface CreateDestinationModalRef {
   open: (project: Components.Schemas.Project) => void

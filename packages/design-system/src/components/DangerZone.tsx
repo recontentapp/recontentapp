@@ -1,7 +1,7 @@
 import { FC } from 'react'
 
 import { Box, Button, Heading, Stack, Text } from '.'
-import { styled } from '../theme'
+import { styled } from '../stitches'
 
 interface DangerZoneProps {
   description: string

@@ -1,6 +1,6 @@
 import { FC, ReactNode } from 'react'
 
-import { styled } from '../../../theme'
+import { styled } from '../../../stitches'
 import { Box } from '../../Box'
 import { Button, ButtonVariation } from '../../Button'
 import { Form } from '../../Form'

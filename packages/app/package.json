@@ -8,7 +8,8 @@
     "generate-routes": "tsx scripts/routing.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "visualize": "vite-bundle-visualizer --open"
   },
   "dependencies": {
     "@hookform/resolvers": "2.9.10",
@@ -63,7 +64,6 @@
     "react-hook-form": "7.51.2",
     "react-hot-toast": "2.4.1",
     "react-hotkeys-hook": "4.5.0",
-    "react-icons": "5.0.1",
     "react-infinite-scroller": "1.2.6",
     "react-router-dom": "6.22.3",
     "react-virtual": "2.10.4",
@@ -104,6 +104,7 @@
     "ts-jest": "29.1.2",
     "tsx": "4.7.1",
     "typescript": "5.4.3",
-    "vite": "5.2.8"
+    "vite": "5.2.8",
+    "vite-bundle-visualizer": "1.2.1"
   }
 }

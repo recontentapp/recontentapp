@@ -13,7 +13,7 @@ import {
   Text,
   TextField,
   toast,
-} from '../../../components/primitives'
+} from 'design-system'
 import { HTTPRequestError, getAPIClient } from '../../../generated/apiClient'
 import routes from '../../../routing'
 

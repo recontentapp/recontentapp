@@ -12,14 +12,14 @@ import {
   Text,
   TextField,
   toast,
-} from '../../../components/primitives'
+} from 'design-system'
 import { useUpdate } from '../../../hooks/update'
-import { styled } from '../../../theme'
 import { useDebounce } from '../../../utils/debounce'
 import { useAPIClient, useCreateWorkspace } from '../../../generated/reactQuery'
 import { useAuth } from '../../../auth'
 import routes from '../../../routing'
 import { useSystem } from '../../../hooks/system'
+import { styled } from '../../../theme'
 
 interface State {
   name: string

@@ -1,7 +1,7 @@
 import { Menu, MenuButton, MenuItem, MenuList } from '@reach/menu-button'
 import { FC } from 'react'
 
-import { globalCss, keyframes } from '../theme'
+import { globalCss, keyframes } from '../stitches'
 import { Box } from './Box'
 import { Icon, IconName } from './Icon'
 import { Spinner } from './Spinner'

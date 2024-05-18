@@ -1,11 +1,6 @@
 import { FC } from 'react'
 
-import {
-  Heading,
-  Icon,
-  Stack,
-  Text,
-} from '../../../../../components/primitives'
+import { Heading, Icon, Stack, Text } from 'design-system'
 import { styled } from '../../../../../theme'
 
 interface StepCardProps {

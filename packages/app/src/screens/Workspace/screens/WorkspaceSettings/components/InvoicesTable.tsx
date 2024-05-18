@@ -6,7 +6,7 @@ import {
   Heading,
   Stack,
   Table,
-} from '../../../../../components/primitives'
+} from 'design-system'
 import {
   useGenerateBillingPortalSession,
   useListBillingInvoices,

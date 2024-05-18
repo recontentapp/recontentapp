@@ -1,6 +1,6 @@
 import { FC, useRef, useState } from 'react'
 import { Components, Paths } from '../../../../../generated/typeDefinitions'
-import { styled } from '../../../../../theme'
+import { Stack, Tag, Text } from 'design-system'
 import { useParams } from 'react-router-dom'
 import {
   ApplyTagsToPhraseParameters,
@@ -10,8 +10,8 @@ import {
 import { useReferenceableTags } from '../../../hooks/referenceable'
 import { useOutsideClick } from '../../../../../hooks/outsideClick'
 import { Popover } from '@reach/popover'
-import { Stack, Tag, Text } from '../../../../../components/primitives'
 import { QueryKey, useQueryClient } from '@tanstack/react-query'
+import { styled } from '../../../../../theme'
 
 interface TagsCellProps {
   phrase: Components.Schemas.PhraseItem

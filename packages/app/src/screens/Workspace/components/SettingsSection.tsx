@@ -1,6 +1,6 @@
 import { FC, ReactNode } from 'react'
 
-import { Box, Heading, Stack } from '../../../components/primitives'
+import { Box, Heading, Stack } from 'design-system'
 
 interface SettingsSectionProps {
   title: string

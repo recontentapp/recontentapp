@@ -8,10 +8,10 @@ import {
   Text,
   TextField,
   toast,
-} from '../../../../../components/primitives'
-import { styled } from '../../../../../theme'
+} from 'design-system'
 import { useSetupBillingSettings } from '../../../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
+import { styled } from '../../../../../theme'
 
 const Container = styled('div', {
   display: 'inline-flex',

@@ -1,6 +1,6 @@
 import { FC, ReactNode } from 'react'
 
-import { styled } from '../theme'
+import { styled } from '../stitches'
 
 const Container = styled('span', {
   display: 'inline-block',

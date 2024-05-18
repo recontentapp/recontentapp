@@ -1,4 +1,4 @@
-export type { Option } from './types'
+export type { Option, FieldProps } from './types'
 export { ComboboxField } from './ComboboxField'
 export { TextField } from './TextField'
 export { SelectField } from './SelectField'

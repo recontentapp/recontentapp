@@ -10,7 +10,7 @@ import {
   Text,
   TextField,
   toast,
-} from '../../../components/primitives'
+} from 'design-system'
 import { useJoinWorkspace } from '../../../generated/reactQuery'
 import { useLooseCurrentWorkspace } from '../../../hooks/workspace'
 import routes from '../../../routing'

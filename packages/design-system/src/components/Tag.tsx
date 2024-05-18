@@ -1,6 +1,6 @@
 import { FC } from 'react'
 
-import { styled } from '../theme'
+import { styled } from '../stitches'
 import { Icon } from './Icon'
 import { getColorBasedOnBackground } from '../utils/colors'
 

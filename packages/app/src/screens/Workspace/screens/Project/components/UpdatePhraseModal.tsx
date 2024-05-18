@@ -19,7 +19,7 @@ import {
   Stack,
   Tooltip,
   toast,
-} from '../../../../../components/primitives'
+} from 'design-system'
 import { isLocaleRTL } from '../../../../../utils/locales'
 import {
   getGetPhraseQueryKey,

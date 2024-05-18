@@ -1,5 +1,5 @@
+import { Spinner } from 'design-system'
 import { styled } from '../theme'
-import { Spinner } from './primitives'
 
 const Container = styled('div', {
   width: '100%',

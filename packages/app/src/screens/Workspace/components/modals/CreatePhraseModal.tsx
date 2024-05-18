@@ -1,20 +1,13 @@
 import { FC, forwardRef, useImperativeHandle, useRef, useState } from 'react'
 
-import {
-  Box,
-  Modal,
-  ModalContent,
-  ModalRef,
-  Stack,
-  toast,
-} from '../../../../components/primitives'
-import { styled } from '../../../../theme'
+import { Box, Modal, ModalContent, ModalRef, Stack, toast } from 'design-system'
 import { Components } from '../../../../generated/typeDefinitions'
 import {
   getListPhrasesQueryKey,
   useCreatePhrase,
 } from '../../../../generated/reactQuery'
 import { useQueryClient } from '@tanstack/react-query'
+import { styled } from '../../../../theme'
 
 export interface CreatePhraseModalRef {
   open: (project: Components.Schemas.Project, revisionId: string) => void

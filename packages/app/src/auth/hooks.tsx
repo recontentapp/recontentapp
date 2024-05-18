@@ -11,7 +11,7 @@ import {
 
 import { CurrentUser, Status } from './types'
 import { getAPIClient } from '../generated/apiClient'
-import { toast } from '../components/primitives'
+import { toast } from 'design-system'
 
 export interface AuthContext {
   accessToken: string | null

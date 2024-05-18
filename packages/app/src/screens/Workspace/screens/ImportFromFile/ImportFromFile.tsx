@@ -14,7 +14,7 @@ import {
   useImportPhrases,
 } from '../../../../generated/reactQuery'
 import routes from '../../../../routing'
-import { toast } from '../../../../components/primitives'
+import { toast } from 'design-system'
 import { useQueryClient } from '@tanstack/react-query'
 
 export const ImportFromFile = () => {

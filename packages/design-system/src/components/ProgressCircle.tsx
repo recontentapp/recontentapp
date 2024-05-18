@@ -42,7 +42,7 @@ export const ProgressCircle = ({ variation, value }: ProgressCircleProps) => {
         r={radius}
         fill="transparent"
         strokeWidth={strokeWidth}
-        stroke={theme.colors.gray6.value}
+        stroke={theme.colors.gray6}
       />
       <circle
         cx={center}
@@ -53,7 +53,7 @@ export const ProgressCircle = ({ variation, value }: ProgressCircleProps) => {
         strokeWidth={strokeWidth}
         strokeDasharray={arcLength}
         strokeDashoffset={arcOffset}
-        stroke={theme.colors.purple700.value}
+        stroke={theme.colors.purple700}
       />
     </svg>
   )

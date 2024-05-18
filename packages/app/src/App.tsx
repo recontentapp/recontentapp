@@ -5,7 +5,6 @@ import { useAuth, useCurrentUser } from './auth'
 import { FullpageSpinner } from './components/FullpageSpinner'
 import { APIClientProvider } from './generated/reactQuery'
 import { Public } from './screens/Public'
-import { normalize } from './theme'
 import { HTTPRequestError } from './generated/apiClient'
 import { queryClient } from './queryClient'
 import { Onboarding } from './screens/Onboarding'
@@ -15,6 +14,7 @@ import {
 } from './hooks/workspace'
 import { SelectWorkspace } from './screens/SelectWorkspace'
 import { Workspace } from './screens/Workspace'
+import { normalize } from './theme'
 
 const AuthenticatedApp = () => {
   const currentUser = useCurrentUser()

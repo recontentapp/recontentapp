@@ -1,7 +1,7 @@
 import { FC } from 'react'
 
 import { useId } from '../hooks/ids'
-import { styled } from '../theme'
+import { styled } from '../stitches'
 import { Stack } from './Stack'
 
 interface SwitchProps {

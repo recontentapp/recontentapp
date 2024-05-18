@@ -9,7 +9,7 @@ import {
   Stack,
   Text,
   toast,
-} from '../../../../../components/primitives'
+} from 'design-system'
 import { FIGMA_PLUGIN_URL } from '../../../../../constants'
 import { useGenerateUserWorkspaceAccountAPIKey } from '../../../../../generated/reactQuery'
 import {

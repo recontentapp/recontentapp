@@ -1,10 +1,11 @@
 import { ReactNode } from 'react'
 
-import { ColorValue, styled } from '../theme'
+import { ColorValue } from '../theme'
 import { Box } from './Box'
 import { Icon } from './Icon'
 import { Stack } from './Stack'
 import { Text } from './Text'
+import { styled } from '../stitches'
 
 type BannerVariant = 'info' | 'warning'
 

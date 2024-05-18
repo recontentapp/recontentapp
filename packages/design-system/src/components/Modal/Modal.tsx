@@ -7,7 +7,7 @@ import {
   useState,
 } from 'react'
 
-import { globalCss, keyframes, styled } from '../../theme'
+import { globalCss, keyframes, styled } from '../../stitches'
 import { Icon } from '../Icon'
 
 interface ModalProps {

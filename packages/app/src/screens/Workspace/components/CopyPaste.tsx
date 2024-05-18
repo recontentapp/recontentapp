@@ -1,5 +1,4 @@
 import { FC, ReactNode, useEffect, useState } from 'react'
-
 import { styled } from '../../../theme'
 
 interface CopyPasteProps {
