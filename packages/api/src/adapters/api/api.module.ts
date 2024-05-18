@@ -49,6 +49,11 @@ import { FigmaPluginController } from './controllers/figma-plugin.controller'
       ? [
           ServeStaticModule.forRoot({
             rootPath: join(__dirname, '..', '..', '..', '..', 'app', 'dist'),
+            serveStaticOptions: {
+              cacheControl: true,
+              immutable: true,
+              maxAge: 1000 * 60 * 60 * 24,
+            },
             exclude: [
               '/private/(.*)',
               '/public/(.*)',
