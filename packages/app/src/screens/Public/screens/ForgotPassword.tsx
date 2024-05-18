@@ -6,12 +6,13 @@ import {
   Button,
   Form,
   Heading,
-  Link,
+  LinkWrapper,
   Stack,
   Text,
   TextField,
 } from 'design-system'
 import routes from '../../../routing'
+import { Link } from 'react-router-dom'
 
 interface RequestState {
   email: string
@@ -55,7 +56,10 @@ export const ForgotPassword: FC = () => {
             </Heading>
             <Text size="$size100" color="$gray11">
               Remember your password?{' '}
-              <Link to={routes.signIn.url({})}>Sign in</Link> to your account.
+              <LinkWrapper>
+                <Link to={routes.signIn.url({})}>Sign in</Link>
+              </LinkWrapper>{' '}
+              to your account.
             </Text>
           </Stack>
 

@@ -3,16 +3,29 @@
   "version": "0.0.1",
   "license": "AGPL-3.0-only",
   "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build:src": "esbuild src/index.ts --bundle --platform=node --packages=external --sourcemap --analyze --outfile=dist/index.js",
     "build:types": "tsc --emitDeclarationOnly --declaration --declarationDir ./dist",
-    "build": "rm -rf dist && yarn build:src && yarn build:types"
+    "build": "rm -rf dist && yarn build:src && yarn build:types && cp src/styles.css dist/styles.css"
   },
   "dependencies": {
     "@radix-ui/colors": "3.0.0",
+    "@radix-ui/react-select": "2.0.0",
+    "@reach/dialog": "0.18.0",
+    "@reach/menu-button": "0.18.0",
+    "@reach/popover": "0.18.0",
+    "@reach/tooltip": "0.18.0",
     "@remixicon/react": "4.2.0",
-    "@stitches/react": "1.2.8"
+    "@stitches/react": "1.2.8",
+    "@tanstack/react-table": "8.15.3",
+    "@reach/combobox": "0.18.0",
+    "react-datepicker": "4.8.0",
+    "react-hot-toast": "2.4.1",
+    "react-dropzone": "14.2.3"
   },
   "peerDependencies": {
     "react": ">=18"
@@ -21,6 +34,7 @@
     "@types/jest": "29.5.12",
     "@types/react": "18.3.2",
     "@types/react-dom": "18.3.0",
+    "@types/react-datepicker": "4.4.2",
     "esbuild": "0.21.1",
     "jest": "29.7.0",
     "react": "18.3.1",

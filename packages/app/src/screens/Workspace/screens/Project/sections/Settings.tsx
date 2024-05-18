@@ -1,5 +1,5 @@
 import { FC, useEffect, useRef, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import { FullpageSpinner } from '../../../../../components/FullpageSpinner'
 import {
@@ -10,7 +10,7 @@ import {
   ConfirmationModalRef,
   DangerZone,
   Form,
-  Link,
+  LinkWrapper,
   Metadata,
   Stack,
   Text,
@@ -212,14 +212,15 @@ export const Settings: FC = () => {
         <Box paddingTop="$space60">
           <Text size="$size80" color="$gray14" lineHeight="$lineHeight200">
             Want to use more languages? Add them in your{' '}
-            <Link
-              size="$size80"
-              to={routes.workspaceSettingsLanguages.url({
-                pathParams: { workspaceKey },
-              })}
-            >
-              workspace settings
-            </Link>
+            <LinkWrapper size="$size80">
+              <Link
+                to={routes.workspaceSettingsLanguages.url({
+                  pathParams: { workspaceKey },
+                })}
+              >
+                workspace settings
+              </Link>
+            </LinkWrapper>
           </Text>
         </Box>
       </SettingsSection>

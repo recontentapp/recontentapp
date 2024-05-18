@@ -1,5 +1,5 @@
 import { FC, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import { passwordConfig } from '../../../auth/config'
 import { Logo } from '../../../components/Logo'
@@ -9,7 +9,7 @@ import {
   ExternalLink,
   Form,
   Heading,
-  Link,
+  LinkWrapper,
   Stack,
   Text,
   TextField,
@@ -82,7 +82,9 @@ export const SignUp: FC = () => {
             </Heading>
             <Text size="$size100" color="$gray11">
               Already have an account?{' '}
-              <Link to={routes.signIn.url({})}>Sign in.</Link>
+              <LinkWrapper>
+                <Link to={routes.signIn.url({})}>Sign in.</Link>
+              </LinkWrapper>
             </Text>
           </Stack>
 

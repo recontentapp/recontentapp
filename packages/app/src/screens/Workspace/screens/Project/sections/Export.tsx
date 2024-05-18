@@ -1,12 +1,12 @@
 import { FC, useRef } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { FullpageSpinner } from '../../../../../components/FullpageSpinner'
 import {
   Button,
   Stack,
   Banner,
   ExternalLink,
-  Link,
+  LinkWrapper,
   Heading,
 } from 'design-system'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
@@ -92,14 +92,15 @@ export const Export: FC = () => {
                   REST API
                 </ExternalLink>{' '}
                 documentation to learn more. API keys can be generated from your{' '}
-                <Link
-                  size="$size80"
-                  to={routes.workspaceSettingsIntegrations.url({
-                    pathParams: { workspaceKey },
-                  })}
-                >
-                  workspace settings
-                </Link>
+                <LinkWrapper size="$size80">
+                  <Link
+                    to={routes.workspaceSettingsIntegrations.url({
+                      pathParams: { workspaceKey },
+                    })}
+                  >
+                    workspace settings
+                  </Link>
+                </LinkWrapper>
                 .
               </span>
             }

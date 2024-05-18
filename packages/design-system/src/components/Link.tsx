@@ -1,8 +1,4 @@
-import { CSSProperties, FC } from 'react'
-import {
-  Link as ReactRouterLink,
-  LinkProps as ReactRouterLinkProps,
-} from 'react-router-dom'
+import { CSSProperties, FC, ReactNode } from 'react'
 
 import { FontSizeValue } from '../theme'
 import { Icon } from './Icon'
@@ -62,14 +58,15 @@ const Container = styled('span', {
   '& a': styles,
 })
 
-interface LinkProps extends ReactRouterLinkProps {
+interface LinkWrapperProps {
   size?: FontSizeValue
+  children: ReactNode
 }
 
-export const Link: FC<LinkProps> = ({ size, ...props }) => {
+export const LinkWrapper: FC<LinkWrapperProps> = ({ size, children }) => {
   return (
     <Container css={size ? { '& a': { fontSize: size } } : undefined}>
-      <ReactRouterLink {...props} />
+      {children}
     </Container>
   )
 }

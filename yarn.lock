@@ -1243,7 +1243,7 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.22.5"
 
-"@babel/runtime@^7.0.0", "@babel/runtime@^7.12.13", "@babel/runtime@^7.12.5", "@babel/runtime@^7.13.10", "@babel/runtime@^7.17.8", "@babel/runtime@^7.21.0", "@babel/runtime@^7.23.8", "@babel/runtime@^7.23.9", "@babel/runtime@^7.7.6", "@babel/runtime@^7.9.2":
+"@babel/runtime@^7.0.0", "@babel/runtime@^7.12.13", "@babel/runtime@^7.12.5", "@babel/runtime@^7.13.10", "@babel/runtime@^7.21.0", "@babel/runtime@^7.23.8", "@babel/runtime@^7.23.9", "@babel/runtime@^7.7.6", "@babel/runtime@^7.9.2":
   version "7.24.4"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.24.4.tgz#de795accd698007a66ba44add6cc86542aff1edd"
   integrity sha512-dkxf7+hn8mFBwKjs9bvBlArzLVxVbS8usaPUDd5p2a9JCL9tB8OaOVN1isD4+Xyk4ns89/xeOmbQvgdK7IIVdA==
@@ -2859,7 +2859,7 @@
     "@reach/popover" "0.18.0"
     "@reach/utils" "0.18.0"
 
-"@reach/observe-rect@1.2.0", "@reach/observe-rect@^1.1.0":
+"@reach/observe-rect@1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@reach/observe-rect/-/observe-rect-1.2.0.tgz#d7a6013b8aafcc64c778a0ccb83355a11204d3b2"
   integrity sha512-Ba7HmkFgfQxZqqaeIWWkNK0rEhpxVQHIoVyW1YDSkGsGIXzcaW4deC8B0pZrNSSyLTdIk7y+5olKt5+g0GmFIQ==
@@ -4439,7 +4439,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/rtl-detect@^1.0.3":
+"@types/rtl-detect@1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@types/rtl-detect/-/rtl-detect-1.0.3.tgz#2b9849ece923d767712e95efa01ca75724de0de5"
   integrity sha512-qpstuHivwg/HoXxRrBo5/r/OVx5M2SkqJpVu2haasdLctt+jMGHWjqdbI0LL7Rk2wRmN/UHdHK4JZg9RUMcvKA==
@@ -10588,13 +10588,6 @@ pluralize@8.0.0:
   resolved "https://registry.yarnpkg.com/pluralize/-/pluralize-8.0.0.tgz#1a6fa16a38d12a1901e0320fa017051c539ce3b1"
   integrity sha512-Nc3IT5yHzflTfbjgqWcCPpo7DaKy4FnpB0l/zCAW0Tc7jxAiuqSxHasntB3D7887LSrA93kDJ9IXovxJYxyLCA==
 
-polished@4.3.1:
-  version "4.3.1"
-  resolved "https://registry.yarnpkg.com/polished/-/polished-4.3.1.tgz#5a00ae32715609f83d89f6f31d0f0261c6170548"
-  integrity sha512-OBatVyC/N7SCW/FaDHrSd+vn0o5cS855TOmYi4OkdWUMSJCET/xip//ch8xGUvtr3i44X9LVyWwQlRMTN3pwSA==
-  dependencies:
-    "@babel/runtime" "^7.17.8"
-
 possible-typed-array-names@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/possible-typed-array-names/-/possible-typed-array-names-1.0.0.tgz#89bb63c6fada2c3e90adc4a647beeeb39cc7bf8f"
@@ -10674,7 +10667,7 @@ prompts@^2.0.1:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@^15.5.8, prop-types@^15.6.2, prop-types@^15.7.2, prop-types@^15.8.1:
+prop-types@^15.6.2, prop-types@^15.7.2, prop-types@^15.8.1:
   version "15.8.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
@@ -11011,13 +11004,6 @@ react-hotkeys-hook@4.5.0:
   resolved "https://registry.yarnpkg.com/react-hotkeys-hook/-/react-hotkeys-hook-4.5.0.tgz#807b389b15256daf6a813a1ec09e6698064fe97f"
   integrity sha512-Samb85GSgAWFQNvVt3PS90LPPGSf9mkH/r4au81ZP1yOIFayLC3QAvqTgGtJ8YEDMXtPmaVBs6NgipHO6h4Mug==
 
-react-infinite-scroller@1.2.6:
-  version "1.2.6"
-  resolved "https://registry.yarnpkg.com/react-infinite-scroller/-/react-infinite-scroller-1.2.6.tgz#8b80233226dc753a597a0eb52621247f49b15f18"
-  integrity sha512-mGdMyOD00YArJ1S1F3TVU9y4fGSfVVl6p5gh/Vt4u99CJOptfVu/q5V/Wlle72TMgYlBwIhbxK5wF0C/R33PXQ==
-  dependencies:
-    prop-types "^15.5.8"
-
 react-is@^16.13.1, react-is@^16.7.0:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
@@ -11128,13 +11114,6 @@ react-style-singleton@^2.1.0, react-style-singleton@^2.2.1:
     get-nonce "^1.0.0"
     invariant "^2.2.4"
     tslib "^2.0.0"
-
-react-virtual@2.10.4:
-  version "2.10.4"
-  resolved "https://registry.yarnpkg.com/react-virtual/-/react-virtual-2.10.4.tgz#08712f0acd79d7d6f7c4726f05651a13b24d8704"
-  integrity sha512-Ir6+oPQZTVHfa6+JL9M7cvMILstFZH/H3jqeYeKI4MSUX+rIruVwFC6nGVXw9wqAw8L0Kg2KvfXxI85OvYQdpQ==
-  dependencies:
-    "@reach/observe-rect" "^1.1.0"
 
 react@18.2.0:
   version "18.2.0"
@@ -11415,7 +11394,7 @@ rope-sequence@^1.3.0:
   resolved "https://registry.yarnpkg.com/rope-sequence/-/rope-sequence-1.3.4.tgz#df85711aaecd32f1e756f76e43a415171235d425"
   integrity sha512-UT5EDe2cu2E/6O4igUr5PSFs23nvvukicWHx6GnOPlHAiiYbzNuCRQCuiUdHJQcqKalLKlrYJnjY0ySGsXNQXQ==
 
-rtl-detect@^1.1.2:
+rtl-detect@1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/rtl-detect/-/rtl-detect-1.1.2.tgz#ca7f0330af5c6bb626c15675c642ba85ad6273c6"
   integrity sha512-PGMBq03+TTG/p/cRB7HCLKJ1MgDIi07+QU1faSjiYRfmY5UsAttV9Hs08jDAHVwcOwmVLcSJkpwyfXszVjWfIQ==
