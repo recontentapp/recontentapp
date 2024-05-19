@@ -1,55 +1,22 @@
-import { useContext } from './context'
-import { Credentials } from './screens/Credentials/Credentials'
-import { APIClientProvider } from './generated/reactQuery'
-import { useMemo, useState } from 'react'
-import { Welcome } from './screens/Welcome'
+import { Box, GlobalStyles, Toast } from 'design-system'
 import { normalize } from './theme'
-
-const AuthenticatedAppWrapper = () => {
-  return (
-    <APIClientProvider
-      config={{
-        baseUrl: '',
-        headers: {
-          Authorization: '',
-        },
-      }}
-    >
-      <div />
-    </APIClientProvider>
-  )
-}
+import { BridgeProvider } from './contexts/Bridge'
+import { CurrentCredentialsProvider } from './contexts/CurrentCredentials'
+import { File } from './screens/File/index'
 
 export const App = () => {
-  const [acceptedWelcome, setAcceptedWelcome] = useState(false)
-  const { fileConfig, userConfig } = useContext()
   normalize()
 
-  const hasCredentialsForFile = useMemo(() => {
-    if (!userConfig) {
-      return false
-    }
+  return (
+    <BridgeProvider>
+      <GlobalStyles />
+      <Toast />
 
-    if (fileConfig) {
-      if (fileConfig.customOrigin) {
-        return userConfig.credentials.some(
-          c => c.customOrigin === fileConfig.customOrigin,
-        )
-      }
-
-      return userConfig.credentials.some(c => c.customOrigin === null)
-    }
-
-    return userConfig.credentials.length > 0
-  }, [fileConfig, userConfig])
-
-  if (!userConfig && !acceptedWelcome) {
-    return <Welcome onGetStarted={() => setAcceptedWelcome(true)} />
-  }
-
-  if (!hasCredentialsForFile) {
-    return <Credentials />
-  }
-
-  return <AuthenticatedAppWrapper />
+      <Box minHeight="100vh" backgroundColor="$white">
+        <CurrentCredentialsProvider>
+          <File />
+        </CurrentCredentialsProvider>
+      </Box>
+    </BridgeProvider>
+  )
 }

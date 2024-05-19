@@ -1,3 +1,5 @@
+import { ReactNode } from 'react'
+
 export interface FieldProps {
   label: string
   hideLabel?: boolean
@@ -6,8 +8,8 @@ export interface FieldProps {
   name?: string
   placeholder?: string
   hint?: string
-  info?: string
-  error?: string
+  info?: ReactNode
+  error?: ReactNode
   isOptional?: boolean
   isDisabled?: boolean
   onBlur?: (event: any) => void

@@ -12,13 +12,8 @@ interface ExternalLinkProps extends Pick<CSSProperties, 'fontSize'> {
 }
 
 const styles = {
-  display: 'inline-flex',
-  flexDirection: 'row',
-  alignItems: 'flex-end',
-  gap: '$space40',
   color: '$blue900',
   fontWeight: 500,
-  lineHeight: '$lineHeight200',
   transition: 'all 0.2s ease-in-out',
   '& path': {
     transition: 'all 0.2s ease-in-out',
@@ -29,6 +24,8 @@ const styles = {
 } as const
 
 const IconContainer = styled('span', {
+  display: 'inline-block',
+  marginRight: '$space20',
   transform: 'translateY(3px)',
 })
 

@@ -22,6 +22,8 @@ export interface UserConfig {
 
 export interface FileConfig {
   id: string
+  languageId: string
+  revisionId: string
   workspaceId: string
   workspaceKey: string
   customOrigin: CustomOrigin
@@ -55,10 +57,28 @@ export interface PluginInitialized {
   }
 }
 
+export interface UserConfigUpdated {
+  type: 'user-config-updated'
+  data: UserConfig
+}
+
+export interface FileConfigSet {
+  type: 'file-config-set'
+  data: FileConfig
+}
+
 export interface FileConfigResetRequested {
   type: 'file-config-reset-requested'
 }
 
 export interface UserConfigResetRequested {
   type: 'user-config-reset-requested'
+}
+
+export interface NotificationRequested {
+  type: 'notification-requested'
+  data: {
+    message: string
+    type?: 'success' | 'error'
+  }
 }

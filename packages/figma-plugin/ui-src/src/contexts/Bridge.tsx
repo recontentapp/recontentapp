@@ -6,18 +6,19 @@ import {
   useState,
   ReactNode,
 } from 'react'
-import { useEmit, useOn } from './io'
+import { useEmit, useOn } from '../io'
 import {
   Text,
   PluginInitialized,
   UserConfig,
   FileConfig,
-} from '../../shared-types'
-import { Emittable, Receivable } from './types'
+} from '../../../shared-types'
+import { Emittable, Receivable } from '../types'
 
 export type Screen = 'Inspect' | 'Settings'
+
 type State = Pick<
-  Context,
+  Bridge,
   'screen' | 'fileConfig' | 'fileName' | 'userConfig' | 'selection'
 >
 
@@ -32,12 +33,12 @@ const defaultState: State = {
   },
 }
 
-interface Context {
+interface Bridge {
   screen: Screen
   updateScreen: (screen: Screen) => void
   fileConfig: FileConfig | null
-  fileName: string
   userConfig: UserConfig | null
+  fileName: string
   selection: {
     texts: Text[]
     traversed: boolean
@@ -45,19 +46,19 @@ interface Context {
   emit: (data: Emittable) => void
 }
 
-const context = createContext<Context>({
+const context = createContext<Bridge>({
   ...defaultState,
   updateScreen: () => {},
   emit: () => {},
 })
 
-export const useContext = () => useReactContext(context)
+export const useBridge = () => useReactContext(context)
 
-interface ContextProviderProps {
+interface BridgeProviderProps {
   children: ReactNode
 }
 
-export const ContextProvider = ({ children }: ContextProviderProps) => {
+export const BridgeProvider = ({ children }: BridgeProviderProps) => {
   const [isReady, setIsReady] = useState(false)
   const [state, setState] = useState<State>(defaultState)
 
@@ -85,7 +86,7 @@ export const ContextProvider = ({ children }: ContextProviderProps) => {
     [],
   )
 
-  const value: Context = useMemo(
+  const value: Bridge = useMemo(
     () => ({
       ...state,
       emit,

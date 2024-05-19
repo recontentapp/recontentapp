@@ -28,6 +28,8 @@ import {
   CreateFigmaFileDto,
   CreateFigmaTextDto,
 } from '../dto/figma-plugin/figma.dto'
+import { ConfigService } from '@nestjs/config'
+import { Config } from 'src/utils/config'
 
 @Controller('figma-plugin')
 @UseGuards(APIKeyGuard)
@@ -35,6 +37,7 @@ export class FigmaPluginController {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly figmaService: FigmaService,
+    private readonly configService: ConfigService<Config, true>,
   ) {}
 
   private static formatLanguage(
@@ -116,6 +119,9 @@ export class FigmaPluginController {
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.GetMe.Responses.$200> {
     const defaultWorkspaceId = requester.getDefaultWorkspaceID()
+    const appConfig = this.configService.get('app', {
+      infer: true,
+    })
 
     const workspaceAccess =
       requester.getWorkspaceAccessOrThrow(defaultWorkspaceId)
@@ -128,6 +134,11 @@ export class FigmaPluginController {
       id,
       firstName,
       lastName,
+      workspace: workspaceAccess.getWorkspaceDetails(),
+      system: {
+        version: appConfig.version,
+        distribution: appConfig.distribution,
+      },
     }
   }
 

@@ -1,12 +1,12 @@
-import { FC } from 'react'
+import { FC, ReactNode } from 'react'
 
 import { Box } from '../../Box'
 import { Icon } from '../../Icon'
 import { Text } from '../../Text'
 
 interface MessageProps {
-  error?: string
-  info?: string
+  error?: ReactNode
+  info?: ReactNode
   withPaddingTop?: boolean
 }
 
@@ -21,7 +21,7 @@ export const Message: FC<MessageProps> = ({ error, info, withPaddingTop }) => {
         style={{
           display: 'inline-block',
           paddingRight: 4,
-          transform: 'translateY(2px)',
+          transform: 'translateY(3px)',
         }}
       >
         <Icon src="info" size={16} color={error ? '$red200' : '$gray10'} />

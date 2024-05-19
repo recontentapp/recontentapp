@@ -5,12 +5,15 @@ interface WelcomeProps {
 
 export const Welcome = ({ onGetStarted }: WelcomeProps) => {
   return (
-    <Box width="100%" height="100%" backgroundColor="$purple800">
+    <Box width="100vw" height="100vh" backgroundColor="$purple800">
       <Stack
+        width="100%"
+        height="100%"
         direction="column"
         alignItems="center"
         justifyContent="center"
         spacing="$space200"
+        paddingX="$space100"
       >
         <Stack direction="column" alignItems="center" spacing="$space100">
           <svg
@@ -29,18 +32,17 @@ export const Welcome = ({ onGetStarted }: WelcomeProps) => {
           </svg>
 
           <Box display="flex" alignItems="center" justifyContent="center">
-            <Box maxWidth={240}>
-              <Text
-                renderAs="p"
-                size="$size80"
-                textAlign="center"
-                color="$white"
-                lineHeight="$lineHeight200"
-              >
-                Recontent.app helps product teams collaborate on product copy &
-                localization.
-              </Text>
-            </Box>
+            <Text
+              renderAs="p"
+              size="$size80"
+              textAlign="center"
+              color="$white"
+              lineHeight="$lineHeight200"
+              maxWidth={300}
+            >
+              Recontent.app helps product teams collaborate on product copy &
+              localization.
+            </Text>
           </Box>
         </Stack>
 

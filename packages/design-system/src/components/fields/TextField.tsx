@@ -108,7 +108,7 @@ export const TextField: FC<TextFieldProps> = ({
         value={controlledValue ?? localValue}
       />
 
-      <Message withPaddingTop error={error} info={info} />
+      <Message error={error} info={info} />
     </Stack>
   )
 }

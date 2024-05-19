@@ -20,11 +20,40 @@ paths:
                     type: string
                   lastName:
                     type: string
+                  workspace:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      key:
+                        type: string
+                    required:
+                      - id
+                      - name
+                      - key
+                  system:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      version:
+                        type: string
+                      distribution:
+                        type: string
+                        enum:
+                          - self-hosted
+                          - cloud
+                    required:
+                      - version
+                      - distribution
                 additionalProperties: false
                 required:
                   - id
                   - firstName
                   - lastName
+                  - workspace
   /languages:
     get:
       operationId: listLanguages

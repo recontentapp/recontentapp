@@ -1,6 +1,6 @@
 import { CustomOrigin } from '../../../shared-types'
 
-export const isValidCustomOrigin = (origin: string) => {
+const isValidCustomOrigin = (origin: string) => {
   try {
     const url = new URL(origin)
     return url.origin === origin
@@ -10,7 +10,7 @@ export const isValidCustomOrigin = (origin: string) => {
 }
 
 const defaultURLs = {
-  api: 'https://api.recontent.app/api/figma-plugin',
+  api: 'https://api.recontent.app/figma-plugin',
   app: 'https://app.recontent.app',
 }
 
@@ -26,7 +26,7 @@ export const getURLs = (origin: CustomOrigin) => {
   }
 
   return {
-    api: `${origin}/api/figma-plugin`,
+    api: `${origin}/figma-plugin`,
     app: origin,
   }
 }

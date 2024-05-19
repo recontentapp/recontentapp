@@ -1,20 +1,20 @@
+import {
+  FileConfigSet,
+  NotificationRequested,
+  UserConfigUpdated,
+} from '../shared-types'
 import { $emit, $on } from './src/io'
 import { getSelectedTraversedTextNodes } from './src/selection'
-import { getUserConfig } from './src/storage/config'
-import { getFileConfig } from './src/storage/file'
+import { getUserConfig, setUserConfig } from './src/storage/config'
+import { getFileConfig, resetFileData, setFileConfig } from './src/storage/file'
 import { Emittable, Receivable } from './src/types'
 
 figma.skipInvisibleInstanceChildren = true
-figma.showUI(__html__, { themeColors: true, height: 340 })
+figma.showUI(__html__, { themeColors: true, height: 380, width: 360 })
 
 const emit = $emit<Emittable>()
 
-$on<Receivable>({
-  'file-config-reset-requested': () => {},
-  'user-config-reset-requested': () => {},
-})
-
-const app = async () => {
+const onPluginInitialized = async () => {
   const userConfig = await getUserConfig()
   const fileConfig = getFileConfig()
 
@@ -24,6 +24,7 @@ const app = async () => {
       userConfig,
       fileConfig,
       fileName: figma.root.name,
+      // TODO: Update selection
       selection: {
         texts: [],
         traversed: false,
@@ -32,7 +33,29 @@ const app = async () => {
   })
 }
 
-void app()
+$on<Receivable>({
+  'file-config-reset-requested': () => {
+    resetFileData()
+    onPluginInitialized()
+  },
+  'user-config-reset-requested': () => {
+    setUserConfig(null)
+    onPluginInitialized()
+  },
+  'user-config-updated': (data: UserConfigUpdated) => {
+    setUserConfig(data.data)
+    onPluginInitialized()
+  },
+  'file-config-set': (data: FileConfigSet) => {
+    setFileConfig(data.data)
+    onPluginInitialized()
+  },
+  'notification-requested': (data: NotificationRequested) => {
+    figma.notify(data.data.message, { error: data.data.type === 'error' })
+  },
+})
+
+onPluginInitialized()
 
 figma.on('selectionchange', () => {
   console.log(getSelectedTraversedTextNodes())
