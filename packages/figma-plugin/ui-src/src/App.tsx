@@ -12,7 +12,7 @@ export const App = () => {
       <GlobalStyles />
       <Toast />
 
-      <Box minHeight="100vh" backgroundColor="$white">
+      <Box flexDirection="column" minHeight="100vh" backgroundColor="$white">
         <CurrentCredentialsProvider>
           <File />
         </CurrentCredentialsProvider>

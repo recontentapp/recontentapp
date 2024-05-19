@@ -12,6 +12,7 @@ import {
   PluginInitialized,
   UserConfig,
   FileConfig,
+  TextSelectionChanged,
 } from '../../../shared-types'
 import { Emittable, Receivable } from '../types'
 
@@ -74,6 +75,12 @@ export const BridgeProvider = ({ children }: BridgeProviderProps) => {
         selection,
       })
       setIsReady(true)
+    },
+    'text-selection-changed': (message: TextSelectionChanged) => {
+      setState(state => ({
+        ...state,
+        selection: message.data,
+      }))
     },
   })
 

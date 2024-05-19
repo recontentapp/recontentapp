@@ -15,8 +15,11 @@ import { queryClient } from '../queryClient'
 import { UserCredentials } from '../../../shared-types'
 import { SelectCredentials } from '../components/SelectCredentials'
 import { CredentialsAreInvalidForFile } from '../components/CredentialsAreInvalidForFile'
-import { CredentialsFooter } from '../components/CredentialsFooter'
-import { Stack } from 'design-system'
+import {
+  CREDENTIALS_FOOTER_HEIGHT,
+  CredentialsFooter,
+} from '../components/CredentialsFooter'
+import { Box, Stack } from 'design-system'
 
 interface CurrentCredentialsProviderProps {
   children: ReactNode
@@ -128,8 +131,13 @@ export const CurrentCredentialsProvider = ({
         }}
       >
         <QueryClientProvider client={queryClient}>
-          <Stack direction="column" spacing="$space100">
-            {children}
+          <Stack width="100%" direction="column" spacing="$space0">
+            <Box
+              flexDirection="column"
+              minHeight={`calc(100vh - ${CREDENTIALS_FOOTER_HEIGHT}px)`}
+            >
+              {children}
+            </Box>
 
             <CredentialsFooter />
           </Stack>

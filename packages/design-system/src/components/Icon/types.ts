@@ -12,6 +12,7 @@ export type IconName =
   | 'info'
   | 'copy'
   | 'stats'
+  | 'sync'
   | 'keyboard_arrow_down'
   | 'keyboard_arrow_up'
   | 'keyboard_arrow_left'

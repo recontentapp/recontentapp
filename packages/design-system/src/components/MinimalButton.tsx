@@ -5,12 +5,14 @@ import { Icon, IconName } from './Icon'
 import { Stack } from './Stack'
 import { Text } from './Text'
 import { styled } from '../stitches'
+import { ButtonSize } from './Button'
 
 type MinimalButtonVariation = 'minimal' | 'primary' | 'danger'
 
 interface MinimalButtonProps {
   onAction: () => void
   variation?: MinimalButtonVariation
+  size?: ButtonSize
   iconPosition?: 'left' | 'right'
   isActive?: boolean
   isLoading?: boolean
@@ -44,6 +46,23 @@ const Container = styled('button', {
     cursor: 'progress',
   },
   variants: {
+    size: {
+      medium: {
+        fontSize: '$size80',
+        paddingX: '$space80',
+        paddingY: '$space60',
+      },
+      small: {
+        fontSize: '$size60',
+        paddingX: '$space80',
+        paddingY: '$space60',
+      },
+      xsmall: {
+        fontSize: '$size60',
+        paddingX: '$space60',
+        paddingY: '$space40',
+      },
+    },
     isActive: {
       true: {
         color: '$blue900',
@@ -78,6 +97,7 @@ export const MinimalButton: FC<MinimalButtonProps> = ({
   iconPosition = 'left',
   isDisabled = false,
   variation = 'minimal',
+  size = 'medium',
   isActive,
   isLoading,
   onAction,
@@ -92,6 +112,8 @@ export const MinimalButton: FC<MinimalButtonProps> = ({
       isActive={isActive}
       hasIcon={icon !== undefined}
       data-loading={isLoading}
+      size={size}
+      css={{ color }}
     >
       <Stack direction="row" alignItems="center" justifyContent="space-between">
         <Stack
@@ -100,9 +122,8 @@ export const MinimalButton: FC<MinimalButtonProps> = ({
           spacing="$space40"
         >
           {icon && <Icon src={icon} size={16} color={color} />}
-          <Text size="$size80" variation="semiBold" color={color}>
-            {children}
-          </Text>
+
+          {children && <span>{children}</span>}
         </Stack>
       </Stack>
     </Container>

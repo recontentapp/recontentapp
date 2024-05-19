@@ -22,6 +22,7 @@ interface BoxProps
     | 'display'
     | 'minWidth'
     | 'maxWidth'
+    | 'flexDirection'
     | 'alignItems'
     | 'justifyContent'
     | 'overflowY'

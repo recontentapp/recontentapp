@@ -17,6 +17,7 @@ import {
 } from '../../../../generated/reactQuery'
 import { FullpageSpinner } from '../../../../components/FullpageSpinner'
 import { isValidFigmaURL } from '../../../../utils/urls'
+import { useCurrentCredentials } from '../../../../contexts/CurrentCredentials'
 
 interface State {
   name: string | undefined
@@ -28,6 +29,7 @@ interface State {
 
 export const FileOnboarding = () => {
   const { fileName, emit } = useBridge()
+  const { currentCredentials } = useCurrentCredentials()
   const { data } = useGetMe()
   const [state, setState] = useState<State>({
     name: fileName,
@@ -90,8 +92,8 @@ export const FileOnboarding = () => {
         languageId: state.languageId,
         revisionId: state.revisionId,
         workspaceId: res.workspaceId,
-        workspaceKey: data.workspace.key,
-        customOrigin: null,
+        workspaceKey: currentCredentials.workspaceKey,
+        customOrigin: currentCredentials.customOrigin,
       },
     })
   }

@@ -1,6 +1,8 @@
-import { Stack, Text } from 'design-system'
+import { Box, MinimalButton, Stack, Text } from 'design-system'
 import { useCurrentCredentials } from '../contexts/CurrentCredentials'
 import { useGetMe } from '../generated/reactQuery'
+
+export const CREDENTIALS_FOOTER_HEIGHT = 36
 
 export const CredentialsFooter = () => {
   const { currentCredentials, requestSelect } = useCurrentCredentials()
@@ -13,13 +15,39 @@ export const CredentialsFooter = () => {
   }
 
   return (
-    <Stack direction="row">
-      <Text size="$size60" color="$gray11">
-        Logged in as {data.firstName} {data.lastName} ({data.workspace.key}{' '}
-        {currentCredentials.customOrigin})
-      </Text>
+    <Box
+      position="sticky"
+      bottom={0}
+      width="100%"
+      height={CREDENTIALS_FOOTER_HEIGHT}
+      backgroundColor="$gray3"
+      paddingX="$space80"
+    >
+      <Stack
+        width="100%"
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+      >
+        <Stack direction="column" spacing="$space20">
+          <Text size="$size40" color="$gray9">
+            Logged in as {data.firstName} {data.lastName}
+          </Text>
 
-      <button onClick={requestSelect}>Change</button>
-    </Stack>
+          <Text size="$size40" color="$gray9">
+            {currentCredentials.workspaceKey} (
+            {currentCredentials.customOrigin ?? 'Recontent.app'})
+          </Text>
+        </Stack>
+
+        <MinimalButton
+          size="xsmall"
+          variation="primary"
+          onAction={requestSelect}
+        >
+          Switch
+        </MinimalButton>
+      </Stack>
+    </Box>
   )
 }

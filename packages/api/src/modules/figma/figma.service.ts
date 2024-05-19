@@ -120,6 +120,7 @@ export class FigmaService {
     }
 
     const { isValid, key } = FigmaService.isValidURL(url)
+
     if (!isValid) {
       throw new BadRequestException('Invalid Figma URL')
     }

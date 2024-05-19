@@ -41,7 +41,7 @@ export interface Text {
     phraseKey: string
     content: string | null
   } | null
-  appLastSyncedAt: string
+  appLastSyncedAt: number | null
 }
 
 export interface PluginInitialized {
@@ -80,5 +80,13 @@ export interface NotificationRequested {
   data: {
     message: string
     type?: 'success' | 'error'
+  }
+}
+
+export interface TextSelectionChanged {
+  type: 'text-selection-changed'
+  data: {
+    texts: Text[]
+    traversed: boolean
   }
 }

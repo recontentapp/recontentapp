@@ -7,6 +7,7 @@ import { $emit, $on } from './src/io'
 import { getSelectedTraversedTextNodes } from './src/selection'
 import { getUserConfig, setUserConfig } from './src/storage/config'
 import { getFileConfig, resetFileData, setFileConfig } from './src/storage/file'
+import { getTextData } from './src/storage/texts'
 import { Emittable, Receivable } from './src/types'
 
 figma.skipInvisibleInstanceChildren = true
@@ -58,5 +59,14 @@ $on<Receivable>({
 onPluginInitialized()
 
 figma.on('selectionchange', () => {
+  const { texts, traversed } = getSelectedTraversedTextNodes()
+
+  emit({
+    type: 'text-selection-changed',
+    data: {
+      texts: texts.map(getTextData),
+      traversed,
+    },
+  })
   console.log(getSelectedTraversedTextNodes())
 })

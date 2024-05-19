@@ -3,11 +3,14 @@ import {
   FileConfigSet,
   NotificationRequested,
   PluginInitialized,
+  TextSelectionChanged,
   UserConfigResetRequested,
   UserConfigUpdated,
 } from '../../shared-types'
 
-export type Receivable = PluginInitialized['type']
+export type Receivable =
+  | PluginInitialized['type']
+  | TextSelectionChanged['type']
 
 export type Emittable =
   | UserConfigResetRequested

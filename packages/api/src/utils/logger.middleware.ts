@@ -24,7 +24,11 @@ export class LoggerMiddleware implements NestMiddleware {
       return 'private-api'
     }
 
-    return 'webhooks'
+    if (path.startsWith('/figma-plugin')) {
+      return 'figma-plugin-api'
+    }
+
+    return 'webhooks-api'
   }
 
   use(req: Request, res: Response, next: NextFunction) {

@@ -95,6 +95,7 @@ export class MailerService {
         html,
       })
     } catch (e) {
+      console.log(e)
       throw new InternalServerErrorException(e, 'Could not send email')
     }
   }
