@@ -109,5 +109,6 @@ export interface TextsSyncReceived {
   type: 'texts-sync-received'
   data: {
     items: TextSync[]
+    type: 'complete' | 'partial'
   }
 }

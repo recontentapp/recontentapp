@@ -85,6 +85,7 @@ export const MultipleTextsForm = ({ texts }: SingleTextFormProps) => {
       type: 'texts-sync-received',
       data: {
         items: resultItems,
+        type: 'partial',
       },
     })
   }

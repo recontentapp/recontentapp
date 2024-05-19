@@ -8,7 +8,7 @@ import { $emit, $on } from './src/io'
 import { getSelectedTraversedTextNodes } from './src/selection'
 import { getUserConfig, setUserConfig } from './src/storage/config'
 import { getFileConfig, resetFileData, setFileConfig } from './src/storage/file'
-import { getPageLastSyncedAt } from './src/storage/page'
+import { getPageLastSyncedAt, setPageLastSyncedAt } from './src/storage/page'
 import { getTextData, syncTextData } from './src/storage/texts'
 import { Emittable, Receivable } from './src/types'
 
@@ -64,6 +64,9 @@ $on<Receivable>({
   },
   'texts-sync-received': async (data: TextsSyncReceived) => {
     await Promise.all(data.data.items.map(syncTextData))
+    if (data.data.type === 'complete') {
+      setPageLastSyncedAt(Date.now())
+    }
     onPluginInitialized()
   },
 })

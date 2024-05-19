@@ -5,6 +5,8 @@ import { Inspect } from './screens/Inspect/Inspect'
 import { Settings } from './screens/Settings'
 import { Tabs } from '../../components/Tabs'
 import { styled } from '../../theme'
+import { Loader } from './components/Loader'
+import { useSync } from './hooks'
 
 const Header = styled('header', {
   position: 'sticky',
@@ -23,6 +25,7 @@ const Header = styled('header', {
 
 export const File = () => {
   const { file, screen, currentPage, updateScreen } = useBridge()
+  const { sync, isLoading } = useSync()
 
   if (!file.config) {
     return <FileOnboarding />
@@ -47,15 +50,22 @@ export const File = () => {
 
         <div style={{ transform: 'translateX(-1px) translateY(-4px)' }}>
           <Tooltip title={tooltipTitle} position="bottom" wrap>
-            <MinimalButton icon="sync" size="xsmall" onAction={() => {}}>
+            <MinimalButton
+              icon="sync"
+              isLoading={isLoading}
+              size="xsmall"
+              onAction={sync}
+            >
               Sync
             </MinimalButton>
           </Tooltip>
         </div>
       </Header>
 
-      {screen === 'Inspect' && <Inspect />}
-      {screen === 'Settings' && <Settings />}
+      {isLoading && <Loader />}
+
+      {!isLoading && screen === 'Inspect' && <Inspect />}
+      {!isLoading && screen === 'Settings' && <Settings />}
     </>
   )
 }

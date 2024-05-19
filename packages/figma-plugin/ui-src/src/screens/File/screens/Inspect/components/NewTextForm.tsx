@@ -60,6 +60,7 @@ const CreatePhrase = ({ text }: SingleTextFormProps) => {
       type: 'texts-sync-received',
       data: {
         items: result.items,
+        type: 'partial',
       },
     })
   }

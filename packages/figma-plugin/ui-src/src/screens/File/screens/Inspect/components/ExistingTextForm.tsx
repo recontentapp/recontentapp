@@ -63,6 +63,7 @@ export const ExistingTextForm = ({ text }: SingleTextFormProps) => {
       type: 'texts-sync-received',
       data: {
         items: [result],
+        type: 'partial',
       },
     })
   }
