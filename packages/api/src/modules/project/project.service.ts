@@ -300,6 +300,18 @@ export class ProjectService {
     }
 
     await this.prismaService.$transaction(async t => {
+      await t.figmaText.deleteMany({
+        where: {
+          phrase: {
+            projectId,
+          },
+        },
+      })
+      await t.figmaFile.deleteMany({
+        where: {
+          projectId,
+        },
+      })
       await t.phraseTranslation.deleteMany({
         where: {
           phrase: {

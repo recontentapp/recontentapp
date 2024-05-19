@@ -38,7 +38,7 @@ export const useCurrentCredentials = () => useContext(context)
 export const CurrentCredentialsProvider = ({
   children,
 }: CurrentCredentialsProviderProps) => {
-  const { fileConfig, userConfig } = useBridge()
+  const { file, userConfig } = useBridge()
 
   const [acceptedWelcome, setAcceptedWelcome] = useState(false)
   const [requestedSelect, setRequestedSelect] = useState(false)
@@ -52,23 +52,23 @@ export const CurrentCredentialsProvider = ({
       return
     }
 
-    if (fileConfig === null && userConfig?.credentials.length === 1) {
+    if (file.config === null && userConfig?.credentials.length === 1) {
       setCurrentCredentials(userConfig.credentials[0])
       return
     }
 
-    if (fileConfig && userConfig) {
+    if (file.config && userConfig) {
       const matchingCredentials = userConfig.credentials.find(
         c =>
-          c.customOrigin === fileConfig.customOrigin &&
-          c.workspaceId === fileConfig.workspaceId,
+          c.customOrigin === file.config?.customOrigin &&
+          c.workspaceId === file.config?.workspaceId,
       )
       if (matchingCredentials) {
         setCurrentCredentials(matchingCredentials)
         return
       }
     }
-  }, [currentCredentials, fileConfig, userConfig])
+  }, [currentCredentials, file.config, userConfig])
 
   const shouldBeWelcomed =
     (!userConfig || userConfig.credentials.length === 0) && !acceptedWelcome
@@ -101,10 +101,10 @@ export const CurrentCredentialsProvider = ({
     )
   }
 
-  const fileNotConfigured = fileConfig === null
+  const fileNotConfigured = file.config === null
   const currentCredentialsMatchFileConfig =
-    fileConfig?.customOrigin === currentCredentials.customOrigin &&
-    fileConfig.workspaceId === currentCredentials.workspaceId
+    file.config?.customOrigin === currentCredentials.customOrigin &&
+    file.config.workspaceId === currentCredentials.workspaceId
   const credentialsValidForFile =
     fileNotConfigured || currentCredentialsMatchFileConfig
 

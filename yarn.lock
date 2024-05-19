@@ -1776,7 +1776,7 @@
     lodash.isundefined "^3.0.1"
     lodash.uniq "^4.5.0"
 
-"@figma/plugin-typings@*":
+"@figma/plugin-typings@1.93.0":
   version "1.93.0"
   resolved "https://registry.yarnpkg.com/@figma/plugin-typings/-/plugin-typings-1.93.0.tgz#ced9d1b206ae06607bd7cd2743dc438311bcecbb"
   integrity sha512-R4iGdkHaoIeJENxz+VUmstOofataZ22Yi7urKS9mr6ZbMJ1TFPBDCrHbKXsJaevvizB9jLhCdNA1wtQci4Ynxg==

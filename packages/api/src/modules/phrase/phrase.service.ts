@@ -418,6 +418,11 @@ export class PhraseService {
           phraseId,
         },
       })
+      await t.figmaText.deleteMany({
+        where: {
+          phraseId,
+        },
+      })
       await t.taggable.deleteMany({
         where: {
           recordId: phraseId,

@@ -1,5 +1,3 @@
-const TEXT_ID_KEY = 'id'
-
 /**
  * Returns directly selected text nodes
  *
@@ -48,24 +46,4 @@ export const getSelectedTraversedTextNodes = () => {
   })
 
   return { texts, traversed }
-}
-
-/**
- * Returns all text nodes that have plugin data
- */
-export const getTraversedPluginTextNodes = () => {
-  return figma.root.findAll(node => {
-    return node.type === 'TEXT' && node.getPluginData(TEXT_ID_KEY).length > 0
-  }) as TextNode[]
-}
-
-/**
- * Returns all text nodes that have plugin data
- */
-export const getTraversedPluginTextNodesWithId = (recontentId: string) => {
-  return figma.root.findAll(node => {
-    return (
-      node.type === 'TEXT' && node.getPluginData(TEXT_ID_KEY) === recontentId
-    )
-  }) as TextNode[]
 }

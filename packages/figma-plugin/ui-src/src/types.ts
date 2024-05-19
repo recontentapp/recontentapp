@@ -3,6 +3,7 @@ import {
   FileConfigSet,
   NotificationRequested,
   PluginInitialized,
+  TextsSyncReceived,
   TextSelectionChanged,
   UserConfigResetRequested,
   UserConfigUpdated,
@@ -18,3 +19,4 @@ export type Emittable =
   | UserConfigUpdated
   | FileConfigSet
   | NotificationRequested
+  | TextsSyncReceived

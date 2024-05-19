@@ -28,11 +28,11 @@ interface State {
 }
 
 export const FileOnboarding = () => {
-  const { fileName, emit } = useBridge()
+  const { file, emit } = useBridge()
   const { currentCredentials } = useCurrentCredentials()
   const { data } = useGetMe()
   const [state, setState] = useState<State>({
-    name: fileName,
+    name: file.name,
     url: undefined,
     projectId: undefined,
     languageId: undefined,
@@ -125,7 +125,7 @@ export const FileOnboarding = () => {
             renderAs="span"
             lineHeight="$lineHeight200"
           >
-            {fileName}
+            {file.name}
           </Text>{' '}
           to Recontent.app!
         </Text>

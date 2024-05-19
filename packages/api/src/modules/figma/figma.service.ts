@@ -57,6 +57,12 @@ interface CreateFileTextsParams {
   >
 }
 
+interface UpdateFileTextParams {
+  id: string
+  requester: Requester
+  content: string
+}
+
 @Injectable()
 export class FigmaService {
   constructor(private prismaService: PrismaService) {}
@@ -126,6 +132,9 @@ export class FigmaService {
     }
 
     const file = await this.prismaService.figmaFile.create({
+      include: {
+        workspace: true,
+      },
       data: {
         name,
         key,
@@ -145,6 +154,9 @@ export class FigmaService {
     const file = await this.prismaService.figmaFile.findUniqueOrThrow({
       where: {
         id,
+      },
+      include: {
+        workspace: true,
       },
     })
 
@@ -205,8 +217,10 @@ export class FigmaService {
         OR: [
           {
             key: {
-              search: query,
+              contains: query,
             },
+          },
+          {
             translations: {
               some: {
                 languageId: file.languageId,
@@ -452,5 +466,62 @@ export class FigmaService {
     )
 
     return texts
+  }
+
+  async updateFileText({ id, requester, content }: UpdateFileTextParams) {
+    const text = await this.prismaService.figmaText.findUniqueOrThrow({
+      where: {
+        id,
+      },
+      include: {
+        file: true,
+      },
+    })
+
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      text.file.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('workspace:write')
+
+    await this.prismaService.phraseTranslation.upsert({
+      where: {
+        phraseId_languageId_revisionId: {
+          phraseId: text.phraseId,
+          languageId: text.file.languageId,
+          revisionId: text.file.revisionId,
+        },
+      },
+      create: {
+        content,
+        languageId: text.file.languageId,
+        revisionId: text.file.revisionId,
+        phraseId: text.phraseId,
+        workspaceId: text.file.workspaceId,
+        createdBy: workspaceAccess.getAccountID(),
+      },
+      update: {
+        content,
+        updatedBy: workspaceAccess.getAccountID(),
+      },
+    })
+
+    const updatedText = await this.prismaService.figmaText.findUniqueOrThrow({
+      where: {
+        id,
+      },
+      include: {
+        phrase: {
+          include: {
+            translations: {
+              where: {
+                languageId: text.file.languageId,
+              },
+            },
+          },
+        },
+      },
+    })
+
+    return updatedText
   }
 }

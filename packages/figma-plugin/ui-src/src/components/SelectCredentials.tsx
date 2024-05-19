@@ -1,4 +1,4 @@
-import { Box, Button, Heading, MinimalButton, Stack, Text } from 'design-system'
+import { Box, Heading, MinimalButton, Stack, Text } from 'design-system'
 import { useBridge } from '../contexts/Bridge'
 import { UserCredentials } from '../../../shared-types'
 import { styled } from '../theme'
@@ -88,7 +88,7 @@ export const SelectCredentials = ({
         <Box>
           <MinimalButton
             size="small"
-            icon="close"
+            icon="reset"
             variation="danger"
             onAction={() => emit({ type: 'user-config-reset-requested' })}
           >

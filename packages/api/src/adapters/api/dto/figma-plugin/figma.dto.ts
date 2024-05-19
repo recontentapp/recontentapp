@@ -67,3 +67,9 @@ export class CreateFigmaTextDto {
   ])
   items: Array<CreateFigmaTextAndCreatePhrase | CreateFigmaTextAndConnectPhrase>
 }
+
+export class UpdateFigmaTextDto {
+  @IsString()
+  @IsNotEmpty()
+  content: string
+}

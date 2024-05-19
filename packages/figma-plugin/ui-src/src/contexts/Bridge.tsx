@@ -20,14 +20,20 @@ export type Screen = 'Inspect' | 'Settings'
 
 type State = Pick<
   Bridge,
-  'screen' | 'fileConfig' | 'fileName' | 'userConfig' | 'selection'
+  'screen' | 'file' | 'userConfig' | 'selection' | 'currentPage'
 >
 
 const defaultState: State = {
   screen: 'Inspect',
-  fileConfig: null,
-  fileName: '',
+  file: {
+    name: '',
+    config: null,
+  },
   userConfig: null,
+  currentPage: {
+    nodeId: '',
+    lastSyncedAt: null,
+  },
   selection: {
     texts: [],
     traversed: false,
@@ -37,9 +43,15 @@ const defaultState: State = {
 interface Bridge {
   screen: Screen
   updateScreen: (screen: Screen) => void
-  fileConfig: FileConfig | null
   userConfig: UserConfig | null
-  fileName: string
+  file: {
+    name: string
+    config: FileConfig | null
+  }
+  currentPage: {
+    nodeId: string
+    lastSyncedAt: number | null
+  }
   selection: {
     texts: Text[]
     traversed: boolean
@@ -66,12 +78,12 @@ export const BridgeProvider = ({ children }: BridgeProviderProps) => {
   const emit = useEmit<Emittable>()
   useOn<Receivable>({
     'plugin-initialized': (message: PluginInitialized) => {
-      const { userConfig, fileConfig, fileName, selection } = message.data
+      const { userConfig, currentPage, file, selection } = message.data
       setState({
         screen: 'Inspect',
-        fileConfig,
-        fileName,
+        file,
         userConfig,
+        currentPage,
         selection,
       })
       setIsReady(true)

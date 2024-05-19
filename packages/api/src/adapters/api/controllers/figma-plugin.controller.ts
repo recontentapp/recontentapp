@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   UseGuards,
 } from '@nestjs/common'
 import {
@@ -27,6 +28,7 @@ import { RequiredQuery } from 'src/utils/required-query'
 import {
   CreateFigmaFileDto,
   CreateFigmaTextDto,
+  UpdateFigmaTextDto,
 } from '../dto/figma-plugin/figma.dto'
 import { ConfigService } from '@nestjs/config'
 import { Config } from 'src/utils/config'
@@ -67,9 +69,12 @@ export class FigmaPluginController {
     }
   }
 
-  private static formatFigmaFile(
+  private formatFigmaFile(
     file: FigmaFile,
+    workspaceKey: string,
   ): Components.Schemas.FigmaFile {
+    const appUrl = this.configService.get('urls.app', { infer: true })
+
     return {
       id: file.id,
       revisionId: file.revisionId,
@@ -77,6 +82,7 @@ export class FigmaPluginController {
       languageId: file.languageId,
       key: file.key,
       url: file.url,
+      inAppUrl: `${appUrl}/${workspaceKey}/projects/${file.projectId}/phrases/${file.revisionId}`,
       name: file.name,
       createdAt: file.createdAt.toISOString(),
       updatedAt: file.updatedAt.toISOString(),
@@ -235,7 +241,7 @@ export class FigmaPluginController {
       name,
     })
 
-    return FigmaPluginController.formatFigmaFile(file)
+    return this.formatFigmaFile(file, file.workspace.key)
   }
 
   @Get('/figma-files/:id')
@@ -244,7 +250,7 @@ export class FigmaPluginController {
     @Param('id') id: string,
   ): Promise<Paths.GetFigmaFile.Responses.$200> {
     const file = await this.figmaService.getFile({ requester, id })
-    return FigmaPluginController.formatFigmaFile(file)
+    return this.formatFigmaFile(file, file.workspace.key)
   }
 
   @Delete('/figma-files/:id')
@@ -307,5 +313,20 @@ export class FigmaPluginController {
     return {
       items: texts.map(FigmaPluginController.formatFigmaFileText),
     }
+  }
+
+  @Put('/figma-files/:id/texts/:textId')
+  async updateFigmaText(
+    @AuthenticatedRequester() requester: Requester,
+    @Param('textId') textId: string,
+    @Body() { content }: UpdateFigmaTextDto,
+  ): Promise<Paths.UpdateFigmaFileText.Responses.$200> {
+    const text = await this.figmaService.updateFileText({
+      requester,
+      id: textId,
+      content,
+    })
+
+    return FigmaPluginController.formatFigmaFileText(text)
   }
 }

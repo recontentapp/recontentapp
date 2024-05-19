@@ -41,15 +41,20 @@ export interface Text {
     phraseKey: string
     content: string | null
   } | null
-  appLastSyncedAt: number | null
 }
 
 export interface PluginInitialized {
   type: 'plugin-initialized'
   data: {
     userConfig: UserConfig | null
-    fileConfig: FileConfig | null
-    fileName: string
+    file: {
+      name: string
+      config: FileConfig | null
+    }
+    currentPage: {
+      nodeId: string
+      lastSyncedAt: number | null
+    }
     selection: {
       texts: Text[]
       traversed: boolean
@@ -88,5 +93,21 @@ export interface TextSelectionChanged {
   data: {
     texts: Text[]
     traversed: boolean
+  }
+}
+
+export interface TextSync {
+  id: string
+  pageNodeId: string
+  textNodeId: string
+  content: string | null
+  phraseKey: string
+  phraseId: string
+}
+
+export interface TextsSyncReceived {
+  type: 'texts-sync-received'
+  data: {
+    items: TextSync[]
   }
 }

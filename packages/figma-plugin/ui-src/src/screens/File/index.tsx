@@ -1,13 +1,14 @@
-import { Box, Icon, MinimalButton, Stack, Tooltip } from 'design-system'
+import { MinimalButton, Tooltip } from 'design-system'
 import { Screen, useBridge } from '../../contexts/Bridge'
 import { FileOnboarding } from './screens/FileOnboarding/FileOnboarding'
-import { Inspect } from './screens/Inspect'
+import { Inspect } from './screens/Inspect/Inspect'
 import { Settings } from './screens/Settings'
 import { Tabs } from '../../components/Tabs'
 import { styled } from '../../theme'
 
 const Header = styled('header', {
   position: 'sticky',
+  zIndex: 10,
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'space-between',
@@ -21,11 +22,15 @@ const Header = styled('header', {
 })
 
 export const File = () => {
-  const { fileConfig, screen, updateScreen } = useBridge()
+  const { file, screen, currentPage, updateScreen } = useBridge()
 
-  if (!fileConfig) {
+  if (!file.config) {
     return <FileOnboarding />
   }
+
+  const tooltipTitle = currentPage.lastSyncedAt
+    ? `Sync from Recontent.app (Last ${new Date(currentPage.lastSyncedAt).toDateString()})`
+    : 'Sync from Recontent.app'
 
   return (
     <>
@@ -41,8 +46,10 @@ export const File = () => {
         />
 
         <div style={{ transform: 'translateX(-1px) translateY(-4px)' }}>
-          <Tooltip title="Sync from Recontent.app" position="bottom" wrap>
-            <MinimalButton icon="sync" size="xsmall" onAction={() => {}} />
+          <Tooltip title={tooltipTitle} position="bottom" wrap>
+            <MinimalButton icon="sync" size="xsmall" onAction={() => {}}>
+              Sync
+            </MinimalButton>
           </Tooltip>
         </div>
       </Header>

@@ -19,6 +19,8 @@ export type IconName =
   | 'keyboard_arrow_right'
   | 'more'
   | 'settings'
+  | 'reset'
+  | 'unlink'
   | 'import_outlined'
   | 'merge'
   | 'translate'

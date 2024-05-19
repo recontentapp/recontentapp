@@ -1,13 +1,15 @@
 import {
   FileConfigSet,
   NotificationRequested,
+  TextsSyncReceived,
   UserConfigUpdated,
 } from '../shared-types'
 import { $emit, $on } from './src/io'
 import { getSelectedTraversedTextNodes } from './src/selection'
 import { getUserConfig, setUserConfig } from './src/storage/config'
 import { getFileConfig, resetFileData, setFileConfig } from './src/storage/file'
-import { getTextData } from './src/storage/texts'
+import { getPageLastSyncedAt } from './src/storage/page'
+import { getTextData, syncTextData } from './src/storage/texts'
 import { Emittable, Receivable } from './src/types'
 
 figma.skipInvisibleInstanceChildren = true
@@ -18,17 +20,23 @@ const emit = $emit<Emittable>()
 const onPluginInitialized = async () => {
   const userConfig = await getUserConfig()
   const fileConfig = getFileConfig()
+  const { texts, traversed } = getSelectedTraversedTextNodes()
 
   emit({
     type: 'plugin-initialized',
     data: {
       userConfig,
-      fileConfig,
-      fileName: figma.root.name,
-      // TODO: Update selection
+      file: {
+        name: figma.root.name,
+        config: fileConfig,
+      },
+      currentPage: {
+        nodeId: figma.currentPage.id,
+        lastSyncedAt: getPageLastSyncedAt(),
+      },
       selection: {
-        texts: [],
-        traversed: false,
+        texts: texts.map(getTextData),
+        traversed,
       },
     },
   })
@@ -54,6 +62,10 @@ $on<Receivable>({
   'notification-requested': (data: NotificationRequested) => {
     figma.notify(data.data.message, { error: data.data.type === 'error' })
   },
+  'texts-sync-received': async (data: TextsSyncReceived) => {
+    await Promise.all(data.data.items.map(syncTextData))
+    onPluginInitialized()
+  },
 })
 
 onPluginInitialized()
@@ -68,5 +80,4 @@ figma.on('selectionchange', () => {
       traversed,
     },
   })
-  console.log(getSelectedTraversedTextNodes())
 })

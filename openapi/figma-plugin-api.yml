@@ -285,6 +285,41 @@ paths:
                 additionalProperties: false
                 required:
                   - items
+  '/figma-files/{id}/texts/{textId}':
+    put:
+      operationId: updateFigmaFileText
+      parameters:
+        - name: id
+          in: path
+          description: Figma file ID
+          required: true
+          schema:
+            type: string
+        - name: textId
+          in: path
+          description: Figma text ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+              additionalProperties: false
+              required:
+                - content
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FigmaText'
 components:
   schemas:
     Pagination:
@@ -396,6 +431,8 @@ components:
           type: string
         url:
           type: string
+        inAppUrl:
+          type: string
         name:
           type: string
         createdAt:
@@ -412,6 +449,7 @@ components:
         - languageId
         - key
         - url
+        - inAppUrl
         - name
         - createdAt
         - updatedAt
