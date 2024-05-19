@@ -50,35 +50,47 @@ export const Settings = () => {
       paddingX="$space80"
       paddingY="$space80"
     >
+      <Stack direction="column" spacing="$space100">
+        <Stack direction="column" spacing="$space60">
+          <Text size="$size80" color="$gray14" variation="bold">
+            Name
+          </Text>
+          <Text size="$size80" color="$gray14">
+            {data.name}
+          </Text>
+        </Stack>
+
+        <Stack direction="column" spacing="$space60">
+          <Text size="$size80" color="$gray14" variation="bold">
+            Creation date
+          </Text>
+          <Text size="$size80" color="$gray14">
+            {formatRelative(new Date(data.createdAt))}
+          </Text>
+        </Stack>
+      </Stack>
+
       <Stack direction="column" spacing="$space80">
-        <Text size="$size80" color="$gray14">
-          Name: {data.name}
-        </Text>
-
-        <Text size="$size80" color="$gray14">
-          Created {formatRelative(new Date(data.createdAt))}
-        </Text>
-
         <ExternalLink
-          fontSize="$size80"
+          fontSize="$size60"
           href={data.inAppUrl}
           title="Recontent.app URL"
         >
           Recontent.app URL
         </ExternalLink>
-      </Stack>
 
-      <Box>
-        <MinimalButton
-          isLoading={isPending}
-          icon="unlink"
-          variation="danger"
-          size="small"
-          onAction={onDelete}
-        >
-          Unlink Figma file
-        </MinimalButton>
-      </Box>
+        <div style={{ marginLeft: -8 }}>
+          <MinimalButton
+            isLoading={isPending}
+            icon="unlink"
+            variation="danger"
+            size="small"
+            onAction={onDelete}
+          >
+            Unlink Figma file
+          </MinimalButton>
+        </div>
+      </Stack>
     </Stack>
   )
 }

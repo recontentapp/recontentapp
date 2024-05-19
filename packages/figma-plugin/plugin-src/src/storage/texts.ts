@@ -20,6 +20,8 @@ export const syncTextData = async (data: TextSync) => {
     node.setPluginData(APP_CONTENT, data.content)
 
     if (!node.hasMissingFont) {
+      // TODO: Investigate potential performance issues
+      await figma.loadFontAsync(node.fontName as FontName)
       node.characters = data.content
     }
   }

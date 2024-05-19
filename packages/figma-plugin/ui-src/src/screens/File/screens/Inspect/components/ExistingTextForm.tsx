@@ -81,16 +81,6 @@ export const ExistingTextForm = ({ text }: SingleTextFormProps) => {
       paddingY="$space80"
     >
       <Stack direction="column" spacing="$space100">
-        {data?.inAppUrl && (
-          <ExternalLink
-            fontSize="$size80"
-            href={`${data.inAppUrl}?key=${text.app?.phraseKey}`}
-            title="See on Recontent.app"
-          >
-            See on Recontent.app
-          </ExternalLink>
-        )}
-
         <Stack direction="column" spacing="$space60">
           <Text size="$size80" color="$gray14" variation="bold">
             Phrase key
@@ -103,12 +93,10 @@ export const ExistingTextForm = ({ text }: SingleTextFormProps) => {
             Content
           </Text>
 
-          <Text size="$size80" color="$gray14">
-            Recontent.app: {text.app?.content}
-          </Text>
+          <Key>{text.app?.content}</Key>
 
           {hasDiff && (
-            <Text size="$size80" color="$gray14">
+            <Text size="$size60" color="$gray11">
               Diff:{' '}
               {parts.map((part, index) => {
                 const color = part.added
@@ -121,7 +109,7 @@ export const ExistingTextForm = ({ text }: SingleTextFormProps) => {
                   <Text
                     key={index}
                     renderAs="span"
-                    size="$size80"
+                    size="$size60"
                     color={color}
                   >
                     {part.value}
@@ -133,16 +121,30 @@ export const ExistingTextForm = ({ text }: SingleTextFormProps) => {
         </Stack>
       </Stack>
 
-      <Box>
-        <Button
-          variation="primary"
-          isLoading={isUpdating}
-          onAction={onUpdate}
-          isDisabled={text.app?.content === text.figma.content}
-        >
-          Push changes
-        </Button>
-      </Box>
+      <Stack direction="column" spacing="$space60">
+        <Box>
+          <Button
+            variation="primary"
+            size="small"
+            icon="cloud_upload"
+            isLoading={isUpdating}
+            onAction={onUpdate}
+            isDisabled={text.app?.content === text.figma.content}
+          >
+            Push changes
+          </Button>
+        </Box>
+
+        {data?.inAppUrl && (
+          <ExternalLink
+            fontSize="$size60"
+            href={`${data.inAppUrl}?key=${text.app?.phraseKey}`}
+            title="See on Recontent.app"
+          >
+            See on Recontent.app
+          </ExternalLink>
+        )}
+      </Stack>
     </Stack>
   )
 }
