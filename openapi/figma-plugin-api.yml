@@ -164,6 +164,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FigmaFile'
+    put:
+      operationId: updateFigmaFile
+      parameters:
+        - name: id
+          in: path
+          description: Figma file ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                languageId:
+                  type: string
+              additionalProperties: false
+              required:
+                - languageId
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FigmaFile'
     delete:
       operationId: deleteFigmaFile
       parameters:
@@ -427,6 +455,12 @@ components:
           type: string
         languageId:
           type: string
+        projectId:
+          type: string
+        projectName:
+          type: string
+        languageName:
+          type: string
         key:
           type: string
         url:
@@ -447,6 +481,9 @@ components:
         - workspaceId
         - revisionId
         - languageId
+        - projectId
+        - projectName
+        - languageName
         - key
         - url
         - inAppUrl

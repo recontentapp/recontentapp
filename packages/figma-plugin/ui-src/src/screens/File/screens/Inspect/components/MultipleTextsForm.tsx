@@ -112,10 +112,21 @@ export const MultipleTextsForm = ({ texts }: SingleTextFormProps) => {
               direction="row"
               alignItems="center"
               spacing="$space0"
+              flexWrap="nowrap"
             >
               <Box flexGrow={1}>
                 <Text size="$size80" color="$gray14" variation="bold">
-                  {text.figma.content}
+                  <span
+                    style={{
+                      display: 'block',
+                      maxWidth: 280,
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}
+                  >
+                    {text.figma.content}
+                  </span>
                 </Text>
               </Box>
 

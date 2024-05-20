@@ -28,6 +28,7 @@ import { RequiredQuery } from 'src/utils/required-query'
 import {
   CreateFigmaFileDto,
   CreateFigmaTextDto,
+  UpdateFigmaFileDto,
   UpdateFigmaTextDto,
 } from '../dto/figma-plugin/figma.dto'
 import { ConfigService } from '@nestjs/config'
@@ -70,7 +71,10 @@ export class FigmaPluginController {
   }
 
   private formatFigmaFile(
-    file: FigmaFile,
+    file: FigmaFile & {
+      language: Language
+      project: Project
+    },
     workspaceKey: string,
   ): Components.Schemas.FigmaFile {
     const appUrl = this.configService.get('urls.app', { infer: true })
@@ -80,6 +84,9 @@ export class FigmaPluginController {
       revisionId: file.revisionId,
       workspaceId: file.workspaceId,
       languageId: file.languageId,
+      projectId: file.projectId,
+      languageName: file.language.name,
+      projectName: file.project.name,
       key: file.key,
       url: file.url,
       inAppUrl: `${appUrl}/${workspaceKey}/projects/${file.projectId}/phrases/${file.revisionId}`,
@@ -250,6 +257,21 @@ export class FigmaPluginController {
     @Param('id') id: string,
   ): Promise<Paths.GetFigmaFile.Responses.$200> {
     const file = await this.figmaService.getFile({ requester, id })
+    return this.formatFigmaFile(file, file.workspace.key)
+  }
+
+  @Put('/figma-files/:id')
+  async updateFigmaFile(
+    @AuthenticatedRequester() requester: Requester,
+    @Param('id') id: string,
+    @Body() { languageId }: UpdateFigmaFileDto,
+  ): Promise<Paths.UpdateFigmaFile.Responses.$200> {
+    const file = await this.figmaService.updateFile({
+      requester,
+      id,
+      languageId,
+    })
+
     return this.formatFigmaFile(file, file.workspace.key)
   }
 

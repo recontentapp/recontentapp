@@ -16,14 +16,13 @@ export const syncTextData = async (data: TextSync) => {
   node.setPluginData(APP_PHRASE_ID, data.phraseId)
   node.setPluginData(APP_PHRASE_KEY, data.phraseKey)
 
-  if (data.content) {
-    node.setPluginData(APP_CONTENT, data.content)
+  const newContent = data.content || data.phraseKey
+  node.setPluginData(APP_CONTENT, '')
 
-    if (!node.hasMissingFont) {
-      // TODO: Investigate potential performance issues
-      await figma.loadFontAsync(node.fontName as FontName)
-      node.characters = data.content
-    }
+  if (!node.hasMissingFont) {
+    // TODO: Investigate potential performance issues
+    await figma.loadFontAsync(node.fontName as FontName)
+    node.characters = newContent
   }
 }
 

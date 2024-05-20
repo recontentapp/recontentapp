@@ -63,6 +63,12 @@ interface UpdateFileTextParams {
   content: string
 }
 
+interface UpdateFileParams {
+  id: string
+  requester: Requester
+  languageId: string
+}
+
 @Injectable()
 export class FigmaService {
   constructor(private prismaService: PrismaService) {}
@@ -134,6 +140,8 @@ export class FigmaService {
     const file = await this.prismaService.figmaFile.create({
       include: {
         workspace: true,
+        language: true,
+        project: true,
       },
       data: {
         name,
@@ -157,6 +165,8 @@ export class FigmaService {
       },
       include: {
         workspace: true,
+        language: true,
+        project: true,
       },
     })
 
@@ -166,6 +176,55 @@ export class FigmaService {
     workspaceAccess.hasAbilityOrThrow('workspace:read')
 
     return file
+  }
+
+  async updateFile({ id, requester, languageId }: UpdateFileParams) {
+    const file = await this.prismaService.figmaFile.findUniqueOrThrow({
+      where: {
+        id,
+      },
+    })
+
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      file.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('workspace:write')
+
+    const project = await this.prismaService.project.findUniqueOrThrow({
+      where: {
+        id: file.projectId,
+      },
+      include: {
+        languages: {
+          where: {
+            id: languageId,
+          },
+        },
+      },
+    })
+
+    const languageInProject = project.languages.find(
+      language => language.id === languageId,
+    )
+    if (!languageInProject) {
+      throw new BadRequestException('Language not found in project')
+    }
+
+    const updatedFile = await this.prismaService.figmaFile.update({
+      where: {
+        id,
+      },
+      data: {
+        languageId,
+      },
+      include: {
+        workspace: true,
+        language: true,
+        project: true,
+      },
+    })
+
+    return updatedFile
   }
 
   async deleteFile({ id, requester }: DeleteFileParams) {

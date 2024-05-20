@@ -73,3 +73,9 @@ export class UpdateFigmaTextDto {
   @IsNotEmpty()
   content: string
 }
+
+export class UpdateFigmaFileDto {
+  @IsString()
+  @IsNotEmpty()
+  languageId: string
+}

@@ -79,6 +79,7 @@ export const theme = {
     space900: '144px',
   },
   fontSizes: {
+    size20: '8px',
     size40: '10px',
     size60: '12px',
     size80: '14px',

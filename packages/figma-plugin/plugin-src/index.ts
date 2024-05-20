@@ -73,6 +73,10 @@ $on<Receivable>({
 
 onPluginInitialized()
 
+figma.on('currentpagechange', () => {
+  onPluginInitialized()
+})
+
 figma.on('selectionchange', () => {
   const { texts, traversed } = getSelectedTraversedTextNodes()
 
