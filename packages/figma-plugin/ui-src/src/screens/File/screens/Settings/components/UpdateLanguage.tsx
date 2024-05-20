@@ -1,6 +1,7 @@
 import { Banner, Button, SelectField, Stack, Text } from 'design-system'
 import { useBridge } from '../../../../../contexts/Bridge'
 import {
+  getGetFigmaFileQueryKey,
   useListLanguages,
   useUpdateFigmaFile,
 } from '../../../../../generated/reactQuery'
@@ -8,6 +9,7 @@ import { FullpageSpinner } from '../../../../../components/FullpageSpinner'
 import { useState } from 'react'
 import { useCurrentCredentials } from '../../../../../contexts/CurrentCredentials'
 import { useFile } from '../../../hooks'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface UpdateLanguageProps {
   onRequestSync: () => void
@@ -18,6 +20,7 @@ export const UpdateLanguage = ({
   onClose,
   onRequestSync,
 }: UpdateLanguageProps) => {
+  const queryClient = useQueryClient()
   const [languageId, setLanguageId] = useState<string | undefined>(undefined)
   const { file, emit } = useBridge()
   const { mutateAsync, isPending } = useUpdateFigmaFile()
@@ -47,6 +50,13 @@ export const UpdateLanguage = ({
         languageId,
       },
     }).then(res => {
+      queryClient.invalidateQueries({
+        queryKey: getGetFigmaFileQueryKey({
+          pathParams: {
+            id: res.id,
+          },
+        }),
+      })
       emit({
         type: 'file-config-set',
         data: {

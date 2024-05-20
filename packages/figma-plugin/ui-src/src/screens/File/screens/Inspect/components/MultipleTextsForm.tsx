@@ -130,17 +130,19 @@ export const MultipleTextsForm = ({ texts }: SingleTextFormProps) => {
                 </Text>
               </Box>
 
-              <MinimalButton
-                icon="delete"
-                size="xsmall"
-                onAction={() => {
-                  setNewTexts(localTexts => {
-                    const copy = [...localTexts]
-                    copy.splice(index, 1)
-                    return copy
-                  })
-                }}
-              />
+              <div style={{ flexShrink: 0 }}>
+                <MinimalButton
+                  icon="delete"
+                  size="xsmall"
+                  onAction={() => {
+                    setNewTexts(localTexts => {
+                      const copy = [...localTexts]
+                      copy.splice(index, 1)
+                      return copy
+                    })
+                  }}
+                />
+              </div>
             </Stack>
           ))}
         </Stack>

@@ -6,8 +6,9 @@ import {
   MinimalButton,
   Stack,
   TextField,
+  Text,
 } from 'design-system'
-import { Text } from '../../../../../../../shared-types'
+import { Text as IText } from '../../../../../../../shared-types'
 import { useState } from 'react'
 import {
   useCreateFigmaFileText,
@@ -17,7 +18,7 @@ import { useBridge } from '../../../../../contexts/Bridge'
 import { useDebouncedValue } from '../../../../../hooks/debouncedValue'
 
 interface SingleTextFormProps {
-  text: Text
+  text: IText
 }
 
 const CreatePhrase = ({ text }: SingleTextFormProps) => {
@@ -87,7 +88,7 @@ const CreatePhrase = ({ text }: SingleTextFormProps) => {
 }
 
 const ConnectToPhrase = ({ text }: SingleTextFormProps) => {
-  const { file } = useBridge()
+  const { file, emit } = useBridge()
   const [searchTerm, setSearchTerm] = useState<string>('')
   const [debouncedSearchTerm] = useDebouncedValue(searchTerm, 500)
   const { data } = useListFigmaFileAvailablePhrases(
@@ -104,8 +105,49 @@ const ConnectToPhrase = ({ text }: SingleTextFormProps) => {
     },
   )
 
+  const { mutateAsync } = useCreateFigmaFileText({
+    onError: () => {
+      emit({
+        type: 'notification-requested',
+        data: {
+          message: 'Failed to connect phrase',
+          type: 'error',
+        },
+      })
+    },
+  })
+
+  const onSubmit = async (phraseId: string) => {
+    const result = await mutateAsync({
+      pathParams: {
+        id: file.config!.id,
+      },
+      body: {
+        items: [
+          {
+            phraseId,
+            textNodeId: text.figma.nodeId,
+            pageNodeId: text.figma.pageNodeId,
+          },
+        ],
+      },
+    }).catch(() => null)
+
+    if (!result) {
+      return
+    }
+
+    emit({
+      type: 'texts-sync-received',
+      data: {
+        items: result.items,
+        type: 'partial',
+      },
+    })
+  }
+
   return (
-    <Form onSubmit={() => {}}>
+    <Stack direction="column" spacing="$space100">
       <TextField
         label="Search for a phrase"
         value={searchTerm}
@@ -113,14 +155,68 @@ const ConnectToPhrase = ({ text }: SingleTextFormProps) => {
         placeholder="Search for a phrase"
       />
 
-      <ul>
-        {data?.items.map(i => (
-          <li key={i.id}>
-            <button>Link to {i.key}</button>
-          </li>
-        ))}
-      </ul>
-    </Form>
+      {data && (
+        <Stack width="100%" direction="column" spacing="$space20">
+          {data.items.map(item => (
+            <Stack
+              width="100%"
+              key={item.id}
+              direction="row"
+              alignItems="center"
+              spacing="$space0"
+              flexWrap="nowrap"
+            >
+              <Box flexGrow={1}>
+                <Stack direction="column" spacing="$space20">
+                  {item.content && (
+                    <Text size="$size80" color="$gray14" variation="bold">
+                      <span
+                        title={item.content}
+                        style={{
+                          display: 'block',
+                          maxWidth: 280,
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {item.content}
+                      </span>
+                    </Text>
+                  )}
+                  <Text
+                    size={item.content ? '$size60' : '$size80'}
+                    color={item.content ? '$gray11' : '$gray14'}
+                  >
+                    <span
+                      style={{
+                        display: 'block',
+                        maxWidth: 280,
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                    >
+                      {item.key}
+                    </span>
+                  </Text>
+                </Stack>
+              </Box>
+
+              <div style={{ flexShrink: 0 }}>
+                <MinimalButton
+                  icon="link"
+                  size="xsmall"
+                  onAction={() => onSubmit(item.id)}
+                >
+                  Link
+                </MinimalButton>
+              </div>
+            </Stack>
+          ))}
+        </Stack>
+      )}
+    </Stack>
   )
 }
 
