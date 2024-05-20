@@ -1,6 +1,6 @@
 import { UserConfig } from '../../../shared-types'
 
-const USER_CONFIG_STORAGE_KEY = 'user_config'
+const USER_CONFIG_STORAGE_KEY = 'userConfig'
 
 export const getUserConfig = async (): Promise<UserConfig | null> => {
   const config = await figma.clientStorage.getAsync(USER_CONFIG_STORAGE_KEY)

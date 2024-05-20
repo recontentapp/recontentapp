@@ -1008,7 +1008,7 @@ export class PrivateApiController {
     const apiUrl = this.configService.get('urls.api', { infer: true })
 
     return {
-      link: `${apiUrl}/private-api/GetPhrasesExport?token=${token}`,
+      link: `${apiUrl}/private/GetPhrasesExport?token=${token}`,
     }
   }
 

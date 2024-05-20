@@ -74,6 +74,9 @@ export class PrismaExceptionFilter implements ExceptionFilter {
 
     let httpStatus = 500
 
+    // Prisma errors
+    // https://www.prisma.io/docs/orm/reference/error-reference
+
     if (exception instanceof PrismaClientRustPanicError) {
       httpStatus = 400
     } else if (exception instanceof PrismaClientValidationError) {

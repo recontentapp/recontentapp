@@ -2,7 +2,7 @@ import { FileConfig } from '../../../shared-types'
 import { resetPage } from './page'
 import { APP_ID, resetText } from './texts'
 
-const FILE_CONFIG_STORAGE_KEY = 'file_config'
+const FILE_CONFIG_STORAGE_KEY = 'fileConfig'
 
 export const getFileConfig = (): FileConfig | null => {
   const config = figma.root.getPluginData(FILE_CONFIG_STORAGE_KEY)
