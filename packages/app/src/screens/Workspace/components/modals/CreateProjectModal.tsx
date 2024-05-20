@@ -1,16 +1,8 @@
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import {
-  Box,
-  Modal,
-  ModalContent,
-  ModalRef,
-  Stack,
-  toast,
-} from '../../../../components/primitives'
+import { Box, Modal, ModalContent, ModalRef, Stack, toast } from 'design-system'
 import { useCurrentWorkspace } from '../../../../hooks/workspace'
-import { styled } from '../../../../theme'
 import {
   getListProjectsQueryKey,
   useCreateProject,
@@ -18,6 +10,7 @@ import {
 } from '../../../../generated/reactQuery'
 import { useQueryClient } from '@tanstack/react-query'
 import routes from '../../../../routing'
+import { styled } from '../../../../theme'
 
 export interface CreateProjectModalRef {
   open: () => void

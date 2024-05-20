@@ -1,12 +1,6 @@
 import { FC, useMemo, useState } from 'react'
 
-import {
-  Box,
-  Button,
-  SelectField,
-  Stack,
-  toast,
-} from '../../../../../components/primitives'
+import { Box, Button, SelectField, Stack, toast } from 'design-system'
 import {
   getGetProjectQueryKey,
   useAddLanguagesToProject,

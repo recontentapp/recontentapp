@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom'
 
-import { Box, Icon, Stack, Text } from '../../../components/primitives'
-import { styled } from '../../../theme'
+import { Box, Icon, Stack, Text } from 'design-system'
 import { useSystem } from '../../../hooks/system'
 import { useLazyGetWorkspaceBillingStatus } from '../../../generated/reactQuery'
 import { useCurrentWorkspace, useHasAbility } from '../../../hooks/workspace'
 import routes from '../../../routing'
+import { styled } from '../../../theme'
 
 const LinkContainer = styled('div', {
   display: 'flex',

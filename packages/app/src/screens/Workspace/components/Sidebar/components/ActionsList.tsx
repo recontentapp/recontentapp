@@ -1,12 +1,6 @@
 import { FC } from 'react'
 
-import {
-  Box,
-  Icon,
-  IconName,
-  Stack,
-  Text,
-} from '../../../../../components/primitives'
+import { Box, Icon, IconName, Stack, Text } from 'design-system'
 import { styled } from '../../../../../theme'
 
 export interface ActionButtonProps {

@@ -8,7 +8,7 @@ import {
   SelectField,
   Stack,
   toast,
-} from '../../../../../components/primitives'
+} from 'design-system'
 import { Components } from '../../../../../generated/typeDefinitions'
 import { fileFormatLabels } from '../../../../../utils/files'
 import {

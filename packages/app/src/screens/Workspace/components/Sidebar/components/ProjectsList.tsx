@@ -1,10 +1,10 @@
 import { FC } from 'react'
 import { useMatch, useNavigate } from 'react-router-dom'
 
-import { Box, Icon, Stack, Tooltip } from '../../../../../components/primitives'
+import { Box, Icon, Stack, Tooltip } from 'design-system'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
-import { styled } from '../../../../../theme'
 import routes from '../../../../../routing'
+import { styled } from '../../../../../theme'
 
 interface ProjectsListItem {
   id: string
@@ -95,7 +95,7 @@ export const ProjectsList: FC<ProjectsListProps> = ({
           {onAdd && (
             <Tooltip title="Quickly create a project" position="right">
               <Button onClick={onAdd} aria-label="Quickly create a project">
-                <Icon src="add_circle_outline" size={20} color="$purple400" />
+                <Icon src="add_circle" size={20} color="$purple400" />
               </Button>
             </Tooltip>
           )}

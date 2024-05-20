@@ -3,13 +3,13 @@ import { Command } from 'cmdk'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { Box } from '../../../../components/primitives'
-import { keyframes, styled } from '../../../../theme'
+import { Box } from 'design-system'
 import { useModals } from '../../hooks/modals'
 import { useKBarContext } from './context'
 import { useListProjects } from '../../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../../hooks/workspace'
 import routes from '../../../../routing'
+import { keyframes, styled } from '../../../../theme'
 
 const fadeIn = keyframes({
   '0%': {

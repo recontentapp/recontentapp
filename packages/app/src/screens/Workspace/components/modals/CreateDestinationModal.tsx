@@ -19,7 +19,7 @@ import {
   Switch,
   TextField,
   toast,
-} from '../../../../components/primitives'
+} from 'design-system'
 import { Components } from '../../../../generated/typeDefinitions'
 import {
   getListDestinationsQueryKey,
@@ -29,9 +29,9 @@ import {
 } from '../../../../generated/reactQuery'
 import { fileFormatLabels } from '../../../../utils/files'
 import { useQueryClient } from '@tanstack/react-query'
-import { styled } from '../../../../theme'
 import { destinationTypeLabels } from '../../../../utils/destinations'
 import { useSystem } from '../../../../hooks/system'
+import { styled } from '../../../../theme'
 
 export interface CreateDestinationModalRef {
   open: (project: Components.Schemas.Project) => void
@@ -284,7 +284,6 @@ const Content: FC<ContentProps> = ({ project, close }) => {
                   fontSize="$size80"
                   icon={false}
                   href="https://cloud.google.com/storage/docs/access-control/iam-roles"
-                  target="_blank"
                 >
                   with a role
                 </ExternalLink>{' '}
@@ -308,7 +307,6 @@ const Content: FC<ContentProps> = ({ project, close }) => {
                   fontSize="$size80"
                   icon={false}
                   href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users.html"
-                  target="_blank"
                 >
                   IAM user
                 </ExternalLink>{' '}
@@ -316,7 +314,6 @@ const Content: FC<ContentProps> = ({ project, close }) => {
                 <ExternalLink
                   fontSize="$size80"
                   icon={false}
-                  target="_blank"
                   title="all write/read permissions for objects"
                   href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-with-s3-actions.html#using-with-s3-actions-related-to-objects"
                 >

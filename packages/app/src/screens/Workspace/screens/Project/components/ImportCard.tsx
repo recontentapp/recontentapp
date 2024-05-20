@@ -1,12 +1,5 @@
 import { FC } from 'react'
-import {
-  FigmaIcon,
-  Heading,
-  Icon,
-  IconName,
-  Stack,
-  Text,
-} from '../../../../../components/primitives'
+import { FigmaIcon, Heading, Icon, IconName, Stack, Text } from 'design-system'
 import { styled } from '../../../../../theme'
 
 export interface ImportCardProps {

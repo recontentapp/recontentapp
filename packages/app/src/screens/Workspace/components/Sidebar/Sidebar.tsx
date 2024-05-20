@@ -1,8 +1,7 @@
 import { FC, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { Box, Stack } from '../../../../components/primitives'
-import { styled } from '../../../../theme'
+import { Box, Stack } from 'design-system'
 import { useModals } from '../../hooks/modals'
 import { ActionButtonProps, ActionsList } from './components/ActionsList'
 import { Button } from './components/Button'
@@ -12,6 +11,7 @@ import { useListProjects } from '../../../../generated/reactQuery'
 import { useCurrentWorkspace, useHasAbility } from '../../../../hooks/workspace'
 import routes from '../../../../routing'
 import { useSystem } from '../../../../hooks/system'
+import { styled } from '../../../../theme'
 
 const Container = styled('aside', {
   display: 'flex',

@@ -5,13 +5,18 @@ import {
   WorkspaceBillingSettings as PrismaWorkspaceBillingSettings,
 } from '@prisma/client'
 import { Components } from 'src/generated/typeDefinitions'
-import { HumanRequestUser, ServiceRequestUser } from './types'
+import {
+  HumanRequestUser,
+  ScopedHumanRequestUser,
+  ServiceRequestUser,
+} from './types'
 import getConfig, { Config } from 'src/utils/config'
 
 export interface Requester {
   getDefaultWorkspaceID: () => string
   getLoggingAttributes: () => Record<string, string>
   getWorkspaceAccessOrThrow: (workspaceId: string) => WorkspaceAccess
+  getUserDetails: () => { firstName: string; lastName: string }
   getUserID: () => string
   getUserEmail: () => string
 }
@@ -129,7 +134,7 @@ export class WorkspaceAccess {
   hasAbilityOrThrow(ability: Components.Schemas.WorkspaceAbility) {
     if (!this.abilities.includes(ability)) {
       throw new ForbiddenException(
-        `User do not have required ability: "${ability}"`,
+        `User does not have required ability: "${ability}"`,
       )
     }
   }
@@ -142,6 +147,13 @@ export class HumanRequester implements Requester {
     return {
       requesterType: 'human',
       userId: this.requestUser.user.id,
+    }
+  }
+
+  getUserDetails() {
+    return {
+      firstName: this.requestUser.user.firstName,
+      lastName: this.requestUser.user.lastName,
     }
   }
 
@@ -185,6 +197,53 @@ export class HumanRequester implements Requester {
   }
 }
 
+export class ScopedHumanRequester implements Requester {
+  constructor(private requestUser: ScopedHumanRequestUser) {}
+
+  getLoggingAttributes() {
+    return {
+      requesterType: 'human',
+      userId: this.requestUser.account.user!.id,
+    }
+  }
+
+  getUserID() {
+    return this.requestUser.account.user!.id
+  }
+
+  getUserDetails() {
+    return {
+      firstName: this.requestUser.account.user!.firstName,
+      lastName: this.requestUser.account.user!.lastName,
+    }
+  }
+
+  getUserEmail() {
+    return this.requestUser.account.user!.email
+  }
+
+  getDefaultWorkspaceID() {
+    return this.requestUser.account.workspaceId
+  }
+
+  getWorkspaceAccessOrThrow(workspaceId: string) {
+    if (this.requestUser.account.workspaceId !== workspaceId) {
+      throw new ForbiddenException('User do not have access to workspace')
+    }
+
+    if (!this.requestUser.account.workspace.billingSettings) {
+      throw new BadRequestException('Workspace do not have billing settings')
+    }
+
+    return new WorkspaceAccess(
+      getConfig(),
+      this.requestUser.account,
+      this.requestUser.account.workspace,
+      this.requestUser.account.workspace.billingSettings,
+    )
+  }
+}
+
 export class ServiceRequester implements Requester {
   constructor(private requestUser: ServiceRequestUser) {}
 
@@ -199,6 +258,15 @@ export class ServiceRequester implements Requester {
     throw new BadRequestException('Service account do not have user id')
 
     return ''
+  }
+
+  getUserDetails() {
+    throw new BadRequestException('Service account do not have user name')
+
+    return {
+      firstName: '',
+      lastName: '',
+    }
   }
 
   getUserEmail() {

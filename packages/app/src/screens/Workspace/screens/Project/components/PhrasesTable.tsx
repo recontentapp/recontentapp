@@ -17,7 +17,7 @@ import {
   TableRef,
   Text,
   toast,
-} from '../../../../../components/primitives'
+} from 'design-system'
 import { useDebouncedUpdate } from '../../../../../hooks/debouncedEffect'
 import { useFormatter } from '../../../../../hooks/formatter'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'

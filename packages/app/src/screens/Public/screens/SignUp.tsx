@@ -1,5 +1,5 @@
 import { FC, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import { passwordConfig } from '../../../auth/config'
 import { Logo } from '../../../components/Logo'
@@ -9,12 +9,12 @@ import {
   ExternalLink,
   Form,
   Heading,
-  Link,
+  LinkWrapper,
   Stack,
   Text,
   TextField,
   toast,
-} from '../../../components/primitives'
+} from 'design-system'
 import { getAPIClient } from '../../../generated/apiClient'
 import routes from '../../../routing'
 
@@ -82,7 +82,9 @@ export const SignUp: FC = () => {
             </Heading>
             <Text size="$size100" color="$gray11">
               Already have an account?{' '}
-              <Link to={routes.signIn.url({})}>Sign in.</Link>
+              <LinkWrapper>
+                <Link to={routes.signIn.url({})}>Sign in.</Link>
+              </LinkWrapper>
             </Text>
           </Stack>
 
@@ -135,7 +137,6 @@ export const SignUp: FC = () => {
               <ExternalLink
                 title="Terms of use"
                 fontSize="$size80"
-                target="_blank"
                 icon={false}
                 href="https://recontent.app/terms"
               >
@@ -145,7 +146,6 @@ export const SignUp: FC = () => {
               <ExternalLink
                 title="Privacy policy"
                 fontSize="$size80"
-                target="_blank"
                 icon={false}
                 href="https://recontent.app/privacy"
               >

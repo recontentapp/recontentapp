@@ -9,7 +9,7 @@ import {
   Table,
   Tag,
   toast,
-} from '../../../../../components/primitives'
+} from 'design-system'
 import { formatRelative } from '../../../../../utils/dates'
 import {
   getGetReferenceableTagsQueryKey,

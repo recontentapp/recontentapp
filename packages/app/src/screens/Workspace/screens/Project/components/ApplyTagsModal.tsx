@@ -15,7 +15,7 @@ import {
   SelectField,
   Stack,
   Tag,
-} from '../../../../../components/primitives'
+} from 'design-system'
 import {
   getListPhrasesQueryKey,
   useBatchApplyProjectTag,

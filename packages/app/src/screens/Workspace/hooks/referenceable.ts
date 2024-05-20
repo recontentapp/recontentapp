@@ -4,7 +4,7 @@ import {
   useGetReferenceableTags,
 } from '../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../hooks/workspace'
-import { theme } from '../../../theme'
+import { theme } from 'design-system'
 
 export const useReferenceableTags = (projectId: string) => {
   const { data } = useGetReferenceableTags(
@@ -19,14 +19,14 @@ export const useReferenceableTags = (projectId: string) => {
       if (!data) {
         return {
           label: 'Loading...',
-          color: theme.colors.gray1.value,
+          color: theme.colors.gray1,
         }
       }
 
       return (
         data.tags[tagId] ?? {
           label: 'Unknown',
-          color: theme.colors.gray1.value,
+          color: theme.colors.gray1,
         }
       )
     },

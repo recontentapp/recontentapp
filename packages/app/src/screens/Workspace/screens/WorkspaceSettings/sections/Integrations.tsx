@@ -11,7 +11,7 @@ import {
   Heading,
   Stack,
   Table,
-} from '../../../../../components/primitives'
+} from 'design-system'
 import { formatRelative } from '../../../../../utils/dates'
 import { useReferenceableAccounts } from '../../../hooks/referenceable'
 import { AddAPIKeyForm } from '../components/AddAPIKeyForm'
@@ -84,9 +84,8 @@ export const Integrations: FC = () => {
               <ExternalLink
                 fontSize="$fontSize80"
                 icon={false}
-                href="https://recontent.app/docs/cli"
+                href="https://docs.recontent.app/developers/command-line-interface-cli"
                 title="CLI documentation"
-                target="_blank"
               >
                 CLI
               </ExternalLink>{' '}
@@ -94,9 +93,8 @@ export const Integrations: FC = () => {
               <ExternalLink
                 fontSize="$fontSize80"
                 icon={false}
-                href="https://recontent.app/docs/api"
+                href="https://docs.recontent.app/developers/rest-api"
                 title="REST API documentation"
-                target="_blank"
               >
                 REST API
               </ExternalLink>{' '}

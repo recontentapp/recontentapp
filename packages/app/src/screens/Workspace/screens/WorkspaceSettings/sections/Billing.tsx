@@ -1,7 +1,7 @@
 import { FC, useState } from 'react'
 
 import { HorizontalSpinner } from '../../../../../components/HorizontalSpinner'
-import { Banner, Stack } from '../../../../../components/primitives'
+import { Banner, Stack } from 'design-system'
 import { PlanCard } from '../components/PlanCard'
 import {
   getGetBillingActiveSubscriptionQueryKey,

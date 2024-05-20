@@ -7,7 +7,7 @@ import {
   Stack,
   TextField,
   toast,
-} from '../../../../../components/primitives'
+} from 'design-system'
 import {
   getListWorkspaceLanguagesQueryKey,
   useAddLanguagesToWorkspace,

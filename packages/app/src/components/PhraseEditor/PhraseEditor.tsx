@@ -2,10 +2,10 @@ import { EditorContent, useEditor } from '@tiptap/react'
 import { forwardRef, useImperativeHandle } from 'react'
 
 import { useId } from '../../hooks/ids'
-import { styled, theme } from '../../theme'
-import { usePhraseExtensions } from '../../tiptap'
-import { Box, Icon, Label, Stack, Text as UIText } from '../primitives'
+import { Box, Icon, Label, Stack, Text as UIText, theme } from 'design-system'
 import { PhraseEditorProps, PhraseEditorRef } from './types'
+import { styled } from '../../theme'
+import { usePhraseExtensions } from '../../tiptap/hooks'
 
 const Container = styled('div', {
   variants: {

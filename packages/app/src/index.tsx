@@ -1,13 +1,14 @@
 import React from 'react'
-import 'react-datepicker/dist/react-datepicker.css'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
+import { GlobalStyles, Toast } from 'design-system'
+
+import 'design-system/dist/styles.css'
+import './theme/fonts/index.css'
 
 import { App } from './App'
-import { GlobalStyles, Toast } from './components/primitives'
 import { SystemProvider } from './hooks/system'
 import reportWebVitals from './reportWebVitals'
-import './theme/fonts/index.css'
 import { AuthProvider } from './auth'
 
 document.body.innerHTML = '<div id="app"></div>'

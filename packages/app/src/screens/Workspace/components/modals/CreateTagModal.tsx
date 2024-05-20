@@ -17,7 +17,7 @@ import {
   Text,
   TextField,
   toast,
-} from '../../../../components/primitives'
+} from 'design-system'
 import { Components } from '../../../../generated/typeDefinitions'
 import {
   getGetReferenceableTagsQueryKey,

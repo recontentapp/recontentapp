@@ -12,13 +12,13 @@ import {
   Stack,
   Text,
   Tooltip,
-} from '../../../../../components/primitives'
+} from 'design-system'
 import {
   useCurrentWorkspace,
   useLooseCurrentWorkspace,
 } from '../../../../../hooks/workspace'
-import { styled } from '../../../../../theme'
 import routes from '../../../../../routing'
+import { styled } from '../../../../../theme'
 
 const WorkspaceButton = styled('div', {
   cursor: 'pointer',
@@ -116,7 +116,7 @@ export const WorkspaceDropdown: FC = () => {
               onSelect={() => updateCurrentAccount(account)}
             >
               <LabelWithIcon
-                icon="arrow_right"
+                icon="chevron_right"
                 label={`Go to ${account.workspace.name}`}
               />
             </MenuItem>

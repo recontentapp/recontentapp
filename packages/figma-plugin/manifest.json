@@ -1,0 +1,14 @@
+{
+  "name": "Recontent.app",
+  "id": "1222442375491446608",
+  "api": "1.0.0",
+  "editorType": ["figma"],
+  "permissions": [],
+  "main": "index.js",
+  "ui": "index.html",
+  "documentAccess": "dynamic-page",
+  "networkAccess": {
+    "allowedDomains": ["*"],
+    "reasoning": "Recontent.app can access self-hosted versions of its API."
+  }
+}

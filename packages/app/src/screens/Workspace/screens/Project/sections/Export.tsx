@@ -1,14 +1,14 @@
 import { FC, useRef } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { FullpageSpinner } from '../../../../../components/FullpageSpinner'
 import {
   Button,
   Stack,
   Banner,
   ExternalLink,
-  Link,
+  LinkWrapper,
   Heading,
-} from '../../../../../components/primitives'
+} from 'design-system'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
 import {
   ExportToFileModal,
@@ -77,9 +77,8 @@ export const Export: FC = () => {
                 <ExternalLink
                   fontSize="$fontSize80"
                   icon={false}
-                  href="https://recontent.app/docs/cli"
+                  href="https://docs.recontent.app/developers/command-line-interface-cli"
                   title="CLI documentation"
-                  target="_blank"
                 >
                   CLI
                 </ExternalLink>{' '}
@@ -87,21 +86,21 @@ export const Export: FC = () => {
                 <ExternalLink
                   fontSize="$fontSize80"
                   icon={false}
-                  href="https://recontent.app/docs/api"
+                  href="https://docs.recontent.app/developers/rest-api"
                   title="REST API documentation"
-                  target="_blank"
                 >
                   REST API
                 </ExternalLink>{' '}
                 documentation to learn more. API keys can be generated from your{' '}
-                <Link
-                  size="$size80"
-                  to={routes.workspaceSettingsIntegrations.url({
-                    pathParams: { workspaceKey },
-                  })}
-                >
-                  workspace settings
-                </Link>
+                <LinkWrapper size="$size80">
+                  <Link
+                    to={routes.workspaceSettingsIntegrations.url({
+                      pathParams: { workspaceKey },
+                    })}
+                  >
+                    workspace settings
+                  </Link>
+                </LinkWrapper>
                 .
               </span>
             }

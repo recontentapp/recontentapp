@@ -1,12 +1,6 @@
 import { FC } from 'react'
 
-import {
-  Avatar,
-  Box,
-  Heading,
-  Stack,
-  Text,
-} from '../../../components/primitives'
+import { Avatar, Box, Heading, Stack, Text } from 'design-system'
 import { useLooseCurrentWorkspace } from '../../../hooks/workspace'
 import { styled } from '../../../theme'
 

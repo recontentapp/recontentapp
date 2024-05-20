@@ -7,7 +7,7 @@ import {
   ModalRef,
   TextField,
   toast,
-} from '../../../../../components/primitives'
+} from 'design-system'
 import { Components } from '../../../../../generated/typeDefinitions'
 import { useUpdatePhraseKey } from '../../../../../generated/reactQuery'
 

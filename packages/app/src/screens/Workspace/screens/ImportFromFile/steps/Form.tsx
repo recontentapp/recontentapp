@@ -6,12 +6,12 @@ import {
   FileUpload,
   SelectField,
   Stack,
-} from '../../../../../components/primitives'
+} from 'design-system'
 import { State } from '../types'
 import {
+  ExcelSheetPreviewData,
   fileFormatAccept,
   getCSVPreviewData,
-  getExcelPreviewData,
   getFileType,
 } from '../../../../../utils/files'
 import { Components } from '../../../../../generated/typeDefinitions'
@@ -65,8 +65,13 @@ export const Form = ({
 
       const csvPreviewData =
         fileType === 'csv' ? await getCSVPreviewData(file) : undefined
-      const excelPreviewData =
-        fileType === 'excel' ? await getExcelPreviewData(file) : undefined
+      let excelPreviewData: ExcelSheetPreviewData[] | undefined = undefined
+
+      if (fileType === 'excel') {
+        const xlsx = await import('../../../../../utils/xlsx')
+        const result = await xlsx.getExcelPreviewData(file)
+        excelPreviewData = result
+      }
 
       updateState(state => {
         const newState = {

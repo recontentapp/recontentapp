@@ -8,7 +8,7 @@ import {
   Icon,
   Stack,
   Text,
-} from '../../../../../components/primitives'
+} from 'design-system'
 import { styled } from '../../../../../theme'
 
 export interface PlanCardProps {

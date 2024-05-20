@@ -1,13 +1,6 @@
 import { FC, useState } from 'react'
 
-import {
-  Box,
-  Button,
-  Form,
-  Stack,
-  TextField,
-  toast,
-} from '../../../../../components/primitives'
+import { Box, Button, Form, Stack, TextField, toast } from 'design-system'
 import {
   getListWorkspaceAccountsQueryKey,
   useCreateWorkspaceServiceAccount,

@@ -1,6 +1,6 @@
 import { FC } from 'react'
 
-import { Heading, Stack, Table } from '../../../../../components/primitives'
+import { Heading, Stack, Table } from 'design-system'
 import { formatRelative } from '../../../../../utils/dates'
 import { useReferenceableAccounts } from '../../../hooks/referenceable'
 import { InvitationForm } from '../components/InvitationForm'

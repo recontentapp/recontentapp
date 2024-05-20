@@ -8,14 +8,15 @@ import {
   ExternalLink,
   Form,
   Heading,
-  Link,
+  LinkWrapper,
   Stack,
   Text,
   TextField,
   toast,
-} from '../../../components/primitives'
+} from 'design-system'
 import { HTTPRequestError, getAPIClient } from '../../../generated/apiClient'
 import routes from '../../../routing'
+import { Link } from 'react-router-dom'
 
 interface State {
   email: string
@@ -174,7 +175,10 @@ export const SignIn: FC = () => {
               Sign in
             </Heading>
             <Text size="$size100" color="$gray11">
-              New to Recontent? <Link to={routes.signUp.url({})}>Sign up</Link>{' '}
+              New to Recontent?{' '}
+              <LinkWrapper>
+                <Link to={routes.signUp.url({})}>Sign up</Link>
+              </LinkWrapper>{' '}
               for an account.
             </Text>
           </Stack>
@@ -209,9 +213,11 @@ export const SignIn: FC = () => {
                     }
                   />
                   <Text size="$size100" color="$gray11">
-                    <Link to={routes.forgotPassword.url({})}>
-                      Forgot password?
-                    </Link>
+                    <LinkWrapper>
+                      <Link to={routes.forgotPassword.url({})}>
+                        Forgot password?
+                      </Link>
+                    </LinkWrapper>
                   </Text>
                 </Stack>
               )}
@@ -286,7 +292,6 @@ export const SignIn: FC = () => {
                 <ExternalLink
                   title="Terms of use"
                   fontSize="$size80"
-                  target="_blank"
                   icon={false}
                   href="https://recontent.app/terms"
                 >
@@ -296,7 +301,6 @@ export const SignIn: FC = () => {
                 <ExternalLink
                   title="Privacy policy"
                   fontSize="$size80"
-                  target="_blank"
                   icon={false}
                   href="https://recontent.app/privacy"
                 >

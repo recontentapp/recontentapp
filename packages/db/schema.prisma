@@ -4,7 +4,8 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
 }
 
 enum WorkspaceBillingPlan {
@@ -92,6 +93,8 @@ model Workspace {
   destinationConfigsAWSS3              DestinationConfigAWSS3[]
   tags                                 Tag[]
   taggables                            Taggable[]
+  figmaFiles                           FigmaFile[]
+  figmaTexts                           FigmaText[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -170,6 +173,7 @@ model Language {
   workspace          Workspace           @relation(fields: [workspaceId], references: [id])
   projects           Project[]           @relation("projects_languages")
   phraseTranslations PhraseTranslation[]
+  figmaFiles         FigmaFile[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -190,6 +194,7 @@ model Project {
   revisions   ProjectRevision[]
   phrases     Phrase[]
   tags        Tag[]
+  figmaFiles  FigmaFile[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -212,6 +217,7 @@ model ProjectRevision {
   phrases            Phrase[]
   phraseTranslations PhraseTranslation[]
   destinations       Destination[]
+  figmaFiles         FigmaFile[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -234,6 +240,7 @@ model Phrase {
   workspace    Workspace           @relation(fields: [workspaceId], references: [id])
   translations PhraseTranslation[]
   taggables    Taggable[]          @relation("phrase_tags")
+  figmaTexts   FigmaText[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -380,4 +387,51 @@ model DestinationConfigAWSS3 {
 
   @@unique([destinationId])
   @@map("destination_configs_aws_s3")
+}
+
+model FigmaFile {
+  id          String          @id @default(uuid()) @db.VarChar()
+  workspaceId String          @db.VarChar()
+  projectId   String          @db.VarChar()
+  revisionId  String          @db.VarChar()
+  languageId  String          @db.VarChar()
+  // Extracted from Figma file URL
+  key         String          @db.VarChar()
+  url         String          @db.VarChar()
+  name        String          @db.VarChar()
+  workspace   Workspace       @relation(fields: [workspaceId], references: [id])
+  project     Project         @relation(fields: [projectId], references: [id])
+  revision    ProjectRevision @relation(fields: [revisionId], references: [id])
+  language    Language        @relation(fields: [languageId], references: [id])
+  texts       FigmaText[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String   @db.VarChar()
+  updatedBy String?  @db.VarChar()
+
+  @@unique([key])
+  @@map("figma_files")
+}
+
+model FigmaText {
+  id          String    @id @default(uuid()) @db.VarChar()
+  fileId      String    @db.VarChar()
+  workspaceId String    @db.VarChar()
+  phraseId    String    @db.VarChar()
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  file        FigmaFile @relation(fields: [fileId], references: [id])
+  phrase      Phrase    @relation(fields: [phraseId], references: [id])
+
+  // Node IDs are not unique across files
+  textNodeId String @db.VarChar()
+  pageNodeId String @db.VarChar()
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String   @db.VarChar()
+  updatedBy String?  @db.VarChar()
+
+  @@index([fileId, pageNodeId])
+  @@map("figma_texts")
 }

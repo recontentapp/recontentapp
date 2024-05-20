@@ -8,7 +8,7 @@ import {
   SelectField,
   Stack,
   Table,
-} from '../../../../../components/primitives'
+} from 'design-system'
 
 interface Props {
   state: State

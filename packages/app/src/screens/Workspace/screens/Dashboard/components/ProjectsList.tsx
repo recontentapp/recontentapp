@@ -1,4 +1,4 @@
-import { Stack } from '../../../../../components/primitives'
+import { Stack } from 'design-system'
 import { Components } from '../../../../../generated/typeDefinitions'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
 import routes from '../../../../../routing'

@@ -1,7 +1,7 @@
 import { FC, useLayoutEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { Tooltip } from '../../../../components/primitives'
+import { Tooltip } from 'design-system'
 import { styled } from '../../../../theme'
 
 export interface BreadcrumbItem {

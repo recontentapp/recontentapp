@@ -1,9 +1,10 @@
 import { FC } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Stack } from '../../../../../components/primitives'
+import { Stack } from 'design-system'
 import { ImportCard } from '../components/ImportCard'
 import routes from '../../../../../routing'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
+import { FIGMA_PLUGIN_URL } from '../../../../../constants'
 
 export const Import: FC = () => {
   const { key: workspaceKey } = useCurrentWorkspace()
@@ -13,6 +14,14 @@ export const Import: FC = () => {
   return (
     <Stack width="100%" direction="column" spacing="$space300">
       <Stack direction="row" spacing="$space100">
+        <ImportCard
+          variation="secondary"
+          title="From Figma"
+          description="Figma plugin"
+          icon="figma"
+          onAction={() => window.open(FIGMA_PLUGIN_URL, '_blank')}
+        />
+
         <ImportCard
           variation="secondary"
           title="From a file"
