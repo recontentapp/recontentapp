@@ -1,4 +1,4 @@
-import { Button, SelectField, Stack } from 'design-system'
+import { Banner, Button, SelectField, Stack, Text } from 'design-system'
 import { useBridge } from '../../../../../contexts/Bridge'
 import {
   useListLanguages,
@@ -70,10 +70,15 @@ export const UpdateLanguage = ({
   return (
     <Stack
       direction="column"
-      spacing="$space300"
+      spacing="$space100"
       paddingX="$space80"
       paddingY="$space80"
     >
+      <Banner
+        variation="info"
+        description="All texts synced with Recontent.app will be updated. Make sure to sync all other pages too."
+      />
+
       <SelectField
         label="New language"
         placeholder="Choose a language"
@@ -91,12 +96,20 @@ export const UpdateLanguage = ({
         }))}
       />
 
-      <Button variation="primary" onAction={onSubmit}>
-        Update
-      </Button>
-      <Button variation="secondary" onAction={onClose}>
-        Close
-      </Button>
+      <Stack direction="row" spacing="$space60">
+        <Button
+          size="xsmall"
+          isDisabled={!languageId}
+          variation="primary"
+          onAction={onSubmit}
+        >
+          Update language
+        </Button>
+
+        <Button size="xsmall" variation="secondary" onAction={onClose}>
+          Cancel
+        </Button>
+      </Stack>
     </Stack>
   )
 }
