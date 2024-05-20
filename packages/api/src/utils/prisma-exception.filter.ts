@@ -4,13 +4,7 @@ import {
   ArgumentsHost,
   HttpException,
 } from '@nestjs/common'
-import {
-  PrismaClientInitializationError,
-  PrismaClientKnownRequestError,
-  PrismaClientRustPanicError,
-  PrismaClientUnknownRequestError,
-  PrismaClientValidationError,
-} from '@prisma/client/runtime/library'
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { Request, Response } from 'express'
 import { MyLogger } from './logger'
 import { getRequestIdFromRequest } from './request-id.middleware'
@@ -76,12 +70,7 @@ export class PrismaExceptionFilter implements ExceptionFilter {
 
     // Prisma errors
     // https://www.prisma.io/docs/orm/reference/error-reference
-
-    if (exception instanceof PrismaClientRustPanicError) {
-      httpStatus = 400
-    } else if (exception instanceof PrismaClientValidationError) {
-      httpStatus = 422
-    } else if (exception instanceof PrismaClientKnownRequestError) {
+    if (exception instanceof PrismaClientKnownRequestError) {
       switch (exception.code) {
         case 'P2015':
         case 'P2025': {
@@ -92,10 +81,6 @@ export class PrismaExceptionFilter implements ExceptionFilter {
           httpStatus = 400
         }
       }
-    } else if (exception instanceof PrismaClientUnknownRequestError) {
-      httpStatus = 400
-    } else if (exception instanceof PrismaClientInitializationError) {
-      httpStatus = 400
     } else {
       try {
         const status = exception.getStatus()
