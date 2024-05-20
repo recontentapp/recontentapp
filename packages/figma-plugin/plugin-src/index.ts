@@ -1,6 +1,7 @@
 import {
   FileConfigSet,
   NotificationRequested,
+  TextResetRequested,
   TextsSyncReceived,
   UserConfigUpdated,
 } from '../shared-types'
@@ -9,7 +10,7 @@ import { getSelectedTraversedTextNodes } from './src/selection'
 import { getUserConfig, setUserConfig } from './src/storage/config'
 import { getFileConfig, resetFileData, setFileConfig } from './src/storage/file'
 import { getPageLastSyncedAt, setPageLastSyncedAt } from './src/storage/page'
-import { getTextData, syncTextData } from './src/storage/texts'
+import { getTextData, resetText, syncTextData } from './src/storage/texts'
 import { Emittable, Receivable } from './src/types'
 
 figma.skipInvisibleInstanceChildren = true
@@ -67,6 +68,17 @@ $on<Receivable>({
     if (data.data.type === 'complete') {
       setPageLastSyncedAt(Date.now())
     }
+    onPluginInitialized()
+  },
+  'text-reset-requested': async (data: TextResetRequested) => {
+    const node = await figma.getNodeByIdAsync(data.data.nodeId)
+    if (!node || node.type !== 'TEXT') {
+      return
+    }
+    resetText(node)
+    figma.notify('Text linked to deleted phrase. Resetting...', {
+      timeout: 5000,
+    })
     onPluginInitialized()
   },
 })

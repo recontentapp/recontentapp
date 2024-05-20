@@ -4,7 +4,7 @@ export const FullpageSpinner = () => {
   return (
     <Box
       width="100vw"
-      height="100vh"
+      height="80vh"
       display="flex"
       alignItems="center"
       justifyContent="center"

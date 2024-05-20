@@ -1,7 +1,22 @@
 import { useState } from 'react'
 import { useBridge } from '../../contexts/Bridge'
-import { useAPIClient } from '../../generated/reactQuery'
+import { useAPIClient, useGetFigmaFile } from '../../generated/reactQuery'
 import { Components } from '../../generated/typeDefinitions'
+
+export const useFile = () => {
+  const { file } = useBridge()
+  return useGetFigmaFile(
+    {
+      pathParams: {
+        id: String(file.config?.id),
+      },
+    },
+    {
+      enabled: Boolean(file.config?.id),
+      staleTime: 1000 * 60 * 60,
+    },
+  )
+}
 
 export const useSync = () => {
   const [isLoading, setIsLoading] = useState(false)

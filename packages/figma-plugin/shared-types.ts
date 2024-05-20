@@ -112,3 +112,10 @@ export interface TextsSyncReceived {
     type: 'complete' | 'partial'
   }
 }
+
+export interface TextResetRequested {
+  type: 'text-reset-requested'
+  data: {
+    nodeId: string
+  }
+}

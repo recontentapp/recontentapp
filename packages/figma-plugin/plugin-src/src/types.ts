@@ -7,6 +7,7 @@ import {
   NotificationRequested,
   TextSelectionChanged,
   TextsSyncReceived,
+  TextResetRequested,
 } from '../../shared-types'
 
 export type Emittable = PluginInitialized | TextSelectionChanged
@@ -18,3 +19,4 @@ export type Receivable =
   | FileConfigSet['type']
   | NotificationRequested['type']
   | TextsSyncReceived['type']
+  | TextResetRequested['type']

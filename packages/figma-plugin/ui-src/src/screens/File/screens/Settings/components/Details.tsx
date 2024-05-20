@@ -6,13 +6,11 @@ import {
   Stack,
   Text,
 } from 'design-system'
-import {
-  useDeleteFigmaFile,
-  useGetFigmaFile,
-} from '../../../../../generated/reactQuery'
+import { useDeleteFigmaFile } from '../../../../../generated/reactQuery'
 import { useBridge } from '../../../../../contexts/Bridge'
 import { FullpageSpinner } from '../../../../../components/FullpageSpinner'
 import { formatRelative } from '../../../../../utils/dates'
+import { useFile } from '../../../hooks'
 
 interface DetailsProps {
   onRequestLanguageChange: () => void
@@ -20,16 +18,7 @@ interface DetailsProps {
 
 export const Details = ({ onRequestLanguageChange }: DetailsProps) => {
   const { file, emit } = useBridge()
-  const { data } = useGetFigmaFile(
-    {
-      pathParams: {
-        id: file.config!.id,
-      },
-    },
-    {
-      staleTime: 1000 * 60 * 60,
-    },
-  )
+  const { data } = useFile()
   const { mutateAsync, isPending } = useDeleteFigmaFile()
 
   const onDelete = () => {

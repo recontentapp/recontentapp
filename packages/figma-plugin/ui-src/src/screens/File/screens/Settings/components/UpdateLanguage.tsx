@@ -1,13 +1,13 @@
 import { Button, SelectField, Stack } from 'design-system'
 import { useBridge } from '../../../../../contexts/Bridge'
 import {
-  useGetFigmaFile,
   useListLanguages,
   useUpdateFigmaFile,
 } from '../../../../../generated/reactQuery'
 import { FullpageSpinner } from '../../../../../components/FullpageSpinner'
 import { useState } from 'react'
 import { useCurrentCredentials } from '../../../../../contexts/CurrentCredentials'
+import { useFile } from '../../../hooks'
 
 interface UpdateLanguageProps {
   onRequestSync: () => void
@@ -22,16 +22,7 @@ export const UpdateLanguage = ({
   const { file, emit } = useBridge()
   const { mutateAsync, isPending } = useUpdateFigmaFile()
   const { currentCredentials } = useCurrentCredentials()
-  const { data } = useGetFigmaFile(
-    {
-      pathParams: {
-        id: file.config!.id,
-      },
-    },
-    {
-      staleTime: 1000 * 60 * 60,
-    },
-  )
+  const { data } = useFile()
   const { data: languagesData } = useListLanguages(
     {
       queryParams: {

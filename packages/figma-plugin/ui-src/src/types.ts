@@ -7,6 +7,7 @@ import {
   TextSelectionChanged,
   UserConfigResetRequested,
   UserConfigUpdated,
+  TextResetRequested,
 } from '../../shared-types'
 
 export type Receivable =
@@ -20,3 +21,4 @@ export type Emittable =
   | FileConfigSet
   | NotificationRequested
   | TextsSyncReceived
+  | TextResetRequested

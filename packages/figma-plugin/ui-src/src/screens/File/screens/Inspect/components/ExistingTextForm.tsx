@@ -3,10 +3,9 @@ import { Text as IText } from '../../../../../../../shared-types'
 import { styled } from '../../../../../theme'
 import { diffChars } from 'diff'
 import { useBridge } from '../../../../../contexts/Bridge'
-import {
-  useGetFigmaFile,
-  useUpdateFigmaFileText,
-} from '../../../../../generated/reactQuery'
+import { useUpdateFigmaFileText } from '../../../../../generated/reactQuery'
+import { useFile } from '../../../hooks'
+import { HTTPRequestError } from '../../../../../generated/apiClient'
 
 interface SingleTextFormProps {
   text: IText
@@ -29,16 +28,7 @@ const Key = styled('span', {
 export const ExistingTextForm = ({ text }: SingleTextFormProps) => {
   const { file, emit } = useBridge()
   const { mutateAsync, isPending: isUpdating } = useUpdateFigmaFileText()
-  const { data } = useGetFigmaFile(
-    {
-      pathParams: {
-        id: file.config!.id,
-      },
-    },
-    {
-      staleTime: 1000 * 60 * 60,
-    },
-  )
+  const { data } = useFile()
 
   const onUpdate = async () => {
     if (!text.app || !file.config) {
@@ -53,7 +43,21 @@ export const ExistingTextForm = ({ text }: SingleTextFormProps) => {
       body: {
         content: text.figma.content,
       },
-    }).catch(() => null)
+    }).catch(res => {
+      if (
+        res.error instanceof HTTPRequestError &&
+        res.error.statusCode === 404
+      ) {
+        emit({
+          type: 'text-reset-requested',
+          data: {
+            nodeId: text.figma.nodeId,
+          },
+        })
+      }
+
+      return null
+    })
 
     if (!result) {
       return

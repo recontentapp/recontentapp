@@ -1,13 +1,7 @@
-import { Stack, Text, Heading, MinimalButton, Box } from 'design-system'
-import { useBridge } from '../contexts/Bridge'
+import { Stack, Heading, Text, Box, MinimalButton } from 'design-system'
+import { useBridge } from '../../../contexts/Bridge'
 
-interface CredentialsAreInvalidForFileProps {
-  onSelect: () => void
-}
-
-export const CredentialsAreInvalidForFile = ({
-  onSelect,
-}: CredentialsAreInvalidForFileProps) => {
+export const ErrorLoadingFile = () => {
   const { emit } = useBridge()
 
   return (
@@ -32,7 +26,7 @@ export const CredentialsAreInvalidForFile = ({
           color="$gray14"
           size="$size100"
         >
-          Invalid credentials
+          File not found on Recontent.app
         </Heading>
 
         <Text
@@ -42,23 +36,12 @@ export const CredentialsAreInvalidForFile = ({
           renderAs="span"
           color="$gray11"
         >
-          This Figma file is already configured with Recontent.app using a
-          different workspace and/or self-hosted version.
+          Looks like this linked Figma file is not found on Recontent.app.
+          Please try again later or unlink it to start again.
         </Text>
       </Stack>
 
       <Stack direction="column" alignItems="center" spacing="$space0">
-        <Box>
-          <MinimalButton
-            size="small"
-            icon="chevron_right"
-            variation="primary"
-            onAction={onSelect}
-          >
-            Choose other credentials
-          </MinimalButton>
-        </Box>
-
         <Box>
           <MinimalButton
             size="small"

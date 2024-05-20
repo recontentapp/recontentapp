@@ -17,7 +17,7 @@ export const syncTextData = async (data: TextSync) => {
   node.setPluginData(APP_PHRASE_KEY, data.phraseKey)
 
   const newContent = data.content || data.phraseKey
-  node.setPluginData(APP_CONTENT, '')
+  node.setPluginData(APP_CONTENT, data.content || '')
 
   if (!node.hasMissingFont) {
     // TODO: Investigate potential performance issues
