@@ -27,6 +27,7 @@ import {
   DestinationConfigAWSS3,
   DestinationConfigCDN,
   DestinationConfigGoogleCloudStorage,
+  FigmaFile,
   Language,
   Phrase,
   PhraseTranslation,
@@ -102,6 +103,8 @@ import {
   SetupBillingSettingsDto,
   SubscribeToBillingPlanDto,
 } from '../dto/private/billing.dto'
+import { FigmaService } from 'src/modules/figma/figma.service'
+import { DeleteFigmaFileDto } from '../dto/private/figma.dto'
 
 @Controller('private')
 @UseGuards(JwtAuthGuard)
@@ -118,6 +121,7 @@ export class PrivateApiController {
     private readonly configService: ConfigService<Config, true>,
     private readonly billingSettingsService: SettingsService,
     private readonly billingSubscriptionService: SubscriptionService,
+    private readonly figmaService: FigmaService,
   ) {}
 
   private static formatTag(tag: Tag): Components.Schemas.Tag {
@@ -133,6 +137,25 @@ export class PrivateApiController {
       updatedAt: tag.updatedAt.toISOString(),
       createdBy: tag.createdBy,
       updatedBy: tag.updatedBy,
+    }
+  }
+
+  private static formatFigmaFile(
+    file: FigmaFile,
+  ): Components.Schemas.FigmaFile {
+    return {
+      id: file.id,
+      workspaceId: file.workspaceId,
+      projectId: file.projectId,
+      revisionId: file.revisionId,
+      languageId: file.languageId,
+      key: file.key,
+      url: file.url,
+      name: file.name,
+      createdAt: file.createdAt.toISOString(),
+      updatedAt: file.updatedAt.toISOString(),
+      createdBy: file.createdBy,
+      updatedBy: file.updatedBy,
     }
   }
 
@@ -1357,6 +1380,37 @@ export class PrivateApiController {
   ): Promise<Paths.ResetBillingSubscription.Responses.$204> {
     await this.billingSubscriptionService.reset({
       workspaceId,
+      requester,
+    })
+
+    return {}
+  }
+
+  @Get('/ListFigmaFiles')
+  async listFigmaFiles(
+    @AuthenticatedRequester() requester: Requester,
+    @RequiredQuery('projectId') projectId: string,
+    @Pagination() pagination: PaginationParams,
+  ): Promise<Paths.ListFigmaFiles.Responses.$200> {
+    const result = await this.figmaService.listFiles({
+      projectId,
+      requester,
+      pagination,
+    })
+
+    return {
+      items: result.items.map(PrivateApiController.formatFigmaFile),
+      pagination: result.pagination,
+    }
+  }
+
+  @Delete('/DeleteFigmaFile')
+  async deleteFigmaFile(
+    @AuthenticatedRequester() requester: Requester,
+    @Body() { figmaFileId }: DeleteFigmaFileDto,
+  ): Promise<Paths.DeleteFigmaFile.Responses.$204> {
+    await this.figmaService.deleteFile({
+      id: figmaFileId,
       requester,
     })
 

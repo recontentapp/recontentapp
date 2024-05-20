@@ -1765,6 +1765,60 @@ paths:
       responses:
         '204':
           description: OK
+  /ListFigmaFiles:
+    get:
+      operationId: listFigmaFiles
+      parameters:
+        - name: projectId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FigmaFile'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                additionalProperties: false
+                required:
+                  - items
+                  - pagination
+  /DeleteFigmaFile:
+    delete:
+      operationId: deleteFigmaFile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                figmaFileId:
+                  type: string
+              additionalProperties: false
+              required:
+                - figmaFileId
+      responses:
+        '204':
+          description: OK
 components:
   schemas:
     Empty:
@@ -2428,6 +2482,50 @@ components:
         - value
         - color
         - description
+        - createdAt
+        - updatedAt
+        - createdBy
+        - updatedBy
+    FigmaFile:
+      type: object
+      properties:
+        id:
+          type: string
+        workspaceId:
+          type: string
+        projectId:
+          type: string
+        revisionId:
+          type: string
+        languageId:
+          type: string
+        key:
+          type: string
+        url:
+          type: string
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+        updatedBy:
+          type: string
+          nullable: true
+      additionalProperties: false
+      required:
+        - id
+        - workspaceId
+        - projectId
+        - revisionId
+        - languageId
+        - key
+        - url
+        - name
         - createdAt
         - updatedAt
         - createdBy

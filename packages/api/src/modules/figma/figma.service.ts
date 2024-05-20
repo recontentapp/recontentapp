@@ -5,6 +5,12 @@ import { PrismaService } from 'src/utils/prisma.service'
 import { PaginationParams } from 'src/utils/pagination'
 import { Requester } from '../auth/requester.object'
 
+interface ListFilesParams {
+  projectId: string
+  pagination: PaginationParams
+  requester: Requester
+}
+
 interface CreateFileParams {
   requester: Requester
   revisionId: string
@@ -90,6 +96,48 @@ export class FigmaService {
     return {
       isValid: true,
       key: result[2],
+    }
+  }
+
+  async listFiles({ projectId, pagination, requester }: ListFilesParams) {
+    const project = await this.prismaService.project.findUniqueOrThrow({
+      where: {
+        id: projectId,
+      },
+    })
+
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      project.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('workspace:read')
+
+    const { limit, offset, pageSize, page } = pagination
+    const [files, count] = await Promise.all([
+      this.prismaService.figmaFile.findMany({
+        where: {
+          projectId,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take: limit,
+        skip: offset,
+      }),
+      this.prismaService.figmaFile.count({
+        where: {
+          projectId,
+        },
+      }),
+    ])
+
+    return {
+      items: files,
+      pagination: {
+        page,
+        pageSize,
+        pagesCount: Math.ceil(count / pageSize),
+        itemsCount: count,
+      },
     }
   }
 

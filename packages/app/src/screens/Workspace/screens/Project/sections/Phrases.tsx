@@ -20,6 +20,7 @@ import { useCurrentWorkspace } from '../../../../../hooks/workspace'
 import { useQueryClient } from '@tanstack/react-query'
 import routes from '../../../../../routing'
 import { useInfiniteListPhrases } from '../hooks'
+import { FigmaFilesList } from '../components/FigmaFilesList'
 
 export const Phrases: FC = () => {
   const queryClient = useQueryClient()
@@ -123,7 +124,7 @@ export const Phrases: FC = () => {
         />
       )}
 
-      <Stack width="100%" direction="column" spacing="$space400">
+      <Stack width="100%" direction="column" spacing="$space200">
         {!hasLanguages && (
           <Banner
             variation="info"
@@ -143,6 +144,8 @@ export const Phrases: FC = () => {
             }}
           />
         )}
+
+        <FigmaFilesList projectId={params.projectId!} />
 
         <Suspense fallback={null}>
           <PhrasesTable

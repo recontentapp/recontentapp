@@ -41,6 +41,15 @@ interface ContentProps {
   primaryAction?: {
     label: string
     variation?: Extract<ButtonVariation, 'primary' | 'danger'>
+    icon?: IconName
+    isDisabled?: boolean
+    isLoading?: boolean
+    onAction: () => void
+  }
+  secondaryAction?: {
+    label: string
+    variation?: Extract<ButtonVariation, 'danger' | 'secondary'>
+    icon?: IconName
     isDisabled?: boolean
     isLoading?: boolean
     onAction: () => void
@@ -125,6 +134,7 @@ const ContextButton = styled('button', {
 export const Content: FC<ContentProps> = ({
   asForm,
   primaryAction,
+  secondaryAction,
   contextAction,
   contextTitle,
   title,
@@ -225,16 +235,34 @@ export const Content: FC<ContentProps> = ({
                 />
               )}
 
-              {primaryAction && (
-                <Button
-                  type={asForm ? 'submit' : 'button'}
-                  variation={primaryAction.variation ?? 'primary'}
-                  onAction={asForm ? () => {} : primaryAction.onAction}
-                  isDisabled={primaryAction.isDisabled}
-                  isLoading={primaryAction.isLoading}
-                >
-                  {primaryAction.label}
-                </Button>
+              {(primaryAction || secondaryAction) && (
+                <Stack direction="row" spacing="$space60">
+                  {secondaryAction && (
+                    <Button
+                      type="button"
+                      variation={secondaryAction.variation ?? 'secondary'}
+                      icon={secondaryAction.icon}
+                      onAction={secondaryAction.onAction}
+                      isDisabled={secondaryAction.isDisabled}
+                      isLoading={secondaryAction.isLoading}
+                    >
+                      {secondaryAction.label}
+                    </Button>
+                  )}
+
+                  {primaryAction && (
+                    <Button
+                      type={asForm ? 'submit' : 'button'}
+                      variation={primaryAction.variation ?? 'primary'}
+                      icon={primaryAction.icon}
+                      onAction={asForm ? () => {} : primaryAction.onAction}
+                      isDisabled={primaryAction.isDisabled}
+                      isLoading={primaryAction.isLoading}
+                    >
+                      {primaryAction.label}
+                    </Button>
+                  )}
+                </Stack>
               )}
             </Stack>
           </Stack>
