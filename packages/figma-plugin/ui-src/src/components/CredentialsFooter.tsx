@@ -1,14 +1,21 @@
 import { Box, MinimalButton, Stack, Text } from 'design-system'
 import { useCurrentCredentials } from '../contexts/CurrentCredentials'
 import { useGetMe } from '../generated/reactQuery'
+import { useEffect } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 
 export const CREDENTIALS_FOOTER_HEIGHT = 36
 
 export const CredentialsFooter = () => {
+  const queryClient = useQueryClient()
   const { currentCredentials, requestSelect } = useCurrentCredentials()
   const { data } = useGetMe({
     staleTime: 1000 * 60 * 60 * 24,
   })
+
+  useEffect(() => {
+    queryClient.resetQueries()
+  }, [queryClient, currentCredentials])
 
   if (!data) {
     return null
