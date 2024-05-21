@@ -4,10 +4,10 @@ const routes: RoutesCollection = {
   '/sign-in': {
     name: 'signIn',
   },
-  '/signUp': {
+  '/sign-up': {
     name: 'signUp',
   },
-  '/forgotPassword': {
+  '/forgot-password': {
     name: 'forgotPassword',
   },
 }

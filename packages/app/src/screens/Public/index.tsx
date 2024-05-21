@@ -2,7 +2,7 @@ import { Route, Routes } from 'react-router-dom'
 
 import { Redirect } from '../Redirect'
 import { ForgotPassword } from './screens/ForgotPassword'
-import { SignIn } from './screens/SignIn'
+import { SignIn } from './screens/SignIn/SignIn'
 import { SignUp } from './screens/SignUp'
 
 export const Public = () => (

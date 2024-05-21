@@ -46,3 +46,9 @@ export class ConfirmSignUpDto {
   @IsNotEmpty()
   confirmationCode: string
 }
+
+export class ExchangeGoogleCodeForAccessTokenDto {
+  @IsString()
+  @IsNotEmpty()
+  code: string
+}

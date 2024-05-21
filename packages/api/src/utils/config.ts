@@ -71,6 +71,15 @@ const getConfig = () => {
       jwtSecret: String(process.env.JWT_SECRET),
       encryptionKey: String(process.env.ENCRYPTION_KEY),
     },
+    googleOAuth: {
+      available:
+        !!process.env.GOOGLE_OAUTH_CLIENT_ID &&
+        !!process.env.GOOGLE_OAUTH_CLIENT_SECRET &&
+        !!process.env.GOOGLE_OAUTH_REDIRECT_URL,
+      clientId: process.env.GOOGLE_OAUTH_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET,
+      redirectUrl: process.env.GOOGLE_OAUTH_REDIRECT_URL,
+    },
     cdn: {
       available:
         !!process.env.S3_REGION &&

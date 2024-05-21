@@ -1,12 +1,12 @@
 import { FC, useRef, useState } from 'react'
 
-import { useAuth } from '../../../auth'
-import { Logo } from '../../../components/Logo'
+import { useAuth } from '../../../../../auth'
+import { Logo } from '../../../../../components/Logo'
 import {
   Box,
   Button,
   ExternalLink,
-  Form,
+  Form as UIForm,
   Heading,
   LinkWrapper,
   Stack,
@@ -14,9 +14,14 @@ import {
   TextField,
   toast,
 } from 'design-system'
-import { HTTPRequestError, getAPIClient } from '../../../generated/apiClient'
-import routes from '../../../routing'
+import {
+  HTTPRequestError,
+  getAPIClient,
+} from '../../../../../generated/apiClient'
+import routes from '../../../../../routing'
 import { Link } from 'react-router-dom'
+import { GoogleButton } from '../../../components/GoogleButton'
+import { useGoogleSignIn } from '../../../hooks'
 
 interface State {
   email: string
@@ -27,7 +32,7 @@ interface State {
 
 type Step = 'signin' | 'newPassword' | 'confirmationCode'
 
-export const SignIn: FC = () => {
+export const Form: FC = () => {
   const apiClient = useRef(
     getAPIClient({
       baseUrl: import.meta.env.VITE_APP_API_URL,
@@ -35,6 +40,7 @@ export const SignIn: FC = () => {
   )
   const [step, setStep] = useState<Step>('signin')
   const [isLoading, setIsLoading] = useState(false)
+  const { isGoogleLoading, onRequestGoogleSignIn } = useGoogleSignIn()
   const { signIn } = useAuth()
   const [state, setState] = useState<State>({
     email: '',
@@ -183,7 +189,7 @@ export const SignIn: FC = () => {
             </Text>
           </Stack>
 
-          <Form onSubmit={action[step]}>
+          <UIForm onSubmit={action[step]}>
             <Stack width="100%" direction="column" spacing="$space200">
               <TextField
                 label="Email"
@@ -282,6 +288,11 @@ export const SignIn: FC = () => {
                 >
                   Sign in with email
                 </Button>
+
+                <GoogleButton
+                  isLoading={isGoogleLoading}
+                  onAction={onRequestGoogleSignIn}
+                />
               </Stack>
             </Stack>
 
@@ -309,7 +320,7 @@ export const SignIn: FC = () => {
                 .
               </Text>
             </Box>
-          </Form>
+          </UIForm>
         </Stack>
       </Box>
     </Box>

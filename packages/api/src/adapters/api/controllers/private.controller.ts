@@ -61,6 +61,7 @@ import { SettingsService } from 'src/modules/cloud/billing/settings.service'
 import { SubscriptionService } from 'src/modules/cloud/billing/subscription.service'
 import {
   ConfirmSignUpDto,
+  ExchangeGoogleCodeForAccessTokenDto,
   LoginDto,
   SignUpDto,
   UpdateCurrentUserDto,
@@ -410,12 +411,34 @@ export class PrivateApiController {
   }
 
   @Throttle({ default: { limit: 1, ttl: 1000 } })
+  @Get('/GetGoogleOAuthURL')
+  @Public()
+  async getGoogleOAuthURL(): Promise<Paths.GetGoogleOAuthURL.Responses.$200> {
+    const url = this.authService.getGoogleOAuthURL()
+
+    return {
+      url,
+    }
+  }
+
+  @Throttle({ default: { limit: 1, ttl: 1000 } })
+  @Post('/ExchangeGoogleCodeForAccessToken')
+  @Public()
+  async exchangeGoogleCodeForAccessToken(
+    @Body() { code }: ExchangeGoogleCodeForAccessTokenDto,
+  ): Promise<Paths.ExchangeGoogleCodeForAccessToken.Responses.$201> {
+    const accessToken =
+      await this.authService.exchangeGoogleCodeForAccessToken(code)
+    return { accessToken }
+  }
+
+  @Throttle({ default: { limit: 1, ttl: 1000 } })
   @Post('/LogIn')
   @Public()
   async login(
     @Body() { email, password }: LoginDto,
   ): Promise<Paths.LogIn.Responses.$200> {
-    const { accessToken } = await this.authService.login({ email, password })
+    const accessToken = await this.authService.login({ email, password })
     return { accessToken }
   }
 

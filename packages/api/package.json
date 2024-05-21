@@ -38,6 +38,7 @@
     "exceljs": "4.4.0",
     "exponential-backoff": "3.1.1",
     "file-formats": "*",
+    "google-auth-library": "9.10.0",
     "helmet": "7.1.0",
     "jsonwebtoken": "9.0.2",
     "ksuid": "3.0.0",
