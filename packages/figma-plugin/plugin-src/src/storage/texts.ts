@@ -20,9 +20,14 @@ export const syncTextData = async (data: TextSync) => {
   node.setPluginData(APP_CONTENT, data.content || '')
 
   if (!node.hasMissingFont) {
-    // TODO: Investigate potential performance issues
-    await figma.loadFontAsync(node.fontName as FontName)
-    node.characters = newContent
+    // https://forum.figma.com/t/error-cannot-unwrap-symbol/36692
+    try {
+      // TODO: Investigate potential performance issues
+      await figma.loadFontAsync(node.fontName as FontName)
+      node.characters = newContent
+    } catch (e) {
+      // Do nothing
+    }
   }
 }
 

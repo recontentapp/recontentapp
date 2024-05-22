@@ -17,12 +17,12 @@ export const File = () => {
     return <FileOnboarding />
   }
 
-  if (isPending) {
-    return <FullpageSpinner />
-  }
-
   if (error) {
     return <ErrorLoadingFile />
+  }
+
+  if (isPending) {
+    return <FullpageSpinner />
   }
 
   return (

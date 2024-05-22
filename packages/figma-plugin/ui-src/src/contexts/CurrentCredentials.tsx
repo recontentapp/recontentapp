@@ -1,6 +1,7 @@
 import {
   ReactNode,
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -20,6 +21,7 @@ import {
   CredentialsFooter,
 } from '../components/CredentialsFooter'
 import { Box, Stack } from 'design-system'
+import { HTTPRequestError } from '../generated/apiClient'
 
 interface CurrentCredentialsProviderProps {
   children: ReactNode
@@ -38,7 +40,7 @@ export const useCurrentCredentials = () => useContext(context)
 export const CurrentCredentialsProvider = ({
   children,
 }: CurrentCredentialsProviderProps) => {
-  const { file, userConfig } = useBridge()
+  const { file, userConfig, emit } = useBridge()
 
   const [acceptedWelcome, setAcceptedWelcome] = useState(false)
   const [requestedSelect, setRequestedSelect] = useState(false)
@@ -46,6 +48,17 @@ export const CurrentCredentialsProvider = ({
 
   const [currentCredentials, setCurrentCredentials] =
     useState<UserCredentials | null>(null)
+
+  const onError = useCallback(
+    (error: unknown) => {
+      if (error instanceof HTTPRequestError && error.statusCode === 401) {
+        emit({
+          type: 'user-config-reset-requested',
+        })
+      }
+    },
+    [emit],
+  )
 
   useEffect(() => {
     if (currentCredentials) {
@@ -128,6 +141,7 @@ export const CurrentCredentialsProvider = ({
           headers: {
             Authorization: `Bearer ${currentCredentials.apiKey}`,
           },
+          onError,
         }}
       >
         <QueryClientProvider client={queryClient}>
