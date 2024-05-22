@@ -29,9 +29,12 @@ paths:
                         type: boolean
                       cdnAvailable:
                         type: boolean
+                      googleOAuthAvailable:
+                        type: boolean
                     required:
                       - workspaceInviteOnly
                       - cdnAvailable
+                      - googleOAuthAvailable
                 additionalProperties: false
                 required:
                   - version
@@ -99,6 +102,49 @@ paths:
                 - password
       responses:
         '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                additionalProperties: false
+                required:
+                  - accessToken
+  /GetGoogleOAuthURL:
+    get:
+      operationId: getGoogleOAuthURL
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
+                additionalProperties: false
+                required:
+                  - url
+  /ExchangeGoogleCodeForAccessToken:
+    post:
+      operationId: exchangeGoogleCodeForAccessToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+              additionalProperties: false
+              required:
+                - code
+      responses:
+        '201':
           description: OK
           content:
             application/json:

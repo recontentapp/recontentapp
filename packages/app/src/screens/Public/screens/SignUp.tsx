@@ -17,6 +17,9 @@ import {
 } from 'design-system'
 import { getAPIClient } from '../../../generated/apiClient'
 import routes from '../../../routing'
+import { useGoogleSignIn } from '../hooks'
+import { GoogleButton } from '../components/GoogleButton'
+import { useSystem } from '../../../hooks/system'
 
 interface State {
   email: string
@@ -25,7 +28,11 @@ interface State {
 
 export const SignUp: FC = () => {
   const navigate = useNavigate()
+  const {
+    settings: { googleOAuthAvailable },
+  } = useSystem()
   const [loading, setLoading] = useState(false)
+  const { isGoogleLoading, onRequestGoogleSignIn } = useGoogleSignIn()
   const [state, setState] = useState<State>({
     email: '',
     password: '',
@@ -126,6 +133,13 @@ export const SignUp: FC = () => {
                 >
                   Sign up with email
                 </Button>
+
+                {googleOAuthAvailable && (
+                  <GoogleButton
+                    isLoading={isGoogleLoading}
+                    onAction={onRequestGoogleSignIn}
+                  />
+                )}
               </Stack>
             </Stack>
           </Form>

@@ -363,24 +363,24 @@ const routes = {
   },
   signUp: {
     url: (params: SignupParams) => {
-      const path = generatePath('/signUp', params.pathParams)
+      const path = generatePath('/sign-up', params.pathParams)
       const queryParams = params.queryParams
         ? QueryString.stringify(params.queryParams)
         : undefined
       return queryParams ? `${path}?${queryParams}` : path
     },
-    path: '/signUp',
+    path: '/sign-up',
     metadata: {},
   },
   forgotPassword: {
     url: (params: ForgotpasswordParams) => {
-      const path = generatePath('/forgotPassword', params.pathParams)
+      const path = generatePath('/forgot-password', params.pathParams)
       const queryParams = params.queryParams
         ? QueryString.stringify(params.queryParams)
         : undefined
       return queryParams ? `${path}?${queryParams}` : path
     },
-    path: '/forgotPassword',
+    path: '/forgot-password',
     metadata: {},
   },
   onboardingYou: {

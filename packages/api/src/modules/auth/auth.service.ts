@@ -1,10 +1,11 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
-import { EventEmitter2 } from '@nestjs/event-emitter'
+import { OAuth2Client } from 'google-auth-library'
 import { randomInt } from 'node:crypto'
 import { PrismaService } from 'src/utils/prisma.service'
 import { MailerService } from 'src/modules/notifications/mailer.service'
@@ -42,7 +43,6 @@ interface ConfirmUserParams {
 @Injectable()
 export class AuthService {
   constructor(
-    private eventEmitter: EventEmitter2,
     private prisma: PrismaService,
     private jwtService: JwtService,
     private configService: ConfigService<Config, true>,
@@ -58,6 +58,98 @@ export class AuthService {
     }
 
     return confirmationCode
+  }
+
+  getGoogleOAuthURL() {
+    const googleOAuth = this.configService.get('googleOAuth', { infer: true })
+
+    if (!googleOAuth.available) {
+      throw new BadRequestException('Google OAuth is not available')
+    }
+
+    const client = new OAuth2Client(
+      googleOAuth.clientId,
+      googleOAuth.clientSecret,
+      googleOAuth.redirectUrl,
+    )
+
+    const authorizeUrl = client.generateAuthUrl({
+      access_type: 'offline',
+      scope: ['profile', 'email'],
+    })
+
+    return authorizeUrl
+  }
+
+  async exchangeGoogleCodeForAccessToken(code: string): Promise<string> {
+    const googleOAuth = this.configService.get('googleOAuth', { infer: true })
+
+    if (!googleOAuth.available) {
+      throw new BadRequestException('Google OAuth is not available')
+    }
+
+    const client = new OAuth2Client(
+      googleOAuth.clientId,
+      googleOAuth.clientSecret,
+      googleOAuth.redirectUrl,
+    )
+
+    const result = await client.getToken(code).catch(() => null)
+
+    if (!result || !result.tokens.access_token) {
+      throw new BadRequestException('Invalid code')
+    }
+
+    const tokenInfo = await client
+      .getTokenInfo(result.tokens.access_token)
+      .catch(() => null)
+
+    if (
+      !tokenInfo ||
+      !tokenInfo.email ||
+      !tokenInfo.email_verified ||
+      !tokenInfo.sub
+    ) {
+      throw new BadRequestException('Invalid code')
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: {
+        providerName_providerId: {
+          providerName: 'google',
+          providerId: tokenInfo.sub,
+        },
+      },
+    })
+
+    if (user) {
+      if (user.blockedAt) {
+        throw new ForbiddenException('User is blocked')
+      }
+
+      const tokenContent: TokenContent = {
+        userId: user.id,
+      }
+
+      return this.jwtService.sign(tokenContent)
+    }
+
+    const newUser = await this.prisma.user.create({
+      data: {
+        providerName: 'google',
+        providerId: tokenInfo.sub,
+        email: tokenInfo.email,
+        firstName: '',
+        lastName: '',
+        confirmedAt: new Date(),
+      },
+    })
+
+    const tokenContent: TokenContent = {
+      userId: newUser.id,
+    }
+
+    return this.jwtService.sign(tokenContent)
   }
 
   async createUser({ firstName, lastName, email, password }: CreateUserParams) {
@@ -181,13 +273,15 @@ export class AuthService {
       throw new BadRequestException('User not confirmed')
     }
 
+    if (user.blockedAt) {
+      throw new ForbiddenException('User is blocked')
+    }
+
     const tokenContent: TokenContent = {
       userId: user.id,
     }
 
-    return {
-      accessToken: this.jwtService.sign(tokenContent),
-    }
+    return this.jwtService.sign(tokenContent)
   }
 
   // TODO: Add password reset
