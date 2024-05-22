@@ -4,7 +4,10 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../../../../auth'
 import { Logo } from '../../../../../components/Logo'
 import { Box, ExternalLink, Stack, Text, toast, Spinner } from 'design-system'
-import { getAPIClient } from '../../../../../generated/apiClient'
+import {
+  HTTPRequestError,
+  getAPIClient,
+} from '../../../../../generated/apiClient'
 import routes from '../../../../../routing'
 import { useCodeSearchParams } from '../../../hooks'
 
@@ -33,13 +36,18 @@ export const CompleteGoogleFlow: FC = () => {
       })
       .then(res => {
         if (!res.ok) {
-          throw new Error()
+          throw res.error
         }
 
         signIn(res.data.accessToken)
       })
-      .catch(() => {
-        toast('error', { title: 'Failed to sign in with Google' })
+      .catch(err => {
+        if (err instanceof HTTPRequestError && err.statusCode === 403) {
+          toast('error', { title: 'Your account has been blocked' })
+        } else {
+          toast('error', { title: 'Failed to sign in with Google' })
+        }
+
         navigate(routes.signUp.url({}))
       })
   }, [])

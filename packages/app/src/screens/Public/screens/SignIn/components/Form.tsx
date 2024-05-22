@@ -22,6 +22,7 @@ import routes from '../../../../../routing'
 import { Link } from 'react-router-dom'
 import { GoogleButton } from '../../../components/GoogleButton'
 import { useGoogleSignIn } from '../../../hooks'
+import { useSystem } from '../../../../../hooks/system'
 
 interface State {
   email: string
@@ -33,6 +34,9 @@ interface State {
 type Step = 'signin' | 'newPassword' | 'confirmationCode'
 
 export const Form: FC = () => {
+  const {
+    settings: { googleOAuthAvailable },
+  } = useSystem()
   const apiClient = useRef(
     getAPIClient({
       baseUrl: import.meta.env.VITE_APP_API_URL,
@@ -121,12 +125,18 @@ export const Form: FC = () => {
       })
       .then(res => {
         if (!res.ok) {
-          if (
-            res.error instanceof HTTPRequestError &&
-            res.error.statusCode === 400
-          ) {
-            setStep('confirmationCode')
-            return
+          if (res.error instanceof HTTPRequestError) {
+            if (res.error.statusCode === 400) {
+              setStep('confirmationCode')
+              return
+            }
+
+            if (res.error.statusCode === 403) {
+              toast('error', {
+                title: 'Your account has been blocked',
+              })
+              return
+            }
           }
 
           toast('error', {
@@ -289,10 +299,12 @@ export const Form: FC = () => {
                   Sign in with email
                 </Button>
 
-                <GoogleButton
-                  isLoading={isGoogleLoading}
-                  onAction={onRequestGoogleSignIn}
-                />
+                {googleOAuthAvailable && (
+                  <GoogleButton
+                    isLoading={isGoogleLoading}
+                    onAction={onRequestGoogleSignIn}
+                  />
+                )}
               </Stack>
             </Stack>
 

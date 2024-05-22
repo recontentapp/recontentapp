@@ -29,9 +29,12 @@ paths:
                         type: boolean
                       cdnAvailable:
                         type: boolean
+                      googleOAuthAvailable:
+                        type: boolean
                     required:
                       - workspaceInviteOnly
                       - cdnAvailable
+                      - googleOAuthAvailable
                 additionalProperties: false
                 required:
                   - version

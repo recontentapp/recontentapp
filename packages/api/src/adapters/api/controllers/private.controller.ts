@@ -394,6 +394,9 @@ export class PrivateApiController {
     const cdnConfig = this.configService.get('cdn', {
       infer: true,
     })
+    const googleOAuthConfig = this.configService.get('googleOAuth', {
+      infer: true,
+    })
 
     if (appConfig.workspaceInviteOnly) {
       const workspacesCount = await this.prismaService.workspace.count()
@@ -406,6 +409,7 @@ export class PrivateApiController {
       settings: {
         workspaceInviteOnly,
         cdnAvailable: cdnConfig.available,
+        googleOAuthAvailable: googleOAuthConfig.available,
       },
     }
   }
