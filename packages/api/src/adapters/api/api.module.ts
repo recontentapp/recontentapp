@@ -25,6 +25,7 @@ import { PrivateApiController } from './controllers/private.controller'
 import { PublicApiController } from './controllers/public.controller'
 import { WebhooksController } from './controllers/webhooks.controller'
 import { FigmaPluginController } from './controllers/figma-plugin.controller'
+import { SlackNotificationsModule } from 'src/modules/cloud/slack-notifications/slack-notifications.module'
 
 @Module({
   imports: [
@@ -64,6 +65,7 @@ import { FigmaPluginController } from './controllers/figma-plugin.controller'
         ]
       : []),
     AuthModule,
+    SlackNotificationsModule,
     NotificationsModule,
     WorkspaceModule,
     ProjectModule,

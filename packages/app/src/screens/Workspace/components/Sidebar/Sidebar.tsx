@@ -1,9 +1,13 @@
-import { FC, useMemo } from 'react'
+import { FC, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { Box, Stack } from 'design-system'
 import { useModals } from '../../hooks/modals'
-import { ActionButtonProps, ActionsList } from './components/ActionsList'
+import {
+  ActionButton,
+  ActionButtonProps,
+  ActionsList,
+} from './components/ActionsList'
 import { Button } from './components/Button'
 import { ProjectsList } from './components/ProjectsList'
 import { WorkspaceDropdown } from './components/WorkspaceDropdown'
@@ -12,6 +16,7 @@ import { useCurrentWorkspace, useHasAbility } from '../../../../hooks/workspace'
 import routes from '../../../../routing'
 import { useSystem } from '../../../../hooks/system'
 import { styled } from '../../../../theme'
+import { FeedbacksModal, FeedbacksModalRef } from './components/FeedbacksModal'
 
 const Container = styled('aside', {
   display: 'flex',
@@ -59,7 +64,10 @@ const LegalLink = styled('a', {
 })
 
 export const Sidebar: FC = () => {
-  const { version } = useSystem()
+  const {
+    version,
+    settings: { feedbacksAvailable },
+  } = useSystem()
   const { openCreateProject } = useModals()
   const navigate = useNavigate()
   const { key: workspaceKey, id: workspaceId } = useCurrentWorkspace()
@@ -73,6 +81,7 @@ export const Sidebar: FC = () => {
   const canManageLanguages = useHasAbility('languages:manage')
   const canManageMembers = useHasAbility('members:manage')
   const canManageIntegrations = useHasAbility('api_keys:manage')
+  const feedbacksModalRef = useRef<FeedbacksModalRef>(null!)
 
   const canAdmin =
     canManageMembers || canManageLanguages || canManageIntegrations
@@ -124,16 +133,20 @@ export const Sidebar: FC = () => {
         />
       </Scroller>
 
+      <FeedbacksModal ref={feedbacksModalRef} />
+
       <Bottom>
         <Box paddingX="$space60">
           <Stack width="100%" direction="column" spacing="$space200">
-            {/* <Stack direction="column" spacing="$space0">
-              <ActionButton
-                onAction={() => {}}
-                name="Contact us"
-                icon="question_answer"
-              />
-            </Stack> */}
+            <Stack direction="column" spacing="$space0">
+              {feedbacksAvailable && (
+                <ActionButton
+                  onAction={() => feedbacksModalRef.current.open()}
+                  name="Send feedback"
+                  icon="reviews"
+                />
+              )}
+            </Stack>
 
             <Stack
               direction="row"

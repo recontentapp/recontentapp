@@ -31,9 +31,12 @@ paths:
                         type: boolean
                       googleOAuthAvailable:
                         type: boolean
+                      feedbacksAvailable:
+                        type: boolean
                     required:
                       - workspaceInviteOnly
                       - cdnAvailable
+                      - feedbacksAvailable
                       - googleOAuthAvailable
                 additionalProperties: false
                 required:
@@ -190,6 +193,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CurrentUser'
+  /SendFeedback:
+    post:
+      operationId: sendFeedback
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                referrer:
+                  type: string
+                workspaceId:
+                  type: string
+              additionalProperties: false
+              required:
+                - message
+                - referrer
+                - workspaceId
+      responses:
+        '201':
+          description: OK
   /GetWorkspaceAvailability:
     get:
       operationId: getWorkspaceAvailability
