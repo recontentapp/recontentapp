@@ -53,6 +53,13 @@ export const CurrentCredentialsProvider = ({
     (error: unknown) => {
       if (error instanceof HTTPRequestError && error.statusCode === 401) {
         emit({
+          type: 'notification-requested',
+          data: {
+            message:
+              'Authentication issue with current credentials, resetting...',
+          },
+        })
+        emit({
           type: 'user-config-reset-requested',
         })
       }
