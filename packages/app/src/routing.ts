@@ -12,6 +12,26 @@ export interface DashboardParams {
   }
 }
 
+export interface CreateanotherworkspaceParams {
+  pathParams: {
+    workspaceKey: string
+    [k: string]: string | undefined
+  }
+  queryParams?: {
+    [k: string]: string | undefined
+  }
+}
+
+export interface JoinanotherworkspaceParams {
+  pathParams: {
+    workspaceKey: string
+    [k: string]: string | undefined
+  }
+  queryParams?: {
+    [k: string]: string | undefined
+  }
+}
+
 export interface WorkspacesettingsbillingParams {
   pathParams: {
     workspaceKey: string
@@ -194,6 +214,34 @@ const routes = {
       return queryParams ? `${path}?${queryParams}` : path
     },
     path: '/:workspaceKey',
+    metadata: {},
+  },
+  createAnotherWorkspace: {
+    url: (params: CreateanotherworkspaceParams) => {
+      const path = generatePath(
+        '/:workspaceKey/create-another-workspace',
+        params.pathParams,
+      )
+      const queryParams = params.queryParams
+        ? QueryString.stringify(params.queryParams)
+        : undefined
+      return queryParams ? `${path}?${queryParams}` : path
+    },
+    path: '/:workspaceKey/create-another-workspace',
+    metadata: {},
+  },
+  joinAnotherWorkspace: {
+    url: (params: JoinanotherworkspaceParams) => {
+      const path = generatePath(
+        '/:workspaceKey/join-another-workspace',
+        params.pathParams,
+      )
+      const queryParams = params.queryParams
+        ? QueryString.stringify(params.queryParams)
+        : undefined
+      return queryParams ? `${path}?${queryParams}` : path
+    },
+    path: '/:workspaceKey/join-another-workspace',
     metadata: {},
   },
   workspaceSettingsBilling: {

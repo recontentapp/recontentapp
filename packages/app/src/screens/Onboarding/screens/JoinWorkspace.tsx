@@ -65,9 +65,11 @@ export const JoinWorkspace = () => {
       <Box width="100%" maxWidth={500} margin="0 auto">
         <Stack width="100%" direction="column" spacing="$space300">
           <Stack direction="column" alignItems="center" spacing="$space60">
-            <Text size="$size80" color="$gray14">
-              Step 2 of 2
-            </Text>
+            {!params.workspaceKey && (
+              <Text size="$size80" color="$gray14">
+                Step 2 of 2
+              </Text>
+            )}
 
             <Stack direction="column" spacing="$space100">
               <Heading

@@ -121,12 +121,22 @@ export const WorkspaceDropdown: FC = () => {
               />
             </MenuItem>
           ))}
-          {/* <MenuItem onSelect={() => navigate(toCreateWorkspace(workspaceKey))}>
+          <MenuItem
+            onSelect={() =>
+              navigate(
+                routes.createAnotherWorkspace.url({
+                  pathParams: {
+                    workspaceKey,
+                  },
+                }),
+              )
+            }
+          >
             <LabelWithIcon
-              icon="add_circle_outline"
+              icon="add_circle"
               label="Create or join a workspace"
             />
-          </MenuItem> */}
+          </MenuItem>
         </MenuList>
       </Menu>
 
