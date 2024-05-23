@@ -14,6 +14,7 @@ import { LanguageLocale } from './locale'
 import { Requester } from '../auth/requester.object'
 import { ConfigService } from '@nestjs/config'
 import { Config } from 'src/utils/config'
+import { WorkspaceCreatedEvent } from './events/workspace-created.event'
 
 interface CreateWorkspaceParams {
   key: string
@@ -188,6 +189,11 @@ export class WorkspaceService {
         },
       })
     })
+
+    this.eventEmitter.emit(
+      'workspace.created',
+      new WorkspaceCreatedEvent(workspace.id),
+    )
 
     return workspace
   }

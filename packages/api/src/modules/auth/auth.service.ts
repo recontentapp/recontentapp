@@ -5,6 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
+import { EventEmitter2 } from '@nestjs/event-emitter'
 import { OAuth2Client } from 'google-auth-library'
 import { randomInt } from 'node:crypto'
 import { PrismaService } from 'src/utils/prisma.service'
@@ -15,6 +16,7 @@ import { TokenContent } from './types'
 import { Prisma } from '@prisma/client'
 import { ConfigService } from '@nestjs/config'
 import { Config } from 'src/utils/config'
+import { UserConfirmedEvent } from './events/user-confirmed.event'
 
 interface CreateUserParams {
   firstName: string
@@ -46,6 +48,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private configService: ConfigService<Config, true>,
+    private eventEmitter: EventEmitter2,
     private mailerService: MailerService,
   ) {}
 
@@ -144,6 +147,8 @@ export class AuthService {
         confirmedAt: new Date(),
       },
     })
+
+    this.eventEmitter.emit('user.confirmed', new UserConfirmedEvent(newUser.id))
 
     const tokenContent: TokenContent = {
       userId: newUser.id,
@@ -245,6 +250,8 @@ export class AuthService {
         confirmedAt: new Date(),
       },
     })
+
+    this.eventEmitter.emit('user.confirmed', new UserConfirmedEvent(user.id))
   }
 
   async login({ email, password }: LoginParams) {

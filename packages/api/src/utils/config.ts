@@ -109,6 +109,10 @@ const getConfig = () => {
       cloudWatchLogsGroupName: process.env.CLOUDWATCH_LOGS_BILLING_GROUP_NAME,
       cloudWatchLogsStreamName: process.env.CLOUDWATCH_LOGS_BILLING_STREAM_NAME,
     },
+    slack: {
+      notificationsWebhookUrl: process.env.SLACK_NOTIFICATIONS_WEBHOOK_URL,
+      feedbacksWebhookUrl: process.env.SLACK_FEEDBACKS_WEBHOOK_URL,
+    },
   }
 }
 

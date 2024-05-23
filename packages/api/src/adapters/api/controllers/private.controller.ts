@@ -58,6 +58,7 @@ import {
 import { AuthenticatedRequester } from 'src/modules/auth/requester.decorator'
 import { Requester } from 'src/modules/auth/requester.object'
 import { SettingsService } from 'src/modules/cloud/billing/settings.service'
+import { SlackService } from 'src/modules/cloud/slack-notifications/slack.service'
 import { SubscriptionService } from 'src/modules/cloud/billing/subscription.service'
 import {
   ConfirmSignUpDto,
@@ -106,6 +107,7 @@ import {
 } from '../dto/private/billing.dto'
 import { FigmaService } from 'src/modules/figma/figma.service'
 import { DeleteFigmaFileDto } from '../dto/private/figma.dto'
+import { SendFeedbackDto } from '../dto/private/feedback.dto'
 
 @Controller('private')
 @UseGuards(JwtAuthGuard)
@@ -123,6 +125,7 @@ export class PrivateApiController {
     private readonly billingSettingsService: SettingsService,
     private readonly billingSubscriptionService: SubscriptionService,
     private readonly figmaService: FigmaService,
+    private readonly slackService: SlackService,
   ) {}
 
   private static formatTag(tag: Tag): Components.Schemas.Tag {
@@ -397,6 +400,12 @@ export class PrivateApiController {
     const googleOAuthConfig = this.configService.get('googleOAuth', {
       infer: true,
     })
+    const feedbacksWebhookUrl = this.configService.get(
+      'slack.feedbacksWebhookUrl',
+      {
+        infer: true,
+      },
+    )
 
     if (appConfig.workspaceInviteOnly) {
       const workspacesCount = await this.prismaService.workspace.count()
@@ -410,6 +419,7 @@ export class PrivateApiController {
         workspaceInviteOnly,
         cdnAvailable: cdnConfig.available,
         googleOAuthAvailable: googleOAuthConfig.available,
+        feedbacksAvailable: !!feedbacksWebhookUrl,
       },
     }
   }
@@ -515,6 +525,22 @@ export class PrivateApiController {
     })
 
     return PrivateApiController.formatCurrentUser(user)
+  }
+
+  @Throttle({ default: { limit: 1, ttl: 2500 } })
+  @Post('/SendFeedback')
+  async sendFeedback(
+    @AuthenticatedRequester() requester: Requester,
+    @Body() { message, referrer, workspaceId }: SendFeedbackDto,
+  ): Promise<Paths.SendFeedback.Responses.$201> {
+    await this.slackService.sendFeedback({
+      requester,
+      message,
+      workspaceId,
+      referrer,
+    })
+
+    return {}
   }
 
   @Get('/GetWorkspaceAbilities')
