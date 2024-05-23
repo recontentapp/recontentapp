@@ -29,7 +29,8 @@ export class SlackService {
       infer: true,
     })
     if (!webhookUrl) {
-      throw new BadRequestException('Slack notifications are not configured')
+      // Fail silently as it's used in non-critical event listeners
+      return
     }
 
     await fetch(webhookUrl, {
