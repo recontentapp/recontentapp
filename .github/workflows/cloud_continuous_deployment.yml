@@ -6,6 +6,7 @@ on:
 jobs:
   trigger_webapp_deployment:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Trigger web app deployment
         run: |
