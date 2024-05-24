@@ -29,7 +29,7 @@ import {
   renderNestedYAML,
   renderPHPArrays,
   renderYAML,
-} from 'file-formats'
+} from '@recontentapp/file-formats'
 
 interface ListPhrasesParams {
   revisionId: string

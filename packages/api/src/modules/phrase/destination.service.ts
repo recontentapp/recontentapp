@@ -16,7 +16,7 @@ import {
   renderNestedYAML,
   renderPHPArrays,
   renderYAML,
-} from 'file-formats'
+} from '@recontentapp/file-formats'
 import {
   DeleteObjectsCommand,
   ListObjectsCommand,

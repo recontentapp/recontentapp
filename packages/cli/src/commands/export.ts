@@ -15,7 +15,7 @@ import {
   renderAndroidXML,
   renderAppleStrings,
   renderPHPArrays,
-} from 'file-formats'
+} from '@recontentapp/file-formats'
 
 interface Flags {
   project: string

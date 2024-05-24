@@ -2,7 +2,7 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator'
-import { isValidFileFormat } from 'file-formats'
+import { isValidFileFormat } from '@recontentapp/file-formats'
 import { isValidPlan } from 'src/modules/cloud/billing/plan'
 import { isValidLanguageLocale } from 'src/modules/workspace/locale'
 

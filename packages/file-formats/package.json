@@ -1,12 +1,21 @@
 {
-  "name": "file-formats",
-  "version": "0.0.1",
+  "name": "@recontentapp/file-formats",
+  "version": "0.4.0",
   "license": "AGPL-3.0-only",
-  "private": true,
+  "private": false,
   "main": "dist/index.js",
   "files": [
     "dist"
   ],
+  "keywords": [
+    "file format",
+    "i18n"
+  ],
+  "homepage": "https://github.com/recontentapp/recontentapp",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/recontentapp/recontentapp"
+  },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build:src": "esbuild src/index.ts --bundle --platform=node --packages=external --sourcemap --analyze --outfile=dist/index.js",
