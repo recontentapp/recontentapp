@@ -12,7 +12,7 @@
     "prepare": "husky",
     "prettier:lint": "prettier -c .",
     "prettier:fix": "prettier -w .",
-    "file-formats:build": "yarn workspace file-formats build",
+    "file-formats:build": "yarn workspace @recontentapp/file-formats build",
     "email-templates:build": "yarn workspace email-templates build",
     "design-system:build": "yarn workspace design-system build",
     "openapi:generate:api": "openapi-kit generate -f ./openapi/private-api.yml -o ./packages/api/src/generated --types && openapi-kit generate -f ./openapi/public-api.yml -o ./packages/api/src/generated/public --types && openapi-kit generate -f ./openapi/figma-plugin-api.yml -o ./packages/api/src/generated/figma-plugin --types",
