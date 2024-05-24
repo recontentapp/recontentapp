@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import slugify from 'slugify'
 
 import {
@@ -38,7 +38,9 @@ export const CreateWorkspace = () => {
   const {
     settings: { workspaceInviteOnly },
   } = useSystem()
+  const navigate = useNavigate()
   const apiClient = useAPIClient()
+  const params = useParams<'workspaceKey'>()
   const { mutateAsync: createWorkspace, isPending: isCreatingWorkspace } =
     useCreateWorkspace()
   const [state, setState] = useState<State>({
@@ -79,11 +81,23 @@ export const CreateWorkspace = () => {
     })
       .then(() => {
         refetchUser()
+        setState({
+          key: '',
+          name: '',
+        })
         toast('success', {
           title: 'Workspace created 🚀',
           description:
             'You can access it from the dropdown in the top left corner',
         })
+
+        if (params.workspaceKey) {
+          navigate(
+            routes.dashboard.url({
+              pathParams: { workspaceKey: params.workspaceKey },
+            }),
+          )
+        }
       })
       .catch(() => {
         toast('error', {
@@ -104,9 +118,11 @@ export const CreateWorkspace = () => {
       <Box width="100%" maxWidth={500} margin="0 auto">
         <Stack width="100%" direction="column" spacing="$space300">
           <Stack direction="column" alignItems="center" spacing="$space60">
-            <Text size="$size80" color="$gray14">
-              Step 2 of 2
-            </Text>
+            {!params.workspaceKey && (
+              <Text size="$size80" color="$gray14">
+                Step 2 of 2
+              </Text>
+            )}
 
             <Stack direction="column" spacing="$space100">
               <Heading
@@ -198,7 +214,17 @@ export const CreateWorkspace = () => {
                   <Text size="$size100" color="$gray11">
                     Got an invitation by email?{' '}
                     <StyledLink>
-                      <Link to={routes.onboardingJoinWorkspace.url({})}>
+                      <Link
+                        to={
+                          params.workspaceKey
+                            ? routes.joinAnotherWorkspace.url({
+                                pathParams: {
+                                  workspaceKey: params.workspaceKey,
+                                },
+                              })
+                            : routes.onboardingJoinWorkspace.url({})
+                        }
+                      >
                         Join a workspace instead.
                       </Link>
                     </StyledLink>

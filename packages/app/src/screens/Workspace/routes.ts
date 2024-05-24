@@ -4,6 +4,12 @@ const routes: RoutesCollection = {
   '/:workspaceKey': {
     name: 'dashboard',
   },
+  '/:workspaceKey/create-another-workspace': {
+    name: 'createAnotherWorkspace',
+  },
+  '/:workspaceKey/join-another-workspace': {
+    name: 'joinAnotherWorkspace',
+  },
   '/:workspaceKey/settings/billing': {
     name: 'workspaceSettingsBilling',
   },

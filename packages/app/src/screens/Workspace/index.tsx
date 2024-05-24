@@ -28,6 +28,8 @@ import { useGetWorkspaceAbilities } from '../../generated/reactQuery'
 import { FullpageSpinner } from '../../components/FullpageSpinner'
 import { BillingBanner } from './components/BillingBanner'
 import { styled } from '../../theme'
+import { CreateWorkspace } from '../Onboarding/screens/CreateWorkspace'
+import { JoinWorkspace } from '../Onboarding/screens/JoinWorkspace'
 
 const MainContainer = styled('div', {
   height: '100vh',
@@ -97,6 +99,16 @@ export const Workspace = () => {
                 <Route
                   path="/:workspaceKey/settings/user"
                   element={<UserSettings />}
+                />
+
+                <Route
+                  path="/:workspaceKey/create-another-workspace"
+                  element={<CreateWorkspace />}
+                />
+
+                <Route
+                  path="/:workspaceKey/join-another-workspace"
+                  element={<JoinWorkspace />}
                 />
 
                 {canAccessSettings && (
