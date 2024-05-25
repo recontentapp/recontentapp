@@ -466,111 +466,126 @@ export class FigmaService {
       )
     }
 
-    const inputs: Prisma.FigmaTextCreateInput[] = items.map(item => {
+    interface IntermediateStruct {
+      isNew: boolean
+      phraseId: string
+      phraseKey: string
+      translation: string
+      textNodeId: string
+      pageNodeId: string
+    }
+
+    const intermediateStruct: Record<string, IntermediateStruct> = {}
+
+    items.forEach(item => {
       if ('phraseId' in item) {
-        const input: Prisma.FigmaTextCreateInput = {
-          file: {
-            connect: {
-              id: fileId,
-            },
-          },
-          phrase: {
-            connect: {
-              id: item.phraseId,
-            },
-          },
-          workspace: {
-            connect: {
-              id: file.workspaceId,
-            },
-          },
-          pageNodeId: item.pageNodeId,
+        intermediateStruct[item.phraseId] = {
+          isNew: false,
+          phraseId: item.phraseId,
+          phraseKey: '',
+          translation: '',
           textNodeId: item.textNodeId,
-          createdBy: workspaceAccess.getAccountID(),
+          pageNodeId: item.pageNodeId,
         }
+      } else {
+        const phraseId = uuidV4()
 
-        return input
+        intermediateStruct[phraseId] = {
+          isNew: true,
+          phraseId,
+          phraseKey: item.phraseKey ?? FigmaService.generatePhraseKey(),
+          translation: item.content,
+          textNodeId: item.textNodeId,
+          pageNodeId: item.pageNodeId,
+        }
       }
-
-      const input: Prisma.FigmaTextCreateInput = {
-        file: {
-          connect: {
-            id: fileId,
-          },
-        },
-        workspace: {
-          connect: {
-            id: file.workspaceId,
-          },
-        },
-        phrase: {
-          create: {
-            key: item.phraseKey ?? FigmaService.generatePhraseKey(),
-            revision: {
-              connect: {
-                id: file.revisionId,
-              },
-            },
-            project: {
-              connect: {
-                id: file.projectId,
-              },
-            },
-            createdBy: workspaceAccess.getAccountID(),
-            workspace: {
-              connect: {
-                id: file.workspaceId,
-              },
-            },
-            translations: {
-              create: {
-                language: {
-                  connect: {
-                    id: file.languageId,
-                  },
-                },
-                content: item.content,
-                revision: {
-                  connect: {
-                    id: file.revisionId,
-                  },
-                },
-                workspace: {
-                  connect: {
-                    id: file.workspaceId,
-                  },
-                },
-                createdBy: workspaceAccess.getAccountID(),
-              },
-            },
-          },
-        },
-        pageNodeId: item.pageNodeId,
-        textNodeId: item.textNodeId,
-        createdBy: workspaceAccess.getAccountID(),
-      }
-
-      return input
     })
 
-    const texts = await this.prismaService.$transaction(
-      inputs.map(input =>
-        this.prismaService.figmaText.create({
-          data: input,
-          include: {
-            phrase: {
-              include: {
-                translations: {
-                  where: {
-                    languageId: file.languageId,
-                  },
+    const existingPhrases = Object.values(intermediateStruct).filter(
+      i => !i.isNew,
+    )
+    const phrasesToCreate = Object.values(intermediateStruct).filter(
+      i => i.isNew,
+    )
+
+    const texts = await this.prismaService.$transaction(async t => {
+      // Insert new phrases (some might already exist with the same key)
+      await t.phrase.createMany({
+        data: phrasesToCreate.map(phrase => ({
+          id: phrase.phraseId,
+          key: phrase.phraseKey,
+          revisionId: file.revisionId,
+          projectId: file.projectId,
+          workspaceId: file.workspaceId,
+          createdBy: workspaceAccess.getAccountID(),
+        })),
+        skipDuplicates: true,
+      })
+
+      const phrases = await t.phrase.findMany({
+        select: {
+          id: true,
+        },
+        where: {
+          id: {
+            in: phrasesToCreate.map(phrase => phrase.phraseId),
+          },
+        },
+      })
+
+      const translations: Prisma.PhraseTranslationCreateManyInput[] = []
+      phrases.forEach(({ id }) => {
+        translations.push({
+          phraseId: id,
+          content: intermediateStruct[id].translation,
+          languageId: file.languageId,
+          workspaceId: file.workspaceId,
+          revisionId: file.revisionId,
+          createdBy: workspaceAccess.getAccountID(),
+        })
+      })
+
+      await t.phraseTranslation.createMany({
+        data: translations,
+        skipDuplicates: true,
+      })
+
+      const allPhraseIds = [
+        ...existingPhrases.map(phrase => phrase.phraseId),
+        ...phrases.map(phrase => phrase.id),
+      ]
+
+      await t.figmaText.createMany({
+        data: allPhraseIds.map(phraseId => ({
+          fileId: file.id,
+          workspaceId: file.workspaceId,
+          phraseId,
+          textNodeId: intermediateStruct[phraseId].textNodeId,
+          pageNodeId: intermediateStruct[phraseId].textNodeId,
+          createdBy: workspaceAccess.getAccountID(),
+        })),
+      })
+
+      return t.figmaText.findMany({
+        where: {
+          fileId: file.id,
+          phraseId: {
+            in: allPhraseIds,
+          },
+        },
+        include: {
+          phrase: {
+            include: {
+              translations: {
+                where: {
+                  languageId: file.languageId,
                 },
               },
             },
           },
-        }),
-      ),
-    )
+        },
+      })
+    })
 
     return texts
   }
