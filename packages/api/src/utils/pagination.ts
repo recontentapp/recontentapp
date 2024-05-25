@@ -53,7 +53,7 @@ export const Pagination = createParamDecorator(
       throw new BadRequestException('Invalid pagination params')
     }
 
-    if (finalParams.limit > 100) {
+    if (finalParams.limit > 250) {
       throw new BadRequestException('Invalid pagination params')
     }
 

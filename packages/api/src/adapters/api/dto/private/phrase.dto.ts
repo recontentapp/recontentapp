@@ -5,45 +5,54 @@ import {
   IsNumberString,
   IsOptional,
   IsString,
+  MaxLength,
   Validate,
   ValidateNested,
 } from 'class-validator'
 import { Components } from 'src/generated/typeDefinitions'
 import { IsNullable } from 'src/utils/class-validator'
 import { FileFormatValidator } from './domain.dto'
+import { ID_LENGTH, LONG_TEXT_LENGTH, TEXT_LENGTH } from '../constants'
 
 export class CreatePhraseDto {
   @IsString()
   @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
   revisionId: string
 
   @IsString()
   @IsNotEmpty()
+  @MaxLength(TEXT_LENGTH)
   key: string
 }
 
 export class UpdatePhraseKeyDto {
   @IsString()
   @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
   phraseId: string
 
   @IsString()
   @IsNotEmpty()
+  @MaxLength(TEXT_LENGTH)
   key: string
 }
 
 class Translation {
   @IsString()
   @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
   languageId: string
 
   @IsString()
+  @MaxLength(LONG_TEXT_LENGTH)
   content: string
 }
 
 export class TranslatePhraseDto {
   @IsString()
   @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
   phraseId: string
 
   @IsNotEmpty()
@@ -55,16 +64,19 @@ export class TranslatePhraseDto {
 export class AutoTranslatePhraseDto {
   @IsString()
   @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
   phraseId: string
 
   @IsString()
   @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
   languageId: string
 }
 
 export class DeletePhraseDto {
   @IsString()
   @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
   phraseId: string
 }
 
@@ -81,10 +93,12 @@ export class ImportPhrasesDto {
 
   @IsString()
   @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
   revisionId: string
 
   @IsString()
   @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
   languageId: string
 
   @IsString()
@@ -93,28 +107,34 @@ export class ImportPhrasesDto {
 
   @IsString()
   @IsOptional()
+  @MaxLength(TEXT_LENGTH)
   mappingSheetName?: string
 
   @IsNumberString()
   @IsOptional()
+  @MaxLength(TEXT_LENGTH)
   mappingRowStartIndex?: string
 
   @IsNumberString()
   @IsOptional()
+  @MaxLength(TEXT_LENGTH)
   mappingKeyColumnIndex?: string
 
   @IsNumberString()
   @IsOptional()
+  @MaxLength(TEXT_LENGTH)
   mappingTranslationColumnIndex?: string
 }
 
 export class GeneratePhrasesExportLinkDto {
   @IsString()
   @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
   revisionId: string
 
   @IsString()
   @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
   languageId: string
 
   @IsArray()
