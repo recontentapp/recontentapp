@@ -51,7 +51,17 @@ export const CurrentCredentialsProvider = ({
 
   const onError = useCallback(
     (error: unknown) => {
-      if (error instanceof HTTPRequestError && error.statusCode === 401) {
+      const isAuthenticationIssue =
+        error instanceof HTTPRequestError && error.statusCode === 401
+
+      const isFetchIssue =
+        typeof error === 'object' &&
+        error &&
+        'message' in error &&
+        typeof error.message === 'string' &&
+        error.message.includes('Failed to fetch')
+
+      if (isAuthenticationIssue || isFetchIssue) {
         emit({
           type: 'notification-requested',
           data: {
