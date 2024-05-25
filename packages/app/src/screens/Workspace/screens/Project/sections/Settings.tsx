@@ -23,6 +23,7 @@ import { useReferenceableAccounts } from '../../../hooks/referenceable'
 import { AddLanguageForm } from '../components/AddLanguageForm'
 import {
   getGetProjectQueryKey,
+  getListProjectsQueryKey,
   useDeleteProject,
   useGetProject,
   useListWorkspaceLanguages,
@@ -61,7 +62,13 @@ export const Settings: FC = () => {
     failureCount,
   } = useGetProject({ queryParams: { id: params.projectId! } })
   const { mutateAsync: deleteProject, isPending: isDeletingProject } =
-    useDeleteProject()
+    useDeleteProject({
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: getListProjectsQueryKey(),
+        })
+      },
+    })
   const confirmationModalRef = useRef<ConfirmationModalRef>(null!)
 
   useEffect(() => {
