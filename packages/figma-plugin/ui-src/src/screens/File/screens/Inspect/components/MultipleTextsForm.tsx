@@ -26,7 +26,7 @@ export const MultipleTextsForm = ({ texts }: SingleTextFormProps) => {
       emit({
         type: 'notification-requested',
         data: {
-          message: 'Could not create texts.',
+          message: 'Could not create phrases.',
           type: 'error',
         },
       })
@@ -98,7 +98,7 @@ export const MultipleTextsForm = ({ texts }: SingleTextFormProps) => {
       paddingX="$space80"
       paddingY="$space80"
     >
-      <Text size="$size80" color="$gray14">
+      <Text size="$size80" lineHeight="$lineHeight200" color="$gray14">
         {texts.length} texts selected, {notSyncedTexts.length} out of which are
         not synced.
       </Text>

@@ -29,7 +29,7 @@ const CreatePhrase = ({ text }: SingleTextFormProps) => {
       emit({
         type: 'notification-requested',
         data: {
-          message: 'Failed to create phrase',
+          message: 'Could not create phrase, key might be taken.',
           type: 'error',
         },
       })
