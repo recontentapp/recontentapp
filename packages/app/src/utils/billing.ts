@@ -18,6 +18,20 @@ export const workspaceBillingStatusLabels: Record<
   payment_required: 'Payment Required',
 }
 
+export const freePlan = {
+  name: 'Free plan',
+  description: 'To discover Recontent.app and its features.',
+  features: [
+    '1 project max.',
+    '1 000 translations max.',
+    'Import/Export',
+    'Tags',
+    'API & CLI for developers',
+  ],
+  currency: 'USD',
+  subscriptionAmount: 0,
+}
+
 export const proPlan = {
   name: 'Pro plan',
   description: 'For innovative teams focused on productivity.',

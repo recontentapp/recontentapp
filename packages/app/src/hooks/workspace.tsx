@@ -200,17 +200,22 @@ export const useCurrentAccount = () => {
 }
 
 export const useHasAbility = (ability: Components.Schemas.WorkspaceAbility) => {
-  const { id: workspaceId } = useCurrentWorkspace()
+  const { currentWorkspace } = useLooseCurrentWorkspace()
   const { data } = useGetWorkspaceAbilities(
     {
       queryParams: {
-        workspaceId,
+        workspaceId: String(currentWorkspace?.id),
       },
     },
     {
+      enabled: !!currentWorkspace,
       staleTime: Infinity,
     },
   )
+
+  if (!currentWorkspace) {
+    return false
+  }
 
   return data?.abilities.includes(ability) ?? false
 }

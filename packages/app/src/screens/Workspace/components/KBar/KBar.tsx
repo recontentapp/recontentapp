@@ -7,7 +7,7 @@ import { Box } from 'design-system'
 import { useModals } from '../../hooks/modals'
 import { useKBarContext } from './context'
 import { useListProjects } from '../../../../generated/reactQuery'
-import { useCurrentWorkspace } from '../../../../hooks/workspace'
+import { useCurrentWorkspace, useHasAbility } from '../../../../hooks/workspace'
 import routes from '../../../../routing'
 import { keyframes, styled } from '../../../../theme'
 
@@ -176,6 +176,12 @@ export const KBar = () => {
     openCreateProject,
     openCreateDestination,
   } = useModals()
+  const canManageLanguages = useHasAbility('languages:manage')
+  const canManageMembers = useHasAbility('members:manage')
+  const canManageIntegrations = useHasAbility('api_keys:manage')
+  const canManageProjectDestination = useHasAbility(
+    'projects:destinations:manage',
+  )
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -205,30 +211,47 @@ export const KBar = () => {
         label: 'Go to Dashboard',
         path: routes.dashboard.url({ pathParams: { workspaceKey } }),
       },
-      {
-        label: 'Go to Members settings',
-        path: routes.workspaceSettingsMembers.url({
-          pathParams: { workspaceKey },
-        }),
-      },
-      {
-        label: 'Go to Languages settings',
-        path: routes.workspaceSettingsLanguages.url({
-          pathParams: { workspaceKey },
-        }),
-      },
-      {
-        label: 'Go to Integrations settings',
-        path: routes.workspaceSettingsIntegrations.url({
-          pathParams: { workspaceKey },
-        }),
-      },
+      ...(canManageMembers
+        ? [
+            {
+              label: 'Go to Members settings',
+              path: routes.workspaceSettingsMembers.url({
+                pathParams: { workspaceKey },
+              }),
+            },
+          ]
+        : []),
+      ...(canManageLanguages
+        ? [
+            {
+              label: 'Go to Languages settings',
+              path: routes.workspaceSettingsLanguages.url({
+                pathParams: { workspaceKey },
+              }),
+            },
+          ]
+        : []),
+      ...(canManageIntegrations
+        ? [
+            {
+              label: 'Go to Integrations settings',
+              path: routes.workspaceSettingsIntegrations.url({
+                pathParams: { workspaceKey },
+              }),
+            },
+          ]
+        : []),
       {
         label: 'Go to User settings',
         path: routes.userSettings.url({ pathParams: { workspaceKey } }),
       },
     ]
-  }, [workspaceKey])
+  }, [
+    workspaceKey,
+    canManageLanguages,
+    canManageIntegrations,
+    canManageMembers,
+  ])
 
   const actionsItems = useMemo(() => {
     const actions: Action[] = []
@@ -248,12 +271,16 @@ export const KBar = () => {
               openCreateTag(project)
             },
           },
-          {
-            label: 'Create a destination',
-            onSelect: () => {
-              openCreateDestination(project)
-            },
-          },
+          ...(canManageProjectDestination
+            ? [
+                {
+                  label: 'Create a destination',
+                  onSelect: () => {
+                    openCreateDestination(project)
+                  },
+                },
+              ]
+            : []),
         ],
       )
     }
@@ -266,7 +293,14 @@ export const KBar = () => {
     })
 
     return actions
-  }, [project, openCreateProject, openCreatePhrase, openCreateDestination])
+  }, [
+    project,
+    openCreateProject,
+    openCreatePhrase,
+    openCreateTag,
+    openCreateDestination,
+    canManageProjectDestination,
+  ])
 
   const projectItems = useMemo(() => {
     if (!project) {
@@ -357,8 +391,12 @@ export const KBar = () => {
                 key={project.id}
                 onSelect={doAndClose(() =>
                   navigate(
-                    routes.projectSettings.url({
-                      pathParams: { workspaceKey, projectId: project.id },
+                    routes.projectPhrases.url({
+                      pathParams: {
+                        workspaceKey,
+                        projectId: project.id,
+                        revisionId: project.masterRevisionId,
+                      },
                     }),
                   ),
                 )}

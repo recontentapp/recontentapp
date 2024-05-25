@@ -17,7 +17,7 @@ export interface PlanCardProps {
   description: string
   isActive?: boolean
   items: string[]
-  primaryAction: {
+  primaryAction?: {
     label: string
     variation?: Extract<ButtonVariation, 'primary' | 'danger'>
     isDisabled?: boolean
@@ -148,9 +148,11 @@ export const PlanCard: FC<PlanCardProps> = ({
           ) : (
             <Stack direction="column" spacing="$space60">
               <div>
-                <Button variation="primary" {...primaryAction}>
-                  {primaryAction.label}
-                </Button>
+                {primaryAction && (
+                  <Button variation="primary" {...primaryAction}>
+                    {primaryAction.label}
+                  </Button>
+                )}
               </div>
 
               <div>

@@ -28,7 +28,7 @@ interface FooterToggle {
 
 interface ContentProps {
   contextTitle?: string
-  title: string
+  title?: string
   description?: string
   children: ReactNode
   asForm?: boolean
@@ -145,128 +145,143 @@ export const Content: FC<ContentProps> = ({
   const containerProps =
     asForm && primaryAction ? { onSubmit: primaryAction.onAction } : {}
 
+  const hasHeader = !!title
+  const hasFooter = !!footer || !!primaryAction || !!secondaryAction
+
   return (
     // @ts-expect-error
-    <Container {...containerProps}>
+    <Container
+      {...containerProps}
+      paddingY={!hasHeader && !hasFooter ? '$space200' : undefined}
+    >
       <Inner className="modal__inner">
-        <Header>
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-          >
+        {hasHeader && (
+          <Header>
             <Stack
-              flexGrow={1}
               direction="row"
-              justifyContent="flex-start"
+              justifyContent="space-between"
               alignItems="center"
-              spacing="$space60"
             >
-              {contextTitle && (
-                <>
-                  <Tooltip
-                    constrained={false}
-                    title={contextTitle}
-                    position="top"
-                  >
-                    <ContextTitle>{contextTitle}</ContextTitle>
-                  </Tooltip>
-                  <ContextTitleChevron>›</ContextTitleChevron>
-                </>
-              )}
-              <Title>{title}</Title>
-            </Stack>
+              <Stack
+                flexGrow={1}
+                direction="row"
+                justifyContent="flex-start"
+                alignItems="center"
+                spacing="$space60"
+              >
+                {contextTitle && (
+                  <>
+                    <Tooltip
+                      constrained={false}
+                      title={contextTitle}
+                      position="top"
+                    >
+                      <ContextTitle>{contextTitle}</ContextTitle>
+                    </Tooltip>
+                    <ContextTitleChevron>›</ContextTitleChevron>
+                  </>
+                )}
 
-            <Stack
-              paddingTop="$space20"
-              direction="row"
-              alignItems="center"
-              justifyContent="center"
-            >
-              {contextAction && (
-                <Tooltip title={contextAction.label} position="bottom">
-                  <ContextButton
-                    type="button"
-                    onClick={contextAction.onAction}
-                    aria-label={contextAction.label}
-                  >
-                    <Icon src={contextAction.icon} color="$gray10" size={16} />
-                  </ContextButton>
-                </Tooltip>
-              )}
+                <Title>{title}</Title>
+              </Stack>
+
+              <Stack
+                paddingTop="$space20"
+                direction="row"
+                alignItems="center"
+                justifyContent="center"
+              >
+                {contextAction && (
+                  <Tooltip title={contextAction.label} position="bottom">
+                    <ContextButton
+                      type="button"
+                      onClick={contextAction.onAction}
+                      aria-label={contextAction.label}
+                    >
+                      <Icon
+                        src={contextAction.icon}
+                        color="$gray10"
+                        size={16}
+                      />
+                    </ContextButton>
+                  </Tooltip>
+                )}
+              </Stack>
             </Stack>
-          </Stack>
-        </Header>
+          </Header>
+        )}
 
         <Main>{children}</Main>
 
-        <Footer withBorder={!!footer || !!primaryAction}>
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-            spacing="$space100"
-          >
-            <Box>
-              {footer && 'moveUp' in footer && (
-                <Stack direction="row" alignItems="center" spacing="$space40">
-                  <Button
-                    variation="secondary"
-                    icon="keyboard_arrow_up"
-                    isDisabled={footer.moveUp.isDisabled}
-                    onAction={footer.moveUp.onAction}
-                  />
-                  <Button
-                    variation="secondary"
-                    icon="keyboard_arrow_down"
-                    isDisabled={footer.moveDown.isDisabled}
-                    onAction={footer.moveDown.onAction}
-                  />
-                </Stack>
-              )}
-            </Box>
-
-            <Stack direction="row" spacing="$space100">
-              {footer && 'toggleLabel' in footer && (
-                <Switch
-                  value={footer.isToggled}
-                  onChange={value => footer.onToggle(value)}
-                  label={footer.toggleLabel}
-                />
-              )}
-
-              {(primaryAction || secondaryAction) && (
-                <Stack direction="row" spacing="$space60">
-                  {secondaryAction && (
+        {hasFooter && (
+          <Footer withBorder={!!footer || !!primaryAction}>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              spacing="$space100"
+            >
+              <Box>
+                {footer && 'moveUp' in footer && (
+                  <Stack direction="row" alignItems="center" spacing="$space40">
                     <Button
-                      type="button"
-                      variation={secondaryAction.variation ?? 'secondary'}
-                      icon={secondaryAction.icon}
-                      onAction={secondaryAction.onAction}
-                      isDisabled={secondaryAction.isDisabled}
-                      isLoading={secondaryAction.isLoading}
-                    >
-                      {secondaryAction.label}
-                    </Button>
-                  )}
-
-                  {primaryAction && (
+                      variation="secondary"
+                      icon="keyboard_arrow_up"
+                      isDisabled={footer.moveUp.isDisabled}
+                      onAction={footer.moveUp.onAction}
+                    />
                     <Button
-                      type={asForm ? 'submit' : 'button'}
-                      variation={primaryAction.variation ?? 'primary'}
-                      icon={primaryAction.icon}
-                      onAction={asForm ? () => {} : primaryAction.onAction}
-                      isDisabled={primaryAction.isDisabled}
-                      isLoading={primaryAction.isLoading}
-                    >
-                      {primaryAction.label}
-                    </Button>
-                  )}
-                </Stack>
-              )}
+                      variation="secondary"
+                      icon="keyboard_arrow_down"
+                      isDisabled={footer.moveDown.isDisabled}
+                      onAction={footer.moveDown.onAction}
+                    />
+                  </Stack>
+                )}
+              </Box>
+
+              <Stack direction="row" spacing="$space100">
+                {footer && 'toggleLabel' in footer && (
+                  <Switch
+                    value={footer.isToggled}
+                    onChange={value => footer.onToggle(value)}
+                    label={footer.toggleLabel}
+                  />
+                )}
+
+                {(primaryAction || secondaryAction) && (
+                  <Stack direction="row" spacing="$space60">
+                    {secondaryAction && (
+                      <Button
+                        type="button"
+                        variation={secondaryAction.variation ?? 'secondary'}
+                        icon={secondaryAction.icon}
+                        onAction={secondaryAction.onAction}
+                        isDisabled={secondaryAction.isDisabled}
+                        isLoading={secondaryAction.isLoading}
+                      >
+                        {secondaryAction.label}
+                      </Button>
+                    )}
+
+                    {primaryAction && (
+                      <Button
+                        type={asForm ? 'submit' : 'button'}
+                        variation={primaryAction.variation ?? 'primary'}
+                        icon={primaryAction.icon}
+                        onAction={asForm ? () => {} : primaryAction.onAction}
+                        isDisabled={primaryAction.isDisabled}
+                        isLoading={primaryAction.isLoading}
+                      >
+                        {primaryAction.label}
+                      </Button>
+                    )}
+                  </Stack>
+                )}
+              </Stack>
             </Stack>
-          </Stack>
-        </Footer>
+          </Footer>
+        )}
       </Inner>
     </Container>
   )

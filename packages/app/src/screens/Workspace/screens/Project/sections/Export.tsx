@@ -9,7 +9,10 @@ import {
   LinkWrapper,
   Heading,
 } from 'design-system'
-import { useCurrentWorkspace } from '../../../../../hooks/workspace'
+import {
+  useCurrentWorkspace,
+  useHasAbility,
+} from '../../../../../hooks/workspace'
 import {
   ExportToFileModal,
   ExportToFileModalRef,
@@ -28,6 +31,9 @@ export const Export: FC = () => {
   const exportToFileModalRef = useRef<ExportToFileModalRef>(null)
   const { key: workspaceKey } = useCurrentWorkspace()
   const { openCreateDestination } = useModals()
+  const canManageProjectDestinations = useHasAbility(
+    'projects:destinations:manage',
+  )
   const { data } = useListDestinations({
     queryParams: { projectId: params.projectId! },
   })
@@ -49,14 +55,18 @@ export const Export: FC = () => {
             <Heading renderAs="h2" size="$size100">
               Destinations
             </Heading>
-            <Button
-              variation="primary"
-              icon="add"
-              size="xsmall"
-              onAction={() => openCreateDestination(project)}
-            >
-              Add
-            </Button>
+
+            {canManageProjectDestinations && (
+              <Button
+                variation="primary"
+                icon="add"
+                size="xsmall"
+                onAction={() => openCreateDestination(project)}
+              >
+                Add
+              </Button>
+            )}
+
             <Button
               variation="secondary"
               icon="file"
@@ -107,25 +117,27 @@ export const Export: FC = () => {
           />
         </Stack>
 
-        <Stack direction="row" spacing="$space100">
-          {data?.items.map(destination => (
-            <DestinationCard
-              key={destination.id}
-              destination={destination}
-              onAction={() => {
-                navigate(
-                  routes.projectDestination.url({
-                    pathParams: {
-                      workspaceKey,
-                      projectId: project.id,
-                      destinationId: destination.id,
-                    },
-                  }),
-                )
-              }}
-            />
-          ))}
-        </Stack>
+        {canManageProjectDestinations && (
+          <Stack direction="row" spacing="$space100">
+            {data?.items.map(destination => (
+              <DestinationCard
+                key={destination.id}
+                destination={destination}
+                onAction={() => {
+                  navigate(
+                    routes.projectDestination.url({
+                      pathParams: {
+                        workspaceKey,
+                        projectId: project.id,
+                        destinationId: destination.id,
+                      },
+                    }),
+                  )
+                }}
+              />
+            ))}
+          </Stack>
+        )}
       </Stack>
     </Stack>
   )

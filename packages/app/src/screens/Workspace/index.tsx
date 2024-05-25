@@ -70,6 +70,9 @@ export const Workspace = () => {
   const canManageLanguages = useHasAbility('languages:manage')
   const canManageIntegrations = useHasAbility('api_keys:manage')
   const canManageBilling = useHasAbility('billing:manage')
+  const canManageProjectDestinations = useHasAbility(
+    'projects:destinations:manage',
+  )
 
   const canAccessSettings =
     canManageMembers ||
@@ -152,10 +155,12 @@ export const Workspace = () => {
                   element={<ImportFromFile />}
                 />
 
-                <Route
-                  path="/:workspaceKey/projects/:projectId/destinations/:destinationId"
-                  element={<Destination />}
-                />
+                {canManageProjectDestinations && (
+                  <Route
+                    path="/:workspaceKey/projects/:projectId/destinations/:destinationId"
+                    element={<Destination />}
+                  />
+                )}
 
                 <Route
                   path="/:workspaceKey/projects/:projectId"

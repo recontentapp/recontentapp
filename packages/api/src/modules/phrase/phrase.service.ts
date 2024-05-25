@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import {
+  BadRequestException,
+  ImATeapotException,
+  Injectable,
+} from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { Components } from 'src/generated/typeDefinitions'
 import { PaginationParams } from 'src/utils/pagination'
@@ -219,8 +223,8 @@ export class PhraseService {
         workspaceId: revision.workspaceId,
       },
     })
-    if (existingPhraseCount >= phrasesCount) {
-      throw new BadRequestException(
+    if (existingPhraseCount + 1 > phrasesCount) {
+      throw new ImATeapotException(
         'Workspace has reached phrases limit with current plan',
       )
     }
@@ -513,11 +517,6 @@ export class PhraseService {
         workspaceId: revision.workspaceId,
       },
     })
-    if (existingPhraseCount >= phrasesCount) {
-      throw new BadRequestException(
-        'Workspace has reached phrases limit with current plan',
-      )
-    }
 
     const language = await this.prismaService.language.findUniqueOrThrow({
       where: { id: languageId },
@@ -595,6 +594,12 @@ export class PhraseService {
         break
       default:
         throw new BadRequestException('Unsupported file format')
+    }
+
+    if (existingPhraseCount + Object.keys(data).length > phrasesCount) {
+      throw new ImATeapotException(
+        'Workspace has reached phrases limit with current plan',
+      )
     }
 
     await this.prismaService.$transaction(async t => {

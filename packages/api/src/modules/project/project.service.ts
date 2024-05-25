@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import {
+  BadRequestException,
+  ImATeapotException,
+  Injectable,
+} from '@nestjs/common'
 import { EventEmitter2 } from '@nestjs/event-emitter'
 import { ProjectRevisionState } from '@prisma/client'
 import { PrismaService } from 'src/utils/prisma.service'
@@ -106,8 +110,8 @@ export class ProjectService {
         workspaceId,
       },
     })
-    if (existingProjectsCount >= projectsCount) {
-      throw new BadRequestException(
+    if (existingProjectsCount + 1 > projectsCount) {
+      throw new ImATeapotException(
         'Workspace has reached projects limit with current plan',
       )
     }

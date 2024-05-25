@@ -4,9 +4,11 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useRef,
 } from 'react'
+import { useLocation } from 'react-router-dom'
 
 import {
   CreateProjectModal,
@@ -38,6 +40,7 @@ const modalsContext = createContext<ModalsContext>(null!)
 export const useModals = () => useContext(modalsContext)
 
 export const ModalsProvider: FC<{ children: ReactNode }> = ({ children }) => {
+  const location = useLocation()
   const createProjectModalRef = useRef<CreateProjectModalRef>(null!)
   const createPhraseModalRef = useRef<CreatePhraseModalRef>(null!)
   const createDestinationModalRef = useRef<CreateDestinationModalRef>(null!)
@@ -68,6 +71,10 @@ export const ModalsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     createDestinationModalRef.current.close()
     createTagModalRef.current.close()
   }, [])
+
+  useEffect(() => {
+    closeAll()
+  }, [location.pathname, closeAll])
 
   const value = useMemo(
     () => ({

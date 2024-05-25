@@ -12,6 +12,7 @@ import { useCreateFigmaFileText } from '../../../../../generated/reactQuery'
 import { useBridge } from '../../../../../contexts/Bridge'
 import { chunkArray } from '../../../../../utils/arrays'
 import { processPromisesInBatches } from '../../../../../utils/promises'
+import { isUpsellIssue } from '../../../../../utils/api'
 
 interface SingleTextFormProps {
   texts: IText[]
@@ -22,7 +23,18 @@ const isNew = (text: IText) => text.app === null
 export const MultipleTextsForm = ({ texts }: SingleTextFormProps) => {
   const { file, emit } = useBridge()
   const { mutateAsync, isPending } = useCreateFigmaFileText({
-    onError: () => {
+    onError: err => {
+      if (isUpsellIssue(err)) {
+        emit({
+          type: 'notification-requested',
+          data: {
+            message:
+              "You've reached the limits of your current Recontent.app plan.",
+          },
+        })
+        return
+      }
+
       emit({
         type: 'notification-requested',
         data: {

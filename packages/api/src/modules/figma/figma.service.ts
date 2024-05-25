@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import {
+  BadRequestException,
+  ImATeapotException,
+  Injectable,
+} from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { v4 as uuidV4 } from 'uuid'
 import { PrismaService } from 'src/utils/prisma.service'
@@ -412,6 +416,7 @@ export class FigmaService {
   }
 
   async createFileTexts({ requester, fileId, items }: CreateFileTextsParams) {
+    const phrasesToCreateCount = items.filter(i => !('phraseId' in i)).length
     const file = await this.prismaService.figmaFile.findUniqueOrThrow({
       where: {
         id: fileId,
@@ -422,6 +427,18 @@ export class FigmaService {
       file.workspaceId,
     )
     workspaceAccess.hasAbilityOrThrow('workspace:write')
+    const { phrasesCount } = workspaceAccess.getLimits()
+
+    const existingPhraseCount = await this.prismaService.phrase.count({
+      where: {
+        workspaceId: file.workspaceId,
+      },
+    })
+    if (existingPhraseCount + phrasesToCreateCount > phrasesCount) {
+      throw new ImATeapotException(
+        'Workspace has reached phrases limit with current plan',
+      )
+    }
 
     const phraseIdsToCheck = items.reduce<string[]>((acc, item) => {
       if ('phraseId' in item) {
