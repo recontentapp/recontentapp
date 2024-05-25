@@ -597,43 +597,68 @@ export class PhraseService {
         throw new BadRequestException('Unsupported file format')
     }
 
-    await this.prismaService.$transaction(
-      Object.entries(data).map(([key, value]) =>
-        this.prismaService.phrase.upsert({
-          where: {
-            key_revisionId: {
-              key,
-              revisionId,
-            },
+    await this.prismaService.$transaction(async t => {
+      await t.phrase.createMany({
+        data: Object.keys(data).map(key => ({
+          key,
+          revisionId,
+          projectId: revision.projectId,
+          workspaceId: revision.workspaceId,
+          createdBy: workspaceAccess.getAccountID(),
+        })),
+        skipDuplicates: true,
+      })
+
+      const createdPhrases = await t.phrase.findMany({
+        select: {
+          id: true,
+          key: true,
+        },
+        where: {
+          revisionId,
+          key: {
+            in: Object.keys(data),
           },
-          create: {
-            key,
-            revisionId,
-            projectId: revision.projectId,
-            workspaceId: revision.workspaceId,
-            createdBy: workspaceAccess.getAccountID(),
-            taggables: {
-              create: tagIds.map(tagId => ({
-                tagId,
-                recordType: 'phrase',
-                createdBy: workspaceAccess.getAccountID(),
-                workspaceId: revision.workspaceId,
-              })),
-            },
-            translations: {
-              create: {
-                content: value,
-                languageId,
-                workspaceId: revision.workspaceId,
-                revisionId,
-                createdBy: workspaceAccess.getAccountID(),
-              },
-            },
-          },
-          update: {},
-        }),
-      ),
-    )
+        },
+      })
+
+      if (tagIds.length > 0) {
+        const inputs: Prisma.TaggableCreateManyInput[] = []
+
+        createdPhrases.forEach(({ id }) => {
+          tagIds.forEach(tagId => {
+            inputs.push({
+              tagId,
+              recordId: id,
+              recordType: 'phrase',
+              createdBy: workspaceAccess.getAccountID(),
+              workspaceId: revision.workspaceId,
+            })
+          })
+        })
+
+        await t.taggable.createMany({
+          data: inputs,
+        })
+      }
+
+      const translations: Prisma.PhraseTranslationCreateManyInput[] = []
+      createdPhrases.forEach(({ id, key }) => {
+        translations.push({
+          content: data[key],
+          languageId,
+          phraseId: id,
+          workspaceId: revision.workspaceId,
+          revisionId,
+          createdBy: workspaceAccess.getAccountID(),
+        })
+      })
+
+      await t.phraseTranslation.createMany({
+        data: translations,
+        skipDuplicates: true,
+      })
+    })
   }
 
   async generatePhrasesExportToken({
