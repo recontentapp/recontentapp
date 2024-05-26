@@ -18,7 +18,7 @@ import { BillingWizard } from '../components/BillingWizard'
 import { ActivePlanCard } from '../components/ActivePlanCard'
 import { useQueryClient } from '@tanstack/react-query'
 import { InvoicesTable } from '../components/InvoicesTable'
-import { proPlan } from '../../../../../utils/billing'
+import { freePlan, proPlan } from '../../../../../utils/billing'
 
 export const Billing: FC = () => {
   const queryClient = useQueryClient()
@@ -144,19 +144,13 @@ export const Billing: FC = () => {
         <Stack direction="row" spacing="$space100">
           <PlanCard
             isActive
-            title="Free plan"
+            title={freePlan.name}
             price={new Intl.NumberFormat('en', {
               style: 'currency',
               currency: proPlan.currency,
-            }).format(0)}
-            description="To discover Recontent.app and its features."
-            items={[
-              '1 project max.',
-              '1 000 translations max.',
-              'Import/Export',
-              'Tags',
-              'API & CLI for developers',
-            ]}
+            }).format(freePlan.subscriptionAmount / 100)}
+            description={freePlan.description}
+            items={freePlan.features}
             primaryAction={
               settings.hasPaymentMethod ? subscribeAction : portalAction
             }
