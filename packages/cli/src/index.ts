@@ -7,7 +7,7 @@ import { API_KEY_ENV, getEnvironment } from './utils/environment'
 program
   .name('recontentapp')
   .description('Ship localized content faster without loosing engineers time')
-  .version('0.4.1')
+  .version('0.4.2')
   .hook('preAction', (command: Command) => {
     const { apiKey } = getEnvironment()
     if (!apiKey) {
