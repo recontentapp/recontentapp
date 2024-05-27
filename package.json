@@ -12,6 +12,7 @@
     "prepare": "husky",
     "prettier:lint": "prettier -c .",
     "prettier:fix": "prettier -w .",
+    "cli:build": "yarn workspace @recontentapp/cli build",
     "file-formats:build": "yarn workspace @recontentapp/file-formats build",
     "email-templates:build": "yarn workspace email-templates build",
     "design-system:build": "yarn workspace design-system build",

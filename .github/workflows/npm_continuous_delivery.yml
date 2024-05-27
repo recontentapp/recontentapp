@@ -1,0 +1,46 @@
+name: NPM continuous delivery
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  publish_to_npm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}-
+            ${{ runner.os }}-
+            ${{ runner.os }}-
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Install dependencies
+        run: yarn install
+      - name: Setup
+        run: yarn setup
+      - name: Build file formats
+        run: yarn file-formats:build
+      - name: Build CLI
+        run: yarn cli:build
+      - run: npm publish --access public
+        name: Publish @recontentapp/file-formats
+        working-directory: packages/file-formats
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: npm publish --access public
+        name: Publish @recontentapp/cli
+        working-directory: packages/cli
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
