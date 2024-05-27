@@ -579,7 +579,7 @@ export class FigmaService {
             workspaceId: file.workspaceId,
             phraseId,
             textNodeId: intermediateStruct[phraseId].textNodeId,
-            pageNodeId: intermediateStruct[phraseId].textNodeId,
+            pageNodeId: intermediateStruct[phraseId].pageNodeId,
             createdBy: workspaceAccess.getAccountID(),
           })),
         })
