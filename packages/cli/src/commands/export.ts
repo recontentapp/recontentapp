@@ -9,7 +9,7 @@ import {
   renderNestedJSON,
   renderNestedYAML,
   renderYAML,
-  fileFormatContentTypes,
+  fileFormatExtensions,
   isValidFileFormat,
   renderExcel,
   renderAndroidXML,
@@ -94,7 +94,7 @@ const exportCommand = new Command('export')
       ),
     )
 
-    const fileExtension = fileFormatContentTypes[format]
+    const fileExtension = fileFormatExtensions[format]
 
     for (const [index, file] of files.entries()) {
       if (file.status !== 'fulfilled' || !file.value.ok) {
