@@ -17,6 +17,9 @@
     "type": "git",
     "url": "https://github.com/recontentapp/recontentapp"
   },
+  "files": [
+    "dist"
+  ],
   "bin": {
     "recontentapp": "dist/index.js"
   },
