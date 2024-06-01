@@ -178,7 +178,7 @@ export const KBar = () => {
   } = useModals()
   const canManageLanguages = useHasAbility('languages:manage')
   const canManageMembers = useHasAbility('members:manage')
-  const canManageIntegrations = useHasAbility('api_keys:manage')
+  const canManageIntegrations = useHasAbility('integrations:manage')
   const canManageProjectDestination = useHasAbility(
     'projects:destinations:manage',
   )

@@ -4,6 +4,7 @@ import { HorizontalSpinner } from '../../../../../components/HorizontalSpinner'
 import {
   Banner,
   Box,
+  Button,
   ConfirmationModal,
   ConfirmationModalRef,
   DropdownButton,
@@ -19,15 +20,35 @@ import { useCurrentWorkspace } from '../../../../../hooks/workspace'
 import {
   getListWorkspaceAccountsQueryKey,
   useDeleteWorkspaceServiceAccount,
+  useGetGithubAppInstallationLink,
+  useListGithubInstallations,
   useListWorkspaceAccounts,
 } from '../../../../../generated/reactQuery'
 import { useQueryClient } from '@tanstack/react-query'
+import { GithubInstallationCard } from '../components/GithubInstallationCard'
+import { useSystem } from '../../../../../hooks/system'
 
 export const Integrations: FC = () => {
   const queryClient = useQueryClient()
   const { getName } = useReferenceableAccounts()
   const { id: workspaceId } = useCurrentWorkspace()
+  const {
+    settings: { githubAppAvailable },
+  } = useSystem()
   const confirmationModalRef = useRef<ConfirmationModalRef>(null!)
+  const { data: installationLinkData } = useGetGithubAppInstallationLink({
+    enabled: githubAppAvailable,
+  })
+  const { data: installationsData } = useListGithubInstallations(
+    {
+      queryParams: {
+        workspaceId,
+      },
+    },
+    {
+      enabled: githubAppAvailable,
+    },
+  )
   const { isPending, data } = useListWorkspaceAccounts({
     queryParams: {
       workspaceId,
@@ -105,6 +126,51 @@ export const Integrations: FC = () => {
       </Box>
 
       <Stack direction="column" spacing="$space300">
+        {githubAppAvailable && (
+          <Stack direction="column" spacing="$space100">
+            <Stack direction="row" spacing="$space60" alignItems="center">
+              <Heading size="$size100" renderAs="h2">
+                Connected GitHub accounts
+              </Heading>
+
+              <Button
+                variation="primary"
+                size="xsmall"
+                icon="add"
+                isLoading={!installationLinkData}
+                onAction={() => {
+                  if (!installationLinkData) {
+                    return
+                  }
+
+                  window.open(
+                    `${installationLinkData.url}?state=${workspaceId}`,
+                    '_blank',
+                  )
+                }}
+              >
+                Add
+              </Button>
+            </Stack>
+
+            {installationsData && (
+              <Stack direction="row" flexWrap="wrap" spacing="$space80">
+                {installationsData.items.map(installation => (
+                  <GithubInstallationCard
+                    key={installation.id}
+                    active
+                    title={installation.githubAccount}
+                    createdBy={`Added by ${getName(installation.createdBy)}`}
+                    onAction={() => {
+                      window.open(installation.githubUrl, '_blank')
+                    }}
+                  />
+                ))}
+              </Stack>
+            )}
+          </Stack>
+        )}
+
         <Stack direction="column" spacing="$space100">
           <Heading size="$size100" renderAs="h2">
             API keys

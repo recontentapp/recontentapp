@@ -18,6 +18,7 @@ import { WorkspaceModule } from 'src/modules/workspace/workspace.module'
 import { ProjectModule } from 'src/modules/project/project.module'
 import { PhraseModule } from 'src/modules/phrase/phrase.module'
 import { FigmaModule } from 'src/modules/figma/figma.module'
+import { GitHubAppModule } from 'src/modules/cloud/github-app/github-app.module'
 import { BillingModule } from 'src/modules/cloud/billing/billing.module'
 import getConfig from 'src/utils/config'
 
@@ -66,6 +67,7 @@ import { SlackNotificationsModule } from 'src/modules/cloud/slack-notifications/
       : []),
     AuthModule,
     SlackNotificationsModule,
+    GitHubAppModule,
     NotificationsModule,
     WorkspaceModule,
     ProjectModule,

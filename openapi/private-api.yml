@@ -31,11 +31,14 @@ paths:
                         type: boolean
                       googleOAuthAvailable:
                         type: boolean
+                      githubAppAvailable:
+                        type: boolean
                       feedbacksAvailable:
                         type: boolean
                     required:
                       - workspaceInviteOnly
                       - cdnAvailable
+                      - githubAppAvailable
                       - feedbacksAvailable
                       - googleOAuthAvailable
                 additionalProperties: false
@@ -1561,6 +1564,66 @@ paths:
       responses:
         '204':
           description: OK
+  /GetGithubAppInstallationLink:
+    get:
+      operationId: getGithubAppInstallationLink
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
+                additionalProperties: false
+                required:
+                  - url
+  /InstallGithubApp:
+    post:
+      operationId: installGithubApp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                installationId:
+                  type: number
+                workspaceId:
+                  type: string
+              additionalProperties: false
+              required:
+                - installationId
+                - workspaceId
+      responses:
+        '201':
+          description: OK
+  /ListGithubInstallations:
+    get:
+      operationId: listGithubInstallations
+      parameters:
+        - name: workspaceId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/GithubInstallation'
+                additionalProperties: false
+                required:
+                  - items
   /GetBillingSettings:
     get:
       operationId: getBillingSettings
@@ -2074,7 +2137,7 @@ components:
         - 'billing:manage'
         - 'members:manage'
         - 'languages:manage'
-        - 'api_keys:manage'
+        - 'integrations:manage'
         - 'auto_translation:use'
         - 'projects:destinations:manage'
     WorkspaceAccountType:
@@ -2329,6 +2392,7 @@ components:
         - cdn
         - aws_s3
         - google_cloud_storage
+        - github
     DestinationItem:
       type: object
       properties:
@@ -2554,6 +2618,41 @@ components:
         - value
         - color
         - description
+        - createdAt
+        - updatedAt
+        - createdBy
+        - updatedBy
+    GithubInstallation:
+      type: object
+      properties:
+        id:
+          type: string
+        workspaceId:
+          type: string
+        githubId:
+          type: number
+        githubAccount:
+          type: string
+        githubUrl:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+        updatedBy:
+          type: string
+          nullable: true
+      additionalProperties: false
+      required:
+        - id
+        - workspaceId
+        - githubAccount
+        - githubId
+        - githubUrl
         - createdAt
         - updatedAt
         - createdBy

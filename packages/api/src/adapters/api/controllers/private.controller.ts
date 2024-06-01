@@ -28,6 +28,7 @@ import {
   DestinationConfigCDN,
   DestinationConfigGoogleCloudStorage,
   FigmaFile,
+  GithubInstallation,
   Language,
   Phrase,
   PhraseTranslation,
@@ -73,6 +74,7 @@ import {
   CreateWorkspaceServiceAccountDto,
   DeleteWorkspaceServiceAccountDto,
   GenerateUserWorkspaceAccountAPIKeyDto,
+  InstallGithubAppDto,
   InviteToWorkspaceDto,
   JoinWorkspaceDto,
 } from '../dto/private/workspace.dto'
@@ -108,6 +110,7 @@ import {
 import { FigmaService } from 'src/modules/figma/figma.service'
 import { DeleteFigmaFileDto } from '../dto/private/figma.dto'
 import { SendFeedbackDto } from '../dto/private/feedback.dto'
+import { GitHubAppInstallationService } from 'src/modules/cloud/github-app/installation.service'
 
 @Controller('private')
 @UseGuards(JwtAuthGuard)
@@ -126,6 +129,7 @@ export class PrivateApiController {
     private readonly billingSubscriptionService: SubscriptionService,
     private readonly figmaService: FigmaService,
     private readonly slackService: SlackService,
+    private readonly githubAppInstallationService: GitHubAppInstallationService,
   ) {}
 
   private static formatTag(tag: Tag): Components.Schemas.Tag {
@@ -298,6 +302,22 @@ export class PrivateApiController {
     }
   }
 
+  private static formatGithubInstallation(
+    installation: GithubInstallation,
+  ): Components.Schemas.GithubInstallation {
+    return {
+      id: installation.id,
+      workspaceId: installation.workspaceId,
+      githubAccount: installation.githubAccount,
+      githubId: installation.githubId,
+      githubUrl: `https://github.com/organizations/${installation.githubAccount}/settings/installations/${installation.githubId}`,
+      createdAt: installation.createdAt.toISOString(),
+      updatedAt: installation.updatedAt.toISOString(),
+      createdBy: installation.createdBy,
+      updatedBy: installation.updatedBy,
+    }
+  }
+
   private static formatDestinationItem(
     destination: Destination,
   ): Components.Schemas.DestinationItem {
@@ -400,6 +420,7 @@ export class PrivateApiController {
     const googleOAuthConfig = this.configService.get('googleOAuth', {
       infer: true,
     })
+    const githubAppConfig = this.configService.get('githubApp', { infer: true })
     const feedbacksWebhookUrl = this.configService.get(
       'slack.feedbacksWebhookUrl',
       {
@@ -418,6 +439,7 @@ export class PrivateApiController {
       settings: {
         workspaceInviteOnly,
         cdnAvailable: cdnConfig.available,
+        githubAppAvailable: githubAppConfig.available,
         googleOAuthAvailable: googleOAuthConfig.available,
         feedbacksAvailable: !!feedbacksWebhookUrl,
       },
@@ -735,6 +757,51 @@ export class PrivateApiController {
     })
 
     return {}
+  }
+
+  @Get('/GetGithubAppInstallationLink')
+  async getGithubAppInstallationLink(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.GetGithubAppInstallationLink.Responses.$200> {
+    const config = this.configService.get('githubApp', { infer: true })
+    if (!config.available) {
+      throw new BadRequestException('GitHub App is not available')
+    }
+
+    return {
+      url: `https://github.com/apps/${config.appName}/installations/new`,
+    }
+  }
+
+  @Post('/InstallGithubApp')
+  async installGithubApp(
+    @AuthenticatedRequester() requester: Requester,
+    @Body() { installationId, workspaceId }: InstallGithubAppDto,
+  ): Promise<Paths.InstallGithubApp.Responses.$201> {
+    await this.githubAppInstallationService.createInstallation({
+      installationId,
+      workspaceId,
+      requester,
+    })
+
+    return {}
+  }
+
+  @Get('/ListGithubInstallations')
+  async listGithubInstallations(
+    @AuthenticatedRequester() requester: Requester,
+    @RequiredQuery('workspaceId') workspaceId: string,
+  ): Promise<Paths.ListGithubInstallations.Responses.$200> {
+    const installations =
+      await this.githubAppInstallationService.listInstallations({
+        requester,
+        workspaceId,
+      })
+
+    return {
+      items: installations.map(PrivateApiController.formatGithubInstallation),
+    }
   }
 
   @Post('/CreateProject')

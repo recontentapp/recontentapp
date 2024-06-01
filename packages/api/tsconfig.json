@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "Node16",
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
@@ -8,6 +8,7 @@
     "allowSyntheticDefaultImports": true,
     "strictPropertyInitialization": false,
     "target": "ES2021",
+    "moduleResolution": "Node16",
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",

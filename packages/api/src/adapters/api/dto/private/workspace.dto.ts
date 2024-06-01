@@ -4,6 +4,7 @@ import {
   IsEmail,
   IsEnum,
   IsNotEmpty,
+  IsNumber,
   IsString,
   Matches,
   MaxLength,
@@ -102,4 +103,15 @@ export class AddLanguagesToWorkspaceDto {
   @IsArray()
   @ValidateNested({ each: true })
   languages: Language[]
+}
+
+export class InstallGithubAppDto {
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
+  workspaceId: string
+
+  @IsNumber()
+  @IsNotEmpty()
+  installationId: number
 }

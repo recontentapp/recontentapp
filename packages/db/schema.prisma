@@ -41,6 +41,13 @@ enum DestinationType {
   cdn                  @map("cdn")
   aws_s3               @map("aws_s3")
   google_cloud_storage @map("google_cloud_storage")
+  github               @map("github")
+}
+
+enum DestinationSyncFrequency {
+  manually @map("manually")
+  daily    @map("daily")
+  weekly   @map("weekly")
 }
 
 model User {
@@ -92,6 +99,8 @@ model Workspace {
   destinationConfigsCDN                DestinationConfigCDN[]
   destinationConfigsGoogleCloudStorage DestinationConfigGoogleCloudStorage[]
   destinationConfigsAWSS3              DestinationConfigAWSS3[]
+  destinationConfigsGithub             DestinationConfigGithub[]
+  githubInstallations                  GithubInstallation[]
   tags                                 Tag[]
   taggables                            Taggable[]
   figmaFiles                           FigmaFile[]
@@ -318,6 +327,7 @@ model Destination {
   revisionId               String                               @db.VarChar()
   name                     String                               @db.VarChar()
   type                     DestinationType
+  syncFrequency            DestinationSyncFrequency             @default(manually)
   active                   Boolean                              @default(true)
   lastSyncError            String?
   lastSyncAt               DateTime?
@@ -327,6 +337,7 @@ model Destination {
   configCDN                DestinationConfigCDN?
   configGoogleCloudStorage DestinationConfigGoogleCloudStorage?
   configAWSS3              DestinationConfigAWSS3?
+  configGithub             DestinationConfigGithub?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -388,6 +399,42 @@ model DestinationConfigAWSS3 {
 
   @@unique([destinationId])
   @@map("destination_configs_aws_s3")
+}
+
+model DestinationConfigGithub {
+  id                       String             @id @default(uuid()) @db.VarChar()
+  destinationId            String             @db.VarChar()
+  workspaceId              String             @db.VarChar()
+  installationId           String             @db.VarChar()
+  installation             GithubInstallation @relation(fields: [installationId], references: [id])
+  destination              Destination        @relation(fields: [destinationId], references: [id])
+  workspace                Workspace          @relation(fields: [workspaceId], references: [id])
+  fileFormat               String             @db.VarChar()
+  includeEmptyTranslations Boolean            @default(false)
+  repositoryOwner          String             @db.VarChar()
+  repositoryName           String             @db.VarChar()
+  branchName               String             @db.VarChar()
+  objectsPrefix            String?            @db.VarChar()
+
+  @@unique([destinationId])
+  @@map("destination_configs_github")
+}
+
+model GithubInstallation {
+  id                       String                    @id @default(uuid()) @db.VarChar()
+  workspaceId              String                    @db.VarChar()
+  githubId                 Int
+  githubAccount            String
+  workspace                Workspace                 @relation(fields: [workspaceId], references: [id])
+  destinationConfigsGithub DestinationConfigGithub[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String   @db.VarChar()
+  updatedBy String?  @db.VarChar()
+
+  @@unique([githubId])
+  @@map("github_installations")
 }
 
 model FigmaFile {

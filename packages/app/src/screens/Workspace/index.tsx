@@ -68,7 +68,7 @@ export const Workspace = () => {
 
   const canManageMembers = useHasAbility('members:manage')
   const canManageLanguages = useHasAbility('languages:manage')
-  const canManageIntegrations = useHasAbility('api_keys:manage')
+  const canManageIntegrations = useHasAbility('integrations:manage')
   const canManageBilling = useHasAbility('billing:manage')
   const canManageProjectDestinations = useHasAbility(
     'projects:destinations:manage',

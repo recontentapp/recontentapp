@@ -113,6 +113,20 @@ const getConfig = () => {
       notificationsWebhookUrl: process.env.SLACK_NOTIFICATIONS_WEBHOOK_URL,
       feedbacksWebhookUrl: process.env.SLACK_FEEDBACKS_WEBHOOK_URL,
     },
+    githubApp: {
+      available:
+        !!process.env.GITHUB_APP_ID &&
+        !!process.env.GITHUB_APP_PRIVATE_KEY &&
+        !!process.env.GITHUB_APP_CLIENT_ID &&
+        !!process.env.GITHUB_APP_CLIENT_SECRET &&
+        !!process.env.GITHUB_APP_WEBHOOK_SECRET,
+      appId: Number(process.env.GITHUB_APP_ID),
+      appName: String(process.env.GITHUB_APP_NAME),
+      privateKey: String(process.env.GITHUB_APP_PRIVATE_KEY),
+      clientId: String(process.env.GITHUB_APP_CLIENT_ID),
+      clientSecret: String(process.env.GITHUB_APP_CLIENT_SECRET),
+      webhookSecret: String(process.env.GITHUB_APP_WEBHOOK_SECRET),
+    },
   }
 }
 

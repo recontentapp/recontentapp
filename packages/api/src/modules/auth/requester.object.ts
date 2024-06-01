@@ -48,7 +48,7 @@ export class WorkspaceAccess {
       abilities.push(
         'members:manage',
         'languages:manage',
-        'api_keys:manage',
+        'integrations:manage',
         'projects:destinations:manage',
       )
     }
