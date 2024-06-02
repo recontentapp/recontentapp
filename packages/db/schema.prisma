@@ -413,7 +413,7 @@ model DestinationConfigGithub {
   includeEmptyTranslations Boolean            @default(false)
   repositoryOwner          String             @db.VarChar()
   repositoryName           String             @db.VarChar()
-  branchName               String             @db.VarChar()
+  baseBranchName           String             @db.VarChar()
   objectsPrefix            String?            @db.VarChar()
 
   @@unique([destinationId])
@@ -424,6 +424,7 @@ model GithubInstallation {
   id                       String                    @id @default(uuid()) @db.VarChar()
   workspaceId              String                    @db.VarChar()
   githubId                 Int
+  active                   Boolean
   githubAccount            String
   workspace                Workspace                 @relation(fields: [workspaceId], references: [id])
   destinationConfigsGithub DestinationConfigGithub[]

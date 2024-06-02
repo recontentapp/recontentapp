@@ -90,6 +90,9 @@ const isValid = (state: State): boolean => {
         state.googleCloudStorageProjectId.length > 0 &&
         state.googleCloudStorageServiceAccountKey.length > 0
       )
+    case 'github':
+      // TODO: Implement
+      return true
   }
 }
 

@@ -29,6 +29,7 @@ import {
   Destination,
   DestinationConfigAWSS3,
   DestinationConfigCDN,
+  DestinationConfigGithub,
   DestinationConfigGoogleCloudStorage,
   Prisma,
   Workspace,
@@ -36,6 +37,10 @@ import {
 import { decrypt, encrypt } from 'src/utils/security'
 import { Requester } from '../auth/requester.object'
 import { escapeTrailingSlash } from 'src/utils/strings'
+import {
+  Addition,
+  GitHubAppSyncService,
+} from '../cloud/github-app/sync.service'
 
 interface CreateCDNDestinationParams {
   name: string
@@ -70,6 +75,19 @@ interface CreateGoogleCloudStorageDestinationParams {
   googleCloudServiceAccountKey: string
 }
 
+interface CreateGithubDestinationParams {
+  name: string
+  revisionId: string
+  installationId: string
+  requester: Requester
+  fileFormat: Components.Schemas.FileFormat
+  includeEmptyTranslations: boolean
+  objectsPrefix?: string
+  repositoryOwner: string
+  repositoryName: string
+  baseBranchName: string
+}
+
 interface SyncDestinationParams {
   destinationId: string
   requester: Requester
@@ -95,8 +113,9 @@ interface ListDestinationsParams {
 @Injectable()
 export class DestinationService {
   constructor(
-    private prismaService: PrismaService,
-    private configService: ConfigService<Config, true>,
+    private readonly prismaService: PrismaService,
+    private readonly configService: ConfigService<Config, true>,
+    private readonly githubAppSyncService: GitHubAppSyncService,
   ) {}
 
   private async getData({
@@ -268,6 +287,7 @@ export class DestinationService {
         configCDN: true,
         configAWSS3: true,
         configGoogleCloudStorage: true,
+        configGithub: true,
       },
       data: {
         name,
@@ -320,6 +340,7 @@ export class DestinationService {
         configCDN: true,
         configAWSS3: true,
         configGoogleCloudStorage: true,
+        configGithub: true,
       },
       data: {
         name,
@@ -376,6 +397,7 @@ export class DestinationService {
         configCDN: true,
         configAWSS3: true,
         configGoogleCloudStorage: true,
+        configGithub: true,
       },
       data: {
         name,
@@ -396,6 +418,64 @@ export class DestinationService {
               googleCloudServiceAccountKey,
               encryptionKey,
             ),
+          },
+        },
+      },
+    })
+
+    return destination
+  }
+
+  async createGithubDestination({
+    name,
+    revisionId,
+    installationId,
+    requester,
+    fileFormat,
+    includeEmptyTranslations,
+    objectsPrefix,
+    repositoryOwner,
+    repositoryName,
+    baseBranchName,
+  }: CreateGithubDestinationParams) {
+    const revision = await this.prismaService.projectRevision.findUniqueOrThrow(
+      {
+        where: { id: revisionId },
+      },
+    )
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      revision.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('projects:destinations:manage')
+
+    await this.prismaService.githubInstallation.findUniqueOrThrow({
+      where: { id: installationId, workspaceId: revision.workspaceId },
+    })
+
+    const destination = await this.prismaService.destination.create({
+      include: {
+        configCDN: true,
+        configAWSS3: true,
+        configGoogleCloudStorage: true,
+        configGithub: true,
+      },
+      data: {
+        name,
+        revisionId,
+        type: 'github',
+        active: true,
+        workspaceId: revision.workspaceId,
+        createdBy: workspaceAccess.getAccountID(),
+        configGithub: {
+          create: {
+            fileFormat,
+            includeEmptyTranslations,
+            workspaceId: revision.workspaceId,
+            objectsPrefix,
+            installationId,
+            repositoryOwner,
+            repositoryName,
+            baseBranchName,
           },
         },
       },
@@ -490,6 +570,7 @@ export class DestinationService {
         configCDN: true,
         configAWSS3: true,
         configGoogleCloudStorage: true,
+        configGithub: true,
       },
     })
 
@@ -547,6 +628,13 @@ export class DestinationService {
           workspaceAccess.getAccountID(),
         )
         break
+      case 'github':
+        await this.syncGithubDestination(
+          destination,
+          revision,
+          workspaceAccess.getAccountID(),
+        )
+        break
     }
   }
 
@@ -556,6 +644,7 @@ export class DestinationService {
       configCDN: DestinationConfigCDN | null
       configAWSS3: DestinationConfigAWSS3 | null
       configGoogleCloudStorage: DestinationConfigGoogleCloudStorage | null
+      configGithub: DestinationConfigGithub | null
     },
     revision: {
       project: {
@@ -666,6 +755,7 @@ export class DestinationService {
       configCDN: DestinationConfigCDN | null
       configAWSS3: DestinationConfigAWSS3 | null
       configGoogleCloudStorage: DestinationConfigGoogleCloudStorage | null
+      configGithub: DestinationConfigGithub | null
     },
     revision: {
       project: {
@@ -766,12 +856,97 @@ export class DestinationService {
     })
   }
 
+  private async syncGithubDestination(
+    destination: Destination & {
+      workspace: Workspace
+      configCDN: DestinationConfigCDN | null
+      configAWSS3: DestinationConfigAWSS3 | null
+      configGoogleCloudStorage: DestinationConfigGoogleCloudStorage | null
+      configGithub: DestinationConfigGithub | null
+    },
+    revision: {
+      project: {
+        languages: {
+          id: string
+          locale: string
+        }[]
+      }
+    },
+    accountId: string,
+  ) {
+    if (!destination.configGithub) {
+      throw new BadRequestException('Destination has no Github configuration')
+    }
+
+    const additions: Addition[] = []
+
+    for (const language of revision.project.languages) {
+      const content = await this.getData({
+        revisionId: destination.revisionId,
+        languageId: language.id,
+        fileFormat: destination.configGithub
+          .fileFormat as Components.Schemas.FileFormat,
+        includeEmptyTranslations:
+          destination.configGithub.includeEmptyTranslations,
+      })
+
+      const extension =
+        fileFormatExtensions[destination.configGithub.fileFormat as FileFormat]
+
+      const path = [
+        escapeTrailingSlash(destination.configGithub.objectsPrefix ?? ''),
+        `${language.locale}${extension}`,
+      ]
+        .filter(Boolean)
+        .join('/')
+
+      additions.push({
+        path,
+        content,
+      })
+    }
+
+    let error: string | null = null
+
+    await this.githubAppSyncService
+      .sync({
+        destinationId: destination.id,
+        additions,
+      })
+      .catch(err => {
+        error = err.message ?? 'Unknown Github error'
+      })
+
+    if (error) {
+      await this.prismaService.destination.update({
+        where: { id: destination.id },
+        data: {
+          lastSyncAt: new Date(),
+          lastSyncError: error,
+          updatedBy: accountId,
+        },
+      })
+      throw new BadRequestException(error)
+    }
+
+    await this.prismaService.destination.update({
+      where: { id: destination.id },
+      data: {
+        lastSyncError: null,
+        lastSuccessfulSyncAt: new Date(),
+        lastSyncAt: new Date(),
+        updatedBy: accountId,
+      },
+    })
+  }
+
   private async syncCDNDestination(
     destination: Destination & {
       workspace: Workspace
       configCDN: DestinationConfigCDN | null
       configAWSS3: DestinationConfigAWSS3 | null
       configGoogleCloudStorage: DestinationConfigGoogleCloudStorage | null
+      configGithub: DestinationConfigGithub | null
     },
     revision: {
       project: {

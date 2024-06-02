@@ -7,7 +7,12 @@ import {
   Req,
 } from '@nestjs/common'
 import { Request } from 'express'
-import { InstallationDeletedEvent, WebhookEvent } from '@octokit/webhooks-types'
+import {
+  InstallationDeletedEvent,
+  InstallationSuspendEvent,
+  InstallationUnsuspendEvent,
+  WebhookEvent,
+} from '@octokit/webhooks-types'
 import { createHmac, timingSafeEqual } from 'crypto'
 import stripe, { Stripe } from 'stripe'
 import { ConfigService } from '@nestjs/config'
@@ -42,6 +47,26 @@ export class WebhooksController {
       'action' in object &&
       'installation' in object &&
       object.action === 'deleted'
+    )
+  }
+
+  private static isGitHubInstallationSuspendedEvent(
+    object: WebhookEvent,
+  ): object is InstallationSuspendEvent {
+    return (
+      'action' in object &&
+      'installation' in object &&
+      object.action === 'suspend'
+    )
+  }
+
+  private static isGitHubInstallationUnsuspendedEvent(
+    object: WebhookEvent,
+  ): object is InstallationUnsuspendEvent {
+    return (
+      'action' in object &&
+      'installation' in object &&
+      object.action === 'unsuspend'
     )
   }
 
@@ -153,6 +178,18 @@ export class WebhooksController {
 
     if (WebhooksController.isGitHubInstallationDeletedEvent(event)) {
       await this.githubInstallationService.onWebhookInstallationDeleted(
+        event.installation.id,
+      )
+    }
+
+    if (WebhooksController.isGitHubInstallationSuspendedEvent(event)) {
+      await this.githubInstallationService.onWebhookInstallationSuspended(
+        event.installation.id,
+      )
+    }
+
+    if (WebhooksController.isGitHubInstallationUnsuspendedEvent(event)) {
+      await this.githubInstallationService.onWebhookInstallationUnsuspended(
         event.installation.id,
       )
     }

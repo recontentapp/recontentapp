@@ -17,7 +17,7 @@ CREATE TABLE "destination_configs_github" (
     "includeEmptyTranslations" BOOLEAN NOT NULL DEFAULT false,
     "repositoryOwner" VARCHAR NOT NULL,
     "repositoryName" VARCHAR NOT NULL,
-    "branchName" VARCHAR NOT NULL,
+    "baseBranchName" VARCHAR NOT NULL,
     "objectsPrefix" VARCHAR,
 
     CONSTRAINT "destination_configs_github_pkey" PRIMARY KEY ("id")
@@ -28,6 +28,7 @@ CREATE TABLE "github_installations" (
     "id" VARCHAR NOT NULL,
     "workspaceId" VARCHAR NOT NULL,
     "githubId" INTEGER NOT NULL,
+    "active" BOOLEAN NOT NULL,
     "githubAccount" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,

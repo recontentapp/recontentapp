@@ -759,18 +759,13 @@ export class PrivateApiController {
     return {}
   }
 
+  @Public()
   @Get('/GetGithubAppInstallationLink')
-  async getGithubAppInstallationLink(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    @AuthenticatedRequester() requester: Requester,
-  ): Promise<Paths.GetGithubAppInstallationLink.Responses.$200> {
-    const config = this.configService.get('githubApp', { infer: true })
-    if (!config.available) {
-      throw new BadRequestException('GitHub App is not available')
-    }
+  async getGithubAppInstallationLink(): Promise<Paths.GetGithubAppInstallationLink.Responses.$200> {
+    const url = this.githubAppInstallationService.getInstallationLink()
 
     return {
-      url: `https://github.com/apps/${config.appName}/installations/new`,
+      url,
     }
   }
 

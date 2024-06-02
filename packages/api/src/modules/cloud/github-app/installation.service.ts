@@ -15,12 +15,36 @@ interface ListInstallationsParams {
   workspaceId: string
 }
 
+interface ListInstallationRepositoriesParams {
+  requester: Requester
+  installationId: number
+  afterCursor?: string
+}
+
+interface ListInstallationRepositoryBranchesParams {
+  requester: Requester
+  installationId: number
+  repositoryName: string
+  repositoryOwner: string
+  query?: string
+  afterCursor?: string
+}
+
 @Injectable()
 export class GitHubAppInstallationService {
   constructor(
     private readonly configService: ConfigService<Config, true>,
     private readonly prismaService: PrismaService,
   ) {}
+
+  getInstallationLink() {
+    const config = this.configService.get('githubApp', { infer: true })
+    if (!config.available) {
+      throw new BadRequestException('GitHub App is not available')
+    }
+
+    return `https://github.com/apps/${config.appName}/installations/new`
+  }
 
   async getGithubInstallation(installationId: number) {
     const config = this.configService.get('githubApp', { infer: true })
@@ -84,6 +108,7 @@ export class GitHubAppInstallationService {
 
     await this.prismaService.githubInstallation.create({
       data: {
+        active: true,
         githubId: installationId,
         githubAccount:
           'login' in githubInstallation.account
@@ -93,6 +118,195 @@ export class GitHubAppInstallationService {
               githubInstallation.account.slug,
         workspaceId,
         createdBy: workspaceAccess.getAccountID(),
+      },
+    })
+  }
+
+  async listInstallationRepositories({
+    installationId,
+    requester,
+    afterCursor,
+  }: ListInstallationRepositoriesParams) {
+    const config = this.configService.get('githubApp', { infer: true })
+    if (!config.available) {
+      throw new BadRequestException('GitHub App is not available')
+    }
+
+    const installation =
+      await this.prismaService.githubInstallation.findUniqueOrThrow({
+        where: {
+          githubId: installationId,
+        },
+      })
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      installation.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('projects:destinations:manage')
+
+    // Native ESM modules need to be imported dynamically
+    const createAppAuth = (await import('@octokit/auth-app')).createAppAuth
+    const GithubApp = (await import('octokit')).Octokit
+
+    const githubApp = new GithubApp({
+      authStrategy: createAppAuth,
+      auth: {
+        appId: config.appId,
+        privateKey: config.privateKey,
+        installationId,
+      },
+    })
+
+    interface Response {
+      viewer: {
+        repositories: {
+          edges: {
+            cursor: string
+            node: {
+              nameWithOwner: string
+            }
+          }[]
+        }
+      }
+    }
+
+    const response = await githubApp.graphql<Response>(
+      `query ($first: Int, $after: String) { 
+        viewer { 
+          repositories(
+            orderBy: { field: UPDATED_AT, direction: DESC },
+            first: $first,
+            after: $after
+          ) {
+            edges {
+              cursor
+              node {
+                nameWithOwner
+              }
+            }
+          }
+        }
+      }
+    `,
+      { first: 100, after: afterCursor },
+    )
+
+    return response.viewer.repositories.edges.map(edge => ({
+      cursor: edge.cursor,
+      name: edge.node.nameWithOwner,
+    }))
+  }
+
+  async listInstallationRepositoryBranches({
+    requester,
+    installationId,
+    repositoryName,
+    repositoryOwner,
+    query,
+    afterCursor,
+  }: ListInstallationRepositoryBranchesParams) {
+    const config = this.configService.get('githubApp', { infer: true })
+    if (!config.available) {
+      throw new BadRequestException('GitHub App is not available')
+    }
+
+    const installation =
+      await this.prismaService.githubInstallation.findUniqueOrThrow({
+        where: {
+          githubId: installationId,
+        },
+      })
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      installation.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('projects:destinations:manage')
+
+    // Native ESM modules need to be imported dynamically
+    const createAppAuth = (await import('@octokit/auth-app')).createAppAuth
+    const GithubApp = (await import('octokit')).Octokit
+
+    const githubApp = new GithubApp({
+      authStrategy: createAppAuth,
+      auth: {
+        appId: config.appId,
+        privateKey: config.privateKey,
+        installationId,
+      },
+    })
+
+    interface Response {
+      repository: {
+        nameWithOwner: string
+        refs: {
+          edges: {
+            cursor: string
+            node: {
+              name: string
+            }
+          }[]
+        }
+      }
+    }
+
+    const response = await githubApp.graphql<Response>(
+      `query (
+        $repositoryName: String!,
+        $repositoryOwner: String!,
+        $first: Int,
+        $after: String
+        $query: String
+      ) { 
+        repository(name: $repositoryName, owner: $repositoryOwner) {
+          nameWithOwner
+          refs(
+            refPrefix: "refs/heads/",
+            first: $first,
+            after: $after,
+            query: $query,
+            orderBy: { field: ALPHABETICAL, direction: ASC }
+          ) {
+            edges {
+              cursor
+              node {
+                name
+              }
+            }
+          }
+        }
+      }
+    `,
+      {
+        repositoryName,
+        repositoryOwner,
+        first: 10,
+        after: afterCursor,
+        query,
+      },
+    )
+
+    return response.repository.refs.edges.map(edge => ({
+      cursor: edge.cursor,
+      name: edge.node.name,
+    }))
+  }
+
+  async onWebhookInstallationSuspended(githubId: number) {
+    await this.prismaService.githubInstallation.update({
+      where: {
+        githubId,
+      },
+      data: {
+        active: false,
+      },
+    })
+  }
+
+  async onWebhookInstallationUnsuspended(githubId: number) {
+    await this.prismaService.githubInstallation.update({
+      where: {
+        githubId,
+      },
+      data: {
+        active: true,
       },
     })
   }

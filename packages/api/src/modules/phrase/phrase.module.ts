@@ -5,12 +5,14 @@ import { PhraseService } from './phrase.service'
 import { DestinationService } from './destination.service'
 import { TranslateService } from './translate.service'
 import { MeteredService } from '../cloud/billing/metered.service'
+import { GitHubAppSyncService } from '../cloud/github-app/sync.service'
 
 @Module({
   providers: [
     PrismaService,
     PhraseService,
     DestinationService,
+    GitHubAppSyncService,
     TranslateService,
     MeteredService,
   ],
