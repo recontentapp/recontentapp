@@ -97,6 +97,7 @@ import {
 import {
   CreateAWSS3DestinationDto,
   CreateCDNDestinationDto,
+  CreateGithubDestinationDto,
   CreateGoogleCloudStorageDestinationDto,
   DeleteDestinationDto,
   SyncDestinationDto,
@@ -1199,6 +1200,74 @@ export class PrivateApiController {
     })
 
     return PrivateApiController.formatDestination(destination)
+  }
+
+  @Post('/CreateGithubDestination')
+  async createGithubDestination(
+    @AuthenticatedRequester() requester: Requester,
+    @Body()
+    {
+      name,
+      revisionId,
+      fileFormat,
+      includeEmptyTranslations,
+      objectsPrefix,
+      installationId,
+      repositoryOwner,
+      repositoryName,
+      baseBranchName,
+    }: CreateGithubDestinationDto,
+  ): Promise<Paths.CreateCDNDestination.Responses.$201> {
+    const destination = await this.destinationService.createGithubDestination({
+      name,
+      revisionId,
+      fileFormat,
+      includeEmptyTranslations,
+      objectsPrefix,
+      installationId,
+      repositoryOwner,
+      repositoryName,
+      baseBranchName,
+      requester,
+    })
+
+    return PrivateApiController.formatDestination(destination)
+  }
+
+  @Get('/GetInstallationRepositories')
+  async getInstallationRepositories(
+    @AuthenticatedRequester() requester: Requester,
+    @RequiredQuery('installationId') installationId: string,
+    @Query('afterCursor') afterCursor?: string,
+  ): Promise<Paths.GetInstallationRepositories.Responses.$200> {
+    const items =
+      await this.githubAppInstallationService.listInstallationRepositories({
+        id: installationId,
+        requester,
+        afterCursor,
+      })
+    return { items }
+  }
+
+  @Get('/GetInstallationRepositoryBranches')
+  async getInstallationRepositoryBranches(
+    @AuthenticatedRequester() requester: Requester,
+    @RequiredQuery('installationId') installationId: string,
+    @RequiredQuery('repositoryNameWithOwner') repositoryNameWithOwner: string,
+    @Query('afterCursor') afterCursor?: string,
+    @Query('query') query?: string,
+  ): Promise<Paths.GetInstallationRepositoryBranches.Responses.$200> {
+    const items =
+      await this.githubAppInstallationService.listInstallationRepositoryBranches(
+        {
+          id: installationId,
+          repositoryNameWithOwner,
+          requester,
+          query,
+          afterCursor,
+        },
+      )
+    return { items }
   }
 
   @Post('/CreateAWSS3Destination')

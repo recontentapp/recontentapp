@@ -548,6 +548,10 @@ export class DestinationService {
         where: { destinationId },
       })
 
+      await t.destinationConfigGithub.deleteMany({
+        where: { destinationId },
+      })
+
       await t.destinationConfigCDN.deleteMany({
         where: { destinationId },
       })

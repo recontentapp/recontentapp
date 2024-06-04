@@ -29,6 +29,50 @@ export class CreateCDNDestinationDto {
   includeEmptyTranslations: boolean
 }
 
+export class CreateGithubDestinationDto {
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
+  revisionId: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(TEXT_LENGTH)
+  name: string
+
+  @Validate(FileFormatValidator)
+  @IsNotEmpty()
+  fileFormat: Components.Schemas.FileFormat
+
+  @IsBoolean()
+  includeEmptyTranslations: boolean
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(TEXT_LENGTH)
+  objectsPrefix?: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
+  installationId: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(TEXT_LENGTH)
+  repositoryName: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(TEXT_LENGTH)
+  repositoryOwner: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(TEXT_LENGTH)
+  baseBranchName: string
+}
+
 export class CreateAWSS3DestinationDto {
   @IsString()
   @IsNotEmpty()

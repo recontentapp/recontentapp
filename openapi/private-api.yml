@@ -1415,7 +1415,6 @@ paths:
                   type: boolean
               additionalProperties: false
               required:
-                - type
                 - revisionId
                 - name
                 - fileFormat
@@ -1456,7 +1455,6 @@ paths:
                   type: string
               additionalProperties: false
               required:
-                - type
                 - revisionId
                 - name
                 - fileFormat
@@ -1499,7 +1497,6 @@ paths:
                   type: string
               additionalProperties: false
               required:
-                - type
                 - revisionId
                 - name
                 - fileFormat
@@ -1507,6 +1504,50 @@ paths:
                 - googleCloudProjectId
                 - googleCloudBucketId
                 - googleCloudServiceAccountKey
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Destination'
+  /CreateGithubDestination:
+    post:
+      operationId: createGithubDestination
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                revisionId:
+                  type: string
+                name:
+                  type: string
+                fileFormat:
+                  $ref: '#/components/schemas/FileFormat'
+                includeEmptyTranslations:
+                  type: boolean
+                objectsPrefix:
+                  type: string
+                installationId:
+                  type: string
+                repositoryOwner:
+                  type: string
+                repositoryName:
+                  type: string
+                baseBranchName:
+                  type: string
+              additionalProperties: false
+              required:
+                - revisionId
+                - name
+                - fileFormat
+                - includeEmptyTranslations
+                - installationId
+                - repositoryOwner
+                - repositoryName
+                - baseBranchName
       responses:
         '201':
           description: OK
@@ -1621,6 +1662,92 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/GithubInstallation'
+                additionalProperties: false
+                required:
+                  - items
+  /GetInstallationRepositories:
+    get:
+      operationId: getInstallationRepositories
+      parameters:
+        - name: installationId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: afterCursor
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: false
+                      required:
+                        - cursor
+                        - name
+                      properties:
+                        cursor:
+                          type: string
+                        name:
+                          type: string
+                additionalProperties: false
+                required:
+                  - items
+  /GetInstallationRepositoryBranches:
+    get:
+      operationId: getInstallationRepositoryBranches
+      parameters:
+        - name: installationId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: repositoryNameWithOwner
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: afterCursor
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: query
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: false
+                      required:
+                        - cursor
+                        - name
+                      properties:
+                        cursor:
+                          type: string
+                        name:
+                          type: string
                 additionalProperties: false
                 required:
                   - items

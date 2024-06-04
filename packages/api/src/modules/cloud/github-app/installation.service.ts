@@ -16,16 +16,15 @@ interface ListInstallationsParams {
 }
 
 interface ListInstallationRepositoriesParams {
+  id: string
   requester: Requester
-  installationId: number
   afterCursor?: string
 }
 
 interface ListInstallationRepositoryBranchesParams {
+  id: string
   requester: Requester
-  installationId: number
-  repositoryName: string
-  repositoryOwner: string
+  repositoryNameWithOwner: string
   query?: string
   afterCursor?: string
 }
@@ -123,7 +122,7 @@ export class GitHubAppInstallationService {
   }
 
   async listInstallationRepositories({
-    installationId,
+    id,
     requester,
     afterCursor,
   }: ListInstallationRepositoriesParams) {
@@ -135,7 +134,7 @@ export class GitHubAppInstallationService {
     const installation =
       await this.prismaService.githubInstallation.findUniqueOrThrow({
         where: {
-          githubId: installationId,
+          id,
         },
       })
     const workspaceAccess = requester.getWorkspaceAccessOrThrow(
@@ -152,7 +151,7 @@ export class GitHubAppInstallationService {
       auth: {
         appId: config.appId,
         privateKey: config.privateKey,
-        installationId,
+        installationId: installation.githubId,
       },
     })
 
@@ -197,10 +196,9 @@ export class GitHubAppInstallationService {
   }
 
   async listInstallationRepositoryBranches({
+    id,
     requester,
-    installationId,
-    repositoryName,
-    repositoryOwner,
+    repositoryNameWithOwner,
     query,
     afterCursor,
   }: ListInstallationRepositoryBranchesParams) {
@@ -212,7 +210,7 @@ export class GitHubAppInstallationService {
     const installation =
       await this.prismaService.githubInstallation.findUniqueOrThrow({
         where: {
-          githubId: installationId,
+          id,
         },
       })
     const workspaceAccess = requester.getWorkspaceAccessOrThrow(
@@ -229,7 +227,7 @@ export class GitHubAppInstallationService {
       auth: {
         appId: config.appId,
         privateKey: config.privateKey,
-        installationId,
+        installationId: installation.githubId,
       },
     })
 
@@ -247,13 +245,15 @@ export class GitHubAppInstallationService {
       }
     }
 
+    const [repositoryOwner, repositoryName] = repositoryNameWithOwner.split('/')
+
     const response = await githubApp.graphql<Response>(
       `query (
         $repositoryName: String!,
         $repositoryOwner: String!,
         $first: Int,
         $after: String
-        $query: String
+        $queryTerm: String
       ) { 
         repository(name: $repositoryName, owner: $repositoryOwner) {
           nameWithOwner
@@ -261,7 +261,7 @@ export class GitHubAppInstallationService {
             refPrefix: "refs/heads/",
             first: $first,
             after: $after,
-            query: $query,
+            query: $queryTerm,
             orderBy: { field: ALPHABETICAL, direction: ASC }
           ) {
             edges {
@@ -277,9 +277,9 @@ export class GitHubAppInstallationService {
       {
         repositoryName,
         repositoryOwner,
-        first: 10,
+        first: 50,
         after: afterCursor,
-        query,
+        queryTerm: query,
       },
     )
 
