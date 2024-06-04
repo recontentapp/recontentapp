@@ -213,6 +213,7 @@ const Content: FC<ContentProps> = ({ project, close }) => {
       case 'cdn': {
         createCDN({
           body: {
+            syncFrequency: 'manually',
             revisionId: state.revisionId!,
             fileFormat: state.fileFormat,
             includeEmptyTranslations: state.includeEmptyTranslations,
@@ -235,6 +236,7 @@ const Content: FC<ContentProps> = ({ project, close }) => {
       case 'aws_s3': {
         createAWSS3({
           body: {
+            syncFrequency: 'manually',
             revisionId: state.revisionId!,
             fileFormat: state.fileFormat,
             includeEmptyTranslations: state.includeEmptyTranslations,
@@ -263,6 +265,7 @@ const Content: FC<ContentProps> = ({ project, close }) => {
       case 'google_cloud_storage': {
         createGoogleCloudStorage({
           body: {
+            syncFrequency: 'manually',
             revisionId: state.revisionId!,
             fileFormat: state.fileFormat,
             includeEmptyTranslations: state.includeEmptyTranslations,
@@ -293,6 +296,7 @@ const Content: FC<ContentProps> = ({ project, close }) => {
           repositoryNameWithOwner?.split('/') ?? ['', '']
         createGithub({
           body: {
+            syncFrequency: 'manually',
             revisionId: state.revisionId!,
             fileFormat: state.fileFormat,
             includeEmptyTranslations: state.includeEmptyTranslations,

@@ -7,7 +7,10 @@ import {
   Validate,
 } from 'class-validator'
 import { Components } from 'src/generated/typeDefinitions'
-import { FileFormatValidator } from './domain.dto'
+import {
+  DestinationSyncFrequencyValidator,
+  FileFormatValidator,
+} from './domain.dto'
 import { ID_LENGTH, TEXT_LENGTH } from '../constants'
 
 export class CreateCDNDestinationDto {
@@ -20,6 +23,10 @@ export class CreateCDNDestinationDto {
   @IsNotEmpty()
   @MaxLength(TEXT_LENGTH)
   name: string
+
+  @Validate(DestinationSyncFrequencyValidator)
+  @IsNotEmpty()
+  syncFrequency: Components.Schemas.DestinationSyncFrequency
 
   @Validate(FileFormatValidator)
   @IsNotEmpty()
@@ -43,6 +50,10 @@ export class CreateGithubDestinationDto {
   @Validate(FileFormatValidator)
   @IsNotEmpty()
   fileFormat: Components.Schemas.FileFormat
+
+  @Validate(DestinationSyncFrequencyValidator)
+  @IsNotEmpty()
+  syncFrequency: Components.Schemas.DestinationSyncFrequency
 
   @IsBoolean()
   includeEmptyTranslations: boolean
@@ -88,6 +99,10 @@ export class CreateAWSS3DestinationDto {
   @IsNotEmpty()
   fileFormat: Components.Schemas.FileFormat
 
+  @Validate(DestinationSyncFrequencyValidator)
+  @IsNotEmpty()
+  syncFrequency: Components.Schemas.DestinationSyncFrequency
+
   @IsBoolean()
   includeEmptyTranslations: boolean
 
@@ -131,6 +146,10 @@ export class CreateGoogleCloudStorageDestinationDto {
   @Validate(FileFormatValidator)
   @IsNotEmpty()
   fileFormat: Components.Schemas.FileFormat
+
+  @Validate(DestinationSyncFrequencyValidator)
+  @IsNotEmpty()
+  syncFrequency: Components.Schemas.DestinationSyncFrequency
 
   @IsBoolean()
   includeEmptyTranslations: boolean

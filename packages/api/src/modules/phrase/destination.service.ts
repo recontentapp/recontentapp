@@ -46,6 +46,7 @@ interface CreateCDNDestinationParams {
   name: string
   revisionId: string
   requester: Requester
+  syncFrequency: Components.Schemas.DestinationSyncFrequency
   fileFormat: Components.Schemas.FileFormat
   includeEmptyTranslations: boolean
 }
@@ -54,6 +55,7 @@ interface CreateAWSS3DestinationParams {
   name: string
   revisionId: string
   requester: Requester
+  syncFrequency: Components.Schemas.DestinationSyncFrequency
   fileFormat: Components.Schemas.FileFormat
   includeEmptyTranslations: boolean
   objectsPrefix?: string
@@ -67,6 +69,7 @@ interface CreateGoogleCloudStorageDestinationParams {
   name: string
   revisionId: string
   requester: Requester
+  syncFrequency: Components.Schemas.DestinationSyncFrequency
   fileFormat: Components.Schemas.FileFormat
   includeEmptyTranslations: boolean
   objectsPrefix?: string
@@ -79,6 +82,7 @@ interface CreateGithubDestinationParams {
   name: string
   revisionId: string
   installationId: string
+  syncFrequency: Components.Schemas.DestinationSyncFrequency
   requester: Requester
   fileFormat: Components.Schemas.FileFormat
   includeEmptyTranslations: boolean
@@ -263,6 +267,7 @@ export class DestinationService {
   async createCDNDestination({
     name,
     revisionId,
+    syncFrequency,
     requester,
     fileFormat,
     includeEmptyTranslations,
@@ -292,6 +297,7 @@ export class DestinationService {
       data: {
         name,
         revisionId,
+        syncFrequency,
         type: 'cdn',
         active: true,
         workspaceId: revision.workspaceId,
@@ -313,6 +319,7 @@ export class DestinationService {
     name,
     revisionId,
     requester,
+    syncFrequency,
     fileFormat,
     includeEmptyTranslations,
     objectsPrefix,
@@ -345,6 +352,7 @@ export class DestinationService {
       data: {
         name,
         revisionId,
+        syncFrequency,
         type: 'aws_s3',
         active: true,
         workspaceId: revision.workspaceId,
@@ -371,6 +379,7 @@ export class DestinationService {
     name,
     revisionId,
     requester,
+    syncFrequency,
     fileFormat,
     includeEmptyTranslations,
     objectsPrefix,
@@ -402,6 +411,7 @@ export class DestinationService {
       data: {
         name,
         revisionId,
+        syncFrequency,
         type: 'google_cloud_storage',
         active: true,
         workspaceId: revision.workspaceId,
@@ -430,6 +440,7 @@ export class DestinationService {
     name,
     revisionId,
     installationId,
+    syncFrequency,
     requester,
     fileFormat,
     includeEmptyTranslations,
@@ -462,6 +473,7 @@ export class DestinationService {
       data: {
         name,
         revisionId,
+        syncFrequency,
         type: 'github',
         active: true,
         workspaceId: revision.workspaceId,

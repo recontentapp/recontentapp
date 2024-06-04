@@ -9,3 +9,12 @@ export const destinationTypeLabels: Record<
   google_cloud_storage: 'Google Cloud Storage',
   github: 'GitHub',
 }
+
+export const destinationSyncFrequencyLabels: Record<
+  Components.Schemas.DestinationSyncFrequency,
+  string
+> = {
+  manually: 'Manually',
+  daily: 'Daily',
+  weekly: 'Weekly',
+}

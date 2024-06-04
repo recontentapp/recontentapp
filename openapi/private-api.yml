@@ -1413,12 +1413,15 @@ paths:
                   $ref: '#/components/schemas/FileFormat'
                 includeEmptyTranslations:
                   type: boolean
+                syncFrequency:
+                  $ref: '#/components/schemas/DestinationSyncFrequency'
               additionalProperties: false
               required:
                 - revisionId
                 - name
                 - fileFormat
                 - includeEmptyTranslations
+                - syncFrequency
       responses:
         '201':
           description: OK
@@ -1453,6 +1456,8 @@ paths:
                   type: string
                 awsSecretAccessKey:
                   type: string
+                syncFrequency:
+                  $ref: '#/components/schemas/DestinationSyncFrequency'
               additionalProperties: false
               required:
                 - revisionId
@@ -1463,6 +1468,7 @@ paths:
                 - awsBucketId
                 - awsAccessKeyId
                 - awsSecretAccessKey
+                - syncFrequency
       responses:
         '201':
           description: OK
@@ -1495,6 +1501,8 @@ paths:
                   type: string
                 googleCloudServiceAccountKey:
                   type: string
+                syncFrequency:
+                  $ref: '#/components/schemas/DestinationSyncFrequency'
               additionalProperties: false
               required:
                 - revisionId
@@ -1504,6 +1512,7 @@ paths:
                 - googleCloudProjectId
                 - googleCloudBucketId
                 - googleCloudServiceAccountKey
+                - syncFrequency
       responses:
         '201':
           description: OK
@@ -1538,6 +1547,8 @@ paths:
                   type: string
                 baseBranchName:
                   type: string
+                syncFrequency:
+                  $ref: '#/components/schemas/DestinationSyncFrequency'
               additionalProperties: false
               required:
                 - revisionId
@@ -1548,6 +1559,7 @@ paths:
                 - repositoryOwner
                 - repositoryName
                 - baseBranchName
+                - syncFrequency
       responses:
         '201':
           description: OK
@@ -2520,6 +2532,12 @@ components:
         - aws_s3
         - google_cloud_storage
         - github
+    DestinationSyncFrequency:
+      type: string
+      enum:
+        - manually
+        - daily
+        - weekly
     DestinationItem:
       type: object
       properties:
@@ -2533,6 +2551,8 @@ components:
           type: string
         type:
           $ref: '#/components/schemas/DestinationType'
+        syncFrequency:
+          $ref: '#/components/schemas/DestinationSyncFrequency'
         active:
           type: boolean
         lastSyncError:
@@ -2564,6 +2584,7 @@ components:
         - revisionId
         - name
         - type
+        - syncFrequency
         - active
         - lastSyncError
         - lastSyncAt
@@ -2585,6 +2606,8 @@ components:
           type: string
         type:
           $ref: '#/components/schemas/DestinationType'
+        syncFrequency:
+          $ref: '#/components/schemas/DestinationSyncFrequency'
         active:
           type: boolean
         lastSyncError:
@@ -2628,6 +2651,7 @@ components:
         - revisionId
         - name
         - type
+        - syncFrequency
         - active
         - lastSyncError
         - lastSyncAt
