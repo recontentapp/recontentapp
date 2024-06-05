@@ -35,12 +35,15 @@ paths:
                         type: boolean
                       feedbacksAvailable:
                         type: boolean
+                      workerAvailable:
+                        type: boolean
                     required:
                       - workspaceInviteOnly
                       - cdnAvailable
                       - githubAppAvailable
                       - feedbacksAvailable
                       - googleOAuthAvailable
+                      - workerAvailable
                 additionalProperties: false
                 required:
                   - version

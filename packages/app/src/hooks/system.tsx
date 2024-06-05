@@ -20,6 +20,7 @@ const systemContext = createContext<System>({
     githubAppAvailable: false,
     googleOAuthAvailable: false,
     feedbacksAvailable: false,
+    workerAvailable: false,
   },
 })
 
@@ -33,6 +34,7 @@ export const SystemProvider: FC<{ children: ReactNode }> = ({ children }) => {
       githubAppAvailable: false,
       googleOAuthAvailable: false,
       feedbacksAvailable: false,
+      workerAvailable: false,
     },
   })
 

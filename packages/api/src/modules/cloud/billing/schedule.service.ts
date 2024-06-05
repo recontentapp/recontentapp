@@ -31,16 +31,16 @@ export class ScheduleService implements BeforeApplicationShutdown {
       return
     }
 
-    const queueUrl = this.configService.get('worker.sqsQueueUrl', {
+    const workerConfig = this.configService.get('worker', {
       infer: true,
     })
-    if (!queueUrl) {
+    if (!workerConfig.available) {
       throw new Error('Worker SQS queue URL is not set')
     }
 
     this.sqsConsumer = Consumer.create({
       waitTimeSeconds: 20, // Long polling
-      queueUrl,
+      queueUrl: workerConfig.sqsQueueUrl,
       handleMessage: this.handleMessage.bind(this),
       sqs: this.sqsService.getClient(),
     })

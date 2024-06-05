@@ -100,7 +100,8 @@ const getConfig = () => {
       openAIKey: process.env.OPENAI_API_KEY,
     },
     worker: {
-      sqsQueueUrl: process.env.SQS_QUEUE_URL,
+      available: !!process.env.SQS_QUEUE_URL,
+      sqsQueueUrl: String(process.env.SQS_QUEUE_URL),
     },
     billing: {
       stripeKey: process.env.STRIPE_API_KEY,

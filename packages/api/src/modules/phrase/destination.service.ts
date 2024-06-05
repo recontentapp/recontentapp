@@ -272,6 +272,14 @@ export class DestinationService {
     fileFormat,
     includeEmptyTranslations,
   }: CreateCDNDestinationParams) {
+    const workerAvailable = this.configService.get('worker.available', {
+      infer: true,
+    })
+
+    if (!workerAvailable && syncFrequency !== 'manually') {
+      throw new BadRequestException('Worker is not available')
+    }
+
     const isAvailable = this.configService.get('cdn.available', { infer: true })
     if (!isAvailable) {
       throw new BadRequestException('CDN is not available')
@@ -328,6 +336,14 @@ export class DestinationService {
     awsBucketId,
     awsSecretAccessKey,
   }: CreateAWSS3DestinationParams) {
+    const workerAvailable = this.configService.get('worker.available', {
+      infer: true,
+    })
+
+    if (!workerAvailable && syncFrequency !== 'manually') {
+      throw new BadRequestException('Worker is not available')
+    }
+
     const encryptionKey = this.configService.get('security.encryptionKey', {
       infer: true,
     })
@@ -387,6 +403,14 @@ export class DestinationService {
     googleCloudServiceAccountKey,
     googleCloudProjectId,
   }: CreateGoogleCloudStorageDestinationParams) {
+    const workerAvailable = this.configService.get('worker.available', {
+      infer: true,
+    })
+
+    if (!workerAvailable && syncFrequency !== 'manually') {
+      throw new BadRequestException('Worker is not available')
+    }
+
     const encryptionKey = this.configService.get('security.encryptionKey', {
       infer: true,
     })
@@ -449,6 +473,14 @@ export class DestinationService {
     repositoryName,
     baseBranchName,
   }: CreateGithubDestinationParams) {
+    const workerAvailable = this.configService.get('worker.available', {
+      infer: true,
+    })
+
+    if (!workerAvailable && syncFrequency !== 'manually') {
+      throw new BadRequestException('Worker is not available')
+    }
+
     const revision = await this.prismaService.projectRevision.findUniqueOrThrow(
       {
         where: { id: revisionId },

@@ -420,6 +420,9 @@ export class PrivateApiController {
     const cdnConfig = this.configService.get('cdn', {
       infer: true,
     })
+    const workerConfig = this.configService.get('worker', {
+      infer: true,
+    })
     const googleOAuthConfig = this.configService.get('googleOAuth', {
       infer: true,
     })
@@ -441,6 +444,7 @@ export class PrivateApiController {
       distribution: appConfig.distribution,
       settings: {
         workspaceInviteOnly,
+        workerAvailable: workerConfig.available,
         cdnAvailable: cdnConfig.available,
         githubAppAvailable: githubAppConfig.available,
         googleOAuthAvailable: googleOAuthConfig.available,

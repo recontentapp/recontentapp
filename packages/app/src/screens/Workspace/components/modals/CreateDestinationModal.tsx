@@ -33,7 +33,10 @@ import {
 } from '../../../../generated/reactQuery'
 import { fileFormatLabels } from '../../../../utils/files'
 import { useQueryClient } from '@tanstack/react-query'
-import { destinationTypeLabels } from '../../../../utils/destinations'
+import {
+  destinationSyncFrequencyLabels,
+  destinationTypeLabels,
+} from '../../../../utils/destinations'
 import { useSystem } from '../../../../hooks/system'
 import { styled } from '../../../../theme'
 
@@ -51,6 +54,7 @@ interface State {
   name: string
   revisionId: string
   type: Components.Schemas.DestinationType
+  syncFrequency: Components.Schemas.DestinationSyncFrequency
   fileFormat: Components.Schemas.FileFormat
   includeEmptyTranslations: boolean
   ObjectsPrefix: string
@@ -111,7 +115,7 @@ const isValid = (state: State): boolean => {
 const Content: FC<ContentProps> = ({ project, close }) => {
   const queryClient = useQueryClient()
   const {
-    settings: { cdnAvailable, githubAppAvailable },
+    settings: { cdnAvailable, githubAppAvailable, workerAvailable },
   } = useSystem()
   const { mutateAsync: createCDN, isPending: isCreatingCDN } =
     useCreateCDNDestination({
@@ -158,6 +162,7 @@ const Content: FC<ContentProps> = ({ project, close }) => {
   const [state, setState] = useState<State>({
     name: '',
     type: cdnAvailable ? 'cdn' : 'aws_s3',
+    syncFrequency: 'manually',
     fileFormat: 'json',
     revisionId: project.masterRevisionId,
     includeEmptyTranslations: false,
@@ -213,7 +218,7 @@ const Content: FC<ContentProps> = ({ project, close }) => {
       case 'cdn': {
         createCDN({
           body: {
-            syncFrequency: 'manually',
+            syncFrequency: state.syncFrequency,
             revisionId: state.revisionId!,
             fileFormat: state.fileFormat,
             includeEmptyTranslations: state.includeEmptyTranslations,
@@ -236,7 +241,7 @@ const Content: FC<ContentProps> = ({ project, close }) => {
       case 'aws_s3': {
         createAWSS3({
           body: {
-            syncFrequency: 'manually',
+            syncFrequency: state.syncFrequency,
             revisionId: state.revisionId!,
             fileFormat: state.fileFormat,
             includeEmptyTranslations: state.includeEmptyTranslations,
@@ -265,7 +270,7 @@ const Content: FC<ContentProps> = ({ project, close }) => {
       case 'google_cloud_storage': {
         createGoogleCloudStorage({
           body: {
-            syncFrequency: 'manually',
+            syncFrequency: state.syncFrequency,
             revisionId: state.revisionId!,
             fileFormat: state.fileFormat,
             includeEmptyTranslations: state.includeEmptyTranslations,
@@ -296,7 +301,7 @@ const Content: FC<ContentProps> = ({ project, close }) => {
           repositoryNameWithOwner?.split('/') ?? ['', '']
         createGithub({
           body: {
-            syncFrequency: 'manually',
+            syncFrequency: state.syncFrequency,
             revisionId: state.revisionId!,
             fileFormat: state.fileFormat,
             includeEmptyTranslations: state.includeEmptyTranslations,
@@ -343,6 +348,24 @@ const Content: FC<ContentProps> = ({ project, close }) => {
         return true
       })
   }, [cdnAvailable, githubAppAvailable])
+
+  const syncFrequencyOptions = useMemo(() => {
+    if (workerAvailable) {
+      return Object.entries(destinationSyncFrequencyLabels).map(
+        ([value, label]) => ({
+          label,
+          value,
+        }),
+      )
+    }
+
+    return [
+      {
+        label: 'Manually',
+        value: 'manually',
+      },
+    ]
+  }, [workerAvailable])
 
   const isStateValid = isValid(state)
 
@@ -436,6 +459,25 @@ const Content: FC<ContentProps> = ({ project, close }) => {
             }))
           }}
         />
+
+        {syncFrequencyOptions.length > 1 && (
+          <SelectField
+            label="Sync frequency"
+            options={syncFrequencyOptions}
+            value={state.syncFrequency}
+            onChange={option => {
+              if (!option) {
+                return
+              }
+
+              setState(state => ({
+                ...state,
+                syncFrequency:
+                  option.value as Components.Schemas.DestinationSyncFrequency,
+              }))
+            }}
+          />
+        )}
 
         <TextField
           autoFocus
