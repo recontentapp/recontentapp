@@ -35,7 +35,7 @@ import {
   Workspace,
 } from '@prisma/client'
 import { decrypt, encrypt } from 'src/utils/security'
-import { Requester } from '../auth/requester.object'
+import { Requester, WorkspaceAccess } from '../auth/requester.object'
 import { escapeTrailingSlash } from 'src/utils/strings'
 import {
   Addition,
@@ -94,7 +94,11 @@ interface CreateGithubDestinationParams {
 
 interface SyncDestinationParams {
   destinationId: string
-  requester: Requester
+  /**
+   * When sync requests come from CRON jobs
+   * the requester is not available
+   */
+  requester: Requester | null
 }
 
 interface DeleteDestinationParams {
@@ -622,10 +626,14 @@ export class DestinationService {
       },
     })
 
-    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
-      destination.workspaceId,
-    )
-    workspaceAccess.hasAbilityOrThrow('projects:destinations:manage')
+    let workspaceAccess: WorkspaceAccess | null = null
+
+    if (requester) {
+      workspaceAccess = requester.getWorkspaceAccessOrThrow(
+        destination.workspaceId,
+      )
+      workspaceAccess.hasAbilityOrThrow('projects:destinations:manage')
+    }
 
     if (!destination.active) {
       throw new BadRequestException('Destination is not active')
@@ -659,28 +667,28 @@ export class DestinationService {
         await this.syncCDNDestination(
           destination,
           revision,
-          workspaceAccess.getAccountID(),
+          workspaceAccess?.getAccountID() ?? destination.createdBy,
         )
         break
       case 'aws_s3':
         await this.syncAWSS3Destination(
           destination,
           revision,
-          workspaceAccess.getAccountID(),
+          workspaceAccess?.getAccountID() ?? destination.createdBy,
         )
         break
       case 'google_cloud_storage':
         await this.syncGoogleCloudStorageDestination(
           destination,
           revision,
-          workspaceAccess.getAccountID(),
+          workspaceAccess?.getAccountID() ?? destination.createdBy,
         )
         break
       case 'github':
         await this.syncGithubDestination(
           destination,
           revision,
-          workspaceAccess.getAccountID(),
+          workspaceAccess?.getAccountID() ?? destination.createdBy,
         )
         break
     }

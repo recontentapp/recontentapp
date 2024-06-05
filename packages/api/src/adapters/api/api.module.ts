@@ -11,13 +11,13 @@ import { MyLogger } from 'src/utils/logger'
 import { LoggerMiddleware } from 'src/utils/logger.middleware'
 import { RequestIdMiddleware } from 'src/utils/request-id.middleware'
 import { PrismaService } from 'src/utils/prisma.service'
-import { SQSService } from 'src/utils/sqs.service'
 import { AuthModule } from 'src/modules/auth/auth.module'
 import { NotificationsModule } from 'src/modules/notifications/notifications.module'
 import { WorkspaceModule } from 'src/modules/workspace/workspace.module'
 import { ProjectModule } from 'src/modules/project/project.module'
 import { PhraseModule } from 'src/modules/phrase/phrase.module'
 import { FigmaModule } from 'src/modules/figma/figma.module'
+import { WorkerModule } from 'src/modules/worker/worker.module'
 import { GitHubAppModule } from 'src/modules/cloud/github-app/github-app.module'
 import { BillingModule } from 'src/modules/cloud/billing/billing.module'
 import getConfig from 'src/utils/config'
@@ -66,6 +66,7 @@ import { SlackNotificationsModule } from 'src/modules/cloud/slack-notifications/
         ]
       : []),
     AuthModule,
+    WorkerModule,
     SlackNotificationsModule,
     GitHubAppModule,
     NotificationsModule,
@@ -83,7 +84,6 @@ import { SlackNotificationsModule } from 'src/modules/cloud/slack-notifications/
   ],
   providers: [
     MyLogger,
-    SQSService,
     PrismaService,
     {
       provide: APP_GUARD,
