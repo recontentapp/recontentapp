@@ -29,18 +29,24 @@ import {
   Destination,
   DestinationConfigAWSS3,
   DestinationConfigCDN,
+  DestinationConfigGithub,
   DestinationConfigGoogleCloudStorage,
   Prisma,
   Workspace,
 } from '@prisma/client'
 import { decrypt, encrypt } from 'src/utils/security'
-import { Requester } from '../auth/requester.object'
+import { Requester, WorkspaceAccess } from '../auth/requester.object'
 import { escapeTrailingSlash } from 'src/utils/strings'
+import {
+  Addition,
+  GitHubAppSyncService,
+} from '../cloud/github-app/sync.service'
 
 interface CreateCDNDestinationParams {
   name: string
   revisionId: string
   requester: Requester
+  syncFrequency: Components.Schemas.DestinationSyncFrequency
   fileFormat: Components.Schemas.FileFormat
   includeEmptyTranslations: boolean
 }
@@ -49,6 +55,7 @@ interface CreateAWSS3DestinationParams {
   name: string
   revisionId: string
   requester: Requester
+  syncFrequency: Components.Schemas.DestinationSyncFrequency
   fileFormat: Components.Schemas.FileFormat
   includeEmptyTranslations: boolean
   objectsPrefix?: string
@@ -62,6 +69,7 @@ interface CreateGoogleCloudStorageDestinationParams {
   name: string
   revisionId: string
   requester: Requester
+  syncFrequency: Components.Schemas.DestinationSyncFrequency
   fileFormat: Components.Schemas.FileFormat
   includeEmptyTranslations: boolean
   objectsPrefix?: string
@@ -70,9 +78,27 @@ interface CreateGoogleCloudStorageDestinationParams {
   googleCloudServiceAccountKey: string
 }
 
+interface CreateGithubDestinationParams {
+  name: string
+  revisionId: string
+  installationId: string
+  syncFrequency: Components.Schemas.DestinationSyncFrequency
+  requester: Requester
+  fileFormat: Components.Schemas.FileFormat
+  includeEmptyTranslations: boolean
+  objectsPrefix?: string
+  repositoryOwner: string
+  repositoryName: string
+  baseBranchName: string
+}
+
 interface SyncDestinationParams {
   destinationId: string
-  requester: Requester
+  /**
+   * When sync requests come from CRON jobs
+   * the requester is not available
+   */
+  requester: Requester | null
 }
 
 interface DeleteDestinationParams {
@@ -95,8 +121,9 @@ interface ListDestinationsParams {
 @Injectable()
 export class DestinationService {
   constructor(
-    private prismaService: PrismaService,
-    private configService: ConfigService<Config, true>,
+    private readonly prismaService: PrismaService,
+    private readonly configService: ConfigService<Config, true>,
+    private readonly githubAppSyncService: GitHubAppSyncService,
   ) {}
 
   private async getData({
@@ -244,10 +271,19 @@ export class DestinationService {
   async createCDNDestination({
     name,
     revisionId,
+    syncFrequency,
     requester,
     fileFormat,
     includeEmptyTranslations,
   }: CreateCDNDestinationParams) {
+    const workerAvailable = this.configService.get('worker.available', {
+      infer: true,
+    })
+
+    if (!workerAvailable && syncFrequency !== 'manually') {
+      throw new BadRequestException('Worker is not available')
+    }
+
     const isAvailable = this.configService.get('cdn.available', { infer: true })
     if (!isAvailable) {
       throw new BadRequestException('CDN is not available')
@@ -268,10 +304,12 @@ export class DestinationService {
         configCDN: true,
         configAWSS3: true,
         configGoogleCloudStorage: true,
+        configGithub: true,
       },
       data: {
         name,
         revisionId,
+        syncFrequency,
         type: 'cdn',
         active: true,
         workspaceId: revision.workspaceId,
@@ -293,6 +331,7 @@ export class DestinationService {
     name,
     revisionId,
     requester,
+    syncFrequency,
     fileFormat,
     includeEmptyTranslations,
     objectsPrefix,
@@ -301,6 +340,14 @@ export class DestinationService {
     awsBucketId,
     awsSecretAccessKey,
   }: CreateAWSS3DestinationParams) {
+    const workerAvailable = this.configService.get('worker.available', {
+      infer: true,
+    })
+
+    if (!workerAvailable && syncFrequency !== 'manually') {
+      throw new BadRequestException('Worker is not available')
+    }
+
     const encryptionKey = this.configService.get('security.encryptionKey', {
       infer: true,
     })
@@ -320,10 +367,12 @@ export class DestinationService {
         configCDN: true,
         configAWSS3: true,
         configGoogleCloudStorage: true,
+        configGithub: true,
       },
       data: {
         name,
         revisionId,
+        syncFrequency,
         type: 'aws_s3',
         active: true,
         workspaceId: revision.workspaceId,
@@ -350,6 +399,7 @@ export class DestinationService {
     name,
     revisionId,
     requester,
+    syncFrequency,
     fileFormat,
     includeEmptyTranslations,
     objectsPrefix,
@@ -357,6 +407,14 @@ export class DestinationService {
     googleCloudServiceAccountKey,
     googleCloudProjectId,
   }: CreateGoogleCloudStorageDestinationParams) {
+    const workerAvailable = this.configService.get('worker.available', {
+      infer: true,
+    })
+
+    if (!workerAvailable && syncFrequency !== 'manually') {
+      throw new BadRequestException('Worker is not available')
+    }
+
     const encryptionKey = this.configService.get('security.encryptionKey', {
       infer: true,
     })
@@ -376,10 +434,12 @@ export class DestinationService {
         configCDN: true,
         configAWSS3: true,
         configGoogleCloudStorage: true,
+        configGithub: true,
       },
       data: {
         name,
         revisionId,
+        syncFrequency,
         type: 'google_cloud_storage',
         active: true,
         workspaceId: revision.workspaceId,
@@ -396,6 +456,74 @@ export class DestinationService {
               googleCloudServiceAccountKey,
               encryptionKey,
             ),
+          },
+        },
+      },
+    })
+
+    return destination
+  }
+
+  async createGithubDestination({
+    name,
+    revisionId,
+    installationId,
+    syncFrequency,
+    requester,
+    fileFormat,
+    includeEmptyTranslations,
+    objectsPrefix,
+    repositoryOwner,
+    repositoryName,
+    baseBranchName,
+  }: CreateGithubDestinationParams) {
+    const workerAvailable = this.configService.get('worker.available', {
+      infer: true,
+    })
+
+    if (!workerAvailable && syncFrequency !== 'manually') {
+      throw new BadRequestException('Worker is not available')
+    }
+
+    const revision = await this.prismaService.projectRevision.findUniqueOrThrow(
+      {
+        where: { id: revisionId },
+      },
+    )
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      revision.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('projects:destinations:manage')
+
+    await this.prismaService.githubInstallation.findUniqueOrThrow({
+      where: { id: installationId, workspaceId: revision.workspaceId },
+    })
+
+    const destination = await this.prismaService.destination.create({
+      include: {
+        configCDN: true,
+        configAWSS3: true,
+        configGoogleCloudStorage: true,
+        configGithub: true,
+      },
+      data: {
+        name,
+        revisionId,
+        syncFrequency,
+        type: 'github',
+        active: true,
+        workspaceId: revision.workspaceId,
+        createdBy: workspaceAccess.getAccountID(),
+        configGithub: {
+          create: {
+            fileFormat,
+            includeEmptyTranslations,
+            workspaceId: revision.workspaceId,
+            objectsPrefix,
+            installationId,
+            repositoryOwner,
+            repositoryName,
+            baseBranchName,
           },
         },
       },
@@ -468,6 +596,10 @@ export class DestinationService {
         where: { destinationId },
       })
 
+      await t.destinationConfigGithub.deleteMany({
+        where: { destinationId },
+      })
+
       await t.destinationConfigCDN.deleteMany({
         where: { destinationId },
       })
@@ -490,13 +622,18 @@ export class DestinationService {
         configCDN: true,
         configAWSS3: true,
         configGoogleCloudStorage: true,
+        configGithub: true,
       },
     })
 
-    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
-      destination.workspaceId,
-    )
-    workspaceAccess.hasAbilityOrThrow('projects:destinations:manage')
+    let workspaceAccess: WorkspaceAccess | null = null
+
+    if (requester) {
+      workspaceAccess = requester.getWorkspaceAccessOrThrow(
+        destination.workspaceId,
+      )
+      workspaceAccess.hasAbilityOrThrow('projects:destinations:manage')
+    }
 
     if (!destination.active) {
       throw new BadRequestException('Destination is not active')
@@ -530,21 +667,28 @@ export class DestinationService {
         await this.syncCDNDestination(
           destination,
           revision,
-          workspaceAccess.getAccountID(),
+          workspaceAccess?.getAccountID() ?? destination.createdBy,
         )
         break
       case 'aws_s3':
         await this.syncAWSS3Destination(
           destination,
           revision,
-          workspaceAccess.getAccountID(),
+          workspaceAccess?.getAccountID() ?? destination.createdBy,
         )
         break
       case 'google_cloud_storage':
         await this.syncGoogleCloudStorageDestination(
           destination,
           revision,
-          workspaceAccess.getAccountID(),
+          workspaceAccess?.getAccountID() ?? destination.createdBy,
+        )
+        break
+      case 'github':
+        await this.syncGithubDestination(
+          destination,
+          revision,
+          workspaceAccess?.getAccountID() ?? destination.createdBy,
         )
         break
     }
@@ -556,6 +700,7 @@ export class DestinationService {
       configCDN: DestinationConfigCDN | null
       configAWSS3: DestinationConfigAWSS3 | null
       configGoogleCloudStorage: DestinationConfigGoogleCloudStorage | null
+      configGithub: DestinationConfigGithub | null
     },
     revision: {
       project: {
@@ -641,6 +786,7 @@ export class DestinationService {
       await this.prismaService.destination.update({
         where: { id: destination.id },
         data: {
+          active: false,
           lastSyncAt: new Date(),
           lastSyncError: error,
           updatedBy: accountId,
@@ -652,6 +798,7 @@ export class DestinationService {
     await this.prismaService.destination.update({
       where: { id: destination.id },
       data: {
+        active: true,
         lastSyncError: null,
         lastSuccessfulSyncAt: new Date(),
         lastSyncAt: new Date(),
@@ -666,6 +813,7 @@ export class DestinationService {
       configCDN: DestinationConfigCDN | null
       configAWSS3: DestinationConfigAWSS3 | null
       configGoogleCloudStorage: DestinationConfigGoogleCloudStorage | null
+      configGithub: DestinationConfigGithub | null
     },
     revision: {
       project: {
@@ -747,6 +895,7 @@ export class DestinationService {
       await this.prismaService.destination.update({
         where: { id: destination.id },
         data: {
+          active: false,
           lastSyncAt: new Date(),
           lastSyncError: error,
           updatedBy: accountId,
@@ -758,6 +907,93 @@ export class DestinationService {
     await this.prismaService.destination.update({
       where: { id: destination.id },
       data: {
+        active: true,
+        lastSyncError: null,
+        lastSuccessfulSyncAt: new Date(),
+        lastSyncAt: new Date(),
+        updatedBy: accountId,
+      },
+    })
+  }
+
+  private async syncGithubDestination(
+    destination: Destination & {
+      workspace: Workspace
+      configCDN: DestinationConfigCDN | null
+      configAWSS3: DestinationConfigAWSS3 | null
+      configGoogleCloudStorage: DestinationConfigGoogleCloudStorage | null
+      configGithub: DestinationConfigGithub | null
+    },
+    revision: {
+      project: {
+        languages: {
+          id: string
+          locale: string
+        }[]
+      }
+    },
+    accountId: string,
+  ) {
+    if (!destination.configGithub) {
+      throw new BadRequestException('Destination has no Github configuration')
+    }
+
+    const additions: Addition[] = []
+
+    for (const language of revision.project.languages) {
+      const content = await this.getData({
+        revisionId: destination.revisionId,
+        languageId: language.id,
+        fileFormat: destination.configGithub
+          .fileFormat as Components.Schemas.FileFormat,
+        includeEmptyTranslations:
+          destination.configGithub.includeEmptyTranslations,
+      })
+
+      const extension =
+        fileFormatExtensions[destination.configGithub.fileFormat as FileFormat]
+
+      const path = [
+        escapeTrailingSlash(destination.configGithub.objectsPrefix ?? ''),
+        `${language.locale}${extension}`,
+      ]
+        .filter(Boolean)
+        .join('/')
+
+      additions.push({
+        path,
+        content,
+      })
+    }
+
+    let error: string | null = null
+
+    await this.githubAppSyncService
+      .sync({
+        destinationId: destination.id,
+        additions,
+      })
+      .catch(err => {
+        error = err.message ?? 'Unknown Github error'
+      })
+
+    if (error) {
+      await this.prismaService.destination.update({
+        where: { id: destination.id },
+        data: {
+          active: false,
+          lastSyncAt: new Date(),
+          lastSyncError: error,
+          updatedBy: accountId,
+        },
+      })
+      throw new BadRequestException(error)
+    }
+
+    await this.prismaService.destination.update({
+      where: { id: destination.id },
+      data: {
+        active: true,
         lastSyncError: null,
         lastSuccessfulSyncAt: new Date(),
         lastSyncAt: new Date(),
@@ -772,6 +1008,7 @@ export class DestinationService {
       configCDN: DestinationConfigCDN | null
       configAWSS3: DestinationConfigAWSS3 | null
       configGoogleCloudStorage: DestinationConfigGoogleCloudStorage | null
+      configGithub: DestinationConfigGithub | null
     },
     revision: {
       project: {
@@ -846,6 +1083,7 @@ export class DestinationService {
       await this.prismaService.destination.update({
         where: { id: destination.id },
         data: {
+          active: false,
           lastSyncAt: new Date(),
           lastSyncError: error,
           updatedBy: accountId,
@@ -862,6 +1100,7 @@ export class DestinationService {
       this.prismaService.destination.update({
         where: { id: destination.id },
         data: {
+          active: true,
           lastSuccessfulSyncAt: new Date(),
           lastSyncAt: new Date(),
           lastSyncError: null,

@@ -28,6 +28,7 @@ import {
   DestinationConfigCDN,
   DestinationConfigGoogleCloudStorage,
   FigmaFile,
+  GithubInstallation,
   Language,
   Phrase,
   PhraseTranslation,
@@ -73,6 +74,7 @@ import {
   CreateWorkspaceServiceAccountDto,
   DeleteWorkspaceServiceAccountDto,
   GenerateUserWorkspaceAccountAPIKeyDto,
+  InstallGithubAppDto,
   InviteToWorkspaceDto,
   JoinWorkspaceDto,
 } from '../dto/private/workspace.dto'
@@ -95,6 +97,7 @@ import {
 import {
   CreateAWSS3DestinationDto,
   CreateCDNDestinationDto,
+  CreateGithubDestinationDto,
   CreateGoogleCloudStorageDestinationDto,
   DeleteDestinationDto,
   SyncDestinationDto,
@@ -108,6 +111,7 @@ import {
 import { FigmaService } from 'src/modules/figma/figma.service'
 import { DeleteFigmaFileDto } from '../dto/private/figma.dto'
 import { SendFeedbackDto } from '../dto/private/feedback.dto'
+import { GitHubAppInstallationService } from 'src/modules/cloud/github-app/installation.service'
 
 @Controller('private')
 @UseGuards(JwtAuthGuard)
@@ -126,6 +130,7 @@ export class PrivateApiController {
     private readonly billingSubscriptionService: SubscriptionService,
     private readonly figmaService: FigmaService,
     private readonly slackService: SlackService,
+    private readonly githubAppInstallationService: GitHubAppInstallationService,
   ) {}
 
   private static formatTag(tag: Tag): Components.Schemas.Tag {
@@ -298,6 +303,22 @@ export class PrivateApiController {
     }
   }
 
+  private static formatGithubInstallation(
+    installation: GithubInstallation,
+  ): Components.Schemas.GithubInstallation {
+    return {
+      id: installation.id,
+      workspaceId: installation.workspaceId,
+      githubAccount: installation.githubAccount,
+      githubId: installation.githubId,
+      githubUrl: `https://github.com/organizations/${installation.githubAccount}/settings/installations/${installation.githubId}`,
+      createdAt: installation.createdAt.toISOString(),
+      updatedAt: installation.updatedAt.toISOString(),
+      createdBy: installation.createdBy,
+      updatedBy: installation.updatedBy,
+    }
+  }
+
   private static formatDestinationItem(
     destination: Destination,
   ): Components.Schemas.DestinationItem {
@@ -307,6 +328,7 @@ export class PrivateApiController {
       revisionId: destination.revisionId,
       name: destination.name,
       type: destination.type,
+      syncFrequency: destination.syncFrequency,
       active: destination.active,
       lastSyncError: destination.lastSyncError,
       lastSyncAt: destination.lastSyncAt
@@ -335,6 +357,7 @@ export class PrivateApiController {
       revisionId: destination.revisionId,
       name: destination.name,
       type: destination.type,
+      syncFrequency: destination.syncFrequency,
       active: destination.active,
       configCDN: destination.configCDN
         ? {
@@ -397,9 +420,13 @@ export class PrivateApiController {
     const cdnConfig = this.configService.get('cdn', {
       infer: true,
     })
+    const workerConfig = this.configService.get('worker', {
+      infer: true,
+    })
     const googleOAuthConfig = this.configService.get('googleOAuth', {
       infer: true,
     })
+    const githubAppConfig = this.configService.get('githubApp', { infer: true })
     const feedbacksWebhookUrl = this.configService.get(
       'slack.feedbacksWebhookUrl',
       {
@@ -417,7 +444,9 @@ export class PrivateApiController {
       distribution: appConfig.distribution,
       settings: {
         workspaceInviteOnly,
+        workerAvailable: workerConfig.available,
         cdnAvailable: cdnConfig.available,
+        githubAppAvailable: githubAppConfig.available,
         googleOAuthAvailable: googleOAuthConfig.available,
         feedbacksAvailable: !!feedbacksWebhookUrl,
       },
@@ -735,6 +764,46 @@ export class PrivateApiController {
     })
 
     return {}
+  }
+
+  @Public()
+  @Get('/GetGithubAppInstallationLink')
+  async getGithubAppInstallationLink(): Promise<Paths.GetGithubAppInstallationLink.Responses.$200> {
+    const url = this.githubAppInstallationService.getInstallationLink()
+
+    return {
+      url,
+    }
+  }
+
+  @Post('/InstallGithubApp')
+  async installGithubApp(
+    @AuthenticatedRequester() requester: Requester,
+    @Body() { installationId, workspaceId }: InstallGithubAppDto,
+  ): Promise<Paths.InstallGithubApp.Responses.$201> {
+    await this.githubAppInstallationService.createInstallation({
+      installationId,
+      workspaceId,
+      requester,
+    })
+
+    return {}
+  }
+
+  @Get('/ListGithubInstallations')
+  async listGithubInstallations(
+    @AuthenticatedRequester() requester: Requester,
+    @RequiredQuery('workspaceId') workspaceId: string,
+  ): Promise<Paths.ListGithubInstallations.Responses.$200> {
+    const installations =
+      await this.githubAppInstallationService.listInstallations({
+        requester,
+        workspaceId,
+      })
+
+    return {
+      items: installations.map(PrivateApiController.formatGithubInstallation),
+    }
   }
 
   @Post('/CreateProject')
@@ -1125,6 +1194,7 @@ export class PrivateApiController {
       name,
       revisionId,
       fileFormat,
+      syncFrequency,
       includeEmptyTranslations,
     }: CreateCDNDestinationDto,
   ): Promise<Paths.CreateCDNDestination.Responses.$201> {
@@ -1132,11 +1202,82 @@ export class PrivateApiController {
       name,
       revisionId,
       fileFormat,
+      syncFrequency,
       includeEmptyTranslations,
       requester,
     })
 
     return PrivateApiController.formatDestination(destination)
+  }
+
+  @Post('/CreateGithubDestination')
+  async createGithubDestination(
+    @AuthenticatedRequester() requester: Requester,
+    @Body()
+    {
+      name,
+      revisionId,
+      fileFormat,
+      includeEmptyTranslations,
+      objectsPrefix,
+      installationId,
+      syncFrequency,
+      repositoryOwner,
+      repositoryName,
+      baseBranchName,
+    }: CreateGithubDestinationDto,
+  ): Promise<Paths.CreateCDNDestination.Responses.$201> {
+    const destination = await this.destinationService.createGithubDestination({
+      name,
+      revisionId,
+      fileFormat,
+      includeEmptyTranslations,
+      objectsPrefix,
+      installationId,
+      syncFrequency,
+      repositoryOwner,
+      repositoryName,
+      baseBranchName,
+      requester,
+    })
+
+    return PrivateApiController.formatDestination(destination)
+  }
+
+  @Get('/GetInstallationRepositories')
+  async getInstallationRepositories(
+    @AuthenticatedRequester() requester: Requester,
+    @RequiredQuery('installationId') installationId: string,
+    @Query('afterCursor') afterCursor?: string,
+  ): Promise<Paths.GetInstallationRepositories.Responses.$200> {
+    const items =
+      await this.githubAppInstallationService.listInstallationRepositories({
+        id: installationId,
+        requester,
+        afterCursor,
+      })
+    return { items }
+  }
+
+  @Get('/GetInstallationRepositoryBranches')
+  async getInstallationRepositoryBranches(
+    @AuthenticatedRequester() requester: Requester,
+    @RequiredQuery('installationId') installationId: string,
+    @RequiredQuery('repositoryNameWithOwner') repositoryNameWithOwner: string,
+    @Query('afterCursor') afterCursor?: string,
+    @Query('query') query?: string,
+  ): Promise<Paths.GetInstallationRepositoryBranches.Responses.$200> {
+    const items =
+      await this.githubAppInstallationService.listInstallationRepositoryBranches(
+        {
+          id: installationId,
+          repositoryNameWithOwner,
+          requester,
+          query,
+          afterCursor,
+        },
+      )
+    return { items }
   }
 
   @Post('/CreateAWSS3Destination')
@@ -1150,6 +1291,7 @@ export class PrivateApiController {
       includeEmptyTranslations,
       objectsPrefix,
       awsRegion,
+      syncFrequency,
       awsAccessKeyId,
       awsBucketId,
       awsSecretAccessKey,
@@ -1162,6 +1304,7 @@ export class PrivateApiController {
       includeEmptyTranslations,
       objectsPrefix,
       awsAccessKeyId,
+      syncFrequency,
       awsRegion,
       awsBucketId,
       awsSecretAccessKey,
@@ -1181,6 +1324,7 @@ export class PrivateApiController {
       fileFormat,
       includeEmptyTranslations,
       objectsPrefix,
+      syncFrequency,
       googleCloudBucketId,
       googleCloudServiceAccountKey,
       googleCloudProjectId,
@@ -1193,6 +1337,7 @@ export class PrivateApiController {
         fileFormat,
         includeEmptyTranslations,
         objectsPrefix,
+        syncFrequency,
         googleCloudBucketId,
         googleCloudServiceAccountKey,
         googleCloudProjectId,

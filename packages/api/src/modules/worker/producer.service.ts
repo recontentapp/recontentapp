@@ -1,35 +1,23 @@
 import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs'
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { Config } from './config'
-
-interface BaseMessage {
-  workspaceId: string
-}
-
-export interface PhraseUsageMessage extends BaseMessage {
-  type: 'phrase-usage'
-  workspaceId: string
-}
-
-export interface AutotranslationUsageMessage extends BaseMessage {
-  type: 'autotranslation-usage'
-  workspaceId: string
-}
-
-export type Message = PhraseUsageMessage | AutotranslationUsageMessage
+import { Message } from './types'
+import { Config } from '../../utils/config'
 
 @Injectable()
-export class SQSService {
+export class ProducerService {
   sqsClient: SQSClient
   queueUrl: string | null
 
   constructor(private readonly configService: ConfigService<Config, true>) {
     this.sqsClient = new SQSClient()
-    this.queueUrl =
-      this.configService.get('worker.sqsQueueUrl', {
-        infer: true,
-      }) ?? null
+    const workerConfig = this.configService.get('worker', {
+      infer: true,
+    })
+
+    if (workerConfig.available) {
+      this.queueUrl = workerConfig.sqsQueueUrl
+    }
   }
 
   getClient() {

@@ -17,8 +17,10 @@ const systemContext = createContext<System>({
   settings: {
     workspaceInviteOnly: false,
     cdnAvailable: false,
+    githubAppAvailable: false,
     googleOAuthAvailable: false,
     feedbacksAvailable: false,
+    workerAvailable: false,
   },
 })
 
@@ -29,8 +31,10 @@ export const SystemProvider: FC<{ children: ReactNode }> = ({ children }) => {
     settings: {
       workspaceInviteOnly: false,
       cdnAvailable: false,
+      githubAppAvailable: false,
       googleOAuthAvailable: false,
       feedbacksAvailable: false,
+      workerAvailable: false,
     },
   })
 

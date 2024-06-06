@@ -28,7 +28,10 @@ import {
 } from '../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../hooks/workspace'
 import routes from '../../../routing'
-import { destinationTypeLabels } from '../../../utils/destinations'
+import {
+  destinationSyncFrequencyLabels,
+  destinationTypeLabels,
+} from '../../../utils/destinations'
 import { fileFormatLabels } from '../../../utils/files'
 import { useQueryClient } from '@tanstack/react-query'
 import { styled } from '../../../theme'
@@ -188,8 +191,8 @@ export const Destination: FC = () => {
         subtitle={destinationTypeLabels[destination.type]}
         title={destination.name}
       >
-        <Stack direction="column" spacing="$space600">
-          <Stack direction="column" spacing="$space200">
+        <Stack width="100%" direction="column" spacing="$space600">
+          <Stack width="100%" direction="column" spacing="$space200">
             {destination.lastSyncError && (
               <Banner
                 variation="warning"
@@ -203,12 +206,17 @@ export const Destination: FC = () => {
                 }
               />
             )}
-            <Box width="100%" maxWidth={400}>
+            <Box width="100%" maxWidth={500}>
               <Metadata
                 metadata={[
                   {
                     label: 'Type',
                     value: destinationTypeLabels[destination.type],
+                  },
+                  {
+                    label: 'Sync frequency',
+                    value:
+                      destinationSyncFrequencyLabels[destination.syncFrequency],
                   },
                   {
                     label: 'Last synced',

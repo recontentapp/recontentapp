@@ -25,11 +25,18 @@ import {
   getListDestinationsQueryKey,
   useCreateAWSS3Destination,
   useCreateCDNDestination,
+  useCreateGithubDestination,
   useCreateGoogleCloudStorageDestination,
+  useGetInstallationRepositories,
+  useGetInstallationRepositoryBranches,
+  useListGithubInstallations,
 } from '../../../../generated/reactQuery'
 import { fileFormatLabels } from '../../../../utils/files'
 import { useQueryClient } from '@tanstack/react-query'
-import { destinationTypeLabels } from '../../../../utils/destinations'
+import {
+  destinationSyncFrequencyLabels,
+  destinationTypeLabels,
+} from '../../../../utils/destinations'
 import { useSystem } from '../../../../hooks/system'
 import { styled } from '../../../../theme'
 
@@ -47,6 +54,7 @@ interface State {
   name: string
   revisionId: string
   type: Components.Schemas.DestinationType
+  syncFrequency: Components.Schemas.DestinationSyncFrequency
   fileFormat: Components.Schemas.FileFormat
   includeEmptyTranslations: boolean
   ObjectsPrefix: string
@@ -57,6 +65,9 @@ interface State {
   awsBucketId: string
   awsAccessKeyId: string
   awsSecretAccessKey: string
+  githubInstallationId: string
+  githubRepositoryId: string
+  githubBaseBranchName: string
 }
 
 const Permission = styled('span', {
@@ -90,16 +101,34 @@ const isValid = (state: State): boolean => {
         state.googleCloudStorageProjectId.length > 0 &&
         state.googleCloudStorageServiceAccountKey.length > 0
       )
+    case 'github':
+      return (
+        state.name.length > 0 &&
+        !!state.revisionId &&
+        state.githubInstallationId.length > 0 &&
+        state.githubRepositoryId.length > 0 &&
+        state.githubBaseBranchName.length > 0
+      )
   }
 }
 
 const Content: FC<ContentProps> = ({ project, close }) => {
   const queryClient = useQueryClient()
   const {
-    settings: { cdnAvailable },
+    settings: { cdnAvailable, githubAppAvailable, workerAvailable },
   } = useSystem()
   const { mutateAsync: createCDN, isPending: isCreatingCDN } =
     useCreateCDNDestination({
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: getListDestinationsQueryKey({
+            queryParams: { projectId: project.id },
+          }),
+        })
+      },
+    })
+  const { mutateAsync: createGithub, isPending: isCreatingGithub } =
+    useCreateGithubDestination({
       onSuccess: () => {
         queryClient.invalidateQueries({
           queryKey: getListDestinationsQueryKey({
@@ -133,6 +162,7 @@ const Content: FC<ContentProps> = ({ project, close }) => {
   const [state, setState] = useState<State>({
     name: '',
     type: cdnAvailable ? 'cdn' : 'aws_s3',
+    syncFrequency: 'manually',
     fileFormat: 'json',
     revisionId: project.masterRevisionId,
     includeEmptyTranslations: false,
@@ -144,10 +174,40 @@ const Content: FC<ContentProps> = ({ project, close }) => {
     awsBucketId: '',
     awsAccessKeyId: '',
     awsSecretAccessKey: '',
+    githubInstallationId: '',
+    githubRepositoryId: '',
+    githubBaseBranchName: '',
   })
 
+  const { data: githubInstallations } = useListGithubInstallations(
+    { queryParams: { workspaceId: project.workspaceId } },
+    { enabled: githubAppAvailable },
+  )
+
+  const { data: githubRepositories } = useGetInstallationRepositories(
+    { queryParams: { installationId: state.githubInstallationId } },
+    { enabled: state.githubInstallationId.length > 0 },
+  )
+
+  const repositoryNameWithOwner =
+    githubRepositories?.items.find(i => i.cursor === state.githubRepositoryId)
+      ?.name ?? null
+
+  const { data: githubBranches } = useGetInstallationRepositoryBranches(
+    {
+      queryParams: {
+        installationId: state.githubInstallationId,
+        repositoryNameWithOwner: String(repositoryNameWithOwner),
+      },
+    },
+    { enabled: !!repositoryNameWithOwner },
+  )
+
   const isCreating =
-    isCreatingCDN || isCreatingGoogleCloudStorage || isCreatingAWSS3
+    isCreatingCDN ||
+    isCreatingGoogleCloudStorage ||
+    isCreatingAWSS3 ||
+    isCreatingGithub
 
   const onSubmit = () => {
     if (isCreating) {
@@ -155,9 +215,10 @@ const Content: FC<ContentProps> = ({ project, close }) => {
     }
 
     switch (state.type) {
-      case 'cdn':
+      case 'cdn': {
         createCDN({
           body: {
+            syncFrequency: state.syncFrequency,
             revisionId: state.revisionId!,
             fileFormat: state.fileFormat,
             includeEmptyTranslations: state.includeEmptyTranslations,
@@ -176,9 +237,11 @@ const Content: FC<ContentProps> = ({ project, close }) => {
             })
           })
         break
-      case 'aws_s3':
+      }
+      case 'aws_s3': {
         createAWSS3({
           body: {
+            syncFrequency: state.syncFrequency,
             revisionId: state.revisionId!,
             fileFormat: state.fileFormat,
             includeEmptyTranslations: state.includeEmptyTranslations,
@@ -203,9 +266,11 @@ const Content: FC<ContentProps> = ({ project, close }) => {
             })
           })
         break
-      case 'google_cloud_storage':
+      }
+      case 'google_cloud_storage': {
         createGoogleCloudStorage({
           body: {
+            syncFrequency: state.syncFrequency,
             revisionId: state.revisionId!,
             fileFormat: state.fileFormat,
             includeEmptyTranslations: state.includeEmptyTranslations,
@@ -230,6 +295,38 @@ const Content: FC<ContentProps> = ({ project, close }) => {
             })
           })
         break
+      }
+      case 'github': {
+        const [repositoryOwner, repositoryName] =
+          repositoryNameWithOwner?.split('/') ?? ['', '']
+        createGithub({
+          body: {
+            syncFrequency: state.syncFrequency,
+            revisionId: state.revisionId!,
+            fileFormat: state.fileFormat,
+            includeEmptyTranslations: state.includeEmptyTranslations,
+            name: state.name,
+            objectsPrefix:
+              state.ObjectsPrefix.length > 0 ? state.ObjectsPrefix : undefined,
+            repositoryOwner,
+            repositoryName,
+            baseBranchName: state.githubBaseBranchName,
+            installationId: state.githubInstallationId,
+          },
+        })
+          .then(() => {
+            close()
+            toast('success', {
+              title: 'Destination created',
+            })
+          })
+          .catch(() => {
+            toast('error', {
+              title: 'Could not create destination',
+            })
+          })
+        break
+      }
     }
   }
 
@@ -244,9 +341,31 @@ const Content: FC<ContentProps> = ({ project, close }) => {
           return cdnAvailable
         }
 
+        if (item.value === 'github') {
+          return githubAppAvailable
+        }
+
         return true
       })
-  }, [cdnAvailable])
+  }, [cdnAvailable, githubAppAvailable])
+
+  const syncFrequencyOptions = useMemo(() => {
+    if (workerAvailable) {
+      return Object.entries(destinationSyncFrequencyLabels).map(
+        ([value, label]) => ({
+          label,
+          value,
+        }),
+      )
+    }
+
+    return [
+      {
+        label: 'Manually',
+        value: 'manually',
+      },
+    ]
+  }, [workerAvailable])
 
   const isStateValid = isValid(state)
 
@@ -257,12 +376,12 @@ const Content: FC<ContentProps> = ({ project, close }) => {
       title="Create destination"
       primaryAction={{
         label: 'Save destination',
-        isLoading: isCreatingCDN,
+        isLoading: isCreating,
         onAction: onSubmit,
         isDisabled: !isStateValid,
       }}
     >
-      <Stack direction="column" spacing="$space200" paddingBottom="$space300">
+      <Stack direction="column" spacing="$space100" paddingBottom="$space300">
         {state.type === 'cdn' && (
           <Banner
             variation="info"
@@ -341,6 +460,25 @@ const Content: FC<ContentProps> = ({ project, close }) => {
           }}
         />
 
+        {syncFrequencyOptions.length > 1 && (
+          <SelectField
+            label="Sync frequency"
+            options={syncFrequencyOptions}
+            value={state.syncFrequency}
+            onChange={option => {
+              if (!option) {
+                return
+              }
+
+              setState(state => ({
+                ...state,
+                syncFrequency:
+                  option.value as Components.Schemas.DestinationSyncFrequency,
+              }))
+            }}
+          />
+        )}
+
         <TextField
           autoFocus
           label="Name"
@@ -354,7 +492,7 @@ const Content: FC<ContentProps> = ({ project, close }) => {
           }
         />
 
-        <Stack direction="column" spacing="$space80">
+        <Stack direction="column" spacing="$space100">
           <SelectField
             label="File format"
             options={Object.entries(fileFormatLabels).map(([value, label]) => ({
@@ -412,7 +550,7 @@ const Content: FC<ContentProps> = ({ project, close }) => {
               />
 
               <TextField
-                label="GCP Objects prefix"
+                label="Objects prefix"
                 value={state.ObjectsPrefix}
                 placeholder="translations/"
                 onChange={ObjectsPrefix =>
@@ -503,6 +641,80 @@ const Content: FC<ContentProps> = ({ project, close }) => {
                   }))
                 }
                 info="Encrypted in our database, only used when syncing your destination"
+              />
+            </>
+          )}
+
+          {state.type === 'github' && (
+            <>
+              <SelectField
+                label="Organization"
+                options={(githubInstallations?.items ?? []).map(item => ({
+                  label: item.githubAccount,
+                  value: item.id,
+                }))}
+                value={state.githubInstallationId}
+                onChange={option => {
+                  if (!option) {
+                    return
+                  }
+
+                  setState(state => ({
+                    ...state,
+                    githubInstallationId: option.value,
+                  }))
+                }}
+              />
+
+              <SelectField
+                label="Repository"
+                options={(githubRepositories?.items ?? []).map(item => ({
+                  label: item.name,
+                  value: item.cursor,
+                }))}
+                value={state.githubRepositoryId}
+                onChange={option => {
+                  if (!option) {
+                    return
+                  }
+
+                  setState(state => ({
+                    ...state,
+                    githubRepositoryId: option.value,
+                  }))
+                }}
+              />
+
+              <SelectField
+                label="Base branch name"
+                options={(githubBranches?.items ?? []).map(item => ({
+                  label: item.name,
+                  value: item.name,
+                }))}
+                value={state.githubBaseBranchName}
+                onChange={option => {
+                  if (!option) {
+                    return
+                  }
+
+                  setState(state => ({
+                    ...state,
+                    githubBaseBranchName: option.value,
+                  }))
+                }}
+              />
+
+              <TextField
+                label="Objects prefix"
+                value={state.ObjectsPrefix}
+                placeholder="translations/"
+                onChange={ObjectsPrefix =>
+                  setState(state => ({
+                    ...state,
+                    ObjectsPrefix,
+                  }))
+                }
+                info="When empty, generated files will be stored at the repository's root."
               />
             </>
           )}

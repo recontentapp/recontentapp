@@ -28,6 +28,7 @@ const iconMap: Record<Components.Schemas.DestinationType, IconName> = {
   google_cloud_storage: 'cloud_upload',
   aws_s3: 'cloud_upload',
   cdn: 'cloud_upload',
+  github: 'cloud_upload',
 }
 
 export const DestinationBadge: FC<DestinationBadgeProps> = ({ type }) => {

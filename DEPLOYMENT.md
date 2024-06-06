@@ -48,6 +48,7 @@ Here's the full list of environment variables that need to be passed to the appl
 | `DATABASE_LOG_QUERIES`            | Log SQL queries                                          | `false`  |
 | `JWT_SECRET`                      | [JWT](https://jwt.io/) for authentication                | `true`   |
 | `ENCRYPTION_KEY`                  | Encrypt/decrypt credentials stored in database           | `true`   |
+| `SQS_QUEUE_URL`                   | AWS SQS queue to use for jobs                            | `false`  |
 | `GOOGLE_OAUTH_CLIENT_ID`          | Google OAuth2 application config for Google sign-in      | `false`  |
 | `GOOGLE_OAUTH_CLIENT_SECRET`      | Google OAuth2 application config for Google sign-in      | `false`  |
 | `GOOGLE_OAUTH_REDIRECT_URL`       | Google OAuth2 application config for Google sign-in      | `false`  |
@@ -102,6 +103,12 @@ To set it up, follow the next steps:
 ### Auto translation with AWS Translate or OpenAI
 
 Recontent.app supports auto-translating phrases once a translation is available in at least one language for a given phrase. Auto translation can either be powered by [AWS Translate](https://aws.amazon.com/translate/) or [OpenAI](https://platform.openai.com/).
+
+### Worker with AWS SQS queue
+
+Recontent.app sometimes needs to perform tasks (eg. daily destinations sync) on a regular basis (eg. CRON jobs) which do not fit the request/response model. To ensure these tasks can be performed at scale, an AWS SQS queue is used for batch processing.
+
+You can set up this worker by using the `SQS_QUEUE_URL` environment variable.
 
 #### Using AWS Translate
 

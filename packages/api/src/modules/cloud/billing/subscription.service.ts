@@ -5,8 +5,8 @@ import { Config } from 'src/utils/config'
 import { PrismaService } from 'src/utils/prisma.service'
 import Stripe from 'stripe'
 import { PayingPlan, payingPlans } from './plan'
-import { SQSService } from 'src/utils/sqs.service'
 import { Requester } from 'src/modules/auth/requester.object'
+import { ProducerService } from 'src/modules/worker/producer.service'
 
 interface GetActiveSubscriptionParams {
   workspaceId: string
@@ -104,7 +104,7 @@ export class SubscriptionService {
   constructor(
     private readonly configService: ConfigService<Config, true>,
     private readonly prismaService: PrismaService,
-    private readonly sqsService: SQSService,
+    private readonly producerService: ProducerService,
   ) {
     const distribution = this.configService.get('app.distribution', {
       infer: true,
@@ -349,7 +349,7 @@ export class SubscriptionService {
       subscription.metadata,
     )
 
-    await this.sqsService.sendMessage({
+    await this.producerService.sendMessage({
       type: 'phrase-usage',
       workspaceId: metadata.workspaceId,
     })

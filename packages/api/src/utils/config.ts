@@ -100,7 +100,8 @@ const getConfig = () => {
       openAIKey: process.env.OPENAI_API_KEY,
     },
     worker: {
-      sqsQueueUrl: process.env.SQS_QUEUE_URL,
+      available: !!process.env.SQS_QUEUE_URL,
+      sqsQueueUrl: String(process.env.SQS_QUEUE_URL),
     },
     billing: {
       stripeKey: process.env.STRIPE_API_KEY,
@@ -112,6 +113,20 @@ const getConfig = () => {
     slack: {
       notificationsWebhookUrl: process.env.SLACK_NOTIFICATIONS_WEBHOOK_URL,
       feedbacksWebhookUrl: process.env.SLACK_FEEDBACKS_WEBHOOK_URL,
+    },
+    githubApp: {
+      available:
+        !!process.env.GITHUB_APP_ID &&
+        !!process.env.GITHUB_APP_PRIVATE_KEY &&
+        !!process.env.GITHUB_APP_CLIENT_ID &&
+        !!process.env.GITHUB_APP_CLIENT_SECRET &&
+        !!process.env.GITHUB_APP_WEBHOOK_SECRET,
+      appId: Number(process.env.GITHUB_APP_ID),
+      appName: String(process.env.GITHUB_APP_NAME),
+      privateKey: String(process.env.GITHUB_APP_PRIVATE_KEY),
+      clientId: String(process.env.GITHUB_APP_CLIENT_ID),
+      clientSecret: String(process.env.GITHUB_APP_CLIENT_SECRET),
+      webhookSecret: String(process.env.GITHUB_APP_WEBHOOK_SECRET),
     },
   }
 }

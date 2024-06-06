@@ -7,10 +7,36 @@ import {
   Validate,
 } from 'class-validator'
 import { Components } from 'src/generated/typeDefinitions'
-import { FileFormatValidator } from './domain.dto'
+import {
+  DestinationSyncFrequencyValidator,
+  FileFormatValidator,
+} from './domain.dto'
 import { ID_LENGTH, TEXT_LENGTH } from '../constants'
 
 export class CreateCDNDestinationDto {
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
+  revisionId: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(TEXT_LENGTH)
+  name: string
+
+  @Validate(DestinationSyncFrequencyValidator)
+  @IsNotEmpty()
+  syncFrequency: Components.Schemas.DestinationSyncFrequency
+
+  @Validate(FileFormatValidator)
+  @IsNotEmpty()
+  fileFormat: Components.Schemas.FileFormat
+
+  @IsBoolean()
+  includeEmptyTranslations: boolean
+}
+
+export class CreateGithubDestinationDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(ID_LENGTH)
@@ -25,8 +51,37 @@ export class CreateCDNDestinationDto {
   @IsNotEmpty()
   fileFormat: Components.Schemas.FileFormat
 
+  @Validate(DestinationSyncFrequencyValidator)
+  @IsNotEmpty()
+  syncFrequency: Components.Schemas.DestinationSyncFrequency
+
   @IsBoolean()
   includeEmptyTranslations: boolean
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(TEXT_LENGTH)
+  objectsPrefix?: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
+  installationId: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(TEXT_LENGTH)
+  repositoryName: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(TEXT_LENGTH)
+  repositoryOwner: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(TEXT_LENGTH)
+  baseBranchName: string
 }
 
 export class CreateAWSS3DestinationDto {
@@ -43,6 +98,10 @@ export class CreateAWSS3DestinationDto {
   @Validate(FileFormatValidator)
   @IsNotEmpty()
   fileFormat: Components.Schemas.FileFormat
+
+  @Validate(DestinationSyncFrequencyValidator)
+  @IsNotEmpty()
+  syncFrequency: Components.Schemas.DestinationSyncFrequency
 
   @IsBoolean()
   includeEmptyTranslations: boolean
@@ -87,6 +146,10 @@ export class CreateGoogleCloudStorageDestinationDto {
   @Validate(FileFormatValidator)
   @IsNotEmpty()
   fileFormat: Components.Schemas.FileFormat
+
+  @Validate(DestinationSyncFrequencyValidator)
+  @IsNotEmpty()
+  syncFrequency: Components.Schemas.DestinationSyncFrequency
 
   @IsBoolean()
   includeEmptyTranslations: boolean

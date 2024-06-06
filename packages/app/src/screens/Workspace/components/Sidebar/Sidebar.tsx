@@ -80,7 +80,7 @@ export const Sidebar: FC = () => {
   })
   const canManageLanguages = useHasAbility('languages:manage')
   const canManageMembers = useHasAbility('members:manage')
-  const canManageIntegrations = useHasAbility('api_keys:manage')
+  const canManageIntegrations = useHasAbility('integrations:manage')
   const feedbacksModalRef = useRef<FeedbacksModalRef>(null!)
 
   const canAdmin =

@@ -12,6 +12,7 @@ import {
   CurrentWorkspaceProvider,
   useLooseCurrentWorkspace,
 } from './hooks/workspace'
+import { CallbacksProvider } from './hooks/callbacks'
 import { SelectWorkspace } from './screens/SelectWorkspace'
 import { Workspace } from './screens/Workspace'
 import { normalize } from './theme'
@@ -74,10 +75,12 @@ export const App = () => {
     return (
       <APIClientProvider config={apiClientProviderConfig}>
         <QueryClientProvider client={queryClient}>
-          <CurrentWorkspaceProvider>
-            <UpsellModal ref={upsellModalRef} />
-            <AuthenticatedApp />
-          </CurrentWorkspaceProvider>
+          <CallbacksProvider>
+            <CurrentWorkspaceProvider>
+              <UpsellModal ref={upsellModalRef} />
+              <AuthenticatedApp />
+            </CurrentWorkspaceProvider>
+          </CallbacksProvider>
         </QueryClientProvider>
       </APIClientProvider>
     )

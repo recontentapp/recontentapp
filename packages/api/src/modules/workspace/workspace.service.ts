@@ -515,7 +515,7 @@ export class WorkspaceService {
     role,
   }: CreateWorkspaceServiceAccountParams) {
     const workspaceAccess = requester.getWorkspaceAccessOrThrow(workspaceId)
-    workspaceAccess.hasAbilityOrThrow('api_keys:manage')
+    workspaceAccess.hasAbilityOrThrow('integrations:manage')
 
     const apiKey = generateAPIKey()
 
@@ -556,7 +556,7 @@ export class WorkspaceService {
     const workspaceAccess = requester.getWorkspaceAccessOrThrow(
       account.workspaceId,
     )
-    workspaceAccess.hasAbilityOrThrow('api_keys:manage')
+    workspaceAccess.hasAbilityOrThrow('integrations:manage')
 
     await this.prismaService.workspaceAccount.update({
       where: {
