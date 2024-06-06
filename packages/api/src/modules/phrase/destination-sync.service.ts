@@ -6,7 +6,7 @@ import { Cron } from '@nestjs/schedule'
 import { ProducerService } from '../worker/producer.service'
 
 @Injectable()
-export class DestinationService {
+export class DestinationSyncService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly configService: ConfigService<Config, true>,
@@ -15,7 +15,7 @@ export class DestinationService {
 
   // `45 * * * * *` At 45 seconds of every minute
   // `0 4 * * *` Every day at 4:00 AM
-  @Cron('0 4 * * *')
+  @Cron('0 5 * * *')
   async everyDay() {
     const workerConfig = this.configService.get('worker', { infer: true })
     if (!workerConfig.available) {

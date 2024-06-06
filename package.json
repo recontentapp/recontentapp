@@ -26,7 +26,8 @@
     "start:app": "yarn workspace app start",
     "start:api": "yarn workspace api start",
     "start:figma-plugin": "yarn workspace figma-plugin start",
-    "localstack:start": "yarn localstack:s3",
+    "localstack:start": "yarn localstack:s3 && yarn localstack:sqs",
+    "localstack:sqs": "aws --profile recontent --endpoint-url=http://localhost:4566 sqs create-queue --queue-name worker --region us-east-1",
     "localstack:s3": "aws --profile recontent --endpoint-url=http://localhost:4566 s3api create-bucket --bucket recontent-public --region us-east-1 && aws --profile recontent --endpoint-url=http://localhost:4566 s3api put-bucket-policy --bucket recontent-public --policy file://localstack/s3-bucket-policy.json",
     "stripe:listen": "stripe listen --forward-to localhost:3000/webhooks/stripe --events customer.subscription.created,customer.subscription.trial_will_end,customer.subscription.updated,customer.subscription.deleted,invoice.upcoming"
   },
