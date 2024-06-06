@@ -381,7 +381,7 @@ const Content: FC<ContentProps> = ({ project, close }) => {
         isDisabled: !isStateValid,
       }}
     >
-      <Stack direction="column" spacing="$space200" paddingBottom="$space300">
+      <Stack direction="column" spacing="$space100" paddingBottom="$space300">
         {state.type === 'cdn' && (
           <Banner
             variation="info"
@@ -492,7 +492,7 @@ const Content: FC<ContentProps> = ({ project, close }) => {
           }
         />
 
-        <Stack direction="column" spacing="$space80">
+        <Stack direction="column" spacing="$space100">
           <SelectField
             label="File format"
             options={Object.entries(fileFormatLabels).map(([value, label]) => ({
@@ -648,7 +648,7 @@ const Content: FC<ContentProps> = ({ project, close }) => {
           {state.type === 'github' && (
             <>
               <SelectField
-                label="Installation ID"
+                label="Organization"
                 options={(githubInstallations?.items ?? []).map(item => ({
                   label: item.githubAccount,
                   value: item.id,

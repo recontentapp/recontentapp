@@ -786,6 +786,7 @@ export class DestinationService {
       await this.prismaService.destination.update({
         where: { id: destination.id },
         data: {
+          active: false,
           lastSyncAt: new Date(),
           lastSyncError: error,
           updatedBy: accountId,
@@ -797,6 +798,7 @@ export class DestinationService {
     await this.prismaService.destination.update({
       where: { id: destination.id },
       data: {
+        active: true,
         lastSyncError: null,
         lastSuccessfulSyncAt: new Date(),
         lastSyncAt: new Date(),
@@ -893,6 +895,7 @@ export class DestinationService {
       await this.prismaService.destination.update({
         where: { id: destination.id },
         data: {
+          active: false,
           lastSyncAt: new Date(),
           lastSyncError: error,
           updatedBy: accountId,
@@ -904,6 +907,7 @@ export class DestinationService {
     await this.prismaService.destination.update({
       where: { id: destination.id },
       data: {
+        active: true,
         lastSyncError: null,
         lastSuccessfulSyncAt: new Date(),
         lastSyncAt: new Date(),
@@ -977,6 +981,7 @@ export class DestinationService {
       await this.prismaService.destination.update({
         where: { id: destination.id },
         data: {
+          active: false,
           lastSyncAt: new Date(),
           lastSyncError: error,
           updatedBy: accountId,
@@ -988,6 +993,7 @@ export class DestinationService {
     await this.prismaService.destination.update({
       where: { id: destination.id },
       data: {
+        active: true,
         lastSyncError: null,
         lastSuccessfulSyncAt: new Date(),
         lastSyncAt: new Date(),
@@ -1077,6 +1083,7 @@ export class DestinationService {
       await this.prismaService.destination.update({
         where: { id: destination.id },
         data: {
+          active: false,
           lastSyncAt: new Date(),
           lastSyncError: error,
           updatedBy: accountId,
@@ -1093,6 +1100,7 @@ export class DestinationService {
       this.prismaService.destination.update({
         where: { id: destination.id },
         data: {
+          active: true,
           lastSuccessfulSyncAt: new Date(),
           lastSyncAt: new Date(),
           lastSyncError: null,
