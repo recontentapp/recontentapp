@@ -22,7 +22,7 @@ import {
 } from './screens/WorkspaceSettings'
 import { ImportFromFile } from './screens/ImportFromFile'
 import { Destination } from './screens/Destination'
-import { useCurrentWorkspace, useHasAbility } from '../../hooks/workspace'
+import { useCurrentWorkspace } from '../../hooks/workspace'
 import routes from '../../routing'
 import { useGetWorkspaceAbilities } from '../../generated/reactQuery'
 import { FullpageSpinner } from '../../components/FullpageSpinner'
@@ -30,6 +30,7 @@ import { BillingBanner } from './components/BillingBanner'
 import { styled } from '../../theme'
 import { CreateWorkspace } from '../Onboarding/screens/CreateWorkspace'
 import { JoinWorkspace } from '../Onboarding/screens/JoinWorkspace'
+import { ProtectedRouteElement } from '../../components/ProtectedRouteElement'
 
 const MainContainer = styled('div', {
   height: '100vh',
@@ -66,20 +67,6 @@ export const Workspace = () => {
     },
   )
 
-  const canManageMembers = useHasAbility('members:manage')
-  const canManageLanguages = useHasAbility('languages:manage')
-  const canManageIntegrations = useHasAbility('integrations:manage')
-  const canManageBilling = useHasAbility('billing:manage')
-  const canManageProjectDestinations = useHasAbility(
-    'projects:destinations:manage',
-  )
-
-  const canAccessSettings =
-    canManageMembers ||
-    canManageLanguages ||
-    canManageIntegrations ||
-    canManageBilling
-
   if (isLoadingAbilities) {
     return <FullpageSpinner variation="primary" />
   }
@@ -114,53 +101,76 @@ export const Workspace = () => {
                   element={<JoinWorkspace />}
                 />
 
-                {canAccessSettings && (
+                <Route
+                  path="/:workspaceKey/settings"
+                  element={<WorkspaceSettings />}
+                >
                   <Route
-                    path="/:workspaceKey/settings"
-                    element={<WorkspaceSettings />}
-                  >
-                    {canManageMembers && (
-                      <Route path="members" element={<WorkspaceMembers />} />
-                    )}
-                    {canManageLanguages && (
-                      <Route
-                        path="languages"
-                        element={<WorkspaceLanguages />}
+                    path="members"
+                    element={
+                      <ProtectedRouteElement
+                        component={WorkspaceMembers}
+                        ability="members:manage"
                       />
-                    )}
-                    {canManageIntegrations && (
-                      <Route
-                        path="integrations"
-                        element={<WorkspaceIntegrations />}
+                    }
+                  />
+
+                  <Route
+                    path="languages"
+                    element={
+                      <ProtectedRouteElement
+                        component={WorkspaceLanguages}
+                        ability="languages:manage"
                       />
-                    )}
-                    {canManageBilling && (
-                      <Route path="billing" element={<WorkspaceBilling />} />
-                    )}
-                    <Route
-                      index
-                      element={
-                        <Redirect
-                          to={routes.dashboard.url({
-                            pathParams: { workspaceKey },
-                          })}
-                        />
-                      }
-                    />
-                  </Route>
-                )}
+                    }
+                  />
+
+                  <Route
+                    path="integrations"
+                    element={
+                      <ProtectedRouteElement
+                        component={WorkspaceIntegrations}
+                        ability="integrations:manage"
+                      />
+                    }
+                  />
+
+                  <Route
+                    path="billing"
+                    element={
+                      <ProtectedRouteElement
+                        component={WorkspaceBilling}
+                        ability="billing:manage"
+                      />
+                    }
+                  />
+
+                  <Route
+                    index
+                    element={
+                      <Redirect
+                        to={routes.dashboard.url({
+                          pathParams: { workspaceKey },
+                        })}
+                      />
+                    }
+                  />
+                </Route>
 
                 <Route
                   path="/:workspaceKey/projects/:projectId/import/from-file"
                   element={<ImportFromFile />}
                 />
 
-                {canManageProjectDestinations && (
-                  <Route
-                    path="/:workspaceKey/projects/:projectId/destinations/:destinationId"
-                    element={<Destination />}
-                  />
-                )}
+                <Route
+                  path="/:workspaceKey/projects/:projectId/destinations/:destinationId"
+                  element={
+                    <ProtectedRouteElement
+                      component={Destination}
+                      ability="projects:destinations:manage"
+                    />
+                  }
+                />
 
                 <Route
                   path="/:workspaceKey/projects/:projectId"
@@ -183,6 +193,7 @@ export const Workspace = () => {
                     }
                   />
                 </Route>
+
                 <Route
                   path="*"
                   element={

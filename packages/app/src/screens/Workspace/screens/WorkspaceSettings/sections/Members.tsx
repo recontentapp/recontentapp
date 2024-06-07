@@ -20,14 +20,17 @@ export const Members: FC = () => {
         type: 'human',
       },
     })
-  const { data, isPending: areInvitationsLoading } =
-    useListWorkspaceInvitations({
-      queryParams: {
-        workspaceId,
-        page: 1,
-        pageSize: 50,
-      },
-    })
+  const {
+    data,
+    isPending: areInvitationsLoading,
+    refetch,
+  } = useListWorkspaceInvitations({
+    queryParams: {
+      workspaceId,
+      page: 1,
+      pageSize: 50,
+    },
+  })
 
   return (
     <Stack width="100%" direction="column" spacing="$space400">
@@ -75,7 +78,12 @@ export const Members: FC = () => {
         </Heading>
         <Table
           footerAdd={({ requestClose }) => (
-            <InvitationForm onClose={requestClose} />
+            <InvitationForm
+              onClose={() => {
+                requestClose()
+                refetch()
+              }}
+            />
           )}
           items={data?.items ?? []}
           isLoading={areInvitationsLoading}
