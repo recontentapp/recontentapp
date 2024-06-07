@@ -41,6 +41,11 @@ interface GetProjectParams {
   requester: Requester
 }
 
+interface GetProjectStatsParams {
+  projectId: string
+  requester: Requester
+}
+
 interface ListProjectsParams {
   workspaceId: string
   requester: Requester
@@ -118,6 +123,62 @@ export class ProjectService {
     workspaceAccess.hasAbilityOrThrow('workspace:read')
 
     return project
+  }
+
+  async getProjectStats({ projectId, requester }: GetProjectStatsParams) {
+    const project = await this.prismaService.project.findUniqueOrThrow({
+      where: {
+        id: projectId,
+      },
+      include: {
+        languages: true,
+        revisions: {
+          where: {
+            isMaster: true,
+          },
+        },
+      },
+    })
+
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      project.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('workspace:read')
+
+    const [phrasesCount, ...translationsCountByLanguage] = await Promise.all([
+      this.prismaService.phrase.count({
+        where: {
+          revisionId: project.revisions[0].id,
+        },
+      }),
+      ...project.languages.map(language =>
+        this.prismaService.phraseTranslation.count({
+          where: {
+            revisionId: project.revisions[0].id,
+            languageId: language.id,
+          },
+        }),
+      ),
+    ])
+
+    const translations = project.languages.map((language, index) => {
+      const translationsCount = translationsCountByLanguage[index]
+      const percentage =
+        phrasesCount > 0
+          ? ((translationsCount / phrasesCount) * 100).toFixed(2)
+          : '0'
+
+      return {
+        languageId: language.id,
+        phrasesCount,
+        translationsCount,
+        percentage: `${percentage}%`,
+      }
+    })
+
+    return {
+      translations,
+    }
   }
 
   async createProject({

@@ -684,6 +684,46 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Project'
+  /GetProjectStats:
+    get:
+      operationId: getProjectStats
+      parameters:
+        - name: projectId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  translations:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: false
+                      required:
+                        - languageId
+                        - phrasesCount
+                        - translationsCount
+                        - percentage
+                      properties:
+                        languageId:
+                          type: string
+                        phrasesCount:
+                          type: integer
+                        translationsCount:
+                          type: integer
+                        percentage:
+                          type: string
+                          example: 86%
+                additionalProperties: false
+                required:
+                  - translations
   /AddLanguagesToProject:
     post:
       operationId: addLanguagesToProject

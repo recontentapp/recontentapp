@@ -14,13 +14,13 @@ import {
   getListPhrasesQueryKey,
   useDeletePhrase,
   useGetProject,
-  useListWorkspaceLanguages,
 } from '../../../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
 import { useQueryClient } from '@tanstack/react-query'
 import routes from '../../../../../routing'
 import { useInfiniteListPhrases } from '../hooks'
 import { FigmaFilesList } from '../components/FigmaFilesList'
+import { ProjectStats } from '../components/ProjectStats'
 
 export const Phrases: FC = () => {
   const queryClient = useQueryClient()
@@ -87,9 +87,6 @@ export const Phrases: FC = () => {
       id: params.projectId!,
     },
   })
-  const { data: languages } = useListWorkspaceLanguages({
-    queryParams: { workspaceId },
-  })
   const { openCreatePhrase } = useModals()
   const { mutateAsync: deletePhrase, isPending: isDeletingPhrase } =
     useDeletePhrase({
@@ -100,7 +97,7 @@ export const Phrases: FC = () => {
       },
     })
 
-  if (!project || !languages) {
+  if (!project) {
     return <HorizontalSpinner />
   }
 
@@ -146,6 +143,8 @@ export const Phrases: FC = () => {
         )}
 
         <FigmaFilesList projectId={params.projectId!} />
+
+        <ProjectStats projectId={params.projectId!} />
 
         <Suspense fallback={null}>
           <PhrasesTable

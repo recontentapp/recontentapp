@@ -850,6 +850,19 @@ export class PrivateApiController {
     return PrivateApiController.formatProject(project)
   }
 
+  @Get('/GetProjectStats')
+  async getProjectStats(
+    @RequiredQuery('projectId') projectId: string,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.GetProjectStats.Responses.$200> {
+    const stats = await this.projectService.getProjectStats({
+      projectId,
+      requester,
+    })
+
+    return stats
+  }
+
   @Post('/AddLanguagesToProject')
   async addLanguagesToProject(
     @Body() { projectId, languageIds }: AddLanguagesToProjectDto,
