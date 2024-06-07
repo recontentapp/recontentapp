@@ -24,7 +24,7 @@ import { ProjectStats } from '../components/ProjectStats'
 
 export const Phrases: FC = () => {
   const queryClient = useQueryClient()
-  const { key: workspaceKey, id: workspaceId } = useCurrentWorkspace()
+  const { key: workspaceKey } = useCurrentWorkspace()
   const [editingPhraseIndex, setEditingPhraseIndex] = useState<
     number | undefined
   >(undefined)
