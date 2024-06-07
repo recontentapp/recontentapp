@@ -71,6 +71,32 @@ export class ProjectService {
     private eventEmitter: EventEmitter2,
   ) {}
 
+  private static defaultTags: Array<{
+    key: string
+    value: string
+    color: string
+    description: string
+  }> = [
+    {
+      key: 'status',
+      value: 'draft',
+      color: '#e4e669',
+      description: 'Improvements might be needed',
+    },
+    {
+      key: 'status',
+      value: 'review',
+      color: '#0075ca',
+      description: 'Needs to be verified',
+    },
+    {
+      key: 'status',
+      value: 'verified',
+      color: '#04aa58',
+      description: 'Ready to be used',
+    },
+  ]
+
   async getProject({ projectId, requester }: GetProjectParams) {
     const project = await this.prismaService.project.findUniqueOrThrow({
       where: {
@@ -153,6 +179,20 @@ export class ProjectService {
           projectId: project.id,
           workspaceId,
         },
+      })
+
+      await t.tag.createMany({
+        data: ProjectService.defaultTags.map(
+          ({ key, value, color, description }) => ({
+            createdBy: workspaceAccess.getAccountID(),
+            projectId: project.id,
+            workspaceId,
+            key,
+            value,
+            color,
+            description,
+          }),
+        ),
       })
 
       return t.project.findFirstOrThrow({

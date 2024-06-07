@@ -10,7 +10,7 @@ import {
 import { useReferenceableTags } from '../../../hooks/referenceable'
 import { useOutsideClick } from '../../../../../hooks/outsideClick'
 import { Popover } from '@reach/popover'
-import { QueryKey, useQueryClient } from '@tanstack/react-query'
+import { InfiniteData, QueryKey, useQueryClient } from '@tanstack/react-query'
 import { styled } from '../../../../../theme'
 
 interface TagsCellProps {
@@ -102,7 +102,7 @@ export const TagsCell: FC<TagsCellProps> = ({
   const { mutateAsync } = useApplyTagsToPhrase({
     onMutate: (variables: ApplyTagsToPhraseParameters) => {
       // Optimistically update the cache for tags
-      queryClient.setQueryData<Paths.ListPhrases.Responses.$200>(
+      queryClient.setQueryData<InfiniteData<Paths.ListPhrases.Responses.$200>>(
         phrasesQueryKey,
         data => {
           if (!data) {
@@ -111,17 +111,21 @@ export const TagsCell: FC<TagsCellProps> = ({
 
           return {
             ...data,
-            items: data.items.map(item => {
-              if (item.id === variables.body.phraseId) {
-                return {
-                  ...item,
-                  tags: variables.body.tagIds,
-                }
-              }
+            pages: data.pages.map(page => {
+              return {
+                ...page,
+                items: page.items.map(item => {
+                  if (item.id === variables.body.phraseId) {
+                    return {
+                      ...item,
+                      tags: variables.body.tagIds,
+                    }
+                  }
 
-              return item
+                  return item
+                }),
+              }
             }),
-            pagination: data.pagination,
           }
         },
       )

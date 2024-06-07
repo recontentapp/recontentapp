@@ -293,6 +293,13 @@ export class TagService {
           createdBy: workspaceAccess.getAccountID(),
         })),
       })
+
+      await t.phrase.update({
+        where: { id: phraseId },
+        data: {
+          updatedBy: workspaceAccess.getAccountID(),
+        },
+      })
     })
   }
 

@@ -8,6 +8,7 @@ import {
   ModalRef,
   Table,
   Tag,
+  Text,
   toast,
 } from 'design-system'
 import { formatRelative } from '../../../../../utils/dates'
@@ -96,12 +97,28 @@ const Content: FC<ContentProps> = ({
             {
               key: 'description',
               headerCell: 'Description',
-              bodyCell: item => item.description ?? '',
+              bodyCell: item => (
+                <Text
+                  size="$size80"
+                  color="$gray14"
+                  lineHeight="$lineHeight200"
+                >
+                  {item.description ?? ''}
+                </Text>
+              ),
             },
             {
               key: 'createdAt',
               headerCell: 'Created At',
-              bodyCell: item => formatRelative(new Date(item.createdAt)),
+              bodyCell: item => (
+                <Text
+                  size="$size80"
+                  color="$gray14"
+                  lineHeight="$lineHeight200"
+                >
+                  {formatRelative(new Date(item.createdAt))}
+                </Text>
+              ),
             },
             {
               headerCell: 'Actions',
