@@ -1,4 +1,5 @@
 import {
+  ArrayMaxSize,
   IsArray,
   IsBoolean,
   IsNotEmpty,
@@ -83,6 +84,7 @@ export class DeletePhraseDto {
 export class BatchDeletePhraseDto {
   @IsArray()
   @IsNotEmpty()
+  @ArrayMaxSize(50)
   ids: string[]
 }
 

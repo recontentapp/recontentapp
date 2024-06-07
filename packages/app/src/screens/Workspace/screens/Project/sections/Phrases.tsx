@@ -14,7 +14,7 @@ import { useCurrentWorkspace } from '../../../../../hooks/workspace'
 import routes from '../../../../../routing'
 import { useModals } from '../../../hooks/modals'
 import { FigmaFilesList } from '../components/FigmaFilesList'
-import { PhrasesTable } from '../components/PhrasesTable'
+import { PhrasesTable } from '../components/PhrasesTable/PhrasesTable'
 import { ProjectStats } from '../components/ProjectStats'
 import {
   UpdatePhraseModal,

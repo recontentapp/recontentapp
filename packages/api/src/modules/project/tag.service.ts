@@ -304,6 +304,10 @@ export class TagService {
   }
 
   async batchApplyTag({ tagIds, recordIds, requester }: BatchApplyTagParams) {
+    if (recordIds.length === 0 || recordIds.length > 50) {
+      throw new BadRequestException('Invalid number of items to tag')
+    }
+
     if (tagIds.length === 0) {
       const phrases = await this.prismaService.phrase.findMany({
         where: { id: { in: recordIds } },

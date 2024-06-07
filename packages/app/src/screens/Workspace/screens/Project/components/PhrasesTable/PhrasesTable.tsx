@@ -1,13 +1,9 @@
 import { FC, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { QueryKey, useQueryClient } from '@tanstack/react-query'
+import { QueryKey } from '@tanstack/react-query'
 import {
-  Box,
-  Button,
   ColumnConfig,
-  ConfirmationModal,
-  ConfirmationModalRef,
   DropdownButton,
   Filter,
   FilterRef,
@@ -17,27 +13,28 @@ import {
   Table,
   TableRef,
   Text,
-  toast,
 } from 'design-system'
 import {
-  useBatchDeletePhrase,
   useListProjectRevisions,
   useListProjectTags,
   useListWorkspaceLanguages,
-} from '../../../../../generated/reactQuery'
-import { Components } from '../../../../../generated/typeDefinitions'
-import { useDebouncedUpdate } from '../../../../../hooks/debouncedEffect'
-import { useFormatter } from '../../../../../hooks/formatter'
-import { useCurrentWorkspace } from '../../../../../hooks/workspace'
-import routes from '../../../../../routing'
-import { formatRelative } from '../../../../../utils/dates'
-import { useModals } from '../../../hooks/modals'
-import { useReferenceableAccounts } from '../../../hooks/referenceable'
-import { ApplyTagsModal, ApplyTagsModalRef } from './ApplyTagsModal'
-import { EditPhraseKeyModal, EditPhraseKeyModalRef } from './EditPhraseKeyModal'
-import { ListTagsModal, ListTagsModalRef } from './ListTagsModal'
-import { Search } from './Search'
-import { TagsCell } from './TagsCell'
+} from '../../../../../../generated/reactQuery'
+import { Components } from '../../../../../../generated/typeDefinitions'
+import { useDebouncedUpdate } from '../../../../../../hooks/debouncedEffect'
+import { useFormatter } from '../../../../../../hooks/formatter'
+import { useCurrentWorkspace } from '../../../../../../hooks/workspace'
+import routes from '../../../../../../routing'
+import { formatRelative } from '../../../../../../utils/dates'
+import { useModals } from '../../../../hooks/modals'
+import { useReferenceableAccounts } from '../../../../hooks/referenceable'
+import {
+  EditPhraseKeyModal,
+  EditPhraseKeyModalRef,
+} from '../EditPhraseKeyModal'
+import { ListTagsModal, ListTagsModalRef } from '../ListTagsModal'
+import { Search } from '../Search'
+import { TagsCell } from '../TagsCell'
+import { SelectionFooter } from './components/SelectionFooter'
 
 interface State {
   translated: string | undefined
@@ -86,18 +83,10 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
   const [selectedPhrases, setSelectedPhrases] = useState<
     Components.Schemas.PhraseItem[]
   >([])
-  const queryClient = useQueryClient()
   const { openCreateTag } = useModals()
   const tableRef = useRef<TableRef>(null!)
   const { getName } = useReferenceableAccounts()
   const { key: workspaceKey, id: workspaceId } = useCurrentWorkspace()
-  const { mutateAsync: batchDeletePhrases } = useBatchDeletePhrase({
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: phrasesQueryKey,
-      })
-    },
-  })
   const { data: languages = [] } = useListWorkspaceLanguages({
     queryParams: { workspaceId },
   })
@@ -108,9 +97,7 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
   })
   const filterRef = useRef<FilterRef>(null!)
   const editPhraseKeyModalRef = useRef<EditPhraseKeyModalRef>(null!)
-  const applyTagsModalRef = useRef<ApplyTagsModalRef>(null!)
   const listTagsModalRef = useRef<ListTagsModalRef>(null!)
-  const confirmationModalRef = useRef<ConfirmationModalRef>(null!)
   const [localKey, setLocalKey] = useState('')
   const { data: tagsData } = useListProjectTags({
     queryParams: { projectId: project.id },
@@ -118,30 +105,6 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
 
   const onRequestEditKey = (phrase: Components.Schemas.PhraseItem) => {
     editPhraseKeyModalRef.current.open({ phrase })
-  }
-
-  const onRequestBatchDeletePhrases = (ids: string[]) => {
-    confirmationModalRef.current.confirm().then(result => {
-      if (!result) {
-        return
-      }
-
-      batchDeletePhrases({
-        body: { ids },
-      })
-        .then(() => {
-          toast('success', {
-            title: 'Phrases deleted',
-          })
-          tableRef.current.resetSelection()
-        })
-        .catch(() => {
-          toast('error', {
-            title: 'Could not delete phrases',
-            description: 'Feel free to try later or contact us',
-          })
-        })
-    })
   }
 
   useEffect(() => {
@@ -283,24 +246,11 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
 
   return (
     <Stack direction="column" spacing="$space80">
-      <ConfirmationModal
-        ref={confirmationModalRef}
-        title="Are you sure about deleting these phrases"
-        description="Once deleted, phrases can not be recovered."
-        variation="danger"
-      />
       <ListTagsModal
         ref={listTagsModalRef}
         projectId={project.id}
         onRequestCreate={() => openCreateTag(project)}
         onTagDeleted={() => {}}
-      />
-      <ApplyTagsModal
-        ref={applyTagsModalRef}
-        projectId={project.id}
-        onApply={() => {
-          tableRef.current.resetSelection()
-        }}
       />
       <EditPhraseKeyModal ref={editPhraseKeyModalRef} />
 
@@ -467,48 +417,12 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
         columns={columns}
         tRef={tableRef}
         SelectionFooter={
-          <Box paddingY="$space60" paddingX="$space80">
-            <Stack
-              direction="row"
-              width="100%"
-              spacing="$space100"
-              alignItems="center"
-              justifyContent="space-between"
-            >
-              <Text size="$size80" color="$white" variation="bold">
-                {selectedPhrases.length} selected phrase(s)
-              </Text>
-
-              <Stack direction="row" spacing="$space60" alignItems="center">
-                <Button
-                  variation="primary"
-                  icon="local_offer"
-                  size="xsmall"
-                  isLoading={false}
-                  onAction={() =>
-                    applyTagsModalRef.current.open(
-                      selectedPhrases.map(phrase => phrase.id),
-                    )
-                  }
-                >
-                  Apply tags
-                </Button>
-                <Button
-                  variation="danger"
-                  icon="delete"
-                  size="xsmall"
-                  isLoading={false}
-                  onAction={() =>
-                    onRequestBatchDeletePhrases(
-                      selectedPhrases.map(phrase => phrase.id),
-                    )
-                  }
-                >
-                  Delete
-                </Button>
-              </Stack>
-            </Stack>
-          </Box>
+          <SelectionFooter
+            projectId={project.id}
+            phrasesQueryKey={phrasesQueryKey}
+            selectedPhrases={selectedPhrases}
+            onBatchSuccess={() => tableRef.current.resetSelection()}
+          />
         }
         onSelectionChange={setSelectedPhrases}
       />

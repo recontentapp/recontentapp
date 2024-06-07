@@ -441,6 +441,10 @@ export class PhraseService {
   }
 
   async batchDeletePhrases({ ids, requester }: BatchDeletePhrasesParams) {
+    if (ids.length === 0 || ids.length > 50) {
+      throw new BadRequestException('Invalid number of phrases to delete')
+    }
+
     const phrases = await this.prismaService.phrase.findMany({
       where: {
         id: {
