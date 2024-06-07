@@ -1,16 +1,16 @@
 import { BadRequestException, ForbiddenException } from '@nestjs/common'
 import {
-  WorkspaceAccount as PrismaWorkspaceAccount,
   Workspace as PrismaWorkspace,
+  WorkspaceAccount as PrismaWorkspaceAccount,
   WorkspaceBillingSettings as PrismaWorkspaceBillingSettings,
 } from '@prisma/client'
 import { Components } from 'src/generated/typeDefinitions'
+import getConfig, { Config } from 'src/utils/config'
 import {
   HumanRequestUser,
   ScopedHumanRequestUser,
   ServiceRequestUser,
 } from './types'
-import getConfig, { Config } from 'src/utils/config'
 
 export interface Requester {
   getDefaultWorkspaceID: () => string

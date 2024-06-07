@@ -1,11 +1,10 @@
 import { FC } from 'react'
 
+import { styled } from '../stitches'
 import { ColorValue } from '../theme'
+import { ButtonSize } from './Button'
 import { Icon, IconName } from './Icon'
 import { Stack } from './Stack'
-import { Text } from './Text'
-import { styled } from '../stitches'
-import { ButtonSize } from './Button'
 
 type MinimalButtonVariation = 'minimal' | 'primary' | 'danger'
 

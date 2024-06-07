@@ -11,10 +11,10 @@ import {
   TextField,
   toast,
 } from 'design-system'
+import { useAuth } from '../../../auth'
 import { useJoinWorkspace } from '../../../generated/reactQuery'
 import { useLooseCurrentWorkspace } from '../../../hooks/workspace'
 import routes from '../../../routing'
-import { useAuth } from '../../../auth'
 
 export const JoinWorkspace = () => {
   const { refetchUser } = useAuth()

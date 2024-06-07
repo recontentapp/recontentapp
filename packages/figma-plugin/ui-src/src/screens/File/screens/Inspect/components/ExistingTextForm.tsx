@@ -1,11 +1,11 @@
 import { Box, Button, ExternalLink, Stack, Text } from 'design-system'
-import { Text as IText } from '../../../../../../../shared-types'
-import { styled } from '../../../../../theme'
 import { diffChars } from 'diff'
+import { Text as IText } from '../../../../../../../shared-types'
 import { useBridge } from '../../../../../contexts/Bridge'
-import { useUpdateFigmaFileText } from '../../../../../generated/reactQuery'
-import { useFile } from '../../../hooks'
 import { HTTPRequestError } from '../../../../../generated/apiClient'
+import { useUpdateFigmaFileText } from '../../../../../generated/reactQuery'
+import { styled } from '../../../../../theme'
+import { useFile } from '../../../hooks'
 
 interface SingleTextFormProps {
   text: IText

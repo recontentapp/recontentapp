@@ -1,20 +1,20 @@
 import {
   BadRequestException,
-  Injectable,
   ForbiddenException,
+  Injectable,
 } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import { EventEmitter2 } from '@nestjs/event-emitter'
 import { WorkspaceAccountRole } from '@prisma/client'
 import { randomInt } from 'node:crypto'
-import { PrismaService } from 'src/utils/prisma.service'
-import { WorkspaceInvitationCreatedEvent } from './events/invitation-created.event'
-import { PaginationParams } from 'src/utils/pagination'
-import { generateAPIKey } from 'src/utils/security'
-import { LanguageLocale } from './locale'
-import { Requester } from '../auth/requester.object'
-import { ConfigService } from '@nestjs/config'
 import { Config } from 'src/utils/config'
+import { PaginationParams } from 'src/utils/pagination'
+import { PrismaService } from 'src/utils/prisma.service'
+import { generateAPIKey } from 'src/utils/security'
+import { Requester } from '../auth/requester.object'
+import { WorkspaceInvitationCreatedEvent } from './events/invitation-created.event'
 import { WorkspaceCreatedEvent } from './events/workspace-created.event'
+import { LanguageLocale } from './locale'
 
 interface CreateWorkspaceParams {
   key: string

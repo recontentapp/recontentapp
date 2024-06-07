@@ -1,11 +1,11 @@
 import {
-  Engine,
-  Program,
-  Node,
-  ExpressionStatement,
   Assign,
+  Engine,
+  ExpressionStatement,
+  Node,
   OffsetLookup,
   String as PHPString,
+  Program,
   Variable,
 } from 'php-parser'
 import { Dict, Parser } from '../../types'

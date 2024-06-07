@@ -1,8 +1,8 @@
 import { CSSProperties } from '@stitches/react'
 import { FC, ReactNode, useMemo } from 'react'
 
-import { ColorValue, SpaceValue } from '../theme'
 import { styled } from '../stitches'
+import { ColorValue, SpaceValue } from '../theme'
 
 type Value = SpaceValue | number | string | '0 auto'
 

@@ -13,8 +13,8 @@ import {
 } from 'design-system'
 import { useAuth, useCurrentUser } from '../../../auth'
 import { useUpdateCurrentUser } from '../../../generated/reactQuery'
-import routes from '../../../routing'
 import { useSystem } from '../../../hooks/system'
+import routes from '../../../routing'
 
 export const You: FC = () => {
   const {

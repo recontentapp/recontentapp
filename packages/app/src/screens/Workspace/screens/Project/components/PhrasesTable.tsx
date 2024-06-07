@@ -1,6 +1,7 @@
 import { FC, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { QueryKey, useQueryClient } from '@tanstack/react-query'
 import {
   Box,
   Button,
@@ -18,13 +19,6 @@ import {
   Text,
   toast,
 } from 'design-system'
-import { useDebouncedUpdate } from '../../../../../hooks/debouncedEffect'
-import { useFormatter } from '../../../../../hooks/formatter'
-import { useCurrentWorkspace } from '../../../../../hooks/workspace'
-import { formatRelative } from '../../../../../utils/dates'
-import { useReferenceableAccounts } from '../../../hooks/referenceable'
-import { EditPhraseKeyModal, EditPhraseKeyModalRef } from './EditPhraseKeyModal'
-import { Search } from './Search'
 import {
   useBatchDeletePhrase,
   useListProjectRevisions,
@@ -32,12 +26,18 @@ import {
   useListWorkspaceLanguages,
 } from '../../../../../generated/reactQuery'
 import { Components } from '../../../../../generated/typeDefinitions'
-import { QueryKey, useQueryClient } from '@tanstack/react-query'
+import { useDebouncedUpdate } from '../../../../../hooks/debouncedEffect'
+import { useFormatter } from '../../../../../hooks/formatter'
+import { useCurrentWorkspace } from '../../../../../hooks/workspace'
 import routes from '../../../../../routing'
-import { ListTagsModal, ListTagsModalRef } from './ListTagsModal'
+import { formatRelative } from '../../../../../utils/dates'
 import { useModals } from '../../../hooks/modals'
-import { TagsCell } from './TagsCell'
+import { useReferenceableAccounts } from '../../../hooks/referenceable'
 import { ApplyTagsModal, ApplyTagsModalRef } from './ApplyTagsModal'
+import { EditPhraseKeyModal, EditPhraseKeyModalRef } from './EditPhraseKeyModal'
+import { ListTagsModal, ListTagsModalRef } from './ListTagsModal'
+import { Search } from './Search'
+import { TagsCell } from './TagsCell'
 
 interface State {
   translated: string | undefined

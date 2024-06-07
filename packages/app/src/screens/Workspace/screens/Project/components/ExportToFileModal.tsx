@@ -9,13 +9,13 @@ import {
   Stack,
   toast,
 } from 'design-system'
-import { Components } from '../../../../../generated/typeDefinitions'
-import { fileFormatLabels } from '../../../../../utils/files'
 import {
   useGeneratePhrasesExportLink,
   useListProjectTags,
 } from '../../../../../generated/reactQuery'
+import { Components } from '../../../../../generated/typeDefinitions'
 import { styled } from '../../../../../theme'
+import { fileFormatLabels } from '../../../../../utils/files'
 
 interface OpenProps {
   project: Components.Schemas.Project

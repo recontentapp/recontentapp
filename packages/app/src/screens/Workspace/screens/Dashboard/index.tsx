@@ -2,16 +2,16 @@ import { FC } from 'react'
 
 import { FullpageSpinner } from '../../../../components/FullpageSpinner'
 import { Head } from '../../../../components/Head'
-import { useCurrentWorkspace, useHasAbility } from '../../../../hooks/workspace'
-import { Page } from '../../components/Page'
-import { ScreenWrapper } from '../../components/ScreenWrapper'
 import {
   useListProjects,
   useListWorkspaceLanguages,
 } from '../../../../generated/reactQuery'
-import { ProjectsList } from './components/ProjectsList'
-import { Onboarding } from './components/Onboarding'
+import { useCurrentWorkspace, useHasAbility } from '../../../../hooks/workspace'
 import routes from '../../../../routing'
+import { Page } from '../../components/Page'
+import { ScreenWrapper } from '../../components/ScreenWrapper'
+import { Onboarding } from './components/Onboarding'
+import { ProjectsList } from './components/ProjectsList'
 
 export const Dashboard: FC = () => {
   const {

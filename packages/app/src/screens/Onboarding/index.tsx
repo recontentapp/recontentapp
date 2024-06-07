@@ -1,12 +1,12 @@
 import { useEffect } from 'react'
 import { Route, Routes, useNavigate } from 'react-router-dom'
 
+import { useCurrentUser } from '../../auth'
+import routes from '../../routing'
 import { Redirect } from '../Redirect'
 import { CreateWorkspace } from './screens/CreateWorkspace'
 import { JoinWorkspace } from './screens/JoinWorkspace'
 import { You } from './screens/You'
-import { useCurrentUser } from '../../auth'
-import routes from '../../routing'
 
 export const Onboarding = () => {
   const { firstName, lastName } = useCurrentUser()

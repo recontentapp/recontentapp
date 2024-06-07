@@ -1,9 +1,9 @@
+import { toast } from 'design-system'
+import queryString from 'query-string'
 import { PropsWithChildren, useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import queryString from 'query-string'
-import { FullpageSpinner } from '../components/FullpageSpinner'
 import { useCurrentUser } from '../auth'
-import { toast } from 'design-system'
+import { FullpageSpinner } from '../components/FullpageSpinner'
 import { useInstallGithubApp } from '../generated/reactQuery'
 
 export const CallbacksProvider = ({ children }: PropsWithChildren) => {

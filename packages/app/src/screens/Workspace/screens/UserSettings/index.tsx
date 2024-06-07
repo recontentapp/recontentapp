@@ -1,11 +1,11 @@
 import { FC } from 'react'
 
-import { Head } from '../../../../components/Head'
 import { Stack } from 'design-system'
-import { Page } from '../../components/Page'
-import { ScreenWrapper } from '../../components/ScreenWrapper'
+import { Head } from '../../../../components/Head'
 import { useCurrentWorkspace } from '../../../../hooks/workspace'
 import routes from '../../../../routing'
+import { Page } from '../../components/Page'
+import { ScreenWrapper } from '../../components/ScreenWrapper'
 import { Global } from './components/Global'
 import { Workspace } from './components/Workspace'
 

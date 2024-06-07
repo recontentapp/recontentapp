@@ -1,6 +1,6 @@
+import { toast } from 'design-system'
 import { useRef, useState } from 'react'
 import { getAPIClient } from '../../generated/apiClient'
-import { toast } from 'design-system'
 
 export const useCodeSearchParams = () => {
   const searchParams = new URLSearchParams(window.location.search)

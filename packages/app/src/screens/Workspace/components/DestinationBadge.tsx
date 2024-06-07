@@ -1,8 +1,8 @@
-import { FC } from 'react'
 import { Icon, IconName } from 'design-system'
+import { FC } from 'react'
 import { Components } from '../../../generated/typeDefinitions'
-import { destinationTypeLabels } from '../../../utils/destinations'
 import { styled } from '../../../theme'
+import { destinationTypeLabels } from '../../../utils/destinations'
 
 const Container = styled('span', {
   display: 'flex',

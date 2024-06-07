@@ -1,19 +1,19 @@
 import {
+  ReactNode,
   createContext,
   useCallback,
-  useContext as useReactContext,
   useMemo,
+  useContext as useReactContext,
   useState,
-  ReactNode,
 } from 'react'
-import { useEmit, useOn } from '../io'
 import {
-  Text,
-  PluginInitialized,
-  UserConfig,
   FileConfig,
+  PluginInitialized,
+  Text,
   TextSelectionChanged,
+  UserConfig,
 } from '../../../shared-types'
+import { useEmit, useOn } from '../io'
 import { Emittable, Receivable } from '../types'
 
 export type Screen = 'Inspect' | 'Settings'

@@ -8,6 +8,7 @@ import {
   useState,
 } from 'react'
 
+import { useQueryClient } from '@tanstack/react-query'
 import {
   Banner,
   ExternalLink,
@@ -20,7 +21,6 @@ import {
   TextField,
   toast,
 } from 'design-system'
-import { Components } from '../../../../generated/typeDefinitions'
 import {
   getListDestinationsQueryKey,
   useCreateAWSS3Destination,
@@ -31,14 +31,14 @@ import {
   useGetInstallationRepositoryBranches,
   useListGithubInstallations,
 } from '../../../../generated/reactQuery'
-import { fileFormatLabels } from '../../../../utils/files'
-import { useQueryClient } from '@tanstack/react-query'
+import { Components } from '../../../../generated/typeDefinitions'
+import { useSystem } from '../../../../hooks/system'
+import { styled } from '../../../../theme'
 import {
   destinationSyncFrequencyLabels,
   destinationTypeLabels,
 } from '../../../../utils/destinations'
-import { useSystem } from '../../../../hooks/system'
-import { styled } from '../../../../theme'
+import { fileFormatLabels } from '../../../../utils/files'
 
 export interface CreateDestinationModalRef {
   open: (project: Components.Schemas.Project) => void

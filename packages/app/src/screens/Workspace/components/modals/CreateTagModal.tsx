@@ -7,6 +7,7 @@ import {
   useState,
 } from 'react'
 
+import { useQueryClient } from '@tanstack/react-query'
 import {
   Button,
   Modal,
@@ -18,15 +19,14 @@ import {
   TextField,
   toast,
 } from 'design-system'
-import { Components } from '../../../../generated/typeDefinitions'
 import {
   getGetReferenceableTagsQueryKey,
   getListProjectTagsQueryKey,
   useCreateProjectTag,
   useGetProject,
 } from '../../../../generated/reactQuery'
+import { Components } from '../../../../generated/typeDefinitions'
 import { getRandomHexColor } from '../../../../utils/colors'
-import { useQueryClient } from '@tanstack/react-query'
 
 export interface CreateTagModalRef {
   open: (project: Components.Schemas.Project) => void

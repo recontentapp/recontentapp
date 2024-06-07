@@ -1,6 +1,6 @@
 import { FC, useRef } from 'react'
 
-import { HorizontalSpinner } from '../../../../../components/HorizontalSpinner'
+import { useQueryClient } from '@tanstack/react-query'
 import {
   Banner,
   Box,
@@ -13,10 +13,7 @@ import {
   Stack,
   Table,
 } from 'design-system'
-import { formatRelative } from '../../../../../utils/dates'
-import { useReferenceableAccounts } from '../../../hooks/referenceable'
-import { AddAPIKeyForm } from '../components/AddAPIKeyForm'
-import { useCurrentWorkspace } from '../../../../../hooks/workspace'
+import { HorizontalSpinner } from '../../../../../components/HorizontalSpinner'
 import {
   getListWorkspaceAccountsQueryKey,
   useDeleteWorkspaceServiceAccount,
@@ -24,9 +21,12 @@ import {
   useListGithubInstallations,
   useListWorkspaceAccounts,
 } from '../../../../../generated/reactQuery'
-import { useQueryClient } from '@tanstack/react-query'
-import { GithubInstallationCard } from '../components/GithubInstallationCard'
 import { useSystem } from '../../../../../hooks/system'
+import { useCurrentWorkspace } from '../../../../../hooks/workspace'
+import { formatRelative } from '../../../../../utils/dates'
+import { useReferenceableAccounts } from '../../../hooks/referenceable'
+import { AddAPIKeyForm } from '../components/AddAPIKeyForm'
+import { GithubInstallationCard } from '../components/GithubInstallationCard'
 
 export const Integrations: FC = () => {
   const queryClient = useQueryClient()

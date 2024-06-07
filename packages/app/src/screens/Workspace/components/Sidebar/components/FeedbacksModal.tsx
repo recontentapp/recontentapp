@@ -1,9 +1,9 @@
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
 
 import { Box, Modal, ModalContent, ModalRef, Stack, toast } from 'design-system'
-import { styled } from '../../../../../theme'
 import { useSendFeedback } from '../../../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
+import { styled } from '../../../../../theme'
 
 export interface FeedbacksModalRef {
   open: () => void

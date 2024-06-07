@@ -1,8 +1,6 @@
 import { FC, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
-import { passwordConfig } from '../../../auth/config'
-import { Logo } from '../../../components/Logo'
 import {
   Box,
   Button,
@@ -15,11 +13,13 @@ import {
   TextField,
   toast,
 } from 'design-system'
+import { passwordConfig } from '../../../auth/config'
+import { Logo } from '../../../components/Logo'
 import { getAPIClient } from '../../../generated/apiClient'
-import routes from '../../../routing'
-import { useGoogleSignIn } from '../hooks'
-import { GoogleButton } from '../components/GoogleButton'
 import { useSystem } from '../../../hooks/system'
+import routes from '../../../routing'
+import { GoogleButton } from '../components/GoogleButton'
+import { useGoogleSignIn } from '../hooks'
 
 interface State {
   email: string

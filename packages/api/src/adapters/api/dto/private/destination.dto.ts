@@ -7,11 +7,11 @@ import {
   Validate,
 } from 'class-validator'
 import { Components } from 'src/generated/typeDefinitions'
+import { ID_LENGTH, TEXT_LENGTH } from '../constants'
 import {
   DestinationSyncFrequencyValidator,
   FileFormatValidator,
 } from './domain.dto'
-import { ID_LENGTH, TEXT_LENGTH } from '../constants'
 
 export class CreateCDNDestinationDto {
   @IsString()

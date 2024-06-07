@@ -1,5 +1,5 @@
-import { CSSProperties, FC, useState } from 'react'
 import * as Select from '@radix-ui/react-select'
+import { CSSProperties, FC, useState } from 'react'
 
 import { useId } from '../../hooks/ids'
 import { globalCss, keyframes, styled } from '../../stitches'

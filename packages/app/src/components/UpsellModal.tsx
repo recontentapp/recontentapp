@@ -1,18 +1,18 @@
 import { FC, forwardRef, useImperativeHandle, useRef } from 'react'
 
 import {
-  Text,
   Heading,
   Modal,
   ModalContent,
   ModalRef,
   Stack,
+  Text,
 } from 'design-system'
+import { useNavigate } from 'react-router-dom'
+import { useHasAbility, useLooseCurrentWorkspace } from '../hooks/workspace'
+import routes from '../routing'
 import { PlanCard } from '../screens/Workspace/screens/WorkspaceSettings/components/PlanCard'
 import { freePlan, proPlan } from '../utils/billing'
-import { useHasAbility, useLooseCurrentWorkspace } from '../hooks/workspace'
-import { useNavigate } from 'react-router-dom'
-import routes from '../routing'
 
 export interface UpsellModalRef {
   open: () => void

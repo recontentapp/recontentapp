@@ -1,5 +1,5 @@
-import { FC } from 'react'
 import { GoogleIcon, Spinner, Stack, Text } from 'design-system'
+import { FC } from 'react'
 import { styled } from '../../../theme'
 
 const GoogleButtonContainer = styled('button', {

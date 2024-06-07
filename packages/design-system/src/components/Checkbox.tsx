@@ -1,8 +1,8 @@
 import { ChangeEventHandler, FC, useEffect, useRef } from 'react'
 
 import { useId } from '../hooks/ids'
-import { customOutline } from '../theme'
 import { styled } from '../stitches'
+import { customOutline } from '../theme'
 
 interface CheckboxProps {
   size: 'medium' | 'small'

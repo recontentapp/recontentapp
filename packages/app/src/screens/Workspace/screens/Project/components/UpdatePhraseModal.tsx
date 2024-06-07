@@ -9,7 +9,7 @@ import {
 } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
-import { PhraseEditor } from '../../../../../components/PhraseEditor'
+import { useQueryClient } from '@tanstack/react-query'
 import {
   Box,
   Button,
@@ -20,7 +20,7 @@ import {
   Tooltip,
   toast,
 } from 'design-system'
-import { isLocaleRTL } from '../../../../../utils/locales'
+import { PhraseEditor } from '../../../../../components/PhraseEditor'
 import {
   getGetPhraseQueryKey,
   useAutoTranslatePhrase,
@@ -28,8 +28,8 @@ import {
   useGetProject,
   useTranslatePhrase,
 } from '../../../../../generated/reactQuery'
-import { useQueryClient } from '@tanstack/react-query'
 import { useHasAbility } from '../../../../../hooks/workspace'
+import { isLocaleRTL } from '../../../../../utils/locales'
 
 export interface UpdatePhraseModalRef {
   open: () => void

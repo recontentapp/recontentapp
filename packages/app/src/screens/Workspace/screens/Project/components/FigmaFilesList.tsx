@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query'
 import {
   Box,
   ConfirmationModal,
@@ -8,17 +9,16 @@ import {
   ModalRef,
   Stack,
 } from 'design-system'
+import { useRef, useState } from 'react'
 import {
   getListFigmaFilesQueryKey,
   useDeleteFigmaFile,
   useListFigmaFiles,
 } from '../../../../../generated/reactQuery'
-import { ImportCard } from './ImportCard'
 import { Components } from '../../../../../generated/typeDefinitions'
-import { useRef, useState } from 'react'
 import { formatRelative } from '../../../../../utils/dates'
 import { useReferenceableAccounts } from '../../../hooks/referenceable'
-import { useQueryClient } from '@tanstack/react-query'
+import { ImportCard } from './ImportCard'
 
 interface FigmaFilesListProps {
   projectId: string

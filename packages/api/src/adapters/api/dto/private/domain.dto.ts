@@ -1,11 +1,11 @@
+import { isValidFileFormat } from '@recontentapp/file-formats'
 import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator'
-import { isValidFileFormat } from '@recontentapp/file-formats'
 import { isValidPlan } from 'src/modules/cloud/billing/plan'
-import { isValidLanguageLocale } from 'src/modules/workspace/locale'
 import { isValidDestinationSyncFrequency } from 'src/modules/phrase/destinations'
+import { isValidLanguageLocale } from 'src/modules/workspace/locale'
 
 @ValidatorConstraint({ name: 'languageLocale', async: false })
 export class LanguageLocaleValidator implements ValidatorConstraintInterface {

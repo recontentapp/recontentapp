@@ -1,7 +1,4 @@
-import { FC, useEffect, useRef } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import { FullpageSpinner } from '../../../components/FullpageSpinner'
-import { Head } from '../../../components/Head'
+import { useQueryClient } from '@tanstack/react-query'
 import {
   Banner,
   Box,
@@ -15,9 +12,10 @@ import {
   Stack,
   toast,
 } from 'design-system'
-import { formatRelative } from '../../../utils/dates'
-import { Page } from '../components/Page'
-import { ScreenWrapper } from '../components/ScreenWrapper'
+import { FC, useEffect, useRef } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { FullpageSpinner } from '../../../components/FullpageSpinner'
+import { Head } from '../../../components/Head'
 import {
   getGetDestinationQueryKey,
   getListDestinationsQueryKey,
@@ -28,13 +26,15 @@ import {
 } from '../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../hooks/workspace'
 import routes from '../../../routing'
+import { styled } from '../../../theme'
+import { formatRelative } from '../../../utils/dates'
 import {
   destinationSyncFrequencyLabels,
   destinationTypeLabels,
 } from '../../../utils/destinations'
 import { fileFormatLabels } from '../../../utils/files'
-import { useQueryClient } from '@tanstack/react-query'
-import { styled } from '../../../theme'
+import { Page } from '../components/Page'
+import { ScreenWrapper } from '../components/ScreenWrapper'
 
 const ErrorMessage = styled('span', {
   display: 'inline-block',

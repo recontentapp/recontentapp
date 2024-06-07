@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
-import { PrismaService } from 'src/utils/prisma.service'
-import { PaginationParams } from 'src/utils/pagination'
 import { isValidHexColor } from 'src/utils/colors'
+import { PaginationParams } from 'src/utils/pagination'
+import { PrismaService } from 'src/utils/prisma.service'
 import { Requester } from '../auth/requester.object'
 
 interface ListProjectTagsParams {

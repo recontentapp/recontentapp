@@ -1,4 +1,4 @@
-import { Stack, Text, Heading, MinimalButton, Box } from 'design-system'
+import { Box, Heading, MinimalButton, Stack, Text } from 'design-system'
 import { useBridge } from '../contexts/Bridge'
 
 interface CredentialsAreInvalidForFileProps {

@@ -1,5 +1,3 @@
-import { Dispatch, SetStateAction, useMemo } from 'react'
-import { State } from '../types'
 import {
   Banner,
   Box,
@@ -9,6 +7,8 @@ import {
   Stack,
   Table,
 } from 'design-system'
+import { Dispatch, SetStateAction, useMemo } from 'react'
+import { State } from '../types'
 
 interface Props {
   state: State

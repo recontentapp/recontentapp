@@ -1,4 +1,3 @@
-import { Form } from './components/Form'
 import {
   Banner,
   Box,
@@ -7,6 +6,7 @@ import {
   MinimalButton,
   Stack,
 } from 'design-system'
+import { Form } from './components/Form'
 import { useForm } from './useForm'
 
 interface CredentialsProps {

@@ -8,20 +8,20 @@ import {
   Stack,
   Text,
 } from 'design-system'
-import { format, formatShort } from '../../../../../utils/dates'
-import { capitalizeFirstLetter } from '../../../../../utils/text'
-import { Paths } from '../../../../../generated/typeDefinitions'
-import {
-  workspaceBillingStatusLabels,
-  workspaceBillingStatusVariations,
-} from '../../../../../utils/billing'
 import { useRef, useState } from 'react'
 import {
   useGenerateBillingPortalSession,
   useResetBillingSubscription,
 } from '../../../../../generated/reactQuery'
+import { Paths } from '../../../../../generated/typeDefinitions'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
 import { styled } from '../../../../../theme'
+import {
+  workspaceBillingStatusLabels,
+  workspaceBillingStatusVariations,
+} from '../../../../../utils/billing'
+import { format, formatShort } from '../../../../../utils/dates'
+import { capitalizeFirstLetter } from '../../../../../utils/text'
 
 const Container = styled('div', {
   display: 'flex',

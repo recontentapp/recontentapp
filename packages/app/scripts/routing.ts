@@ -1,10 +1,10 @@
-import { globSync } from 'glob'
 import { writeFileSync } from 'fs'
-import path from 'path'
+import { globSync } from 'glob'
 import { JSONSchema, compile } from 'json-schema-to-typescript'
+import path from 'path'
 import { parse } from 'path-to-regexp'
 
-import { RoutesCollection, Route } from '../src/routing-types'
+import { Route, RoutesCollection } from '../src/routing-types'
 
 const FILE_NAME = 'routes.ts'
 const EXPORT_FILE_NAME = 'routing.ts'

@@ -1,8 +1,8 @@
 import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs'
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { Message } from './types'
 import { Config } from '../../utils/config'
+import { Message } from './types'
 
 @Injectable()
 export class ProducerService {

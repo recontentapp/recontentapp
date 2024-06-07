@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { OnEvent } from '@nestjs/event-emitter'
 
-import { PrismaService } from 'src/utils/prisma.service'
 import { UserConfirmedEvent } from 'src/modules/auth/events/user-confirmed.event'
+import { PrismaService } from 'src/utils/prisma.service'
 import { SlackService } from './slack.service'
 
 @Injectable()

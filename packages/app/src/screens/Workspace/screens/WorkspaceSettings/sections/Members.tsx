@@ -1,14 +1,14 @@
 import { FC } from 'react'
 
 import { Heading, Stack, Table } from 'design-system'
-import { formatRelative } from '../../../../../utils/dates'
-import { useReferenceableAccounts } from '../../../hooks/referenceable'
-import { InvitationForm } from '../components/InvitationForm'
 import {
   useListWorkspaceAccounts,
   useListWorkspaceInvitations,
 } from '../../../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
+import { formatRelative } from '../../../../../utils/dates'
+import { useReferenceableAccounts } from '../../../hooks/referenceable'
+import { InvitationForm } from '../components/InvitationForm'
 
 export const Members: FC = () => {
   const { id: workspaceId } = useCurrentWorkspace()

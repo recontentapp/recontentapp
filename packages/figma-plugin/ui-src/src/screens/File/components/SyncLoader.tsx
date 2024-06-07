@@ -1,4 +1,4 @@
-import { Box, Stack, Spinner, Text } from 'design-system'
+import { Box, Spinner, Stack, Text } from 'design-system'
 import { useEffect, useState } from 'react'
 
 const texts = ['Fetching latest changes...', 'Applying changes...']

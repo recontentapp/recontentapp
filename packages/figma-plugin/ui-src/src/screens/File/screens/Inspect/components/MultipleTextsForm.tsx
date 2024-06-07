@@ -1,18 +1,18 @@
 import {
-  Stack,
-  TextField,
-  Text,
-  MinimalButton,
   Box,
   Button,
+  MinimalButton,
+  Stack,
+  Text,
+  TextField,
 } from 'design-system'
-import { Text as IText } from '../../../../../../../shared-types'
 import { useEffect, useState } from 'react'
-import { useCreateFigmaFileText } from '../../../../../generated/reactQuery'
+import { Text as IText } from '../../../../../../../shared-types'
 import { useBridge } from '../../../../../contexts/Bridge'
+import { useCreateFigmaFileText } from '../../../../../generated/reactQuery'
+import { isUpsellIssue } from '../../../../../utils/api'
 import { chunkArray } from '../../../../../utils/arrays'
 import { processPromisesInBatches } from '../../../../../utils/promises'
-import { isUpsellIssue } from '../../../../../utils/api'
 
 interface SingleTextFormProps {
   texts: IText[]

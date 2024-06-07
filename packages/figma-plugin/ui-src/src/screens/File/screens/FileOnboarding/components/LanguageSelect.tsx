@@ -1,4 +1,4 @@
-import { SelectField, Option } from 'design-system'
+import { Option, SelectField } from 'design-system'
 import { useListLanguages } from '../../../../../generated/reactQuery'
 
 interface LanguageSelectProps {

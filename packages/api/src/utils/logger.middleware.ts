@@ -1,9 +1,9 @@
 import { Injectable, NestMiddleware } from '@nestjs/common'
 import { NextFunction, Request, Response } from 'express'
 
+import { getRequesterOrNull } from 'src/modules/auth/requester.resolver'
 import { MyLogger } from './logger'
 import { getRequestIdFromRequest } from './request-id.middleware'
-import { getRequesterOrNull } from 'src/modules/auth/requester.resolver'
 
 const REQUEST_PROCESSED = 'Request processed'
 

@@ -2,8 +2,8 @@ import { EditorContent, useEditor } from '@tiptap/react'
 import { FC } from 'react'
 
 import { styled, theme } from '../../theme'
-import { TextViewProps } from './types'
 import { useExtensions } from '../../tiptap/hooks'
+import { TextViewProps } from './types'
 
 const Container = styled('div', {
   '& .ProseMirror': {

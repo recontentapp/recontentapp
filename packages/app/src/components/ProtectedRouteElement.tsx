@@ -1,7 +1,7 @@
+import { Heading, Icon, Stack, Text } from 'design-system'
 import { ComponentType } from 'react'
 import { Components } from '../generated/typeDefinitions'
 import { useHasAbility } from '../hooks/workspace'
-import { Stack, Heading, Text, Icon } from 'design-system'
 
 interface Props {
   component: ComponentType

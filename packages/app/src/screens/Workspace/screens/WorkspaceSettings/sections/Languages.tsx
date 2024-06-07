@@ -1,13 +1,13 @@
 import { FC } from 'react'
 
 import { Heading, Stack, Table } from 'design-system'
+import { useListWorkspaceLanguages } from '../../../../../generated/reactQuery'
+import { useCurrentWorkspace } from '../../../../../hooks/workspace'
+import { styled } from '../../../../../theme'
 import { formatRelative } from '../../../../../utils/dates'
 import { CopyPaste } from '../../../components/CopyPaste'
 import { useReferenceableAccounts } from '../../../hooks/referenceable'
 import { AddLanguageForm } from '../components/AddLanguageForm'
-import { useCurrentWorkspace } from '../../../../../hooks/workspace'
-import { useListWorkspaceLanguages } from '../../../../../generated/reactQuery'
-import { styled } from '../../../../../theme'
 
 const Key = styled('span', {
   fontFamily: '$mono',

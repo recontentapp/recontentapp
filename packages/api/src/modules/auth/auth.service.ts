@@ -4,19 +4,19 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common'
-import { JwtService } from '@nestjs/jwt'
 import { EventEmitter2 } from '@nestjs/event-emitter'
+import { JwtService } from '@nestjs/jwt'
 import { OAuth2Client } from 'google-auth-library'
 import { randomInt } from 'node:crypto'
-import { PrismaService } from 'src/utils/prisma.service'
 import { MailerService } from 'src/modules/notifications/mailer.service'
+import { PrismaService } from 'src/utils/prisma.service'
 import { hashPassword, isPasswordValid } from 'src/utils/security'
 
-import { TokenContent } from './types'
-import { Prisma } from '@prisma/client'
 import { ConfigService } from '@nestjs/config'
+import { Prisma } from '@prisma/client'
 import { Config } from 'src/utils/config'
 import { UserConfirmedEvent } from './events/user-confirmed.event'
+import { TokenContent } from './types'
 
 interface CreateUserParams {
   firstName: string

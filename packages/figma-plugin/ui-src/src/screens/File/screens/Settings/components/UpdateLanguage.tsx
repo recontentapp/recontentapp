@@ -1,15 +1,15 @@
-import { Banner, Button, SelectField, Stack, Text } from 'design-system'
+import { useQueryClient } from '@tanstack/react-query'
+import { Banner, Button, SelectField, Stack } from 'design-system'
+import { useState } from 'react'
+import { FullpageSpinner } from '../../../../../components/FullpageSpinner'
 import { useBridge } from '../../../../../contexts/Bridge'
+import { useCurrentCredentials } from '../../../../../contexts/CurrentCredentials'
 import {
   getGetFigmaFileQueryKey,
   useListLanguages,
   useUpdateFigmaFile,
 } from '../../../../../generated/reactQuery'
-import { FullpageSpinner } from '../../../../../components/FullpageSpinner'
-import { useState } from 'react'
-import { useCurrentCredentials } from '../../../../../contexts/CurrentCredentials'
 import { useFile } from '../../../hooks'
-import { useQueryClient } from '@tanstack/react-query'
 
 interface UpdateLanguageProps {
   onRequestSync: () => void

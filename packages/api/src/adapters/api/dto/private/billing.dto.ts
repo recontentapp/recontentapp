@@ -6,8 +6,8 @@ import {
   Validate,
 } from 'class-validator'
 import { Components } from 'src/generated/typeDefinitions'
-import { WorkspaceBillingPlanValidator } from './domain.dto'
 import { ID_LENGTH, TEXT_LENGTH } from '../constants'
+import { WorkspaceBillingPlanValidator } from './domain.dto'
 
 export class SetupBillingSettingsDto {
   @IsString()

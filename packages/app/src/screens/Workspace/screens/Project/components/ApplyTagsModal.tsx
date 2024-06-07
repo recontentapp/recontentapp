@@ -7,14 +7,15 @@ import {
   useState,
 } from 'react'
 
+import { useQueryClient } from '@tanstack/react-query'
 import {
-  Text,
   Modal,
   ModalContent,
   ModalRef,
   SelectField,
   Stack,
   Tag,
+  Text,
 } from 'design-system'
 import {
   getListPhrasesQueryKey,
@@ -23,7 +24,6 @@ import {
   useListProjectTags,
 } from '../../../../../generated/reactQuery'
 import { Components } from '../../../../../generated/typeDefinitions'
-import { useQueryClient } from '@tanstack/react-query'
 
 export interface ApplyTagsModalRef {
   open: (phraseIds: string[]) => void

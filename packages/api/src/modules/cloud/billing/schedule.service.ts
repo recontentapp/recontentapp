@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
+import { Cron } from '@nestjs/schedule'
+import { ProducerService } from 'src/modules/worker/producer.service'
 import { Config } from 'src/utils/config'
 import { PrismaService } from 'src/utils/prisma.service'
-import { ProducerService } from 'src/modules/worker/producer.service'
-import { Cron } from '@nestjs/schedule'
 
 @Injectable()
 export class ScheduleService {

@@ -1,5 +1,5 @@
 import { testDict } from '../../testHelpers'
-import { renderYAML, renderNestedYAML } from './render'
+import { renderNestedYAML, renderYAML } from './render'
 
 describe('yaml', () => {
   it('matches snapshot', async () => {

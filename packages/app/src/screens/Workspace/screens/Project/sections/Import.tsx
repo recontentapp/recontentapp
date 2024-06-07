@@ -1,10 +1,10 @@
+import { Stack } from 'design-system'
 import { FC } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Stack } from 'design-system'
-import { ImportCard } from '../components/ImportCard'
-import routes from '../../../../../routing'
-import { useCurrentWorkspace } from '../../../../../hooks/workspace'
 import { FIGMA_PLUGIN_URL } from '../../../../../constants'
+import { useCurrentWorkspace } from '../../../../../hooks/workspace'
+import routes from '../../../../../routing'
+import { ImportCard } from '../components/ImportCard'
 
 export const Import: FC = () => {
   const { key: workspaceKey } = useCurrentWorkspace()

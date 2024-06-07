@@ -2,6 +2,11 @@ import { FC, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { Box, Stack } from 'design-system'
+import { useListProjects } from '../../../../generated/reactQuery'
+import { useSystem } from '../../../../hooks/system'
+import { useCurrentWorkspace, useHasAbility } from '../../../../hooks/workspace'
+import routes from '../../../../routing'
+import { styled } from '../../../../theme'
 import { useModals } from '../../hooks/modals'
 import {
   ActionButton,
@@ -9,14 +14,9 @@ import {
   ActionsList,
 } from './components/ActionsList'
 import { Button } from './components/Button'
+import { FeedbacksModal, FeedbacksModalRef } from './components/FeedbacksModal'
 import { ProjectsList } from './components/ProjectsList'
 import { WorkspaceDropdown } from './components/WorkspaceDropdown'
-import { useListProjects } from '../../../../generated/reactQuery'
-import { useCurrentWorkspace, useHasAbility } from '../../../../hooks/workspace'
-import routes from '../../../../routing'
-import { useSystem } from '../../../../hooks/system'
-import { styled } from '../../../../theme'
-import { FeedbacksModal, FeedbacksModalRef } from './components/FeedbacksModal'
 
 const Container = styled('aside', {
   display: 'flex',

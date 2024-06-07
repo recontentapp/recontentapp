@@ -1,6 +1,3 @@
-import { useState } from 'react'
-import { useCurrentUser } from '../../../../../auth'
-import { useUpdateCurrentUser } from '../../../../../generated/reactQuery'
 import {
   Box,
   Button,
@@ -10,6 +7,9 @@ import {
   TextField,
   toast,
 } from 'design-system'
+import { useState } from 'react'
+import { useCurrentUser } from '../../../../../auth'
+import { useUpdateCurrentUser } from '../../../../../generated/reactQuery'
 
 export const Global = () => {
   const { firstName: initialFirstName, lastName: initialLastName } =

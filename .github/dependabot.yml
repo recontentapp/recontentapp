@@ -6,4 +6,4 @@ updates:
     schedule:
       interval: 'daily'
     ignore:
-      - dependency-name: "query-string"
+      - dependency-name: 'query-string'

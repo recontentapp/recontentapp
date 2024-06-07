@@ -11,8 +11,8 @@ import {
 } from 'class-validator'
 import { Components } from 'src/generated/typeDefinitions'
 import { IsNullable } from 'src/utils/class-validator'
-import { FileFormatValidator } from './domain.dto'
 import { ID_LENGTH, LONG_TEXT_LENGTH, TEXT_LENGTH } from '../constants'
+import { FileFormatValidator } from './domain.dto'
 
 export class CreatePhraseDto {
   @IsString()

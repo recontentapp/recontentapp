@@ -12,8 +12,8 @@ import {
   ValidateNested,
 } from 'class-validator'
 import { LanguageLocale } from 'src/modules/workspace/locale'
-import { LanguageLocaleValidator } from './domain.dto'
 import { ID_LENGTH, KEY_LENGTH, TEXT_LENGTH } from '../constants'
+import { LanguageLocaleValidator } from './domain.dto'
 
 export class CreateWorkspaceDto {
   @IsString()

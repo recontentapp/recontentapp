@@ -1,8 +1,8 @@
 import { FC, ReactElement, ReactNode } from 'react'
 
 import { Box, Stack } from 'design-system'
-import { Breadcrumb, BreadcrumbItem } from './Breadcrumb'
 import { styled } from '../../../theme'
+import { Breadcrumb, BreadcrumbItem } from './Breadcrumb'
 
 interface ScreenWrapperProps {
   children: ReactNode

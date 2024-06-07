@@ -9,9 +9,9 @@ import {
   useState,
 } from 'react'
 
-import { CurrentUser, Status } from './types'
-import { getAPIClient } from '../generated/apiClient'
 import { toast } from 'design-system'
+import { getAPIClient } from '../generated/apiClient'
+import { CurrentUser, Status } from './types'
 
 export interface AuthContext {
   accessToken: string | null

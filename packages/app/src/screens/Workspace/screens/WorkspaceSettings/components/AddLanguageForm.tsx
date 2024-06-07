@@ -1,5 +1,6 @@
 import { FC, useMemo, useState } from 'react'
 
+import { useQueryClient } from '@tanstack/react-query'
 import {
   Box,
   Button,
@@ -15,7 +16,6 @@ import {
 } from '../../../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
 import { languageLocales } from '../../../../../utils/locales'
-import { useQueryClient } from '@tanstack/react-query'
 
 export interface State {
   name: string

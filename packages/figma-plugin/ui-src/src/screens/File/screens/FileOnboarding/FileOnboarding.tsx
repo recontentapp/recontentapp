@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import {
   Box,
   Button,
@@ -8,16 +7,17 @@ import {
   Text,
   TextField,
 } from 'design-system'
-import { LanguageSelect } from './components/LanguageSelect'
+import { useState } from 'react'
+import { FullpageSpinner } from '../../../../components/FullpageSpinner'
 import { useBridge } from '../../../../contexts/Bridge'
+import { useCurrentCredentials } from '../../../../contexts/CurrentCredentials'
 import {
   useCreateFigmaFile,
   useGetMe,
   useListProjects,
 } from '../../../../generated/reactQuery'
-import { FullpageSpinner } from '../../../../components/FullpageSpinner'
 import { isValidFigmaURL } from '../../../../utils/urls'
-import { useCurrentCredentials } from '../../../../contexts/CurrentCredentials'
+import { LanguageSelect } from './components/LanguageSelect'
 
 interface State {
   name: string | undefined

@@ -1,8 +1,8 @@
 import { FC, useState } from 'react'
 
-import { HorizontalSpinner } from '../../../../../components/HorizontalSpinner'
+import { useQueryClient } from '@tanstack/react-query'
 import { Banner, Stack } from 'design-system'
-import { PlanCard } from '../components/PlanCard'
+import { HorizontalSpinner } from '../../../../../components/HorizontalSpinner'
 import {
   getGetBillingActiveSubscriptionQueryKey,
   getGetBillingSettingsQueryKey,
@@ -14,11 +14,11 @@ import {
   useSubscribeToBillingPlan,
 } from '../../../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
-import { BillingWizard } from '../components/BillingWizard'
-import { ActivePlanCard } from '../components/ActivePlanCard'
-import { useQueryClient } from '@tanstack/react-query'
-import { InvoicesTable } from '../components/InvoicesTable'
 import { freePlan, proPlan } from '../../../../../utils/billing'
+import { ActivePlanCard } from '../components/ActivePlanCard'
+import { BillingWizard } from '../components/BillingWizard'
+import { InvoicesTable } from '../components/InvoicesTable'
+import { PlanCard } from '../components/PlanCard'
 
 export const Billing: FC = () => {
   const queryClient = useQueryClient()

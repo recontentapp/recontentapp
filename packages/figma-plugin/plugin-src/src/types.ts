@@ -1,13 +1,13 @@
 import {
-  PluginInitialized,
   FileConfigResetRequested,
-  UserConfigResetRequested,
-  UserConfigUpdated,
   FileConfigSet,
   NotificationRequested,
+  PluginInitialized,
+  TextResetRequested,
   TextSelectionChanged,
   TextsSyncReceived,
-  TextResetRequested,
+  UserConfigResetRequested,
+  UserConfigUpdated,
 } from '../../shared-types'
 
 export type Emittable = PluginInitialized | TextSelectionChanged

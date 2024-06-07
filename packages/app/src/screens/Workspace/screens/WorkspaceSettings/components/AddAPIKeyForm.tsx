@@ -1,12 +1,12 @@
 import { FC, useState } from 'react'
 
+import { useQueryClient } from '@tanstack/react-query'
 import { Box, Button, Form, Stack, TextField, toast } from 'design-system'
 import {
   getListWorkspaceAccountsQueryKey,
   useCreateWorkspaceServiceAccount,
 } from '../../../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
-import { useQueryClient } from '@tanstack/react-query'
 
 interface AddAPIKeyFormProps {
   onClose: () => void

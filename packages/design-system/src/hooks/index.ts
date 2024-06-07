@@ -1,2 +1,2 @@
-export * from './outsideClick'
 export * from './ids'
+export * from './outsideClick'

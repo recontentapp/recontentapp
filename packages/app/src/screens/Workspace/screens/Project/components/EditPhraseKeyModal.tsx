@@ -8,8 +8,8 @@ import {
   TextField,
   toast,
 } from 'design-system'
-import { Components } from '../../../../../generated/typeDefinitions'
 import { useUpdatePhraseKey } from '../../../../../generated/reactQuery'
+import { Components } from '../../../../../generated/typeDefinitions'
 
 interface OpenProps {
   phrase: Components.Schemas.PhraseItem

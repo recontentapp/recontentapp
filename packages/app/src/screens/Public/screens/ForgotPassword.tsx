@@ -1,6 +1,5 @@
 import { FC, useState } from 'react'
 
-import { Logo } from '../../../components/Logo'
 import {
   Box,
   Button,
@@ -11,8 +10,9 @@ import {
   Text,
   TextField,
 } from 'design-system'
-import routes from '../../../routing'
 import { Link } from 'react-router-dom'
+import { Logo } from '../../../components/Logo'
+import routes from '../../../routing'
 
 interface RequestState {
   email: string

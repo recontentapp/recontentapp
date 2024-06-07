@@ -2,8 +2,6 @@ import { Menu, MenuButton, MenuItem, MenuList } from '@reach/menu-button'
 import { FC, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { useAuth, useCurrentUser } from '../../../../../auth'
-import { Logo } from '../../../../../components/Logo'
 import {
   Avatar,
   Box,
@@ -13,6 +11,8 @@ import {
   Text,
   Tooltip,
 } from 'design-system'
+import { useAuth, useCurrentUser } from '../../../../../auth'
+import { Logo } from '../../../../../components/Logo'
 import {
   useCurrentWorkspace,
   useLooseCurrentWorkspace,

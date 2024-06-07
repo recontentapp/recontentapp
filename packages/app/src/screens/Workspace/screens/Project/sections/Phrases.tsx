@@ -1,26 +1,26 @@
 import { FC, Suspense, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { HorizontalSpinner } from '../../../../../components/HorizontalSpinner'
+import { useQueryClient } from '@tanstack/react-query'
 import { Banner, Box, Stack } from 'design-system'
-import { useURLState } from '../../../../../hooks/urlState'
-import { useModals } from '../../../hooks/modals'
-import { PhrasesTable } from '../components/PhrasesTable'
-import {
-  UpdatePhraseModal,
-  UpdatePhraseModalRef,
-} from '../components/UpdatePhraseModal'
+import { HorizontalSpinner } from '../../../../../components/HorizontalSpinner'
 import {
   getListPhrasesQueryKey,
   useDeletePhrase,
   useGetProject,
 } from '../../../../../generated/reactQuery'
+import { useURLState } from '../../../../../hooks/urlState'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
-import { useQueryClient } from '@tanstack/react-query'
 import routes from '../../../../../routing'
-import { useInfiniteListPhrases } from '../hooks'
+import { useModals } from '../../../hooks/modals'
 import { FigmaFilesList } from '../components/FigmaFilesList'
+import { PhrasesTable } from '../components/PhrasesTable'
 import { ProjectStats } from '../components/ProjectStats'
+import {
+  UpdatePhraseModal,
+  UpdatePhraseModalRef,
+} from '../components/UpdatePhraseModal'
+import { useInfiniteListPhrases } from '../hooks'
 
 export const Phrases: FC = () => {
   const queryClient = useQueryClient()

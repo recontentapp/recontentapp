@@ -1,8 +1,8 @@
 import { CSSProperties } from '@stitches/react'
 import { FC, ReactNode, useMemo } from 'react'
 
-import { ColorValue, FontSizeValue } from '../theme'
 import { styled } from '../stitches'
+import { ColorValue, FontSizeValue } from '../theme'
 
 interface TextProps
   extends Pick<CSSProperties, 'maxWidth' | 'lineHeight' | 'textAlign'> {

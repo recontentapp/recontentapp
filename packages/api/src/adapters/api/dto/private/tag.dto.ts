@@ -1,13 +1,13 @@
 import {
   IsArray,
+  IsHexColor,
+  IsIn,
   IsNotEmpty,
   IsOptional,
   IsString,
-  IsHexColor,
-  IsIn,
   MaxLength,
 } from 'class-validator'
-import { ID_LENGTH, LONG_TEXT_LENGTH, KEY_LENGTH } from '../constants'
+import { ID_LENGTH, KEY_LENGTH, LONG_TEXT_LENGTH } from '../constants'
 
 export class CreateProjectTagDto {
   @IsString()

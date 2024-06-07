@@ -1,7 +1,7 @@
 import { BubbleMenu, Editor } from '@tiptap/react'
+import { Icon } from 'design-system'
 import { FC } from 'react'
 import { styled } from '../../../theme'
-import { Icon } from 'design-system'
 
 const Container = styled('div', {
   display: 'flex',

@@ -2,10 +2,10 @@ import { FC } from 'react'
 import { Outlet } from 'react-router-dom'
 
 import { Head } from '../../../../components/Head'
-import { Page } from '../../components/Page'
-import { ScreenWrapper } from '../../components/ScreenWrapper'
 import { useCurrentWorkspace, useHasAbility } from '../../../../hooks/workspace'
 import routes from '../../../../routing'
+import { Page } from '../../components/Page'
+import { ScreenWrapper } from '../../components/ScreenWrapper'
 
 export const WorkspaceSettings: FC = () => {
   const { key: workspaceKey, name: workspaceName } = useCurrentWorkspace()

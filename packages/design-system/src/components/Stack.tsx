@@ -1,8 +1,8 @@
 import { CSSProperties } from '@stitches/react'
 import { FC, ReactNode, useMemo } from 'react'
 
-import { SpaceValue } from '../theme'
 import { styled } from '../stitches'
+import { SpaceValue } from '../theme'
 
 interface StackProps
   extends Pick<

@@ -13,13 +13,13 @@ import {
   TextField,
   toast,
 } from 'design-system'
-import { useUpdate } from '../../../hooks/update'
-import { useDebounce } from '../../../utils/debounce'
-import { useAPIClient, useCreateWorkspace } from '../../../generated/reactQuery'
 import { useAuth } from '../../../auth'
-import routes from '../../../routing'
+import { useAPIClient, useCreateWorkspace } from '../../../generated/reactQuery'
 import { useSystem } from '../../../hooks/system'
+import { useUpdate } from '../../../hooks/update'
+import routes from '../../../routing'
 import { styled } from '../../../theme'
+import { useDebounce } from '../../../utils/debounce'
 
 interface State {
   name: string

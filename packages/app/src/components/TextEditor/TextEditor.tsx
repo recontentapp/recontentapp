@@ -1,13 +1,13 @@
 import { EditorContent, useEditor } from '@tiptap/react'
 import { forwardRef, useImperativeHandle } from 'react'
 
+import { Box, Icon, Label, Stack, Text as UIText } from 'design-system'
 import { useId } from '../../hooks/ids'
 import { styled, theme } from '../../theme'
-import { SelectionMenu } from './components/SelectionMenu'
-import { TextEditorProps, TextEditorRef } from './types'
 import { useExtensions } from '../../tiptap/hooks'
 import { findChildrenByType } from '../../tiptap/utils'
-import { Box, Icon, Label, Stack, Text as UIText } from 'design-system'
+import { SelectionMenu } from './components/SelectionMenu'
+import { TextEditorProps, TextEditorRef } from './types'
 
 const Container = styled('div', {
   variants: {

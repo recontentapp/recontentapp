@@ -5,10 +5,10 @@ import {
 } from '@nestjs/common'
 import { EventEmitter2 } from '@nestjs/event-emitter'
 import { ProjectRevisionState } from '@prisma/client'
-import { PrismaService } from 'src/utils/prisma.service'
-import { ProjectCreatedEvent } from './events/project-created.event'
 import { PaginationParams } from 'src/utils/pagination'
+import { PrismaService } from 'src/utils/prisma.service'
 import { Requester } from '../auth/requester.object'
+import { ProjectCreatedEvent } from './events/project-created.event'
 
 interface CreateProjectParams {
   workspaceId: string

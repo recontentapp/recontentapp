@@ -4,9 +4,9 @@ import {
   Injectable,
 } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
-import { v4 as uuidV4 } from 'uuid'
-import { PrismaService } from 'src/utils/prisma.service'
 import { PaginationParams } from 'src/utils/pagination'
+import { PrismaService } from 'src/utils/prisma.service'
+import { v4 as uuidV4 } from 'uuid'
 import { Requester } from '../auth/requester.object'
 
 interface ListFilesParams {

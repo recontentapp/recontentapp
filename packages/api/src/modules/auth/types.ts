@@ -1,8 +1,8 @@
 import {
-  User as PrismaUser,
-  WorkspaceAccount as PrismaWorkspaceAccount,
   Service as PrismaService,
+  User as PrismaUser,
   Workspace as PrismaWorkspace,
+  WorkspaceAccount as PrismaWorkspaceAccount,
   WorkspaceBillingSettings as PrismaWorkspaceBillingSettings,
 } from '@prisma/client'
 

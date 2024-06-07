@@ -1,4 +1,4 @@
-import { Stack, Heading, Text, Box, MinimalButton } from 'design-system'
+import { Box, Heading, MinimalButton, Stack, Text } from 'design-system'
 import { useBridge } from '../../../contexts/Bridge'
 
 export const ErrorLoadingFile = () => {

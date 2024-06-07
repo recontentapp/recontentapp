@@ -11,9 +11,9 @@ import {
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { useCurrentUser } from '../auth'
+import { useGetWorkspaceAbilities } from '../generated/reactQuery'
 import { Components } from '../generated/typeDefinitions'
 import routes from '../routing'
-import { useGetWorkspaceAbilities } from '../generated/reactQuery'
 
 type Workspace = Components.Schemas.Workspace
 type Account = Components.Schemas.CurrentUser['accounts'][number]

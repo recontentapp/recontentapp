@@ -3,8 +3,8 @@ import * as path from 'path'
 
 import { NestFactory } from '@nestjs/core'
 import { NestExpressApplication } from '@nestjs/platform-express'
-import { ApiModule } from '../adapters/api/api.module'
 import * as yaml from 'yaml'
+import { ApiModule } from '../adapters/api/api.module'
 
 interface Route {
   path: string

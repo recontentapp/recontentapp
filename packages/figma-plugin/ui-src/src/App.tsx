@@ -1,8 +1,8 @@
 import { Box, GlobalStyles, Toast } from 'design-system'
-import { normalize } from './theme'
 import { BridgeProvider } from './contexts/Bridge'
 import { CurrentCredentialsProvider } from './contexts/CurrentCredentials'
 import { File } from './screens/File/index'
+import { normalize } from './theme'
 
 export const App = () => {
   normalize()

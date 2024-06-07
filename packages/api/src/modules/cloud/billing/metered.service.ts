@@ -1,13 +1,13 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
-import { Config } from 'src/utils/config'
-import { backOff } from 'exponential-backoff'
 import {
   CloudWatchLogsClient,
   GetQueryResultsCommand,
   PutLogEventsCommand,
   StartQueryCommand,
 } from '@aws-sdk/client-cloudwatch-logs'
+import { BadRequestException, Injectable } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
+import { backOff } from 'exponential-backoff'
+import { Config } from 'src/utils/config'
 import { PrismaService } from 'src/utils/prisma.service'
 import Stripe from 'stripe'
 

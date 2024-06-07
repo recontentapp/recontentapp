@@ -3,12 +3,12 @@ import { Outlet, useNavigate, useParams } from 'react-router-dom'
 
 import { FullpageSpinner } from '../../../../components/FullpageSpinner'
 import { Head } from '../../../../components/Head'
-import { Page } from '../../components/Page'
-import { ScreenWrapper } from '../../components/ScreenWrapper'
 import { useGetProject } from '../../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../../hooks/workspace'
-import { useKBarContext } from '../../components/KBar'
 import routes from '../../../../routing'
+import { useKBarContext } from '../../components/KBar'
+import { Page } from '../../components/Page'
+import { ScreenWrapper } from '../../components/ScreenWrapper'
 
 export const Project: FC = () => {
   const params = useParams<'projectId' | 'revisionId'>()

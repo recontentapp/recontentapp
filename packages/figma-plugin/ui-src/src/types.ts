@@ -3,11 +3,11 @@ import {
   FileConfigSet,
   NotificationRequested,
   PluginInitialized,
-  TextsSyncReceived,
+  TextResetRequested,
   TextSelectionChanged,
+  TextsSyncReceived,
   UserConfigResetRequested,
   UserConfigUpdated,
-  TextResetRequested,
 } from '../../shared-types'
 
 export type Receivable =

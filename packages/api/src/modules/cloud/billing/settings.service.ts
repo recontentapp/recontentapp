@@ -1,10 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { Config } from 'src/utils/config'
 import { Requester } from 'src/modules/auth/requester.object'
+import { Config } from 'src/utils/config'
 import { PrismaService } from 'src/utils/prisma.service'
-import Stripe from 'stripe'
 import { escapeTrailingSlash } from 'src/utils/strings'
+import Stripe from 'stripe'
 
 interface GetSettingsParams {
   workspaceId: string

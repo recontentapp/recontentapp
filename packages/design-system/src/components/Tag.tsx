@@ -1,8 +1,8 @@
 import { FC } from 'react'
 
 import { styled } from '../stitches'
-import { Icon } from './Icon'
 import { getColorBasedOnBackground } from '../utils/colors'
+import { Icon } from './Icon'
 
 const Container = styled('span', {
   display: 'inline-flex',

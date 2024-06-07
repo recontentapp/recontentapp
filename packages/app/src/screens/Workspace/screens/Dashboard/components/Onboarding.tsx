@@ -1,10 +1,10 @@
-import { useNavigate } from 'react-router-dom'
 import { Stack } from 'design-system'
+import { useNavigate } from 'react-router-dom'
+import { Components } from '../../../../../generated/typeDefinitions'
+import { useCurrentWorkspace } from '../../../../../hooks/workspace'
+import routes from '../../../../../routing'
 import { useModals } from '../../../hooks/modals'
 import { StepCard } from './StepCard'
-import { useCurrentWorkspace } from '../../../../../hooks/workspace'
-import { Components } from '../../../../../generated/typeDefinitions'
-import routes from '../../../../../routing'
 
 interface OnboardingProps {
   languages: Components.Schemas.Language[]

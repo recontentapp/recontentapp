@@ -1,4 +1,3 @@
-import { Dispatch, SetStateAction, useCallback, useEffect } from 'react'
 import {
   Box,
   Button,
@@ -7,15 +6,16 @@ import {
   SelectField,
   Stack,
 } from 'design-system'
-import { State } from '../types'
+import { Dispatch, SetStateAction, useCallback, useEffect } from 'react'
+import { useListProjectTags } from '../../../../../generated/reactQuery'
+import { Components } from '../../../../../generated/typeDefinitions'
 import {
   ExcelSheetPreviewData,
   fileFormatAccept,
   getCSVPreviewData,
   getFileType,
 } from '../../../../../utils/files'
-import { Components } from '../../../../../generated/typeDefinitions'
-import { useListProjectTags } from '../../../../../generated/reactQuery'
+import { State } from '../types'
 
 interface Props {
   project: Components.Schemas.Project

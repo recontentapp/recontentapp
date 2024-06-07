@@ -1,13 +1,13 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
-import OpenAI from 'openai'
-import { PrismaService } from 'src/utils/prisma.service'
-import { ConfigService } from '@nestjs/config'
-import { Config } from 'src/utils/config'
-import { Language, Phrase, PhraseTranslation } from '@prisma/client'
 import {
   TranslateClient,
   TranslateTextCommand,
 } from '@aws-sdk/client-translate'
+import { BadRequestException, Injectable } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
+import { Language, Phrase, PhraseTranslation } from '@prisma/client'
+import OpenAI from 'openai'
+import { Config } from 'src/utils/config'
+import { PrismaService } from 'src/utils/prisma.service'
 import { Requester, WorkspaceAccess } from '../auth/requester.object'
 import { MeteredService } from '../cloud/billing/metered.service'
 

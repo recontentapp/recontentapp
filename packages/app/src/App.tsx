@@ -3,20 +3,20 @@ import { useMemo, useRef } from 'react'
 
 import { useAuth, useCurrentUser } from './auth'
 import { FullpageSpinner } from './components/FullpageSpinner'
-import { APIClientProvider } from './generated/reactQuery'
-import { Public } from './screens/Public'
+import { UpsellModal, UpsellModalRef } from './components/UpsellModal'
 import { HTTPRequestError } from './generated/apiClient'
-import { queryClient } from './queryClient'
-import { Onboarding } from './screens/Onboarding'
+import { APIClientProvider } from './generated/reactQuery'
+import { CallbacksProvider } from './hooks/callbacks'
 import {
   CurrentWorkspaceProvider,
   useLooseCurrentWorkspace,
 } from './hooks/workspace'
-import { CallbacksProvider } from './hooks/callbacks'
+import { queryClient } from './queryClient'
+import { Onboarding } from './screens/Onboarding'
+import { Public } from './screens/Public'
 import { SelectWorkspace } from './screens/SelectWorkspace'
 import { Workspace } from './screens/Workspace'
 import { normalize } from './theme'
-import { UpsellModal, UpsellModalRef } from './components/UpsellModal'
 
 const AuthenticatedApp = () => {
   const currentUser = useCurrentUser()

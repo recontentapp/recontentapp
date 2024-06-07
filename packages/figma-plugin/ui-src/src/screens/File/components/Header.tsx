@@ -1,6 +1,6 @@
-import { Icon, Stack, Tooltip, Text, Spinner } from 'design-system'
-import { Screen, useBridge } from '../../../contexts/Bridge'
+import { Icon, Spinner, Stack, Text } from 'design-system'
 import { Tabs } from '../../../components/Tabs'
+import { Screen, useBridge } from '../../../contexts/Bridge'
 import { styled } from '../../../theme'
 import { formatRelative } from '../../../utils/dates'
 

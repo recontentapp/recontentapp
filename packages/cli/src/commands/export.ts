@@ -1,21 +1,21 @@
+import {
+  fileFormatExtensions,
+  fileFormats,
+  isValidFileFormat,
+  renderAndroidXML,
+  renderAppleStrings,
+  renderCSV,
+  renderExcel,
+  renderJSON,
+  renderNestedJSON,
+  renderNestedYAML,
+  renderPHPArrays,
+  renderYAML,
+} from '@recontentapp/file-formats'
 import { Command } from 'commander'
 import path from 'path'
 import { getApiClient } from '../utils/environment'
 import { writeFile } from '../utils/fs'
-import {
-  fileFormats,
-  renderCSV,
-  renderJSON,
-  renderNestedJSON,
-  renderNestedYAML,
-  renderYAML,
-  fileFormatExtensions,
-  isValidFileFormat,
-  renderExcel,
-  renderAndroidXML,
-  renderAppleStrings,
-  renderPHPArrays,
-} from '@recontentapp/file-formats'
 
 interface Flags {
   project: string

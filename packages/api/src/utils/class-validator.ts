@@ -1,9 +1,9 @@
 import { ClassConstructor, plainToInstance, Type } from 'class-transformer'
 import {
-  ValidationOptions,
-  ValidateIf,
   registerDecorator,
+  ValidateIf,
   validateSync,
+  ValidationOptions,
 } from 'class-validator'
 
 export const IsNullable = (validationOptions?: ValidationOptions) => {

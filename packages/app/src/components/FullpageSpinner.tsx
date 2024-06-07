@@ -1,8 +1,8 @@
 import { FC } from 'react'
 
 import { Spinner, Stack } from 'design-system'
-import { Logo } from './Logo'
 import { styled } from '../theme'
+import { Logo } from './Logo'
 
 const Container = styled('div', {
   width: '100%',

@@ -5,16 +5,16 @@ import {
   Heading,
   MinimalButton,
   Stack,
-  TextField,
   Text,
+  TextField,
 } from 'design-system'
-import { Text as IText } from '../../../../../../../shared-types'
 import { useState } from 'react'
+import { Text as IText } from '../../../../../../../shared-types'
+import { useBridge } from '../../../../../contexts/Bridge'
 import {
   useCreateFigmaFileText,
   useListFigmaFileAvailablePhrases,
 } from '../../../../../generated/reactQuery'
-import { useBridge } from '../../../../../contexts/Bridge'
 import { useDebouncedValue } from '../../../../../hooks/debouncedValue'
 import { isUpsellIssue } from '../../../../../utils/api'
 

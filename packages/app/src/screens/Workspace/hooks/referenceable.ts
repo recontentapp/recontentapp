@@ -1,10 +1,10 @@
+import { theme } from 'design-system'
 import { useCallback } from 'react'
 import {
   useGetReferenceableAccounts,
   useGetReferenceableTags,
 } from '../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../hooks/workspace'
-import { theme } from 'design-system'
 
 export const useReferenceableTags = (projectId: string) => {
   const { data } = useGetReferenceableTags(

@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { useBridge } from '../../contexts/Bridge'
-import { CredentialsValues } from './types'
-import { HTTPRequestError, getAPIClient } from '../../generated/apiClient'
 import { UserCredentials } from '../../../../shared-types'
+import { useBridge } from '../../contexts/Bridge'
+import { HTTPRequestError, getAPIClient } from '../../generated/apiClient'
 import { getURLs } from '../../utils/origins'
+import { CredentialsValues } from './types'
 
 export const useForm = (callback: () => void) => {
   const { userConfig, emit } = useBridge()

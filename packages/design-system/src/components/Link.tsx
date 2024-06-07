@@ -1,8 +1,8 @@
 import { CSSProperties, FC, ReactNode } from 'react'
 
+import { styled } from '../stitches'
 import { FontSizeValue } from '../theme'
 import { Icon } from './Icon'
-import { styled } from '../stitches'
 
 interface ExternalLinkProps extends Pick<CSSProperties, 'fontSize'> {
   href: string

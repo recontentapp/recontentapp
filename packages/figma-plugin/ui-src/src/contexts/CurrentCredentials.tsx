@@ -1,3 +1,5 @@
+import { QueryClientProvider } from '@tanstack/react-query'
+import { Box, Stack } from 'design-system'
 import {
   ReactNode,
   createContext,
@@ -6,22 +8,20 @@ import {
   useEffect,
   useState,
 } from 'react'
-import { useBridge } from './Bridge'
-import { APIClientProvider } from '../generated/reactQuery'
-import { getURLs } from '../utils/origins'
-import { Welcome } from '../screens/Onboarding/screens/Welcome'
-import { CredentialsForm } from '../components/CredentialsForm/CredentialsForm'
-import { QueryClientProvider } from '@tanstack/react-query'
-import { queryClient } from '../queryClient'
 import { UserCredentials } from '../../../shared-types'
-import { SelectCredentials } from '../components/SelectCredentials'
 import { CredentialsAreInvalidForFile } from '../components/CredentialsAreInvalidForFile'
 import {
   CREDENTIALS_FOOTER_HEIGHT,
   CredentialsFooter,
 } from '../components/CredentialsFooter'
-import { Box, Stack } from 'design-system'
+import { CredentialsForm } from '../components/CredentialsForm/CredentialsForm'
+import { SelectCredentials } from '../components/SelectCredentials'
 import { HTTPRequestError } from '../generated/apiClient'
+import { APIClientProvider } from '../generated/reactQuery'
+import { queryClient } from '../queryClient'
+import { Welcome } from '../screens/Onboarding/screens/Welcome'
+import { getURLs } from '../utils/origins'
+import { useBridge } from './Bridge'
 
 interface CurrentCredentialsProviderProps {
   children: ReactNode

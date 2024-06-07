@@ -8,6 +8,7 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import {
   FigmaFile,
   FigmaText,
@@ -22,6 +23,7 @@ import { APIKeyGuard } from 'src/modules/auth/api-key.guard'
 import { AuthenticatedRequester } from 'src/modules/auth/requester.decorator'
 import { Requester } from 'src/modules/auth/requester.object'
 import { FigmaService } from 'src/modules/figma/figma.service'
+import { Config } from 'src/utils/config'
 import { Pagination, PaginationParams } from 'src/utils/pagination'
 import { PrismaService } from 'src/utils/prisma.service'
 import { RequiredQuery } from 'src/utils/required-query'
@@ -31,8 +33,6 @@ import {
   UpdateFigmaFileDto,
   UpdateFigmaTextDto,
 } from '../dto/figma-plugin/figma.dto'
-import { ConfigService } from '@nestjs/config'
-import { Config } from 'src/utils/config'
 
 @Controller('figma-plugin')
 @UseGuards(APIKeyGuard)

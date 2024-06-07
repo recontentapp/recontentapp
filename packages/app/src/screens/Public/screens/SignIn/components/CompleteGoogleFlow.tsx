@@ -1,9 +1,9 @@
 import { FC, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { Box, ExternalLink, Spinner, Stack, Text, toast } from 'design-system'
 import { useAuth } from '../../../../../auth'
 import { Logo } from '../../../../../components/Logo'
-import { Box, ExternalLink, Stack, Text, toast, Spinner } from 'design-system'
 import {
   HTTPRequestError,
   getAPIClient,

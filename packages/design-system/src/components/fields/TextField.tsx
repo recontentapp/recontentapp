@@ -1,12 +1,12 @@
 import { CSSProperties, FC, useState } from 'react'
 
 import { useId } from '../../hooks/ids'
+import { styled } from '../../stitches'
 import { theme } from '../../theme'
 import { Stack } from '../Stack'
 import { Label } from './components/Label'
 import { Message } from './components/Message'
 import { FieldProps } from './types'
-import { styled } from '../../stitches'
 
 interface TextFieldProps
   extends FieldProps,

@@ -14,14 +14,9 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common'
-import { Response } from 'express'
-import { Components, Paths } from 'src/generated/typeDefinitions'
-import { AuthService } from 'src/modules/auth/auth.service'
-import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard'
-import { Public } from 'src/utils/is-public.decorator'
+import { ConfigService } from '@nestjs/config'
+import { FileInterceptor } from '@nestjs/platform-express'
 import { Throttle } from '@nestjs/throttler'
-import { PrismaService } from 'src/utils/prisma.service'
-import { WorkspaceService } from 'src/modules/workspace/workspace.service'
 import {
   Destination,
   DestinationConfigAWSS3,
@@ -39,28 +34,28 @@ import {
   Workspace,
   WorkspaceAccount,
 } from '@prisma/client'
-import { Pagination, PaginationParams } from 'src/utils/pagination'
-import { ProjectService } from 'src/modules/project/project.service'
-import { PhraseService } from 'src/modules/phrase/phrase.service'
-import { RequiredQuery } from 'src/utils/required-query'
-import { FileInterceptor } from '@nestjs/platform-express'
-import { ConfigService } from '@nestjs/config'
-import { Config } from 'src/utils/config'
-import { DestinationService } from 'src/modules/phrase/destination.service'
-import { TranslateService } from 'src/modules/phrase/translate.service'
-import { TagService } from 'src/modules/project/tag.service'
-import {
-  ApplyTagsToPhraseDto,
-  BatchApplyProjectTagDto,
-  CreateProjectTagDto,
-  DeleteProjectTagDto,
-  UpdateProjectTagDto,
-} from '../dto/private/tag.dto'
+import { Response } from 'express'
+import { Components, Paths } from 'src/generated/typeDefinitions'
+import { AuthService } from 'src/modules/auth/auth.service'
+import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard'
 import { AuthenticatedRequester } from 'src/modules/auth/requester.decorator'
 import { Requester } from 'src/modules/auth/requester.object'
 import { SettingsService } from 'src/modules/cloud/billing/settings.service'
-import { SlackService } from 'src/modules/cloud/slack-notifications/slack.service'
 import { SubscriptionService } from 'src/modules/cloud/billing/subscription.service'
+import { GitHubAppInstallationService } from 'src/modules/cloud/github-app/installation.service'
+import { SlackService } from 'src/modules/cloud/slack-notifications/slack.service'
+import { FigmaService } from 'src/modules/figma/figma.service'
+import { DestinationService } from 'src/modules/phrase/destination.service'
+import { PhraseService } from 'src/modules/phrase/phrase.service'
+import { TranslateService } from 'src/modules/phrase/translate.service'
+import { ProjectService } from 'src/modules/project/project.service'
+import { TagService } from 'src/modules/project/tag.service'
+import { WorkspaceService } from 'src/modules/workspace/workspace.service'
+import { Config } from 'src/utils/config'
+import { Public } from 'src/utils/is-public.decorator'
+import { Pagination, PaginationParams } from 'src/utils/pagination'
+import { PrismaService } from 'src/utils/prisma.service'
+import { RequiredQuery } from 'src/utils/required-query'
 import {
   ConfirmSignUpDto,
   ExchangeGoogleCodeForAccessTokenDto,
@@ -69,21 +64,21 @@ import {
   UpdateCurrentUserDto,
 } from '../dto/private/authentication.dto'
 import {
-  AddLanguagesToWorkspaceDto,
-  CreateWorkspaceDto,
-  CreateWorkspaceServiceAccountDto,
-  DeleteWorkspaceServiceAccountDto,
-  GenerateUserWorkspaceAccountAPIKeyDto,
-  InstallGithubAppDto,
-  InviteToWorkspaceDto,
-  JoinWorkspaceDto,
-} from '../dto/private/workspace.dto'
+  GenerateBillingPortalSessionDto,
+  ResetBillingSubscriptionDto,
+  SetupBillingSettingsDto,
+  SubscribeToBillingPlanDto,
+} from '../dto/private/billing.dto'
 import {
-  AddLanguagesToProjectDto,
-  CreateProjectDto,
-  DeleteProjectDto,
-  UpdateProjectDto,
-} from '../dto/private/project.dto'
+  CreateAWSS3DestinationDto,
+  CreateCDNDestinationDto,
+  CreateGithubDestinationDto,
+  CreateGoogleCloudStorageDestinationDto,
+  DeleteDestinationDto,
+  SyncDestinationDto,
+} from '../dto/private/destination.dto'
+import { SendFeedbackDto } from '../dto/private/feedback.dto'
+import { DeleteFigmaFileDto } from '../dto/private/figma.dto'
 import {
   AutoTranslatePhraseDto,
   BatchDeletePhraseDto,
@@ -95,23 +90,28 @@ import {
   UpdatePhraseKeyDto,
 } from '../dto/private/phrase.dto'
 import {
-  CreateAWSS3DestinationDto,
-  CreateCDNDestinationDto,
-  CreateGithubDestinationDto,
-  CreateGoogleCloudStorageDestinationDto,
-  DeleteDestinationDto,
-  SyncDestinationDto,
-} from '../dto/private/destination.dto'
+  AddLanguagesToProjectDto,
+  CreateProjectDto,
+  DeleteProjectDto,
+  UpdateProjectDto,
+} from '../dto/private/project.dto'
 import {
-  GenerateBillingPortalSessionDto,
-  ResetBillingSubscriptionDto,
-  SetupBillingSettingsDto,
-  SubscribeToBillingPlanDto,
-} from '../dto/private/billing.dto'
-import { FigmaService } from 'src/modules/figma/figma.service'
-import { DeleteFigmaFileDto } from '../dto/private/figma.dto'
-import { SendFeedbackDto } from '../dto/private/feedback.dto'
-import { GitHubAppInstallationService } from 'src/modules/cloud/github-app/installation.service'
+  ApplyTagsToPhraseDto,
+  BatchApplyProjectTagDto,
+  CreateProjectTagDto,
+  DeleteProjectTagDto,
+  UpdateProjectTagDto,
+} from '../dto/private/tag.dto'
+import {
+  AddLanguagesToWorkspaceDto,
+  CreateWorkspaceDto,
+  CreateWorkspaceServiceAccountDto,
+  DeleteWorkspaceServiceAccountDto,
+  GenerateUserWorkspaceAccountAPIKeyDto,
+  InstallGithubAppDto,
+  InviteToWorkspaceDto,
+  JoinWorkspaceDto,
+} from '../dto/private/workspace.dto'
 
 @Controller('private')
 @UseGuards(JwtAuthGuard)

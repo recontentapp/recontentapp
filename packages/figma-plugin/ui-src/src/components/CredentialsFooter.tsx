@@ -1,8 +1,8 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { Box, MinimalButton, Stack, Text } from 'design-system'
+import { useEffect } from 'react'
 import { useCurrentCredentials } from '../contexts/CurrentCredentials'
 import { useGetMe } from '../generated/reactQuery'
-import { useEffect } from 'react'
-import { useQueryClient } from '@tanstack/react-query'
 
 export const CREDENTIALS_FOOTER_HEIGHT = 36
 

@@ -3,15 +3,8 @@ import {
   ImATeapotException,
   Injectable,
 } from '@nestjs/common'
-import { Prisma } from '@prisma/client'
-import { Components } from 'src/generated/typeDefinitions'
-import { PaginationParams } from 'src/utils/pagination'
-import { PrismaService } from 'src/utils/prisma.service'
-import * as jwt from 'jsonwebtoken'
-import { escapeFileName } from 'src/utils/security'
 import { ConfigService } from '@nestjs/config'
-import { Config } from 'src/utils/config'
-import { Requester } from '../auth/requester.object'
+import { Prisma } from '@prisma/client'
 import {
   Dict,
   FileFormat,
@@ -34,6 +27,13 @@ import {
   renderPHPArrays,
   renderYAML,
 } from '@recontentapp/file-formats'
+import * as jwt from 'jsonwebtoken'
+import { Components } from 'src/generated/typeDefinitions'
+import { Config } from 'src/utils/config'
+import { PaginationParams } from 'src/utils/pagination'
+import { PrismaService } from 'src/utils/prisma.service'
+import { escapeFileName } from 'src/utils/security'
+import { Requester } from '../auth/requester.object'
 
 interface ListPhrasesParams {
   revisionId: string

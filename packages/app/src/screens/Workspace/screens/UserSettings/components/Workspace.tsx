@@ -1,4 +1,3 @@
-import { useRef } from 'react'
 import {
   Box,
   Button,
@@ -10,6 +9,7 @@ import {
   Text,
   toast,
 } from 'design-system'
+import { useRef } from 'react'
 import { FIGMA_PLUGIN_URL } from '../../../../../constants'
 import { useGenerateUserWorkspaceAccountAPIKey } from '../../../../../generated/reactQuery'
 import {

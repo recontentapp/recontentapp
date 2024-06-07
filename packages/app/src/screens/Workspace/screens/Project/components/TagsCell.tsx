@@ -1,17 +1,17 @@
-import { FC, useRef, useState } from 'react'
-import { Components, Paths } from '../../../../../generated/typeDefinitions'
+import { Popover } from '@reach/popover'
+import { InfiniteData, QueryKey, useQueryClient } from '@tanstack/react-query'
 import { Stack, Tag, Text } from 'design-system'
+import { FC, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import {
   ApplyTagsToPhraseParameters,
   useApplyTagsToPhrase,
   useListProjectTags,
 } from '../../../../../generated/reactQuery'
-import { useReferenceableTags } from '../../../hooks/referenceable'
+import { Components, Paths } from '../../../../../generated/typeDefinitions'
 import { useOutsideClick } from '../../../../../hooks/outsideClick'
-import { Popover } from '@reach/popover'
-import { InfiniteData, QueryKey, useQueryClient } from '@tanstack/react-query'
 import { styled } from '../../../../../theme'
+import { useReferenceableTags } from '../../../hooks/referenceable'
 
 interface TagsCellProps {
   phrase: Components.Schemas.PhraseItem

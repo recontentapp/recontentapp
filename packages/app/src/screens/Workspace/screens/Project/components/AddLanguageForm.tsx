@@ -1,5 +1,6 @@
 import { FC, useMemo, useState } from 'react'
 
+import { useQueryClient } from '@tanstack/react-query'
 import { Box, Button, SelectField, Stack, toast } from 'design-system'
 import {
   getGetProjectQueryKey,
@@ -7,7 +8,6 @@ import {
   useListWorkspaceLanguages,
 } from '../../../../../generated/reactQuery'
 import { Components } from '../../../../../generated/typeDefinitions'
-import { useQueryClient } from '@tanstack/react-query'
 
 export interface State {
   name: string

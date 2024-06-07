@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { Command, program } from 'commander'
-import getCommand from './commands/get'
 import exportCommand from './commands/export'
+import getCommand from './commands/get'
 import { API_KEY_ENV, getEnvironment } from './utils/environment'
 
 program

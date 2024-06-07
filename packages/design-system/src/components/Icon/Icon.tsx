@@ -1,8 +1,8 @@
 import { FC } from 'react'
 import { theme } from '../../theme'
+import { Box } from '../Box'
 import { iconMap } from './iconMap'
 import { IconName } from './types'
-import { Box } from '../Box'
 
 interface IconProps {
   size: number

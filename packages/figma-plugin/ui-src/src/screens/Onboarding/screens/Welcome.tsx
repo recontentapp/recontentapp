@@ -1,4 +1,4 @@
-import { Box, Stack, Text, Button } from 'design-system'
+import { Box, Button, Stack, Text } from 'design-system'
 interface WelcomeProps {
   onGetStarted: () => void
 }

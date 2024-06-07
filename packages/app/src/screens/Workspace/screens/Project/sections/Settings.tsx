@@ -1,7 +1,7 @@
 import { FC, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
-import { FullpageSpinner } from '../../../../../components/FullpageSpinner'
+import { useQueryClient } from '@tanstack/react-query'
 import {
   Badge,
   Box,
@@ -17,10 +17,7 @@ import {
   TextField,
   toast,
 } from 'design-system'
-import { formatRelative } from '../../../../../utils/dates'
-import { SettingsSection } from '../../../components/SettingsSection'
-import { useReferenceableAccounts } from '../../../hooks/referenceable'
-import { AddLanguageForm } from '../components/AddLanguageForm'
+import { FullpageSpinner } from '../../../../../components/FullpageSpinner'
 import {
   getGetProjectQueryKey,
   getListProjectsQueryKey,
@@ -30,8 +27,11 @@ import {
   useUpdateProject,
 } from '../../../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
-import { useQueryClient } from '@tanstack/react-query'
 import routes from '../../../../../routing'
+import { formatRelative } from '../../../../../utils/dates'
+import { SettingsSection } from '../../../components/SettingsSection'
+import { useReferenceableAccounts } from '../../../hooks/referenceable'
+import { AddLanguageForm } from '../components/AddLanguageForm'
 
 export const Settings: FC = () => {
   const queryClient = useQueryClient()

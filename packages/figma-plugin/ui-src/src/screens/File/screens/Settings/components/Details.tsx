@@ -6,9 +6,9 @@ import {
   Stack,
   Text,
 } from 'design-system'
-import { useDeleteFigmaFile } from '../../../../../generated/reactQuery'
-import { useBridge } from '../../../../../contexts/Bridge'
 import { FullpageSpinner } from '../../../../../components/FullpageSpinner'
+import { useBridge } from '../../../../../contexts/Bridge'
+import { useDeleteFigmaFile } from '../../../../../generated/reactQuery'
 import { formatRelative } from '../../../../../utils/dates'
 import { useFile } from '../../../hooks'
 

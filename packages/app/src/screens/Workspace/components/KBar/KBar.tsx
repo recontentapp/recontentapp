@@ -4,12 +4,12 @@ import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { Box } from 'design-system'
-import { useModals } from '../../hooks/modals'
-import { useKBarContext } from './context'
 import { useListProjects } from '../../../../generated/reactQuery'
 import { useCurrentWorkspace, useHasAbility } from '../../../../hooks/workspace'
 import routes from '../../../../routing'
 import { keyframes, styled } from '../../../../theme'
+import { useModals } from '../../hooks/modals'
+import { useKBarContext } from './context'
 
 const fadeIn = keyframes({
   '0%': {

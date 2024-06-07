@@ -11,17 +11,17 @@ import {
 import { useLocation } from 'react-router-dom'
 
 import {
-  CreateProjectModal,
-  CreateProjectModalRef,
-} from '../components/modals/CreateProjectModal'
+  CreateDestinationModal,
+  CreateDestinationModalRef,
+} from '../components/modals/CreateDestinationModal'
 import {
   CreatePhraseModal,
   CreatePhraseModalRef,
 } from '../components/modals/CreatePhraseModal'
 import {
-  CreateDestinationModal,
-  CreateDestinationModalRef,
-} from '../components/modals/CreateDestinationModal'
+  CreateProjectModal,
+  CreateProjectModalRef,
+} from '../components/modals/CreateProjectModal'
 import {
   CreateTagModal,
   CreateTagModalRef,

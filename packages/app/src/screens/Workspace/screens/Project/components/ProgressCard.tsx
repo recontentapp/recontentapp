@@ -1,5 +1,5 @@
-import { FC } from 'react'
 import { Heading, Stack, Text } from 'design-system'
+import { FC } from 'react'
 import { styled } from '../../../../../theme'
 
 export interface ProgressCardProps {

@@ -1,6 +1,6 @@
 import { Box, Heading, MinimalButton, Stack, Text } from 'design-system'
-import { useBridge } from '../contexts/Bridge'
 import { UserCredentials } from '../../../shared-types'
+import { useBridge } from '../contexts/Bridge'
 import { styled } from '../theme'
 
 interface SelectCredentialsProps {

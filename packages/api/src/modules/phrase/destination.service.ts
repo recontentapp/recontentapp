@@ -1,8 +1,21 @@
+import {
+  DeleteObjectsCommand,
+  ListObjectsCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3'
+import { Storage as GoogleCloudStorage } from '@google-cloud/storage'
 import { BadRequestException, Injectable } from '@nestjs/common'
-import { PrismaService } from 'src/utils/prisma.service'
 import { ConfigService } from '@nestjs/config'
-import { Config } from 'src/utils/config'
-import { Components } from 'src/generated/typeDefinitions'
+import {
+  Destination,
+  DestinationConfigAWSS3,
+  DestinationConfigCDN,
+  DestinationConfigGithub,
+  DestinationConfigGoogleCloudStorage,
+  Prisma,
+  Workspace,
+} from '@prisma/client'
 import {
   FileFormat,
   fileFormatContentTypes,
@@ -17,26 +30,13 @@ import {
   renderPHPArrays,
   renderYAML,
 } from '@recontentapp/file-formats'
-import {
-  DeleteObjectsCommand,
-  ListObjectsCommand,
-  PutObjectCommand,
-  S3Client,
-} from '@aws-sdk/client-s3'
-import { Storage as GoogleCloudStorage } from '@google-cloud/storage'
+import { Components } from 'src/generated/typeDefinitions'
+import { Config } from 'src/utils/config'
 import { PaginationParams } from 'src/utils/pagination'
-import {
-  Destination,
-  DestinationConfigAWSS3,
-  DestinationConfigCDN,
-  DestinationConfigGithub,
-  DestinationConfigGoogleCloudStorage,
-  Prisma,
-  Workspace,
-} from '@prisma/client'
+import { PrismaService } from 'src/utils/prisma.service'
 import { decrypt, encrypt } from 'src/utils/security'
-import { Requester, WorkspaceAccess } from '../auth/requester.object'
 import { escapeTrailingSlash } from 'src/utils/strings'
+import { Requester, WorkspaceAccess } from '../auth/requester.object'
 import {
   Addition,
   GitHubAppSyncService,

@@ -1,36 +1,36 @@
 import { Route, Routes } from 'react-router-dom'
 
+import { FullpageSpinner } from '../../components/FullpageSpinner'
+import { ProtectedRouteElement } from '../../components/ProtectedRouteElement'
+import { useGetWorkspaceAbilities } from '../../generated/reactQuery'
+import { useCurrentWorkspace } from '../../hooks/workspace'
+import routes from '../../routing'
+import { styled } from '../../theme'
+import { CreateWorkspace } from '../Onboarding/screens/CreateWorkspace'
+import { JoinWorkspace } from '../Onboarding/screens/JoinWorkspace'
 import { Redirect } from '../Redirect'
+import { BillingBanner } from './components/BillingBanner'
 import { KBar, KBarProvider } from './components/KBar'
 import { Sidebar } from './components/Sidebar'
 import { ModalsProvider } from './hooks/modals'
 import { Dashboard } from './screens/Dashboard'
+import { Destination } from './screens/Destination'
+import { ImportFromFile } from './screens/ImportFromFile'
 import {
   Project,
-  Settings as ProjectSettings,
-  Phrases as ProjectPhrases,
-  Import as ProjectImport,
   Export as ProjectExport,
+  Import as ProjectImport,
+  Phrases as ProjectPhrases,
+  Settings as ProjectSettings,
 } from './screens/Project'
 import { UserSettings } from './screens/UserSettings'
 import {
+  Billing as WorkspaceBilling,
   Integrations as WorkspaceIntegrations,
   Languages as WorkspaceLanguages,
   Members as WorkspaceMembers,
-  Billing as WorkspaceBilling,
   WorkspaceSettings,
 } from './screens/WorkspaceSettings'
-import { ImportFromFile } from './screens/ImportFromFile'
-import { Destination } from './screens/Destination'
-import { useCurrentWorkspace } from '../../hooks/workspace'
-import routes from '../../routing'
-import { useGetWorkspaceAbilities } from '../../generated/reactQuery'
-import { FullpageSpinner } from '../../components/FullpageSpinner'
-import { BillingBanner } from './components/BillingBanner'
-import { styled } from '../../theme'
-import { CreateWorkspace } from '../Onboarding/screens/CreateWorkspace'
-import { JoinWorkspace } from '../Onboarding/screens/JoinWorkspace'
-import { ProtectedRouteElement } from '../../components/ProtectedRouteElement'
 
 const MainContainer = styled('div', {
   height: '100vh',

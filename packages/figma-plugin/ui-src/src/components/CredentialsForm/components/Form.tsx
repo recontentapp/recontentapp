@@ -1,4 +1,4 @@
-import { Stack, TextField, ExternalLink, Switch } from 'design-system'
+import { ExternalLink, Stack, Switch, TextField } from 'design-system'
 import { getURLs } from '../../../utils/origins'
 import { CredentialsValues } from '../types'
 

@@ -1,21 +1,21 @@
+import { useQueryClient } from '@tanstack/react-query'
+import { toast } from 'design-system'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { FullpageSpinner } from '../../../../components/FullpageSpinner'
 import { Head } from '../../../../components/Head'
-import { Page } from '../../components/Page'
-import { ScreenWrapper } from '../../components/ScreenWrapper'
-import { State } from './types'
-import { Form } from './steps/Form'
-import { Mapping } from './steps/Mapping'
-import { useCurrentWorkspace } from '../../../../hooks/workspace'
 import {
   getListPhrasesQueryKey,
   useGetProject,
   useImportPhrases,
 } from '../../../../generated/reactQuery'
+import { useCurrentWorkspace } from '../../../../hooks/workspace'
 import routes from '../../../../routing'
-import { toast } from 'design-system'
-import { useQueryClient } from '@tanstack/react-query'
+import { Page } from '../../components/Page'
+import { ScreenWrapper } from '../../components/ScreenWrapper'
+import { Form } from './steps/Form'
+import { Mapping } from './steps/Mapping'
+import { State } from './types'
 
 export const ImportFromFile = () => {
   const queryClient = useQueryClient()

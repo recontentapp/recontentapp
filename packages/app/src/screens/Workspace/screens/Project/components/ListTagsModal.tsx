@@ -1,5 +1,6 @@
 import { FC, forwardRef, useCallback, useImperativeHandle, useRef } from 'react'
 
+import { useQueryClient } from '@tanstack/react-query'
 import {
   Box,
   DropdownButton,
@@ -11,7 +12,6 @@ import {
   Text,
   toast,
 } from 'design-system'
-import { formatRelative } from '../../../../../utils/dates'
 import {
   getGetReferenceableTagsQueryKey,
   getListProjectTagsQueryKey,
@@ -19,7 +19,7 @@ import {
   useGetProject,
   useListProjectTags,
 } from '../../../../../generated/reactQuery'
-import { useQueryClient } from '@tanstack/react-query'
+import { formatRelative } from '../../../../../utils/dates'
 
 export interface ListTagsModalRef {
   open: () => void

@@ -1,8 +1,8 @@
 import { useBridge } from '../../../../contexts/Bridge'
-import { Placeholder } from './components/Placeholder'
-import { NewTextForm } from './components/NewTextForm'
 import { ExistingTextForm } from './components/ExistingTextForm'
 import { MultipleTextsForm } from './components/MultipleTextsForm'
+import { NewTextForm } from './components/NewTextForm'
+import { Placeholder } from './components/Placeholder'
 
 export const Inspect = () => {
   const { selection } = useBridge()

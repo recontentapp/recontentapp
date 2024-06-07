@@ -1,5 +1,5 @@
 import { createStitches } from '@stitches/react'
-import { medias, theme as customTheme } from 'design-system'
+import { theme as customTheme, medias } from 'design-system'
 
 export const {
   styled,
