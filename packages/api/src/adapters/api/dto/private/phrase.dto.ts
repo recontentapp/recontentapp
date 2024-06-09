@@ -74,6 +74,28 @@ export class AutoTranslatePhraseDto {
   languageId: string
 }
 
+export class BatchAutoTranslatePhrasesDto {
+  @IsArray()
+  @IsNotEmpty()
+  @ArrayMaxSize(50)
+  phraseIds: string[]
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
+  revisionId: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
+  sourceLanguageId: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
+  targetLanguageId: string
+}
+
 export class DeletePhraseDto {
   @IsString()
   @IsNotEmpty()

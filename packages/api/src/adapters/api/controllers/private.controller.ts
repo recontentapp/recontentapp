@@ -81,6 +81,7 @@ import { SendFeedbackDto } from '../dto/private/feedback.dto'
 import { DeleteFigmaFileDto } from '../dto/private/figma.dto'
 import {
   AutoTranslatePhraseDto,
+  BatchAutoTranslatePhrasesDto,
   BatchDeletePhraseDto,
   CreatePhraseDto,
   DeletePhraseDto,
@@ -1051,6 +1052,28 @@ export class PrivateApiController {
     })
 
     return PrivateApiController.formatPhrase(phrase)
+  }
+
+  @Post('/BatchAutoTranslatePhrases')
+  async batchAutoTranslatePhrases(
+    @Body()
+    {
+      revisionId,
+      phraseIds,
+      sourceLanguageId,
+      targetLanguageId,
+    }: BatchAutoTranslatePhrasesDto,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.BatchAutoTranslatePhrases.Responses.$204> {
+    await this.translateService.batchTranslatePhrases({
+      revisionId,
+      phraseIds,
+      sourceLanguageId,
+      targetLanguageId,
+      requester,
+    })
+
+    return {}
   }
 
   @Delete('/BatchDeletePhrase')

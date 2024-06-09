@@ -1064,6 +1064,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Phrase'
+  /BatchAutoTranslatePhrases:
+    post:
+      operationId: batchAutoTranslatePhrases
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                revisionId:
+                  type: string
+                phraseIds:
+                  type: array
+                  items:
+                    type: string
+                sourceLanguageId:
+                  type: string
+                targetLanguageId:
+                  type: string
+              additionalProperties: false
+              required:
+                - revisionId
+                - phraseIds
+                - sourceLanguageId
+                - targetLanguageId
+      responses:
+        '204':
+          description: OK
   /ListProjectTags:
     get:
       operationId: listProjectTags

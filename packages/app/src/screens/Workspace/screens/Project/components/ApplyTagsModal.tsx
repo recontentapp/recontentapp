@@ -72,7 +72,7 @@ const Content: FC<ContentProps> = ({ projectId, phraseIds, onApply }) => {
       contextTitle={project?.name}
       title="Apply tags"
       primaryAction={{
-        label: 'Save changes',
+        label: `Apply tags to ${phraseIds.length} phrases`,
         onAction: () =>
           mutateAsync({
             body: {

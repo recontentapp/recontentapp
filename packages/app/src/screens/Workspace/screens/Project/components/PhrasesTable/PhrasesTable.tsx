@@ -419,6 +419,7 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
         SelectionFooter={
           <SelectionFooter
             projectId={project.id}
+            revisionId={project.masterRevisionId}
             phrasesQueryKey={phrasesQueryKey}
             selectedPhrases={selectedPhrases}
             onBatchSuccess={() => tableRef.current.resetSelection()}

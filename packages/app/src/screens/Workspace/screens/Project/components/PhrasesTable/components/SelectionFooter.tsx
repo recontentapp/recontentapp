@@ -13,9 +13,14 @@ import { useRef } from 'react'
 import { useBatchDeletePhrase } from '../../../../../../../generated/reactQuery'
 import { Components } from '../../../../../../../generated/typeDefinitions'
 import { ApplyTagsModal, ApplyTagsModalRef } from '../../ApplyTagsModal'
+import {
+  BatchTranslateModal,
+  BatchTranslateModalRef,
+} from './BatchTranslateModal'
 
 interface Props {
   projectId: string
+  revisionId: string
   selectedPhrases: Components.Schemas.PhraseItem[]
   phrasesQueryKey: QueryKey
   onBatchSuccess: () => void
@@ -23,6 +28,7 @@ interface Props {
 
 export const SelectionFooter = ({
   projectId,
+  revisionId,
   selectedPhrases,
   phrasesQueryKey,
   onBatchSuccess,
@@ -30,6 +36,7 @@ export const SelectionFooter = ({
   const queryClient = useQueryClient()
   const confirmationModalRef = useRef<ConfirmationModalRef>(null!)
   const applyTagsModalRef = useRef<ApplyTagsModalRef>(null!)
+  const batchTranslateModalRef = useRef<BatchTranslateModalRef>(null!)
 
   const { mutateAsync: batchDeletePhrases } = useBatchDeletePhrase({
     onSuccess: () => {
@@ -87,6 +94,20 @@ export const SelectionFooter = ({
           <Stack direction="row" spacing="$space60" alignItems="center">
             <Button
               variation="primary"
+              icon="translate"
+              size="xsmall"
+              isDisabled={!canBatch}
+              isLoading={false}
+              onAction={() =>
+                batchTranslateModalRef.current.open(
+                  selectedPhrases.map(phrase => phrase.id),
+                )
+              }
+            >
+              Autotranslate
+            </Button>
+            <Button
+              variation="primary"
               icon="local_offer"
               size="xsmall"
               isDisabled={!canBatch}
@@ -127,6 +148,13 @@ export const SelectionFooter = ({
       <ApplyTagsModal
         ref={applyTagsModalRef}
         projectId={projectId}
+        onApply={onBatchSuccess}
+      />
+
+      <BatchTranslateModal
+        ref={batchTranslateModalRef}
+        projectId={projectId}
+        revisionId={revisionId}
         onApply={onBatchSuccess}
       />
     </Box>
