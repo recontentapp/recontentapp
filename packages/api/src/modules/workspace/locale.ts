@@ -7,35 +7,21 @@ export type LanguageLocale =
   | 'ru'
   | 'zh'
   | 'ab'
-  | 'ace'
-  | 'ach'
-  | 'ada'
-  | 'ady'
   | 'aa'
   | 'aa-DJ'
   | 'aa-ER'
   | 'aa-ET'
   | 'aa-Ethi'
-  | 'afh'
   | 'af'
   | 'af-NA'
   | 'af-ZA'
-  | 'afa'
-  | 'ain'
-  | 'ain-Latn'
   | 'ak'
   | 'ak-GH'
-  | 'akk'
   | 'sq'
   | 'sq-AL'
   | 'sq-MK'
-  | 'ale'
-  | 'alg'
-  | 'tut'
   | 'am'
   | 'am-ET'
-  | 'anp'
-  | 'apa'
   | 'ar'
   | 'ar-145'
   | 'ar-DZ'
@@ -58,26 +44,12 @@ export type LanguageLocale =
   | 'ar-AE'
   | 'ar-YE'
   | 'an'
-  | 'arp'
-  | 'arn'
-  | 'arw'
   | 'hy'
   | 'hy-AM'
-  | 'rup'
-  | 'rup-Grek'
-  | 'rup-Latn'
-  | 'art'
   | 'as'
   | 'as-IN'
-  | 'ast'
-  | 'ath'
-  | 'cch'
-  | 'cch-NG'
-  | 'aus'
-  | 'map'
   | 'av'
   | 'ae'
-  | 'awa'
   | 'ay'
   | 'az'
   | 'az-Arab'
@@ -88,66 +60,32 @@ export type LanguageLocale =
   | 'az-Latn'
   | 'az-IR'
   | 'az-Arab-IR'
-  | 'ban'
-  | 'bat'
-  | 'bal'
-  | 'bal-Arab'
   | 'bm'
-  | 'bai'
-  | 'bad'
-  | 'bnt'
-  | 'bas'
   | 'ba'
   | 'eu'
   | 'eu-FR'
   | 'eu-ES'
-  | 'btk'
-  | 'bej'
   | 'be'
   | 'be-BY'
   | 'be-Cyrl'
   | 'be-Latn'
-  | 'bem'
   | 'bn'
   | 'bn-bd'
   | 'bn-IN'
-  | 'ber'
-  | 'bho'
-  | 'bh'
-  | 'bik'
-  | 'bin'
   | 'bi'
-  | 'byn'
-  | 'byn-ER'
-  | 'zbl'
   | 'bs'
   | 'bs-BA'
-  | 'bra'
   | 'br'
-  | 'bug'
   | 'bg'
   | 'bg-BG'
-  | 'bua'
   | 'my'
   | 'my-MM'
-  | 'cad'
-  | 'car'
   | 'ca'
   | 'ca-ES'
-  | 'cau'
-  | 'ceb'
-  | 'cel'
-  | 'cai'
   | 'km'
   | 'km-KH'
-  | 'cmc'
-  | 'cmc-Arab'
   | 'ch'
   | 'ce'
-  | 'chr'
-  | 'chy'
-  | 'cnr'
-  | 'cnr-ME'
   | 'ny'
   | 'ny-MW'
   | 'zh-CN'
@@ -165,49 +103,26 @@ export type LanguageLocale =
   | 'zh-Hant-TW'
   | 'zh-Hant'
   | 'zh-yue'
-  | 'chn'
-  | 'chp'
-  | 'cho'
   | 'cu'
-  | 'chk'
   | 'cv'
   | 'kw'
   | 'kw-GB'
   | 'co'
   | 'cr'
-  | 'mus'
-  | 'crp'
-  | 'crh'
-  | 'crh-Cyrl'
-  | 'crh-Latn'
   | 'hr'
   | 'hr-HR'
-  | 'cus'
   | 'cs'
   | 'cs-CZ'
-  | 'dak'
   | 'da'
   | 'da-DK'
-  | 'dar'
-  | 'day'
-  | 'del'
-  | 'din'
   | 'dv'
   | 'dv-MV'
   | 'dv-Thaa'
-  | 'doi'
-  | 'dgr'
-  | 'dra'
-  | 'dua'
   | 'nl'
   | 'nl-BE'
   | 'nl-NL'
-  | 'dyu'
   | 'dz'
   | 'dz-BT'
-  | 'frs'
-  | 'efi'
-  | 'eka'
   | 'en-AR'
   | 'en-AS'
   | 'en-AT'
@@ -215,7 +130,6 @@ export type LanguageLocale =
   | 'en-AU'
   | 'en-BH'
   | 'en-BR'
-  | 'cpe'
   | 'en-BE'
   | 'en-BZ'
   | 'en-BW'
@@ -313,7 +227,6 @@ export type LanguageLocale =
   | 'en-AL'
   | 'en-AD'
   | 'en-IC'
-  | 'myv'
   | 'eo'
   | 'et'
   | 'et-EE'
@@ -321,20 +234,12 @@ export type LanguageLocale =
   | 'ee'
   | 'ee-GH'
   | 'ee-TG'
-  | 'ewo'
-  | 'fan'
-  | 'fat'
   | 'fo'
   | 'fo-FO'
   | 'fj'
-  | 'fil'
-  | 'fil-PH'
   | 'fi'
   | 'fi-FI'
   | 'fi-Se'
-  | 'fiu'
-  | 'fon'
-  | 'cpf'
   | 'fr-BE'
   | 'fr-CA'
   | 'fr-FR'
@@ -354,44 +259,28 @@ export type LanguageLocale =
   | 'fr-RE'
   | 'fr-TN'
   | 'fr-NC'
-  | 'fur'
-  | 'fur-IT'
   | 'ff'
   | 'ff-Arab'
   | 'ff-Latn'
-  | 'gaa'
   | 'gd'
-  | 'gaa-GH'
   | 'gl'
   | 'gl-ES'
   | 'lg'
-  | 'gay'
-  | 'gba'
-  | 'gez'
-  | 'gez-ER'
-  | 'gez-ET'
   | 'ka'
   | 'ka-GE'
   | 'de-AT'
   | 'de-BE'
   | 'de-DE'
-  | 'gem'
   | 'de-LI'
   | 'de-LU'
   | 'de-NL'
   | 'de-CH'
-  | 'gil'
-  | 'gon'
-  | 'gor'
-  | 'grb'
   | 'el'
   | 'el-CY'
   | 'el-GR'
   | 'gn'
   | 'gu'
   | 'gu-IN'
-  | 'gwi'
-  | 'hai'
   | 'ht'
   | 'ht-HT'
   | 'ha'
@@ -406,49 +295,29 @@ export type LanguageLocale =
   | 'ha-Latn-NE'
   | 'ha-SD'
   | 'ha-Arab-SD'
-  | 'haw'
-  | 'haw-US'
   | 'he'
   | 'he-Hebr'
   | 'he-IL'
   | 'hz'
-  | 'hil'
-  | 'him'
   | 'hi'
   | 'hi-IN'
   | 'ho'
-  | 'hit'
-  | 'hmn'
   | 'hu'
   | 'hu-HU'
-  | 'hup'
-  | 'iba'
   | 'is'
   | 'is-IS'
   | 'io'
   | 'ig'
   | 'ig-NG'
-  | 'ijo'
-  | 'ilo'
-  | 'smn'
-  | 'inc'
-  | 'ine'
   | 'id'
   | 'id-Arab'
   | 'id-ID'
   | 'id-Arab-ID'
-  | 'inh'
-  | 'in'
-  | 'in-ID'
-  | 'ia'
-  | 'ie'
   | 'iu'
   | 'iu-CA'
   | 'ik'
-  | 'ira'
   | 'ga'
   | 'ga-IE'
-  | 'iro'
   | 'it'
   | 'it-AT'
   | 'it-IT'
@@ -458,31 +327,15 @@ export type LanguageLocale =
   | 'jv'
   | 'jv-Java'
   | 'jv-Latn'
-  | 'jrb'
-  | 'jpr'
-  | 'kbd'
-  | 'kab'
-  | 'kac'
   | 'kl'
   | 'kl-GL'
-  | 'xal'
-  | 'xal-Cyrl'
-  | 'xal-Mong'
-  | 'kam'
-  | 'kam-KE'
   | 'kn'
   | 'kn-IN'
   | 'kr'
-  | 'krc'
-  | 'kaa'
-  | 'krl'
-  | 'kar'
   | 'ks'
   | 'ks-Arab'
   | 'ks-Deva'
   | 'ks-Latn'
-  | 'csb'
-  | 'kaw'
   | 'kk'
   | 'kk-Arab'
   | 'kk-Cyrl'
@@ -491,11 +344,7 @@ export type LanguageLocale =
   | 'kk-Cyrl-KZ'
   | 'kk-Latn-KZ'
   | 'kk-Latn'
-  | 'kha'
-  | 'khi'
-  | 'kho'
   | 'ki'
-  | 'kmb'
   | 'rw'
   | 'rw-RW'
   | 'ky-Cyrl'
@@ -503,28 +352,11 @@ export type LanguageLocale =
   | 'ky-Arab'
   | 'ky-KG'
   | 'ky-Latn'
-  | 'tlh'
   | 'kv'
   | 'kg'
-  | 'kok'
-  | 'kok-IN'
-  | 'kok-Knda-IN'
-  | 'kok-Latn-IN'
-  | 'kok-Mlym-IN'
-  | 'kok-Knda'
-  | 'kok-Latn'
-  | 'kok-Mlym'
   | 'ko'
   | 'ko-KR'
-  | 'kfo'
-  | 'kfo-CI'
-  | 'kos'
-  | 'kpe'
-  | 'kpe-GN'
-  | 'kpe-LR'
-  | 'kro'
   | 'kj'
-  | 'kum'
   | 'ku'
   | 'ku-Arab'
   | 'ku-IR'
@@ -536,47 +368,22 @@ export type LanguageLocale =
   | 'ku-Arab-SY'
   | 'ku-TR'
   | 'ku-Latn-TR'
-  | 'kru'
-  | 'kut'
-  | 'lad'
-  | 'lad-Hebr'
-  | 'lad-Latn'
-  | 'lah'
-  | 'lam'
   | 'lo'
   | 'lo-LA'
   | 'la'
   | 'lv'
   | 'lv-LV'
-  | 'lez'
   | 'li'
   | 'ln'
   | 'ln-CG'
   | 'ln-CD'
   | 'lt'
   | 'lt-LT'
-  | 'jbo'
-  | 'dsb'
-  | 'nds'
-  | 'nds-DE'
-  | 'loz'
   | 'lu'
-  | 'lua'
-  | 'lui'
-  | 'smj'
-  | 'lun'
-  | 'luo'
-  | 'lus'
   | 'lb'
   | 'lb-LU'
   | 'mk'
   | 'mk-MK'
-  | 'mad'
-  | 'mag'
-  | 'mai'
-  | 'mak'
-  | 'mak-Bugi'
-  | 'mak-Latn'
   | 'mg'
   | 'ms'
   | 'ml'
@@ -593,30 +400,12 @@ export type LanguageLocale =
   | 'ms-Latn-MY'
   | 'mt'
   | 'mt-MT'
-  | 'mnc'
-  | 'mdr'
-  | 'man'
-  | 'mni'
-  | 'mno'
   | 'gv'
   | 'gv-GB'
   | 'mi'
   | 'mr'
   | 'mr-IN'
-  | 'chm'
   | 'mh'
-  | 'mwr'
-  | 'mas'
-  | 'myn'
-  | 'men'
-  | 'mic'
-  | 'min'
-  | 'mwl'
-  | 'moh'
-  | 'mdf'
-  | 'mo'
-  | 'mo-MD'
-  | 'lol'
   | 'mn'
   | 'mn-CN'
   | 'mn-Mong-CN'
@@ -624,31 +413,15 @@ export type LanguageLocale =
   | 'mn-MN'
   | 'mn-Cyrl-MN'
   | 'mn-Mong'
-  | 'mkh'
-  | 'mos'
-  | 'mul'
-  | 'mun'
-  | 'nah'
   | 'na'
   | 'nv'
   | 'nd'
   | 'nr'
   | 'nr-ZA'
   | 'ng'
-  | 'nap'
-  | 'new'
   | 'ne'
   | 'ne-IN'
   | 'ne-NP'
-  | 'nia'
-  | 'nic'
-  | 'ssa'
-  | 'niu'
-  | 'nqo'
-  | 'nog'
-  | 'zxx'
-  | 'nai'
-  | 'frr'
   | 'se'
   | 'se-FI'
   | 'se-NO'
@@ -658,11 +431,6 @@ export type LanguageLocale =
   | 'nb-NO'
   | 'nn'
   | 'nn-NO'
-  | 'nub'
-  | 'nym'
-  | 'nyn'
-  | 'nyo'
-  | 'nzi'
   | 'oc'
   | 'oc-FR'
   | 'oj'
@@ -671,20 +439,13 @@ export type LanguageLocale =
   | 'om'
   | 'om-ET'
   | 'om-KE'
-  | 'osa'
   | 'os'
   | 'os-Cyrl'
   | 'os-Latn'
-  | 'oto'
-  | 'pal'
-  | 'pau'
   | 'pi'
   | 'pi-Deva'
   | 'pi-Sinh'
   | 'pi-Thai'
-  | 'pam'
-  | 'pam-IN'
-  | 'pag'
   | 'pa-Arab'
   | 'pa-Deva'
   | 'pa-Guru'
@@ -692,23 +453,15 @@ export type LanguageLocale =
   | 'pa-Guru-IN'
   | 'pa-Arab-PK'
   | 'pa-Deva-PK'
-  | 'pap'
-  | 'paa'
-  | 'nso'
-  | 'nso-ZA'
   | 'fa'
   | 'fa-AF'
   | 'fa-Arab'
   | 'fa-Cyrl'
   | 'fa-IR'
-  | 'phi'
-  | 'pon'
   | 'pl'
   | 'pl-PL'
-  | 'cpp'
   | 'pt-BR'
   | 'pt-PT'
-  | 'pra'
   | 'pa'
   | 'pa-PK'
   | 'ps'
@@ -716,42 +469,21 @@ export type LanguageLocale =
   | 'ps-Arab'
   | 'qu'
   | 'qu-PE'
-  | 'raj'
-  | 'raj-Arab'
-  | 'raj-Deva'
-  | 'rap'
-  | 'rar'
-  | 'roa'
   | 'ro'
   | 'ro-MD'
   | 'ro-RO'
   | 'rm'
-  | 'rom'
   | 'rn'
   | 'ru-LV'
   | 'ru-LT'
   | 'ru-RU'
   | 'ru-UA'
   | 'ru-KZ'
-  | 'sal'
-  | 'sam'
-  | 'sam-Syrc'
-  | 'smi'
   | 'sm'
-  | 'sad'
   | 'sg'
   | 'sa'
   | 'sa-IN'
-  | 'sat'
-  | 'sat-Beng'
-  | 'sat-Deva'
-  | 'sat-Latn'
-  | 'sat-Orya'
   | 'sc'
-  | 'sas'
-  | 'sco'
-  | 'sel'
-  | 'sem'
   | 'sr'
   | 'sr-BA'
   | 'sr-Cyrl-BA'
@@ -767,59 +499,30 @@ export type LanguageLocale =
   | 'sr-Latn-CS'
   | 'sr-Cyrl-RS'
   | 'sr-Latn-RS'
-  | 'sh'
-  | 'sh-BA'
-  | 'sh-ME'
-  | 'sh-CS'
-  | 'srr'
-  | 'srr-Arab'
-  | 'srr-Latn'
-  | 'shn'
   | 'sn'
   | 'ii'
   | 'ii-CN'
   | 'ii-Yiii-CN'
   | 'ii-Yiii'
-  | 'scn'
-  | 'sid'
-  | 'sid-ET'
-  | 'sid-Ethi'
-  | 'sid-Latn'
-  | 'sgn'
-  | 'bla'
   | 'sd'
   | 'sd-Arab'
   | 'sd-Deva'
   | 'sd-Guru'
   | 'si'
   | 'si-LK'
-  | 'sit'
-  | 'sio'
-  | 'sms'
-  | 'den'
-  | 'sla'
   | 'sk'
   | 'sk-SK'
   | 'sl'
   | 'sl-SI'
-  | 'sog'
   | 'so'
   | 'so-Arab'
   | 'so-DJ'
   | 'so-ET'
   | 'so-KE'
   | 'so-SO'
-  | 'son'
-  | 'snk'
-  | 'snk-Arab'
-  | 'snk-Latn'
-  | 'wen'
   | 'st'
   | 'st-LS'
   | 'st-ZA'
-  | 'sai'
-  | 'alt'
-  | 'sma'
   | 'es-419'
   | 'es-AR'
   | 'es-BO'
@@ -843,16 +546,10 @@ export type LanguageLocale =
   | 'es-US'
   | 'es-UY'
   | 'es-VE'
-  | 'srn'
-  | 'suk'
-  | 'sux'
   | 'su'
   | 'su-Arab'
   | 'su-Java'
   | 'su-Latn'
-  | 'sus'
-  | 'sus-Arab'
-  | 'sus-Latn'
   | 'sw'
   | 'sw-KE'
   | 'sw-TZ'
@@ -862,16 +559,8 @@ export type LanguageLocale =
   | 'sv'
   | 'sv-FI'
   | 'sv-SE'
-  | 'gsw'
-  | 'gsw-CH'
-  | 'syr'
-  | 'syr-Cyrl'
-  | 'syr-SY'
-  | 'syr-Syrc'
-  | 'syr-Cyrl-SY'
   | 'tl'
   | 'ty'
-  | 'tai'
   | 'tg'
   | 'tg-Arab'
   | 'tg-Cyrl'
@@ -880,10 +569,6 @@ export type LanguageLocale =
   | 'tg-Arab-TJ'
   | 'tg-Cyrl-TJ'
   | 'tg-Latn-TJ'
-  | 'tmh'
-  | 'tmh-Arab'
-  | 'tmh-Latn'
-  | 'tmh-Tfng'
   | 'ta'
   | 'ta-IN'
   | 'tt'
@@ -894,48 +579,25 @@ export type LanguageLocale =
   | 'tt-Latn-RU'
   | 'te'
   | 'te-IN'
-  | 'ter'
-  | 'tet'
   | 'th'
   | 'th-TH'
   | 'bo'
   | 'bo-CN'
   | 'bo-IN'
-  | 'tig'
-  | 'tig-ER'
   | 'ti'
   | 'ti-ER'
   | 'ti-ET'
-  | 'tem'
-  | 'tiv'
-  | 'tli'
-  | 'tkl'
-  | 'tpi'
-  | 'tog'
-  | 'tog-TO'
   | 'to'
-  | 'tsi'
-  | 'tsi-ZA'
   | 'ts'
   | 'tn'
   | 'tn-ZA'
-  | 'tum'
-  | 'tup'
   | 'tr'
   | 'tr-TR'
   | 'tk'
   | 'tk-Arab'
   | 'tk-Cyrl'
   | 'tk-Latn'
-  | 'tvl'
-  | 'tyv'
   | 'tw'
-  | 'kcg'
-  | 'kcg-NG'
-  | 'udm'
-  | 'udm-Cyrl'
-  | 'udm-Latn'
-  | 'uga'
   | 'ug'
   | 'ug-Arab'
   | 'ug-CN'
@@ -946,10 +608,6 @@ export type LanguageLocale =
   | 'ug-Latn'
   | 'uk'
   | 'uk-UA'
-  | 'umb'
-  | 'mis'
-  | 'und'
-  | 'hsb'
   | 'ur'
   | 'ur-Arab'
   | 'ur-IN'
@@ -963,19 +621,12 @@ export type LanguageLocale =
   | 'uz-UZ'
   | 'uz-Cyrl-UZ'
   | 'uz-Latn-UZ'
-  | 'vai'
   | 've'
   | 've-ZA'
   | 'vi'
   | 'vi-VN'
   | 'vo'
-  | 'vot'
-  | 'wak'
-  | 'wal'
-  | 'wal-ET'
   | 'wa'
-  | 'war'
-  | 'was'
   | 'cy'
   | 'cy-GB'
   | 'fy'
@@ -987,18 +638,10 @@ export type LanguageLocale =
   | 'wo-Latn-SN'
   | 'xh'
   | 'xh-ZA'
-  | 'sah'
-  | 'yao'
-  | 'yap'
   | 'yi'
   | 'yi-Hebr'
   | 'yo'
   | 'yo-NG'
-  | 'ypk'
-  | 'znd'
-  | 'zap'
-  | 'zza'
-  | 'zen'
 
 export const possibleLocales: LanguageLocale[] = [
   'en',
@@ -1009,35 +652,21 @@ export const possibleLocales: LanguageLocale[] = [
   'ru',
   'zh',
   'ab',
-  'ace',
-  'ach',
-  'ada',
-  'ady',
   'aa',
   'aa-DJ',
   'aa-ER',
   'aa-ET',
   'aa-Ethi',
-  'afh',
   'af',
   'af-NA',
   'af-ZA',
-  'afa',
-  'ain',
-  'ain-Latn',
   'ak',
   'ak-GH',
-  'akk',
   'sq',
   'sq-AL',
   'sq-MK',
-  'ale',
-  'alg',
-  'tut',
   'am',
   'am-ET',
-  'anp',
-  'apa',
   'ar',
   'ar-145',
   'ar-DZ',
@@ -1060,26 +689,12 @@ export const possibleLocales: LanguageLocale[] = [
   'ar-AE',
   'ar-YE',
   'an',
-  'arp',
-  'arn',
-  'arw',
   'hy',
   'hy-AM',
-  'rup',
-  'rup-Grek',
-  'rup-Latn',
-  'art',
   'as',
   'as-IN',
-  'ast',
-  'ath',
-  'cch',
-  'cch-NG',
-  'aus',
-  'map',
   'av',
   'ae',
-  'awa',
   'ay',
   'az',
   'az-Arab',
@@ -1090,66 +705,32 @@ export const possibleLocales: LanguageLocale[] = [
   'az-Latn',
   'az-IR',
   'az-Arab-IR',
-  'ban',
-  'bat',
-  'bal',
-  'bal-Arab',
   'bm',
-  'bai',
-  'bad',
-  'bnt',
-  'bas',
   'ba',
   'eu',
   'eu-FR',
   'eu-ES',
-  'btk',
-  'bej',
   'be',
   'be-BY',
   'be-Cyrl',
   'be-Latn',
-  'bem',
   'bn',
   'bn-bd',
   'bn-IN',
-  'ber',
-  'bho',
-  'bh',
-  'bik',
-  'bin',
   'bi',
-  'byn',
-  'byn-ER',
-  'zbl',
   'bs',
   'bs-BA',
-  'bra',
   'br',
-  'bug',
   'bg',
   'bg-BG',
-  'bua',
   'my',
   'my-MM',
-  'cad',
-  'car',
   'ca',
   'ca-ES',
-  'cau',
-  'ceb',
-  'cel',
-  'cai',
   'km',
   'km-KH',
-  'cmc',
-  'cmc-Arab',
   'ch',
   'ce',
-  'chr',
-  'chy',
-  'cnr',
-  'cnr-ME',
   'ny',
   'ny-MW',
   'zh-CN',
@@ -1167,49 +748,26 @@ export const possibleLocales: LanguageLocale[] = [
   'zh-Hant-TW',
   'zh-Hant',
   'zh-yue',
-  'chn',
-  'chp',
-  'cho',
   'cu',
-  'chk',
   'cv',
   'kw',
   'kw-GB',
   'co',
   'cr',
-  'mus',
-  'crp',
-  'crh',
-  'crh-Cyrl',
-  'crh-Latn',
   'hr',
   'hr-HR',
-  'cus',
   'cs',
   'cs-CZ',
-  'dak',
   'da',
   'da-DK',
-  'dar',
-  'day',
-  'del',
-  'din',
   'dv',
   'dv-MV',
   'dv-Thaa',
-  'doi',
-  'dgr',
-  'dra',
-  'dua',
   'nl',
   'nl-BE',
   'nl-NL',
-  'dyu',
   'dz',
   'dz-BT',
-  'frs',
-  'efi',
-  'eka',
   'en-AR',
   'en-AS',
   'en-AT',
@@ -1217,7 +775,6 @@ export const possibleLocales: LanguageLocale[] = [
   'en-AU',
   'en-BH',
   'en-BR',
-  'cpe',
   'en-BE',
   'en-BZ',
   'en-BW',
@@ -1315,7 +872,6 @@ export const possibleLocales: LanguageLocale[] = [
   'en-AL',
   'en-AD',
   'en-IC',
-  'myv',
   'eo',
   'et',
   'et-EE',
@@ -1323,20 +879,12 @@ export const possibleLocales: LanguageLocale[] = [
   'ee',
   'ee-GH',
   'ee-TG',
-  'ewo',
-  'fan',
-  'fat',
   'fo',
   'fo-FO',
   'fj',
-  'fil',
-  'fil-PH',
   'fi',
   'fi-FI',
   'fi-Se',
-  'fiu',
-  'fon',
-  'cpf',
   'fr-BE',
   'fr-CA',
   'fr-FR',
@@ -1356,44 +904,28 @@ export const possibleLocales: LanguageLocale[] = [
   'fr-RE',
   'fr-TN',
   'fr-NC',
-  'fur',
-  'fur-IT',
   'ff',
   'ff-Arab',
   'ff-Latn',
-  'gaa',
   'gd',
-  'gaa-GH',
   'gl',
   'gl-ES',
   'lg',
-  'gay',
-  'gba',
-  'gez',
-  'gez-ER',
-  'gez-ET',
   'ka',
   'ka-GE',
   'de-AT',
   'de-BE',
   'de-DE',
-  'gem',
   'de-LI',
   'de-LU',
   'de-NL',
   'de-CH',
-  'gil',
-  'gon',
-  'gor',
-  'grb',
   'el',
   'el-CY',
   'el-GR',
   'gn',
   'gu',
   'gu-IN',
-  'gwi',
-  'hai',
   'ht',
   'ht-HT',
   'ha',
@@ -1408,49 +940,29 @@ export const possibleLocales: LanguageLocale[] = [
   'ha-Latn-NE',
   'ha-SD',
   'ha-Arab-SD',
-  'haw',
-  'haw-US',
   'he',
   'he-Hebr',
   'he-IL',
   'hz',
-  'hil',
-  'him',
   'hi',
   'hi-IN',
   'ho',
-  'hit',
-  'hmn',
   'hu',
   'hu-HU',
-  'hup',
-  'iba',
   'is',
   'is-IS',
   'io',
   'ig',
   'ig-NG',
-  'ijo',
-  'ilo',
-  'smn',
-  'inc',
-  'ine',
   'id',
   'id-Arab',
   'id-ID',
   'id-Arab-ID',
-  'inh',
-  'in',
-  'in-ID',
-  'ia',
-  'ie',
   'iu',
   'iu-CA',
   'ik',
-  'ira',
   'ga',
   'ga-IE',
-  'iro',
   'it',
   'it-AT',
   'it-IT',
@@ -1460,31 +972,15 @@ export const possibleLocales: LanguageLocale[] = [
   'jv',
   'jv-Java',
   'jv-Latn',
-  'jrb',
-  'jpr',
-  'kbd',
-  'kab',
-  'kac',
   'kl',
   'kl-GL',
-  'xal',
-  'xal-Cyrl',
-  'xal-Mong',
-  'kam',
-  'kam-KE',
   'kn',
   'kn-IN',
   'kr',
-  'krc',
-  'kaa',
-  'krl',
-  'kar',
   'ks',
   'ks-Arab',
   'ks-Deva',
   'ks-Latn',
-  'csb',
-  'kaw',
   'kk',
   'kk-Arab',
   'kk-Cyrl',
@@ -1493,11 +989,7 @@ export const possibleLocales: LanguageLocale[] = [
   'kk-Cyrl-KZ',
   'kk-Latn-KZ',
   'kk-Latn',
-  'kha',
-  'khi',
-  'kho',
   'ki',
-  'kmb',
   'rw',
   'rw-RW',
   'ky-Cyrl',
@@ -1505,28 +997,11 @@ export const possibleLocales: LanguageLocale[] = [
   'ky-Arab',
   'ky-KG',
   'ky-Latn',
-  'tlh',
   'kv',
   'kg',
-  'kok',
-  'kok-IN',
-  'kok-Knda-IN',
-  'kok-Latn-IN',
-  'kok-Mlym-IN',
-  'kok-Knda',
-  'kok-Latn',
-  'kok-Mlym',
   'ko',
   'ko-KR',
-  'kfo',
-  'kfo-CI',
-  'kos',
-  'kpe',
-  'kpe-GN',
-  'kpe-LR',
-  'kro',
   'kj',
-  'kum',
   'ku',
   'ku-Arab',
   'ku-IR',
@@ -1538,47 +1013,22 @@ export const possibleLocales: LanguageLocale[] = [
   'ku-Arab-SY',
   'ku-TR',
   'ku-Latn-TR',
-  'kru',
-  'kut',
-  'lad',
-  'lad-Hebr',
-  'lad-Latn',
-  'lah',
-  'lam',
   'lo',
   'lo-LA',
   'la',
   'lv',
   'lv-LV',
-  'lez',
   'li',
   'ln',
   'ln-CG',
   'ln-CD',
   'lt',
   'lt-LT',
-  'jbo',
-  'dsb',
-  'nds',
-  'nds-DE',
-  'loz',
   'lu',
-  'lua',
-  'lui',
-  'smj',
-  'lun',
-  'luo',
-  'lus',
   'lb',
   'lb-LU',
   'mk',
   'mk-MK',
-  'mad',
-  'mag',
-  'mai',
-  'mak',
-  'mak-Bugi',
-  'mak-Latn',
   'mg',
   'ms',
   'ml',
@@ -1595,30 +1045,12 @@ export const possibleLocales: LanguageLocale[] = [
   'ms-Latn-MY',
   'mt',
   'mt-MT',
-  'mnc',
-  'mdr',
-  'man',
-  'mni',
-  'mno',
   'gv',
   'gv-GB',
   'mi',
   'mr',
   'mr-IN',
-  'chm',
   'mh',
-  'mwr',
-  'mas',
-  'myn',
-  'men',
-  'mic',
-  'min',
-  'mwl',
-  'moh',
-  'mdf',
-  'mo',
-  'mo-MD',
-  'lol',
   'mn',
   'mn-CN',
   'mn-Mong-CN',
@@ -1626,31 +1058,15 @@ export const possibleLocales: LanguageLocale[] = [
   'mn-MN',
   'mn-Cyrl-MN',
   'mn-Mong',
-  'mkh',
-  'mos',
-  'mul',
-  'mun',
-  'nah',
   'na',
   'nv',
   'nd',
   'nr',
   'nr-ZA',
   'ng',
-  'nap',
-  'new',
   'ne',
   'ne-IN',
   'ne-NP',
-  'nia',
-  'nic',
-  'ssa',
-  'niu',
-  'nqo',
-  'nog',
-  'zxx',
-  'nai',
-  'frr',
   'se',
   'se-FI',
   'se-NO',
@@ -1660,11 +1076,6 @@ export const possibleLocales: LanguageLocale[] = [
   'nb-NO',
   'nn',
   'nn-NO',
-  'nub',
-  'nym',
-  'nyn',
-  'nyo',
-  'nzi',
   'oc',
   'oc-FR',
   'oj',
@@ -1673,20 +1084,13 @@ export const possibleLocales: LanguageLocale[] = [
   'om',
   'om-ET',
   'om-KE',
-  'osa',
   'os',
   'os-Cyrl',
   'os-Latn',
-  'oto',
-  'pal',
-  'pau',
   'pi',
   'pi-Deva',
   'pi-Sinh',
   'pi-Thai',
-  'pam',
-  'pam-IN',
-  'pag',
   'pa-Arab',
   'pa-Deva',
   'pa-Guru',
@@ -1694,23 +1098,15 @@ export const possibleLocales: LanguageLocale[] = [
   'pa-Guru-IN',
   'pa-Arab-PK',
   'pa-Deva-PK',
-  'pap',
-  'paa',
-  'nso',
-  'nso-ZA',
   'fa',
   'fa-AF',
   'fa-Arab',
   'fa-Cyrl',
   'fa-IR',
-  'phi',
-  'pon',
   'pl',
   'pl-PL',
-  'cpp',
   'pt-BR',
   'pt-PT',
-  'pra',
   'pa',
   'pa-PK',
   'ps',
@@ -1718,42 +1114,21 @@ export const possibleLocales: LanguageLocale[] = [
   'ps-Arab',
   'qu',
   'qu-PE',
-  'raj',
-  'raj-Arab',
-  'raj-Deva',
-  'rap',
-  'rar',
-  'roa',
   'ro',
   'ro-MD',
   'ro-RO',
   'rm',
-  'rom',
   'rn',
   'ru-LV',
   'ru-LT',
   'ru-RU',
   'ru-UA',
   'ru-KZ',
-  'sal',
-  'sam',
-  'sam-Syrc',
-  'smi',
   'sm',
-  'sad',
   'sg',
   'sa',
   'sa-IN',
-  'sat',
-  'sat-Beng',
-  'sat-Deva',
-  'sat-Latn',
-  'sat-Orya',
   'sc',
-  'sas',
-  'sco',
-  'sel',
-  'sem',
   'sr',
   'sr-BA',
   'sr-Cyrl-BA',
@@ -1769,59 +1144,30 @@ export const possibleLocales: LanguageLocale[] = [
   'sr-Latn-CS',
   'sr-Cyrl-RS',
   'sr-Latn-RS',
-  'sh',
-  'sh-BA',
-  'sh-ME',
-  'sh-CS',
-  'srr',
-  'srr-Arab',
-  'srr-Latn',
-  'shn',
   'sn',
   'ii',
   'ii-CN',
   'ii-Yiii-CN',
   'ii-Yiii',
-  'scn',
-  'sid',
-  'sid-ET',
-  'sid-Ethi',
-  'sid-Latn',
-  'sgn',
-  'bla',
   'sd',
   'sd-Arab',
   'sd-Deva',
   'sd-Guru',
   'si',
   'si-LK',
-  'sit',
-  'sio',
-  'sms',
-  'den',
-  'sla',
   'sk',
   'sk-SK',
   'sl',
   'sl-SI',
-  'sog',
   'so',
   'so-Arab',
   'so-DJ',
   'so-ET',
   'so-KE',
   'so-SO',
-  'son',
-  'snk',
-  'snk-Arab',
-  'snk-Latn',
-  'wen',
   'st',
   'st-LS',
   'st-ZA',
-  'sai',
-  'alt',
-  'sma',
   'es-419',
   'es-AR',
   'es-BO',
@@ -1845,16 +1191,10 @@ export const possibleLocales: LanguageLocale[] = [
   'es-US',
   'es-UY',
   'es-VE',
-  'srn',
-  'suk',
-  'sux',
   'su',
   'su-Arab',
   'su-Java',
   'su-Latn',
-  'sus',
-  'sus-Arab',
-  'sus-Latn',
   'sw',
   'sw-KE',
   'sw-TZ',
@@ -1864,16 +1204,8 @@ export const possibleLocales: LanguageLocale[] = [
   'sv',
   'sv-FI',
   'sv-SE',
-  'gsw',
-  'gsw-CH',
-  'syr',
-  'syr-Cyrl',
-  'syr-SY',
-  'syr-Syrc',
-  'syr-Cyrl-SY',
   'tl',
   'ty',
-  'tai',
   'tg',
   'tg-Arab',
   'tg-Cyrl',
@@ -1882,10 +1214,6 @@ export const possibleLocales: LanguageLocale[] = [
   'tg-Arab-TJ',
   'tg-Cyrl-TJ',
   'tg-Latn-TJ',
-  'tmh',
-  'tmh-Arab',
-  'tmh-Latn',
-  'tmh-Tfng',
   'ta',
   'ta-IN',
   'tt',
@@ -1896,48 +1224,25 @@ export const possibleLocales: LanguageLocale[] = [
   'tt-Latn-RU',
   'te',
   'te-IN',
-  'ter',
-  'tet',
   'th',
   'th-TH',
   'bo',
   'bo-CN',
   'bo-IN',
-  'tig',
-  'tig-ER',
   'ti',
   'ti-ER',
   'ti-ET',
-  'tem',
-  'tiv',
-  'tli',
-  'tkl',
-  'tpi',
-  'tog',
-  'tog-TO',
   'to',
-  'tsi',
-  'tsi-ZA',
   'ts',
   'tn',
   'tn-ZA',
-  'tum',
-  'tup',
   'tr',
   'tr-TR',
   'tk',
   'tk-Arab',
   'tk-Cyrl',
   'tk-Latn',
-  'tvl',
-  'tyv',
   'tw',
-  'kcg',
-  'kcg-NG',
-  'udm',
-  'udm-Cyrl',
-  'udm-Latn',
-  'uga',
   'ug',
   'ug-Arab',
   'ug-CN',
@@ -1948,10 +1253,6 @@ export const possibleLocales: LanguageLocale[] = [
   'ug-Latn',
   'uk',
   'uk-UA',
-  'umb',
-  'mis',
-  'und',
-  'hsb',
   'ur',
   'ur-Arab',
   'ur-IN',
@@ -1965,19 +1266,12 @@ export const possibleLocales: LanguageLocale[] = [
   'uz-UZ',
   'uz-Cyrl-UZ',
   'uz-Latn-UZ',
-  'vai',
   've',
   've-ZA',
   'vi',
   'vi-VN',
   'vo',
-  'vot',
-  'wak',
-  'wal',
-  'wal-ET',
   'wa',
-  'war',
-  'was',
   'cy',
   'cy-GB',
   'fy',
@@ -1989,18 +1283,10 @@ export const possibleLocales: LanguageLocale[] = [
   'wo-Latn-SN',
   'xh',
   'xh-ZA',
-  'sah',
-  'yao',
-  'yap',
   'yi',
   'yi-Hebr',
   'yo',
   'yo-NG',
-  'ypk',
-  'znd',
-  'zap',
-  'zza',
-  'zen',
 ]
 
 export const isValidLanguageLocale = (
@@ -2009,7 +1295,7 @@ export const isValidLanguageLocale = (
   return possibleLocales.map(String).includes(locale)
 }
 
-const iso639Labels: Record<string, string | undefined> = {
+const iso639Labels: Record<string, string> = {
   ab: 'Abkhazian',
   aa: 'Afar',
   af: 'Afrikaans',
@@ -2196,5 +1482,5 @@ const iso639Labels: Record<string, string | undefined> = {
 export const getISO639LabelFromLocale = (locale: LanguageLocale) => {
   const code = locale.split('-')[0]
 
-  return iso639Labels[code] ?? null
+  return iso639Labels[code]
 }
