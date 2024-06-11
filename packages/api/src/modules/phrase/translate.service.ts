@@ -413,9 +413,6 @@ export class TranslateService {
     const targetLanguageISOLabel = getISO639LabelFromLocale(
       targetLanguage.locale as LanguageLocale,
     )
-    if (!sourceLanguageISOLabel || !targetLanguageISOLabel) {
-      throw new BadRequestException('Invalid language locale')
-    }
 
     const phrases = await this.prismaService.phrase.findMany({
       where: {
@@ -492,6 +489,15 @@ export class TranslateService {
     if (!response) {
       return
     }
+
+    this.meteredService.log({
+      workspaceId: workspaceAccess.getWorkspaceID(),
+      accountId: workspaceAccess.getAccountID(),
+      metric: 'token',
+      quantity: chatCompletion.usage?.total_tokens ?? 0,
+      externalId: chatCompletion.id,
+      timestamp: new Date(chatCompletion.created),
+    })
 
     let content: Record<string, string>
 

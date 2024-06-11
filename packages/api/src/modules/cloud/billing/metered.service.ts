@@ -63,11 +63,12 @@ export class MeteredService {
     private readonly configService: ConfigService<Config, true>,
     private readonly prismaService: PrismaService,
   ) {
-    const distribution = this.configService.get('app.distribution', {
-      infer: true,
-    })
+    const {
+      cloudWatchLogsGroupName: groupName,
+      cloudWatchLogsStreamName: streamName,
+    } = this.configService.get('billing', { infer: true })
 
-    this.active = distribution === 'cloud'
+    this.active = !!groupName && !!streamName
 
     if (!this.active) {
       this.stripe = null
@@ -81,11 +82,6 @@ export class MeteredService {
       typescript: true,
       apiVersion: '2024-04-10',
     })
-
-    const {
-      cloudWatchLogsGroupName: groupName,
-      cloudWatchLogsStreamName: streamName,
-    } = this.configService.get('billing', { infer: true })
 
     this.logsClient = new CloudWatchLogsClient()
     this.groupName = String(groupName)
