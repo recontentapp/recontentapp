@@ -1092,6 +1092,51 @@ paths:
       responses:
         '204':
           description: OK
+  /RewritePhraseTranslation:
+    post:
+      operationId: rewritePhraseTranslation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                phraseTranslationId:
+                  type: string
+                tone:
+                  type: string
+                  enum:
+                    - formal
+                    - informal
+                length:
+                  type: string
+                  enum:
+                    - shorter
+                    - longer
+                    - same
+                customInstructions:
+                  type: array
+                  items:
+                    type: string
+              additionalProperties: false
+              required:
+                - phraseTranslationId
+                - tone
+                - length
+                - customInstructions
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  suggestion:
+                    type: string
+                additionalProperties: false
+                required:
+                  - suggestion
   /ListProjectTags:
     get:
       operationId: listProjectTags

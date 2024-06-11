@@ -34,6 +34,14 @@ interface TranslateWithProviderParams {
   workspaceAccess: WorkspaceAccess
 }
 
+interface RewritePhraseTranslationParams {
+  phraseTranslationId: string
+  requester: Requester
+  tone: 'formal' | 'informal'
+  length: 'shorter' | 'longer' | 'same'
+  customInstructions: string[]
+}
+
 @Injectable()
 export class TranslateService {
   constructor(
@@ -541,5 +549,89 @@ export class TranslateService {
         },
       }),
     ])
+  }
+
+  async rewritePhraseTranslation({
+    phraseTranslationId,
+    requester,
+    tone,
+    length,
+    customInstructions,
+  }: RewritePhraseTranslationParams) {
+    const phraseTranslation =
+      await this.prismaService.phraseTranslation.findUniqueOrThrow({
+        where: { id: phraseTranslationId },
+        include: {
+          language: true,
+        },
+      })
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      phraseTranslation.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('auto_translation:use')
+
+    const apiKey = this.configService.get('autoTranslate.openAIKey', {
+      infer: true,
+    })
+    if (!apiKey) {
+      throw new BadRequestException('OpenAI API key not set')
+    }
+
+    const client = new OpenAI({
+      apiKey,
+    })
+
+    const sourceLanguageISOLabel = getISO639LabelFromLocale(
+      phraseTranslation.language.locale as LanguageLocale,
+    )
+
+    let lengthLabel: string
+    switch (length) {
+      case 'shorter':
+        lengthLabel = 'shorter'
+        break
+      case 'longer':
+        lengthLabel = 'longer'
+        break
+      case 'same':
+        lengthLabel = 'the same length'
+        break
+    }
+
+    const chatCompletion = await client.chat.completions.create({
+      messages: [
+        {
+          role: 'system',
+          content: `You are a UX writing assistant. You will be provided with a text in ${sourceLanguageISOLabel}. Your task is to rephrase it while making it ${lengthLabel} using a ${tone} tone. Make sure to also:\n${customInstructions.join('\n')}`,
+        },
+        {
+          role: 'user',
+          content: phraseTranslation.content,
+        },
+      ],
+      model: 'gpt-3.5-turbo',
+      response_format: { type: 'text' },
+      temperature: 1,
+      max_tokens: 256,
+      top_p: 1,
+      frequency_penalty: 0,
+      presence_penalty: 0,
+    })
+
+    const response = chatCompletion.choices.at(0)?.message.content
+    if (!response) {
+      throw new BadRequestException('Could not rewrite phrase translation')
+    }
+
+    this.meteredService.log({
+      workspaceId: workspaceAccess.getWorkspaceID(),
+      accountId: workspaceAccess.getAccountID(),
+      metric: 'token',
+      quantity: chatCompletion.usage?.total_tokens ?? 0,
+      externalId: chatCompletion.id,
+      timestamp: new Date(chatCompletion.created),
+    })
+
+    return response
   }
 }

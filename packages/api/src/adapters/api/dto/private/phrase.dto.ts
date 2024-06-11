@@ -96,6 +96,25 @@ export class BatchAutoTranslatePhrasesDto {
   targetLanguageId: string
 }
 
+export class RewritePhraseTranslationDto {
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
+  phraseTranslationId: string
+
+  @IsString()
+  @IsNotEmpty()
+  tone: 'formal' | 'informal'
+
+  @IsString()
+  @IsNotEmpty()
+  length: 'shorter' | 'longer' | 'same'
+
+  @IsArray()
+  @ArrayMaxSize(10)
+  customInstructions: string[]
+}
+
 export class DeletePhraseDto {
   @IsString()
   @IsNotEmpty()

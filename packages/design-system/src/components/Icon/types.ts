@@ -2,6 +2,7 @@ export type IconName =
   | 'add_circle'
   | 'exit_to_app'
   | 'chevron_right'
+  | 'sparkles'
   | 'add'
   | 'close'
   | 'delete'

@@ -1,7 +1,6 @@
 import {
   FC,
   forwardRef,
-  useCallback,
   useEffect,
   useImperativeHandle,
   useRef,
@@ -9,27 +8,15 @@ import {
 } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
-import { useQueryClient } from '@tanstack/react-query'
+import { Modal, ModalContent, ModalRef, Stack, toast } from 'design-system'
 import {
-  Box,
-  Button,
-  Modal,
-  ModalContent,
-  ModalRef,
-  Stack,
-  Tooltip,
-  toast,
-} from 'design-system'
-import { PhraseEditor } from '../../../../../components/PhraseEditor'
-import {
-  getGetPhraseQueryKey,
-  useAutoTranslatePhrase,
   useGetPhrase,
   useGetProject,
   useTranslatePhrase,
-} from '../../../../../generated/reactQuery'
-import { useHasAbility } from '../../../../../hooks/workspace'
-import { isLocaleRTL } from '../../../../../utils/locales'
+} from '../../../../../../generated/reactQuery'
+import { useHasAbility } from '../../../../../../hooks/workspace'
+import { Form } from './components/Form'
+import { State } from './types'
 
 export interface UpdatePhraseModalRef {
   open: () => void
@@ -63,7 +50,6 @@ const Content: FC<ContentProps> = ({
   onNext,
   onPrevious,
 }) => {
-  const queryClient = useQueryClient()
   const hasAutoTranslate = useHasAbility('auto_translation:use')
   const { data: project } = useGetProject({ queryParams: { id: projectId } })
   const { data: phrase, isLoading: isLoadingPhrase } = useGetPhrase({
@@ -71,21 +57,10 @@ const Content: FC<ContentProps> = ({
       phraseId,
     },
   })
-  const { mutateAsync: autoTranslate, isPending: isAutoTranslating } =
-    useAutoTranslatePhrase({
-      onSuccess: data => {
-        queryClient.setQueryData(
-          getGetPhraseQueryKey({ queryParams: { phraseId } }),
-          data,
-        )
-      },
-    })
   const { mutateAsync: translate, isPending: isTranslating } =
     useTranslatePhrase()
-  const [initialState, setInitialState] = useState<
-    Record<string, string | undefined>
-  >({})
-  const [state, setState] = useState<Record<string, string | undefined>>({})
+  const [initialState, setInitialState] = useState<State>({})
+  const [state, setState] = useState<State>({})
 
   useEffect(() => {
     if (!phrase) {
@@ -135,27 +110,6 @@ const Content: FC<ContentProps> = ({
       })
   }
 
-  const onAutoTranslate = useCallback(
-    (languageId: string) => {
-      if (isAutoTranslating) {
-        return
-      }
-
-      autoTranslate({ body: { phraseId, languageId } })
-        .then(() => {
-          toast('success', {
-            title: 'Phrase autotranslated',
-          })
-        })
-        .catch(() => {
-          toast('error', {
-            title: 'Could not autotranslate phrase',
-          })
-        })
-    },
-    [phraseId, isAutoTranslating, autoTranslate],
-  )
-
   useHotkeys(
     ['metaKey+s', 'ctrl+s'],
     () => {
@@ -169,10 +123,6 @@ const Content: FC<ContentProps> = ({
     [onSubmit],
   )
 
-  const singleTranslationId =
-    phrase?.translations.length === 1
-      ? phrase?.translations[0].languageId
-      : undefined
   const hasAtLeastOneTranslation = (phrase?.translations ?? []).length > 0
   const showAutoTranslate = hasAutoTranslate && hasAtLeastOneTranslation
 
@@ -197,55 +147,24 @@ const Content: FC<ContentProps> = ({
         },
       }}
     >
-      <Stack direction="column" spacing="$space100" paddingBottom="$space300">
-        {(project?.languages ?? []).map((language, index) => {
-          const isRTL = isLocaleRTL(language.locale)
-          const isSingleTranslation = singleTranslationId === language.id
-
-          return (
-            <Stack
-              width="100%"
-              direction="row"
-              spacing="$space80"
-              alignItems="flex-start"
-              key={language.id}
-            >
-              <Box
-                flexGrow={1}
-                testId={index === 0 ? 'phrase-modal-first-field' : undefined}
-              >
-                <PhraseEditor
-                  autoFocus={index === 0}
-                  width="100%"
-                  direction={isRTL ? 'rtl' : 'ltr'}
-                  label={language.name}
-                  placeholder="Translation content"
-                  isDisabled={isLoadingPhrase}
-                  initialValue={initialState[language.id] ?? ''}
-                  onChange={value =>
-                    setState(state => ({
-                      ...state,
-                      [language.id]: value,
-                    }))
-                  }
-                />
-              </Box>
-              {showAutoTranslate && (
-                <Box display="block" paddingTop="$space200">
-                  <Tooltip title="Autotranslate" position="top" wrap>
-                    <Button
-                      variation="secondary"
-                      icon="translate"
-                      isDisabled={isSingleTranslation}
-                      isLoading={isAutoTranslating}
-                      onAction={() => onAutoTranslate(language.id)}
-                    />
-                  </Tooltip>
-                </Box>
-              )}
-            </Stack>
-          )
-        })}
+      <Stack direction="column" spacing="$space200" paddingBottom="$space300">
+        {(project?.languages ?? []).map((language, index) => (
+          <Form
+            key={index}
+            initialValue={initialState[language.id] ?? ''}
+            index={index}
+            onChange={value =>
+              setState(state => ({
+                ...state,
+                [language.id]: value,
+              }))
+            }
+            language={language}
+            phrase={phrase}
+            autoTranslationAvailable={showAutoTranslate}
+            isLoading={isLoadingPhrase}
+          />
+        ))}
       </Stack>
     </ModalContent>
   )

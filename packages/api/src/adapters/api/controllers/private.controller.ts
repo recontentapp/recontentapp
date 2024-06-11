@@ -87,6 +87,7 @@ import {
   DeletePhraseDto,
   GeneratePhrasesExportLinkDto,
   ImportPhrasesDto,
+  RewritePhraseTranslationDto,
   TranslatePhraseDto,
   UpdatePhraseKeyDto,
 } from '../dto/private/phrase.dto'
@@ -1074,6 +1075,28 @@ export class PrivateApiController {
     })
 
     return {}
+  }
+
+  @Post('/RewritePhraseTranslation')
+  async rewritePhraseTranslation(
+    @Body()
+    {
+      phraseTranslationId,
+      tone,
+      length,
+      customInstructions,
+    }: RewritePhraseTranslationDto,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.RewritePhraseTranslation.Responses.$200> {
+    const suggestion = await this.translateService.rewritePhraseTranslation({
+      phraseTranslationId,
+      tone,
+      length,
+      customInstructions,
+      requester,
+    })
+
+    return { suggestion }
   }
 
   @Delete('/BatchDeletePhrase')

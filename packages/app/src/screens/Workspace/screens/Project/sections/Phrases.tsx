@@ -19,7 +19,7 @@ import { ProjectStats } from '../components/ProjectStats'
 import {
   UpdatePhraseModal,
   UpdatePhraseModalRef,
-} from '../components/UpdatePhraseModal'
+} from '../components/UpdatePhraseModal/UpdatePhraseModal'
 import { useInfiniteListPhrases } from '../hooks'
 
 export const Phrases: FC = () => {
