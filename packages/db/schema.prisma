@@ -105,6 +105,9 @@ model Workspace {
   taggables                            Taggable[]
   figmaFiles                           FigmaFile[]
   figmaTexts                           FigmaText[]
+  prompts                              Prompt[]
+  glossaries                           Glossary[]
+  glossaryTerms                        GlossaryTerm[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -184,6 +187,7 @@ model Language {
   projects           Project[]           @relation("projects_languages")
   phraseTranslations PhraseTranslation[]
   figmaFiles         FigmaFile[]
+  glossaryTerms      GlossaryTerm[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -194,6 +198,67 @@ model Language {
   @@map("languages")
 }
 
+model Prompt {
+  id                 String    @id @default(uuid()) @db.VarChar()
+  workspaceId        String    @db.VarChar()
+  glossaryId         String?   @db.VarChar()
+  name               String    @db.VarChar()
+  tone               String?   @db.VarChar()
+  length             String?   @db.VarChar()
+  customInstructions String[]
+  workspace          Workspace @relation(fields: [workspaceId], references: [id])
+  glossary           Glossary? @relation(fields: [glossaryId], references: [id])
+  projects           Project[] @relation("projects_prompts")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String   @db.VarChar()
+  updatedBy String?  @db.VarChar()
+
+  @@map("prompts")
+}
+
+model Glossary {
+  id          String         @id @default(uuid()) @db.VarChar()
+  workspaceId String         @db.VarChar()
+  name        String         @db.VarChar()
+  description String?        @db.VarChar()
+  workspace   Workspace      @relation(fields: [workspaceId], references: [id])
+  projects    Project[]      @relation("projects_glossaries")
+  terms       GlossaryTerm[]
+  prompts     Prompt[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String   @db.VarChar()
+  updatedBy String?  @db.VarChar()
+
+  @@map("glossaries")
+}
+
+model GlossaryTerm {
+  id            String    @id @default(uuid()) @db.VarChar()
+  groupId       String    @db.VarChar()
+  glossaryId    String    @db.VarChar()
+  workspaceId   String    @db.VarChar()
+  languageId    String?   @db.VarChar()
+  name          String    @db.VarChar()
+  description   String?   @db.VarChar()
+  forbidden     Boolean   @default(false)
+  caseSensitive Boolean   @default(false)
+  glossary      Glossary  @relation(fields: [glossaryId], references: [id])
+  workspace     Workspace @relation(fields: [workspaceId], references: [id])
+  language      Language? @relation(fields: [languageId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String   @db.VarChar()
+  updatedBy String?  @db.VarChar()
+
+  @@unique([groupId, languageId])
+  @@map("glossary_terms")
+}
+
 model Project {
   id          String            @id @default(uuid()) @db.VarChar()
   workspaceId String            @db.VarChar()
@@ -201,6 +266,8 @@ model Project {
   description String?           @db.VarChar()
   workspace   Workspace         @relation(fields: [workspaceId], references: [id])
   languages   Language[]        @relation("projects_languages")
+  prompts     Prompt[]          @relation("projects_prompts")
+  glossaries  Glossary[]        @relation("projects_glossaries")
   revisions   ProjectRevision[]
   phrases     Phrase[]
   tags        Tag[]
