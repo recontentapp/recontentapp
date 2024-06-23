@@ -4,6 +4,7 @@ CREATE TABLE "prompts" (
     "workspaceId" VARCHAR NOT NULL,
     "glossaryId" VARCHAR,
     "name" VARCHAR NOT NULL,
+    "description" VARCHAR,
     "tone" VARCHAR,
     "length" VARCHAR,
     "customInstructions" TEXT[],

@@ -203,6 +203,7 @@ model Prompt {
   workspaceId        String    @db.VarChar()
   glossaryId         String?   @db.VarChar()
   name               String    @db.VarChar()
+  description        String?   @db.VarChar()
   tone               String?   @db.VarChar()
   length             String?   @db.VarChar()
   customInstructions String[]

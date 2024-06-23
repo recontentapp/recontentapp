@@ -2392,6 +2392,8 @@ components:
         - 'billing:manage'
         - 'members:manage'
         - 'languages:manage'
+        - 'glossaries:manage'
+        - 'prompts:manage'
         - 'integrations:manage'
         - 'auto_translation:use'
         - 'projects:destinations:manage'
@@ -2531,6 +2533,176 @@ components:
         - workspaceId
         - locale
         - name
+        - createdAt
+        - updatedAt
+        - createdBy
+        - updatedBy
+    PromptTone:
+      type: string
+      enum:
+        - apologetic
+        - casual
+        - catchy
+        - confident
+        - conversational
+        - convincing
+        - crisp
+        - empathetic
+        - engaging
+        - enthusiastic
+        - exciting
+        - formal
+        - friendly
+        - funny
+        - happy
+        - helpful
+        - inclusive
+        - informative
+        - intelligent
+        - inviting
+        - kind
+        - playful
+        - polite
+        - positive
+        - professional
+        - upbeat
+        - warm
+        - witty
+    PromptLength:
+      type: string
+      enum:
+        - shorter
+        - longer
+        - same
+    Prompt:
+      type: object
+      properties:
+        id:
+          type: string
+        workspaceId:
+          type: string
+        glossaryId:
+          type: string
+          nullable: true
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        tone:
+          oneOf:
+            - $ref: '#/components/schemas/PromptTone'
+            - $ref: '#/components/schemas/Empty'
+        length:
+          oneOf:
+            - $ref: '#/components/schemas/PromptLength'
+            - $ref: '#/components/schemas/Empty'
+        customInstructions:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+        updatedBy:
+          type: string
+          nullable: true
+      additionalProperties: false
+      required:
+        - id
+        - workspaceId
+        - glossaryId
+        - name
+        - description
+        - tone
+        - length
+        - customInstructions
+        - createdAt
+        - updatedAt
+        - createdBy
+        - updatedBy
+    Glossary:
+      type: object
+      properties:
+        id:
+          type: string
+        workspaceId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+        updatedBy:
+          type: string
+          nullable: true
+      additionalProperties: false
+      required:
+        - id
+        - workspaceId
+        - name
+        - description
+        - createdAt
+        - updatedAt
+        - createdBy
+        - updatedBy
+    GlossaryTerm:
+      type: object
+      properties:
+        id:
+          type: string
+        workspaceId:
+          type: string
+        glossaryId:
+          type: string
+        groupId:
+          type: string
+        languageId:
+          type: string
+          nullable: true
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        forbidden:
+          type: boolean
+        caseSensitive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+        updatedBy:
+          type: string
+          nullable: true
+      additionalProperties: false
+      required:
+        - id
+        - workspaceId
+        - glossaryId
+        - languageId
+        - name
+        - description
+        - forbidden
+        - caseSensitive
         - createdAt
         - updatedAt
         - createdBy
