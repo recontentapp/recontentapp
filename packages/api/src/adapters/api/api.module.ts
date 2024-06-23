@@ -24,6 +24,7 @@ import { LoggerMiddleware } from 'src/utils/logger.middleware'
 import { PrismaService } from 'src/utils/prisma.service'
 import { RequestIdMiddleware } from 'src/utils/request-id.middleware'
 import { FigmaPluginController } from './controllers/figma-plugin.controller'
+import { Private2ApiController } from './controllers/private-2.controller'
 import { PrivateApiController } from './controllers/private.controller'
 import { PublicApiController } from './controllers/public.controller'
 import { WebhooksController } from './controllers/webhooks.controller'
@@ -79,6 +80,7 @@ import { WebhooksController } from './controllers/webhooks.controller'
   ],
   controllers: [
     PrivateApiController,
+    Private2ApiController,
     PublicApiController,
     WebhooksController,
     FigmaPluginController,

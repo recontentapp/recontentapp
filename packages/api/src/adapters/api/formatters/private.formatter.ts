@@ -5,17 +5,24 @@ import {
   DestinationConfigGoogleCloudStorage,
   FigmaFile,
   GithubInstallation,
+  Glossary,
+  GlossaryTerm,
   Language,
   Phrase,
   PhraseTranslation,
   Project,
   ProjectRevision,
+  Prompt,
   Tag,
   User,
   Workspace,
   WorkspaceAccount,
 } from '@prisma/client'
 import { Components } from 'src/generated/typeDefinitions'
+import {
+  isValidPromptLength,
+  isValidPromptTone,
+} from 'src/modules/ux-writing/prompt'
 
 export class PrivateFormatter {
   static formatTag(tag: Tag): Components.Schemas.Tag {
@@ -284,6 +291,59 @@ export class PrivateFormatter {
       updatedAt: destination.updatedAt.toISOString(),
       createdBy: destination.createdBy,
       updatedBy: destination.updatedBy,
+    }
+  }
+
+  static formatGlossary(glossary: Glossary): Components.Schemas.Glossary {
+    return {
+      id: glossary.id,
+      workspaceId: glossary.workspaceId,
+      name: glossary.name,
+      description: glossary.description,
+      createdAt: glossary.createdAt.toISOString(),
+      updatedAt: glossary.updatedAt.toISOString(),
+      createdBy: glossary.createdBy,
+      updatedBy: glossary.updatedBy,
+    }
+  }
+
+  static formatGlossaryTerm(
+    term: GlossaryTerm,
+  ): Components.Schemas.GlossaryTerm {
+    return {
+      id: term.id,
+      workspaceId: term.workspaceId,
+      glossaryId: term.glossaryId,
+      groupId: term.groupId,
+      languageId: term.languageId,
+      name: term.name,
+      description: term.description,
+      forbidden: term.forbidden,
+      caseSensitive: term.caseSensitive,
+      createdAt: term.createdAt.toISOString(),
+      updatedAt: term.updatedAt.toISOString(),
+      createdBy: term.createdBy,
+      updatedBy: term.updatedBy,
+    }
+  }
+
+  static formatPrompt(prompt: Prompt): Components.Schemas.Prompt {
+    return {
+      id: prompt.id,
+      workspaceId: prompt.workspaceId,
+      glossaryId: prompt.glossaryId,
+      name: prompt.name,
+      description: prompt.description,
+      tone: prompt.tone && isValidPromptTone(prompt.tone) ? prompt.tone : null,
+      length:
+        prompt.length && isValidPromptLength(prompt.length)
+          ? prompt.length
+          : null,
+      customInstructions: prompt.customInstructions,
+      createdAt: prompt.createdAt.toISOString(),
+      updatedAt: prompt.updatedAt.toISOString(),
+      createdBy: prompt.createdBy,
+      updatedBy: prompt.updatedBy,
     }
   }
 }

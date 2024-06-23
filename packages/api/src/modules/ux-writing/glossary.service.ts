@@ -428,7 +428,7 @@ export class GlossaryService {
     await this.prismaService.$transaction(
       terms.map(term =>
         this.prismaService.glossaryTerm.update({
-          where: { id: term.id },
+          where: { id: term.id, glossaryId },
           data: {
             groupId: term.groupId,
             languageId: term.languageId,

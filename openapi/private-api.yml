@@ -2209,6 +2209,323 @@ paths:
       responses:
         '204':
           description: OK
+  /ListGlossaries:
+    get:
+      operationId: listGlossaries
+      parameters:
+        - name: workspaceId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: projectId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Glossary'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                additionalProperties: false
+                required:
+                  - items
+                  - pagination
+  /CreateGlossary:
+    post:
+      operationId: createGlossary
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                workspaceId:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+              additionalProperties: false
+              required:
+                - workspaceId
+                - name
+                - description
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Glossary'
+  /UpdateGlossary:
+    post:
+      operationId: updateGlossary
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+              additionalProperties: false
+              required:
+                - id
+                - name
+                - description
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Glossary'
+  /DeleteGlossary:
+    delete:
+      operationId: deleteGlossary
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                glossaryId:
+                  type: string
+              additionalProperties: false
+              required:
+                - glossaryId
+      responses:
+        '204':
+          description: OK
+  /LinkGlossaryWithProject:
+    post:
+      operationId: linkGlossaryWithProject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                glossaryId:
+                  type: string
+                projectId:
+                  type: string
+              additionalProperties: false
+              required:
+                - glossaryId
+                - projectId
+      responses:
+        '204':
+          description: OK
+  /UnlinkGlossaryFromProject:
+    post:
+      operationId: unlinkGlossaryFromProject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                glossaryId:
+                  type: string
+                projectId:
+                  type: string
+              additionalProperties: false
+              required:
+                - glossaryId
+                - projectId
+      responses:
+        '204':
+          description: OK
+  /ListGlossaryTerms:
+    get:
+      operationId: listGlossaryTerms
+      parameters:
+        - name: glossaryId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: languageId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: groupId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/GlossaryTerm'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                additionalProperties: false
+                required:
+                  - items
+                  - pagination
+  /BatchCreateGlossaryTerms:
+    post:
+      operationId: batchCreateGlossaryTerms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                glossaryId:
+                  type: string
+                terms:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    required:
+                      - groupId
+                      - languageId
+                      - name
+                      - description
+                      - forbidden
+                      - caseSensitive
+                    properties:
+                      groupId:
+                        type: string
+                      languageId:
+                        type: string
+                        nullable: true
+                      name:
+                        type: string
+                      description:
+                        type: string
+                        nullable: true
+                      forbidden:
+                        type: boolean
+                      caseSensitive:
+                        type: boolean
+              additionalProperties: false
+              required:
+                - glossaryId
+                - terms
+      responses:
+        '201':
+          description: OK
+  /BatchUpdateGlossaryTerms:
+    post:
+      operationId: batchUpdateGlossaryTerms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                glossaryId:
+                  type: string
+                terms:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    required:
+                      - id
+                      - groupId
+                      - languageId
+                      - name
+                      - description
+                      - forbidden
+                      - caseSensitive
+                    properties:
+                      id:
+                        type: string
+                      groupId:
+                        type: string
+                      languageId:
+                        type: string
+                        nullable: true
+                      name:
+                        type: string
+                      description:
+                        type: string
+                        nullable: true
+                      forbidden:
+                        type: boolean
+                      caseSensitive:
+                        type: boolean
+              additionalProperties: false
+              required:
+                - glossaryId
+                - terms
+      responses:
+        '204':
+          description: OK
+  /BatchDeleteGlossaryTerms:
+    delete:
+      operationId: batchDeleteGlossaryTerms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                glossaryId:
+                  type: string
+                ids:
+                  type: array
+                  items:
+                    type: string
+              additionalProperties: false
+              required:
+                - glossaryId
+                - ids
+      responses:
+        '204':
+          description: OK
 components:
   schemas:
     Empty:
