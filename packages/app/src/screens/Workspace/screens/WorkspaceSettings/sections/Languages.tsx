@@ -1,6 +1,6 @@
 import { FC } from 'react'
 
-import { Heading, Stack, Table } from 'design-system'
+import { Table } from 'design-system'
 import { useListWorkspaceLanguages } from '../../../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
 import { styled } from '../../../../../theme'
@@ -29,44 +29,39 @@ export const Languages: FC = () => {
     useListWorkspaceLanguages({ queryParams: { workspaceId } })
 
   return (
-    <Stack width="100%" direction="column" spacing="$space80">
-      <Heading size="$size100" renderAs="h2">
-        Languages
-      </Heading>
-      <Table
-        footerAdd={({ requestClose }) => (
-          <AddLanguageForm onClose={requestClose} />
-        )}
-        isLoading={areLanguagesLoading}
-        items={languages ?? []}
-        columns={[
-          {
-            headerCell: 'Name',
-            key: 'name',
-            width: 300,
-            bodyCell: locale => <p>{locale.name}</p>,
-          },
-          {
-            headerCell: 'Locale',
-            key: 'locale',
-            bodyCell: language => (
-              <CopyPaste content={language.locale}>
-                <Key>{language.locale}</Key>
-              </CopyPaste>
-            ),
-          },
-          {
-            headerCell: 'Created by',
-            key: 'created_by',
-            bodyCell: locale => getName(locale.createdBy),
-          },
-          {
-            headerCell: 'Creation date',
-            key: 'created_at',
-            bodyCell: locale => formatRelative(new Date(locale.createdAt)),
-          },
-        ]}
-      />
-    </Stack>
+    <Table
+      footerAdd={({ requestClose }) => (
+        <AddLanguageForm onClose={requestClose} />
+      )}
+      isLoading={areLanguagesLoading}
+      items={languages ?? []}
+      columns={[
+        {
+          headerCell: 'Name',
+          key: 'name',
+          width: 300,
+          bodyCell: locale => <p>{locale.name}</p>,
+        },
+        {
+          headerCell: 'Locale',
+          key: 'locale',
+          bodyCell: language => (
+            <CopyPaste content={language.locale}>
+              <Key>{language.locale}</Key>
+            </CopyPaste>
+          ),
+        },
+        {
+          headerCell: 'Created by',
+          key: 'created_by',
+          bodyCell: locale => getName(locale.createdBy),
+        },
+        {
+          headerCell: 'Creation date',
+          key: 'created_at',
+          bodyCell: locale => formatRelative(new Date(locale.createdAt)),
+        },
+      ]}
+    />
   )
 }

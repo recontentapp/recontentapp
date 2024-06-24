@@ -32,7 +32,7 @@ export class Private2ApiController {
   constructor(private readonly glossaryService: GlossaryService) {}
 
   @Get('/ListGlossaries')
-  async listWorkspaceInvitations(
+  async listGlossaries(
     @RequiredQuery('workspaceId') workspaceId: string,
     @AuthenticatedRequester() requester: Requester,
     @Pagination() pagination: PaginationParams,
@@ -49,6 +49,19 @@ export class Private2ApiController {
       items: result.items.map(PrivateFormatter.formatGlossary),
       pagination: result.pagination,
     }
+  }
+
+  @Get('/GetGlossary')
+  async getGlossary(
+    @RequiredQuery('id') id: string,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.GetGlossary.Responses.$200> {
+    const glossary = await this.glossaryService.getGlossary({
+      id,
+      requester,
+    })
+
+    return PrivateFormatter.formatGlossary(glossary)
   }
 
   @Post('/CreateGlossary')

@@ -11,6 +11,11 @@ interface ListGlossariesParams {
   requester: Requester
 }
 
+interface GetGlossaryParams {
+  id: string
+  requester: Requester
+}
+
 interface ListGlossaryTermsParams {
   glossaryId: string
   languageId?: string
@@ -137,6 +142,18 @@ export class GlossaryService {
         itemsCount: count,
       },
     }
+  }
+
+  async getGlossary({ id, requester }: GetGlossaryParams) {
+    const glossary = await this.prismaService.glossary.findUniqueOrThrow({
+      where: { id },
+    })
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      glossary.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('workspace:read')
+
+    return glossary
   }
 
   async listGlossaryTerms({

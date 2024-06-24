@@ -13,6 +13,7 @@ export const WorkspaceSettings: FC = () => {
   const canManageIntegrations = useHasAbility('integrations:manage')
   const canManageLanguages = useHasAbility('languages:manage')
   const canManageMembers = useHasAbility('members:manage')
+  const canManageGlossaries = useHasAbility('glossaries:manage')
 
   return (
     <ScreenWrapper
@@ -48,6 +49,16 @@ export const WorkspaceSettings: FC = () => {
                 {
                   label: 'Languages',
                   to: routes.workspaceSettingsLanguages.url({
+                    pathParams: { workspaceKey },
+                  }),
+                },
+              ]
+            : []),
+          ...(canManageGlossaries
+            ? [
+                {
+                  label: 'Glossaries',
+                  to: routes.workspaceSettingsGlossaries.url({
                     pathParams: { workspaceKey },
                   }),
                 },

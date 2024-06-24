@@ -15,6 +15,7 @@ import { Sidebar } from './components/Sidebar'
 import { ModalsProvider } from './hooks/modals'
 import { Dashboard } from './screens/Dashboard'
 import { Destination } from './screens/Destination'
+import { Glossary } from './screens/Glossary/Glossary'
 import { ImportFromFile } from './screens/ImportFromFile'
 import {
   Project,
@@ -26,6 +27,7 @@ import {
 import { UserSettings } from './screens/UserSettings'
 import {
   Billing as WorkspaceBilling,
+  Glossaries as WorkspaceGlossaries,
   Integrations as WorkspaceIntegrations,
   Languages as WorkspaceLanguages,
   Members as WorkspaceMembers,
@@ -126,6 +128,16 @@ export const Workspace = () => {
                   />
 
                   <Route
+                    path="glossaries"
+                    element={
+                      <ProtectedRouteElement
+                        component={WorkspaceGlossaries}
+                        ability="glossaries:manage"
+                      />
+                    }
+                  />
+
+                  <Route
                     path="integrations"
                     element={
                       <ProtectedRouteElement
@@ -156,6 +168,11 @@ export const Workspace = () => {
                     }
                   />
                 </Route>
+
+                <Route
+                  path="/:workspaceKey/glossaries/:glossaryId"
+                  element={<Glossary />}
+                />
 
                 <Route
                   path="/:workspaceKey/projects/:projectId/import/from-file"

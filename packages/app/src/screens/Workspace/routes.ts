@@ -16,6 +16,9 @@ const routes: RoutesCollection = {
   '/:workspaceKey/settings/languages': {
     name: 'workspaceSettingsLanguages',
   },
+  '/:workspaceKey/settings/glossaries': {
+    name: 'workspaceSettingsGlossaries',
+  },
   '/:workspaceKey/settings/integrations': {
     name: 'workspaceSettingsIntegrations',
   },
@@ -42,6 +45,9 @@ const routes: RoutesCollection = {
   },
   '/:workspaceKey/projects/:projectId/destinations/:destinationId': {
     name: 'projectDestination',
+  },
+  '/:workspaceKey/glossaries/:glossaryId': {
+    name: 'glossary',
   },
 }
 

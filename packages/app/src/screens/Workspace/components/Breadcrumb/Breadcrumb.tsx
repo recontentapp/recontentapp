@@ -6,7 +6,7 @@ import { styled } from '../../../../theme'
 
 export interface BreadcrumbItem {
   label: string
-  path: string
+  path?: string
 }
 
 interface BreadcrumbProps {
@@ -30,17 +30,24 @@ const List = styled('ol', {
   flexDirection: 'row',
 })
 
+const sharedListItemStyles = {
+  display: 'inline-flex',
+  paddingY: '$space60',
+  paddingX: '$space60',
+  color: '$gray13',
+  fontWeight: 500,
+  fontSize: '$size80',
+  borderRadius: '$radius100',
+  transition: 'all 0.2s ease-in-out',
+  outline: 'none',
+}
+
 const ListItem = styled('li', {
+  '.breadcrumb__item': {
+    ...sharedListItemStyles,
+  },
   '.breadcrumb__link': {
-    display: 'inline-flex',
-    paddingY: '$space60',
-    paddingX: '$space60',
-    color: '$gray13',
-    fontWeight: 500,
-    fontSize: '$size80',
-    borderRadius: '$radius100',
-    transition: 'all 0.2s ease-in-out',
-    outline: 'none',
+    ...sharedListItemStyles,
     '&:hover,&:focus': {
       backgroundColor: '$gray3',
     },
@@ -84,15 +91,29 @@ export const Breadcrumb: FC<BreadcrumbProps> = ({ items }) => {
   return (
     <Container aria-label="Breadcrumb">
       <List>
-        {items.map((item, index) => (
-          <ListItem key={index}>
-            <Link className="breadcrumb__link" to={item.path}>
-              <TextEllipsis>{item.label}</TextEllipsis>
-            </Link>
+        {items.map((item, index) => {
+          if (!item.path) {
+            return (
+              <ListItem key={index}>
+                <span className="breadcrumb__item">
+                  <TextEllipsis>{item.label}</TextEllipsis>
+                </span>
 
-            {index < items.length - 1 && <Separator>/</Separator>}
-          </ListItem>
-        ))}
+                {index < items.length - 1 && <Separator>/</Separator>}
+              </ListItem>
+            )
+          }
+
+          return (
+            <ListItem key={index}>
+              <Link className="breadcrumb__link" to={item.path}>
+                <TextEllipsis>{item.label}</TextEllipsis>
+              </Link>
+
+              {index < items.length - 1 && <Separator>/</Separator>}
+            </ListItem>
+          )
+        })}
       </List>
     </Container>
   )
