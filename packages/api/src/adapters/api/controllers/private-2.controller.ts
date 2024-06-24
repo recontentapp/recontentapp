@@ -12,6 +12,7 @@ import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard'
 import { AuthenticatedRequester } from 'src/modules/auth/requester.decorator'
 import { Requester } from 'src/modules/auth/requester.object'
 import { GlossaryService } from 'src/modules/ux-writing/glossary.service'
+import { PromptService } from 'src/modules/ux-writing/prompt.service'
 import { Pagination, PaginationParams } from 'src/utils/pagination'
 import { RequiredQuery } from 'src/utils/required-query'
 import {
@@ -24,12 +25,22 @@ import {
   UnlinkGlossaryFromProjectDto,
   UpdateGlossaryDto,
 } from '../dto/private/glossary.dto'
+import {
+  CreatePromptDto,
+  DeletePromptDto,
+  LinkPromptWithProjectDto,
+  UnlinkPromptFromProjectDto,
+  UpdatePromptDto,
+} from '../dto/private/prompt.dto'
 import { PrivateFormatter } from '../formatters/private.formatter'
 
 @Controller('private')
 @UseGuards(JwtAuthGuard)
 export class Private2ApiController {
-  constructor(private readonly glossaryService: GlossaryService) {}
+  constructor(
+    private readonly glossaryService: GlossaryService,
+    private readonly promptService: PromptService,
+  ) {}
 
   @Get('/ListGlossaries')
   async listGlossaries(
@@ -193,6 +204,123 @@ export class Private2ApiController {
     await this.glossaryService.batchDeleteGlossaryTerms({
       glossaryId,
       ids,
+      requester,
+    })
+
+    return {}
+  }
+
+  @Get('/ListPrompts')
+  async listPrompts(
+    @RequiredQuery('workspaceId') workspaceId: string,
+    @AuthenticatedRequester() requester: Requester,
+    @Pagination() pagination: PaginationParams,
+    @Query('projectId') projectId?: string,
+  ): Promise<Paths.ListPrompts.Responses.$200> {
+    const result = await this.promptService.listPrompts({
+      workspaceId,
+      projectId,
+      requester,
+      pagination,
+    })
+
+    return {
+      items: result.items.map(PrivateFormatter.formatPrompt),
+      pagination: result.pagination,
+    }
+  }
+
+  @Post('/CreatePrompt')
+  async createPrompt(
+    @Body()
+    {
+      name,
+      description,
+      workspaceId,
+      glossaryId,
+      tone,
+      length,
+      customInstructions,
+    }: CreatePromptDto,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.CreatePrompt.Responses.$201> {
+    const prompt = await this.promptService.createPrompt({
+      name,
+      description,
+      workspaceId,
+      glossaryId,
+      tone,
+      length,
+      customInstructions,
+      requester,
+    })
+
+    return PrivateFormatter.formatPrompt(prompt)
+  }
+
+  @Post('/UpdatePrompt')
+  async updatePrompt(
+    @Body()
+    {
+      name,
+      description,
+      id,
+      glossaryId,
+      tone,
+      length,
+      customInstructions,
+    }: UpdatePromptDto,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.UpdateGlossary.Responses.$200> {
+    const prompt = await this.promptService.updatePrompt({
+      name,
+      description,
+      id,
+      glossaryId,
+      tone,
+      length,
+      customInstructions,
+      requester,
+    })
+
+    return PrivateFormatter.formatPrompt(prompt)
+  }
+
+  @Post('/LinkPromptWithProject')
+  async linkPromptWithProject(
+    @Body() { promptId, projectId }: LinkPromptWithProjectDto,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.LinkGlossaryWithProject.Responses.$204> {
+    await this.promptService.linkPromptWithProject({
+      promptId,
+      projectId,
+      requester,
+    })
+
+    return {}
+  }
+
+  @Post('/UnlinkPromptFromProject')
+  async unlinkPromptFromProject(
+    @Body() { promptId, projectId }: UnlinkPromptFromProjectDto,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.UnlinkGlossaryFromProject.Responses.$204> {
+    await this.promptService.unlinkPromptFromProject({
+      promptId,
+      projectId,
+      requester,
+    })
+
+    return {}
+  }
+
+  @Delete('/DeletePrompt')
+  async deletePrompt(
+    @Body() { promptId }: DeletePromptDto,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.DeleteGlossary.Responses.$204> {
+    await this.promptService.deletePrompt({
+      id: promptId,
       requester,
     })
 

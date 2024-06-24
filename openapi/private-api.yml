@@ -2542,6 +2542,195 @@ paths:
       responses:
         '204':
           description: OK
+  /ListPrompts:
+    get:
+      operationId: listPrompts
+      parameters:
+        - name: workspaceId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: projectId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Prompt'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                additionalProperties: false
+                required:
+                  - items
+                  - pagination
+  /CreatePrompt:
+    post:
+      operationId: createPrompt
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                workspaceId:
+                  type: string
+                glossaryId:
+                  type: string
+                  nullable: true
+                name:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                tone:
+                  oneOf:
+                    - $ref: '#/components/schemas/PromptTone'
+                    - $ref: '#/components/schemas/Empty'
+                length:
+                  oneOf:
+                    - $ref: '#/components/schemas/PromptLength'
+                    - $ref: '#/components/schemas/Empty'
+                customInstructions:
+                  type: array
+                  items:
+                    type: string
+              additionalProperties: false
+              required:
+                - workspaceId
+                - glossaryId
+                - name
+                - description
+                - tone
+                - length
+                - customInstructions
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prompt'
+  /UpdatePrompt:
+    post:
+      operationId: updatePrompt
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                tone:
+                  oneOf:
+                    - $ref: '#/components/schemas/PromptTone'
+                    - $ref: '#/components/schemas/Empty'
+                length:
+                  oneOf:
+                    - $ref: '#/components/schemas/PromptLength'
+                    - $ref: '#/components/schemas/Empty'
+                customInstructions:
+                  type: array
+                  items:
+                    type: string
+              additionalProperties: false
+              required:
+                - id
+                - name
+                - description
+                - tone
+                - length
+                - customInstructions
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prompt'
+  /DeletePrompt:
+    delete:
+      operationId: deletePrompt
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                promptId:
+                  type: string
+              additionalProperties: false
+              required:
+                - promptId
+      responses:
+        '204':
+          description: OK
+  /LinkPromptWithProject:
+    post:
+      operationId: linkPromptWithProject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                promptId:
+                  type: string
+                projectId:
+                  type: string
+              additionalProperties: false
+              required:
+                - promptId
+                - projectId
+      responses:
+        '204':
+          description: OK
+  /UnlinkPromptFromProject:
+    post:
+      operationId: unlinkPromptFromProject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                promptId:
+                  type: string
+                projectId:
+                  type: string
+              additionalProperties: false
+              required:
+                - promptId
+                - projectId
+      responses:
+        '204':
+          description: OK
 components:
   schemas:
     Empty:
