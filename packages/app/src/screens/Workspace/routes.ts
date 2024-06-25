@@ -19,6 +19,9 @@ const routes: RoutesCollection = {
   '/:workspaceKey/settings/glossaries': {
     name: 'workspaceSettingsGlossaries',
   },
+  '/:workspaceKey/settings/prompts': {
+    name: 'workspaceSettingsPrompts',
+  },
   '/:workspaceKey/settings/integrations': {
     name: 'workspaceSettingsIntegrations',
   },

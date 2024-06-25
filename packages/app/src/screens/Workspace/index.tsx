@@ -31,6 +31,7 @@ import {
   Integrations as WorkspaceIntegrations,
   Languages as WorkspaceLanguages,
   Members as WorkspaceMembers,
+  Prompts as WorkspacePrompts,
   WorkspaceSettings,
 } from './screens/WorkspaceSettings'
 
@@ -133,6 +134,16 @@ export const Workspace = () => {
                       <ProtectedRouteElement
                         component={WorkspaceGlossaries}
                         ability="glossaries:manage"
+                      />
+                    }
+                  />
+
+                  <Route
+                    path="prompts"
+                    element={
+                      <ProtectedRouteElement
+                        component={WorkspacePrompts}
+                        ability="prompts:manage"
                       />
                     }
                   />

@@ -33,6 +33,7 @@ export const globalStyles = globalCss({
     display: 'block',
     minWidth: 'min-content',
     zIndex: 1000,
+    maxHeight: 300,
     outline: 'none',
     backgroundColor: '$white',
     border: '1px solid $gray7',
@@ -52,8 +53,6 @@ export const globalStyles = globalCss({
     margin: 0,
     padding: 0,
     listStyle: 'none',
-    maxHeight: 300,
-    overflowY: 'auto',
   },
 
   '[data-reach-listbox-list]:focus': {
@@ -233,7 +232,6 @@ export const SelectField: FC<SelectFieldProps> = ({
             position="popper"
             sideOffset={0}
             data-reach-listbox-popover
-            className="SelectContent"
           >
             <Select.Viewport className="SelectViewport">
               <Select.Group>

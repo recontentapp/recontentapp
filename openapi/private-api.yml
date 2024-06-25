@@ -2642,6 +2642,9 @@ paths:
               properties:
                 id:
                   type: string
+                glossaryId:
+                  type: string
+                  nullable: true
                 name:
                   type: string
                 description:
@@ -2663,6 +2666,7 @@ paths:
               required:
                 - id
                 - name
+                - glossaryId
                 - description
                 - tone
                 - length

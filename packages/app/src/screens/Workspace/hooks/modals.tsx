@@ -30,6 +30,10 @@ import {
   CreateTagModal,
   CreateTagModalRef,
 } from '../components/modals/CreateTagModal'
+import {
+  UpsertPromptModal,
+  UpsertPromptModalRef,
+} from '../components/modals/UpsertPromptModal'
 
 interface ModalsContext {
   openCreateProject: CreateProjectModalRef['open']
@@ -37,6 +41,7 @@ interface ModalsContext {
   openCreateTag: CreateTagModalRef['open']
   openCreateDestination: CreateDestinationModalRef['open']
   openCreateGlossary: CreateGlossaryModalRef['open']
+  openUpsertPrompt: UpsertPromptModalRef['open']
   closeAll: () => void
 }
 
@@ -51,6 +56,7 @@ export const ModalsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const createPhraseModalRef = useRef<CreatePhraseModalRef>(null!)
   const createDestinationModalRef = useRef<CreateDestinationModalRef>(null!)
   const createTagModalRef = useRef<CreateTagModalRef>(null!)
+  const upsertPromptModalRef = useRef<UpsertPromptModalRef>(null!)
 
   const openCreateProject: CreateProjectModalRef['open'] = useCallback(() => {
     createProjectModalRef.current?.open()
@@ -73,6 +79,12 @@ export const ModalsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     },
     [],
   )
+  const openUpsertPrompt: UpsertPromptModalRef['open'] = useCallback(
+    (...props) => {
+      upsertPromptModalRef.current?.open(...props)
+    },
+    [],
+  )
 
   const closeAll = useCallback(() => {
     createProjectModalRef.current.close()
@@ -80,6 +92,7 @@ export const ModalsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     createDestinationModalRef.current.close()
     createTagModalRef.current.close()
     createGlossaryModalRef.current.close()
+    upsertPromptModalRef.current.close()
   }, [])
 
   useEffect(() => {
@@ -93,6 +106,7 @@ export const ModalsProvider: FC<{ children: ReactNode }> = ({ children }) => {
       openCreateDestination,
       openCreateTag,
       openCreateGlossary,
+      openUpsertPrompt,
       closeAll,
     }),
     [
@@ -102,6 +116,7 @@ export const ModalsProvider: FC<{ children: ReactNode }> = ({ children }) => {
       openCreateTag,
       openCreatePhrase,
       openCreateDestination,
+      openUpsertPrompt,
     ],
   )
 
@@ -112,6 +127,7 @@ export const ModalsProvider: FC<{ children: ReactNode }> = ({ children }) => {
       <CreateDestinationModal ref={createDestinationModalRef} />
       <CreateTagModal ref={createTagModalRef} />
       <CreateGlossaryModal ref={createGlossaryModalRef} />
+      <UpsertPromptModal ref={upsertPromptModalRef} />
 
       {children}
     </modalsContext.Provider>
