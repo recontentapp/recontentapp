@@ -97,7 +97,7 @@ export const Glossary: FC = () => {
         description={glossary.description ? glossary.description : undefined}
         panel={
           isAdding && languageId ? (
-            <AddPanel languageId={languageId} />
+            <AddPanel glossaryId={params.glossaryId!} languageId={languageId} />
           ) : undefined
         }
       >
