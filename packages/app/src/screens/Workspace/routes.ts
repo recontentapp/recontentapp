@@ -34,11 +34,23 @@ const routes: RoutesCollection = {
   '/:workspaceKey/projects/:projectId/phrases/:revisionId': {
     name: 'projectPhrases',
   },
+  '/:workspaceKey/projects/:projectId/phrases/:revisionId/editor': {
+    name: 'projectPhrasesEditor',
+    queryParams: {
+      phraseId: {
+        type: 'string',
+        required: true,
+      },
+    },
+  },
   '/:workspaceKey/projects/:projectId/settings': {
     name: 'projectSettings',
   },
   '/:workspaceKey/projects/:projectId/import': {
     name: 'projectImport',
+  },
+  '/:workspaceKey/projects/:projectId/ux-writing': {
+    name: 'projectUXWriting',
   },
   '/:workspaceKey/projects/:projectId/import/from-file': {
     name: 'projectImportFromFile',

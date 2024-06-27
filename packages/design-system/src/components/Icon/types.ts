@@ -15,6 +15,7 @@ export type IconName =
   | 'stats'
   | 'sync'
   | 'reviews'
+  | 'double_arrow'
   | 'keyboard_arrow_down'
   | 'keyboard_arrow_up'
   | 'keyboard_arrow_left'

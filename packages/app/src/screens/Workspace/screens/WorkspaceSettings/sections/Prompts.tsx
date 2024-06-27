@@ -25,7 +25,7 @@ export const Prompts: FC = () => {
       items={data?.items ?? []}
       primaryAction={{
         label: 'Update prompt',
-        icon: 'open_in_new',
+        icon: 'edit',
         onAction: item => openUpsertPrompt(item),
       }}
       columns={[

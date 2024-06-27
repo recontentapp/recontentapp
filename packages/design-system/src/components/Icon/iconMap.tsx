@@ -16,6 +16,11 @@ export const iconMap: Record<IconName, SVGComponent> = {
       <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
     </svg>
   ),
+  double_arrow: props => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+      <path d="m242-200 200-280-200-280h98l200 280-200 280h-98Zm238 0 200-280-200-280h98l200 280-200 280h-98Z" />
+    </svg>
+  ),
   reviews: props => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
       <path d="m363-390 117-71 117 71-31-133 104-90-137-11-53-126-53 126-137 11 104 90-31 133ZM80-80v-720q0-33 23.5-56.5T160-880h640q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H240L80-80Zm126-240h594v-480H160v525l46-45Zm-46 0v-480 480Z" />

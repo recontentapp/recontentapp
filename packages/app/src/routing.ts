@@ -114,6 +114,19 @@ export interface ProjectphrasesParams {
   }
 }
 
+export interface ProjectphraseseditorParams {
+  pathParams: {
+    workspaceKey: string
+    projectId: string
+    revisionId: string
+    [k: string]: string | undefined
+  }
+  queryParams: {
+    phraseId: string
+    [k: string]: string | undefined
+  }
+}
+
 export interface ProjectsettingsParams {
   pathParams: {
     workspaceKey: string
@@ -126,6 +139,17 @@ export interface ProjectsettingsParams {
 }
 
 export interface ProjectimportParams {
+  pathParams: {
+    workspaceKey: string
+    projectId: string
+    [k: string]: string | undefined
+  }
+  queryParams?: {
+    [k: string]: string | undefined
+  }
+}
+
+export interface ProjectuxwritingParams {
   pathParams: {
     workspaceKey: string
     projectId: string
@@ -387,6 +411,20 @@ const routes = {
     path: '/:workspaceKey/projects/:projectId/phrases/:revisionId',
     metadata: {},
   },
+  projectPhrasesEditor: {
+    url: (params: ProjectphraseseditorParams) => {
+      const path = generatePath(
+        '/:workspaceKey/projects/:projectId/phrases/:revisionId/editor',
+        params.pathParams,
+      )
+      const queryParams = params.queryParams
+        ? QueryString.stringify(params.queryParams)
+        : undefined
+      return queryParams ? `${path}?${queryParams}` : path
+    },
+    path: '/:workspaceKey/projects/:projectId/phrases/:revisionId/editor',
+    metadata: {},
+  },
   projectSettings: {
     url: (params: ProjectsettingsParams) => {
       const path = generatePath(
@@ -413,6 +451,20 @@ const routes = {
       return queryParams ? `${path}?${queryParams}` : path
     },
     path: '/:workspaceKey/projects/:projectId/import',
+    metadata: {},
+  },
+  projectUXWriting: {
+    url: (params: ProjectuxwritingParams) => {
+      const path = generatePath(
+        '/:workspaceKey/projects/:projectId/ux-writing',
+        params.pathParams,
+      )
+      const queryParams = params.queryParams
+        ? QueryString.stringify(params.queryParams)
+        : undefined
+      return queryParams ? `${path}?${queryParams}` : path
+    },
+    path: '/:workspaceKey/projects/:projectId/ux-writing',
     metadata: {},
   },
   projectImportFromFile: {

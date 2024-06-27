@@ -15,6 +15,7 @@ import { Sidebar } from './components/Sidebar'
 import { ModalsProvider } from './hooks/modals'
 import { Dashboard } from './screens/Dashboard'
 import { Destination } from './screens/Destination'
+import { Editor } from './screens/Editor/Editor'
 import { Glossary } from './screens/Glossary/Glossary'
 import { ImportFromFile } from './screens/ImportFromFile'
 import {
@@ -23,6 +24,7 @@ import {
   Import as ProjectImport,
   Phrases as ProjectPhrases,
   Settings as ProjectSettings,
+  UXWriting as ProjectUXWriting,
 } from './screens/Project'
 import { UserSettings } from './screens/UserSettings'
 import {
@@ -201,11 +203,17 @@ export const Workspace = () => {
                 />
 
                 <Route
+                  path="/:workspaceKey/projects/:projectId/phrases/:revisionId/editor"
+                  element={<Editor />}
+                />
+
+                <Route
                   path="/:workspaceKey/projects/:projectId"
                   element={<Project />}
                 >
                   <Route path="import" element={<ProjectImport />} />
                   <Route path="export" element={<ProjectExport />} />
+                  <Route path="ux-writing" element={<ProjectUXWriting />} />
                   <Route path="settings" element={<ProjectSettings />} />
                   <Route path="phrases">
                     <Route path=":revisionId" element={<ProjectPhrases />} />

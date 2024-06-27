@@ -8,14 +8,25 @@ import {
 } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
-import { Modal, ModalContent, ModalRef, Stack, toast } from 'design-system'
+import {
+  Box,
+  Button,
+  Heading,
+  Sidepanel,
+  Stack,
+  toast,
+  Form as UIForm,
+} from 'design-system'
+import { SidepanelRef } from 'design-system/dist/components/Sidepanel'
+import { useNavigate } from 'react-router-dom'
 import {
   useGetPhrase,
   useGetProject,
   useTranslatePhrase,
 } from '../../../../../../generated/reactQuery'
-import { useHasAbility } from '../../../../../../hooks/workspace'
+import { useCurrentWorkspace } from '../../../../../../hooks/workspace'
 import { Form } from './components/Form'
+import { Sidebar } from './components/Sidebar'
 import { State } from './types'
 
 export interface UpdatePhraseModalRef {
@@ -50,7 +61,8 @@ const Content: FC<ContentProps> = ({
   onNext,
   onPrevious,
 }) => {
-  const hasAutoTranslate = useHasAbility('auto_translation:use')
+  const navigate = useNavigate()
+  const { key: workspaceKey } = useCurrentWorkspace()
   const { data: project } = useGetProject({ queryParams: { id: projectId } })
   const { data: phrase, isLoading: isLoadingPhrase } = useGetPhrase({
     queryParams: {
@@ -123,50 +135,58 @@ const Content: FC<ContentProps> = ({
     [onSubmit],
   )
 
-  const hasAtLeastOneTranslation = (phrase?.translations ?? []).length > 0
-  const showAutoTranslate = hasAutoTranslate && hasAtLeastOneTranslation
-
   return (
-    <ModalContent
-      asForm
-      contextTitle={phrase?.key ?? 'Loading...'}
-      title="Update translations"
-      primaryAction={{
-        label: 'Save translations',
-        isLoading: isTranslating,
-        onAction: onSubmit,
-      }}
-      footer={{
-        moveDown: {
-          isDisabled: !hasNext,
-          onAction: onNext,
-        },
-        moveUp: {
-          isDisabled: !hasPrevious,
-          onAction: onPrevious,
-        },
-      }}
-    >
-      <Stack direction="column" spacing="$space200" paddingBottom="$space300">
-        {(project?.languages ?? []).map((language, index) => (
-          <Form
-            key={index}
-            initialValue={initialState[language.id] ?? ''}
-            index={index}
-            onChange={value =>
-              setState(state => ({
-                ...state,
-                [language.id]: value,
-              }))
-            }
-            language={language}
-            phrase={phrase}
-            autoTranslationAvailable={showAutoTranslate}
-            isLoading={isLoadingPhrase}
-          />
-        ))}
+    <Stack width="100%" height="100%" direction="row">
+      <Stack
+        flexGrow={1}
+        direction="column"
+        alignItems="center"
+        paddingX="$space100"
+        paddingTop="$space500"
+      >
+        <Box width="100%" maxWidth={700} display="block">
+          <Stack direction="column" spacing="$space100">
+            <Heading size="$size100" color="$gray14" renderAs="h2">
+              {phrase?.key}
+            </Heading>
+
+            <UIForm onSubmit={onSubmit}>
+              <Stack
+                direction="column"
+                spacing="$space200"
+                paddingBottom="$space300"
+              >
+                {(project?.languages ?? []).map((language, index) => (
+                  <Form
+                    key={index}
+                    initialValue={initialState[language.id] ?? ''}
+                    index={index}
+                    onChange={value =>
+                      setState(state => ({
+                        ...state,
+                        [language.id]: value,
+                      }))
+                    }
+                    language={language}
+                    isLoading={isLoadingPhrase}
+                  />
+                ))}
+              </Stack>
+
+              <Button
+                variation="primary"
+                type="submit"
+                isLoading={isTranslating}
+              >
+                Save translations
+              </Button>
+            </UIForm>
+          </Stack>
+        </Box>
       </Stack>
-    </ModalContent>
+
+      <Sidebar project={project} phrase={phrase} />
+    </Stack>
   )
 }
 
@@ -178,16 +198,16 @@ export const UpdatePhraseModal = forwardRef<
     { onClose, phraseId, projectId, hasNext, hasPrevious, onNext, onPrevious },
     ref,
   ) => {
-    const modalRef = useRef<ModalRef>(null!)
+    const sidepanelRef = useRef<SidepanelRef>(null!)
 
     useImperativeHandle(ref, () => ({
       open: () => {
-        modalRef.current.open()
+        sidepanelRef.current.open()
       },
     }))
 
     return (
-      <Modal ref={modalRef} onClose={onClose}>
+      <Sidepanel ref={sidepanelRef} onClose={onClose}>
         <Content
           projectId={projectId}
           phraseId={phraseId}
@@ -196,7 +216,7 @@ export const UpdatePhraseModal = forwardRef<
           onNext={onNext}
           onPrevious={onPrevious}
         />
-      </Modal>
+      </Sidepanel>
     )
   },
 )

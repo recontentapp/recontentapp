@@ -46,7 +46,6 @@ export const Phrases: FC = () => {
   const navigate = useNavigate()
   const params = useParams<'projectId' | 'revisionId'>()
   const updatePhraseModalRef = useRef<UpdatePhraseModalRef>(null!)
-
   const revisionId = params.revisionId!
 
   const { data, fetchNextPage, hasNextPage } = useInfiniteListPhrases({

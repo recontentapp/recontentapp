@@ -226,7 +226,7 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
               usePortal={false}
               items={[
                 {
-                  label: 'Edit key',
+                  label: 'Update',
                   icon: 'edit',
                   onSelect: () => onRequestEditKey(phrase),
                 },
@@ -407,8 +407,8 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
       <Table
         isLoading={isLoading}
         primaryAction={{
-          label: 'Quickly translate',
-          icon: 'translate',
+          label: 'Update',
+          icon: 'edit',
           onAction: (_phrase, index) => onRequestTranslate(index),
         }}
         footerLoadMore={onLoadMore}

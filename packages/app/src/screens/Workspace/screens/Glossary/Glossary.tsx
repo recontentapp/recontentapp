@@ -4,32 +4,21 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Box, Button, SelectField } from 'design-system'
 import { FullpageSpinner } from '../../../../components/FullpageSpinner'
 import { Head } from '../../../../components/Head'
-import {
-  useGetGlossary,
-  useListWorkspaceLanguages,
-} from '../../../../generated/reactQuery'
+import { useGetGlossary } from '../../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../../hooks/workspace'
 import routes from '../../../../routing'
 import { Page } from '../../components/Page'
 import { ScreenWrapper } from '../../components/ScreenWrapper'
+import { useLanguagesSelector } from '../../hooks/languages'
 import { AddPanel } from './components/AddPanel'
 import { useInfiniteListGlossaryTerms } from './hooks'
 
 export const Glossary: FC = () => {
   const params = useParams<'glossaryId'>()
   const navigate = useNavigate()
-  const {
-    id: workspaceId,
-    key: workspaceKey,
-    name: workspaceName,
-  } = useCurrentWorkspace()
-  const { data: languagesData } = useListWorkspaceLanguages({
-    queryParams: {
-      workspaceId,
-    },
-  })
+  const { key: workspaceKey, name: workspaceName } = useCurrentWorkspace()
   const [isAdding, setIsAdding] = useState(false)
-  const [languageId, setLanguageId] = useState<string | null>(null)
+  const { languageId, setLanguageId, languages } = useLanguagesSelector()
   const {
     data: glossary,
     isLoading: glossaryLoading,
@@ -39,7 +28,7 @@ export const Glossary: FC = () => {
       id: params.glossaryId!,
     },
   })
-  const { data, fetchNextPage, hasNextPage } = useInfiniteListGlossaryTerms(
+  const { data } = useInfiniteListGlossaryTerms(
     {
       glossaryId: params.glossaryId!,
       languageId: String(languageId),
@@ -51,14 +40,6 @@ export const Glossary: FC = () => {
   const terms = useMemo(() => {
     return data?.pages.flatMap(page => page.items) ?? []
   }, [data])
-
-  useEffect(() => {
-    if (!languagesData) {
-      return
-    }
-
-    setLanguageId(languagesData.at(0)?.id ?? null)
-  }, [languagesData])
 
   useEffect(() => {
     if (failureCount > 0) {
@@ -112,13 +93,12 @@ export const Glossary: FC = () => {
 
             setLanguageId(option.value)
           }}
-          options={
-            languagesData?.map(l => ({
-              label: l.name,
-              value: l.id,
-            })) ?? []
-          }
+          options={languages.map(l => ({
+            label: l.name,
+            value: l.id,
+          }))}
         />
+
         {terms.map(term => (
           <p>{term.name}</p>
         ))}
