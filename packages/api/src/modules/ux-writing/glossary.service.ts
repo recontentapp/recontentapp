@@ -167,6 +167,9 @@ export class GlossaryService {
         },
         take: limit,
         skip: offset,
+        include: {
+          translations: true,
+        },
       }),
       this.prismaService.glossaryTerm.count({
         where,

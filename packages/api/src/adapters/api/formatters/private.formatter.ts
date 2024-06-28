@@ -7,6 +7,7 @@ import {
   GithubInstallation,
   Glossary,
   GlossaryTerm,
+  GlossaryTermTranslation,
   Language,
   Phrase,
   PhraseTranslation,
@@ -164,7 +165,6 @@ export class PrivateFormatter {
     project: Project & {
       languages: Language[]
       revisions: ProjectRevision[]
-      glossaries: Pick<Glossary, 'id'>[]
       prompts: Pick<Prompt, 'id'>[]
     },
   ): Components.Schemas.Project {
@@ -176,7 +176,7 @@ export class PrivateFormatter {
       name: project.name,
       description: project.description,
       prompts: project.prompts.map(item => item.id),
-      glossaries: project.glossaries.map(item => item.id),
+      glossaryId: project.glossaryId,
       createdAt: project.createdAt.toISOString(),
       updatedAt: project.updatedAt.toISOString(),
       createdBy: project.createdBy,
@@ -321,18 +321,21 @@ export class PrivateFormatter {
   }
 
   static formatGlossaryTerm(
-    term: GlossaryTerm,
+    term: GlossaryTerm & { translations: GlossaryTermTranslation[] },
   ): Components.Schemas.GlossaryTerm {
     return {
       id: term.id,
       workspaceId: term.workspaceId,
       glossaryId: term.glossaryId,
-      groupId: term.groupId,
-      languageId: term.languageId,
       name: term.name,
       description: term.description,
       forbidden: term.forbidden,
       caseSensitive: term.caseSensitive,
+      nonTranslatable: term.nonTranslatable,
+      translations: term.translations.map(t => ({
+        languageId: t.languageId,
+        content: t.content,
+      })),
       createdAt: term.createdAt.toISOString(),
       updatedAt: term.updatedAt.toISOString(),
       createdBy: term.createdBy,

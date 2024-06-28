@@ -2218,11 +2218,6 @@ paths:
           required: true
           schema:
             type: string
-        - name: projectId
-          in: query
-          required: false
-          schema:
-            type: string
         - name: page
           in: query
           required: false
@@ -2389,16 +2384,6 @@ paths:
           required: true
           schema:
             type: string
-        - name: languageId
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: groupId
-          in: query
-          required: false
-          schema:
-            type: string
         - name: page
           in: query
           required: false
@@ -2427,9 +2412,9 @@ paths:
                 required:
                   - items
                   - pagination
-  /BatchCreateGlossaryTerms:
+  /CreateGlossaryTerm:
     post:
-      operationId: batchCreateGlossaryTerms
+      operationId: createGlossaryTerm
       requestBody:
         content:
           application/json:
@@ -2438,89 +2423,90 @@ paths:
               properties:
                 glossaryId:
                   type: string
-                terms:
+                name:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                forbidden:
+                  type: boolean
+                caseSensitive:
+                  type: boolean
+                nonTranslatable:
+                  type: boolean
+                translations:
                   type: array
                   items:
                     type: object
                     additionalProperties: false
                     required:
-                      - groupId
                       - languageId
-                      - name
-                      - description
-                      - forbidden
-                      - caseSensitive
+                      - content
                     properties:
-                      groupId:
-                        type: string
                       languageId:
                         type: string
-                        nullable: true
-                      name:
+                      content:
                         type: string
-                      description:
-                        type: string
-                        nullable: true
-                      forbidden:
-                        type: boolean
-                      caseSensitive:
-                        type: boolean
               additionalProperties: false
               required:
                 - glossaryId
-                - terms
+                - name
+                - description
+                - forbidden
+                - caseSensitive
+                - nonTranslatable
+                - translations
       responses:
         '201':
           description: OK
-  /BatchUpdateGlossaryTerms:
+  /UpdateGlossaryTerm:
     post:
-      operationId: batchUpdateGlossaryTerms
+      operationId: updateGlossaryTerm
       requestBody:
         content:
           application/json:
             schema:
               type: object
               properties:
-                glossaryId:
+                id:
                   type: string
-                terms:
+                name:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                forbidden:
+                  type: boolean
+                caseSensitive:
+                  type: boolean
+                nonTranslatable:
+                  type: boolean
+                translations:
                   type: array
                   items:
                     type: object
                     additionalProperties: false
                     required:
-                      - id
-                      - groupId
                       - languageId
-                      - name
-                      - description
-                      - forbidden
-                      - caseSensitive
+                      - content
                     properties:
-                      id:
-                        type: string
-                      groupId:
-                        type: string
                       languageId:
                         type: string
-                        nullable: true
-                      name:
+                      content:
                         type: string
-                      description:
-                        type: string
-                        nullable: true
-                      forbidden:
-                        type: boolean
-                      caseSensitive:
-                        type: boolean
               additionalProperties: false
               required:
-                - glossaryId
-                - terms
+                - id
+                - name
+                - description
+                - forbidden
+                - caseSensitive
+                - nonTranslatable
+                - translations
       responses:
         '204':
           description: OK
-  /BatchDeleteGlossaryTerms:
+  /DeleteGlossaryTerm:
     delete:
       operationId: batchDeleteGlossaryTerms
       requestBody:
@@ -2529,16 +2515,11 @@ paths:
             schema:
               type: object
               properties:
-                glossaryId:
+                id:
                   type: string
-                ids:
-                  type: array
-                  items:
-                    type: string
               additionalProperties: false
               required:
-                - glossaryId
-                - ids
+                - id
       responses:
         '204':
           description: OK
@@ -2952,6 +2933,9 @@ components:
           type: string
         workspaceId:
           type: string
+        glossaryId:
+          type: string
+          nullable: true
         name:
           type: string
         description:
@@ -2964,10 +2948,6 @@ components:
           items:
             $ref: '#/components/schemas/Language'
         prompts:
-          type: array
-          items:
-            type: string
-        glossaries:
           type: array
           items:
             type: string
@@ -2986,11 +2966,11 @@ components:
       required:
         - id
         - workspaceId
+        - glossaryId
         - masterRevisionId
         - name
         - description
         - prompts
-        - glossaries
         - languages
         - createdAt
         - updatedAt
@@ -3204,11 +3184,6 @@ components:
           type: string
         glossaryId:
           type: string
-        groupId:
-          type: string
-        languageId:
-          type: string
-          nullable: true
         name:
           type: string
         description:
@@ -3218,6 +3193,21 @@ components:
           type: boolean
         caseSensitive:
           type: boolean
+        nonTranslatable:
+          type: boolean
+        translations:
+          type: array
+          items:
+            type: object
+            required:
+              - languageId
+              - content
+            additionalProperties: false
+            properties:
+              languageId:
+                type: string
+              content:
+                type: string
         createdAt:
           type: string
           format: date-time
@@ -3234,11 +3224,11 @@ components:
         - id
         - workspaceId
         - glossaryId
-        - languageId
         - name
         - description
         - forbidden
         - caseSensitive
+        - nonTranslatable
         - createdAt
         - updatedAt
         - createdBy

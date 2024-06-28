@@ -1,5 +1,4 @@
 import {
-  ArrayMaxSize,
   IsArray,
   IsBoolean,
   IsNotEmpty,
@@ -75,16 +74,23 @@ export class UnlinkGlossaryFromProjectDto {
   projectId: string
 }
 
-class TermToCreate {
+class Translation {
+  @IsString()
+  @MaxLength(ID_LENGTH)
+  @IsNotEmpty()
+  languageId: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(TEXT_LENGTH)
+  content: string
+}
+
+export class CreateGlossaryTermDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(ID_LENGTH)
-  groupId: string
-
-  @IsString()
-  @MaxLength(ID_LENGTH)
-  @IsOptional()
-  languageId?: string
+  glossaryId: string
 
   @IsString()
   @IsNotEmpty()
@@ -101,21 +107,16 @@ class TermToCreate {
 
   @IsBoolean()
   caseSensitive: boolean
-}
 
-export class BatchCreateGlossaryTermsDto {
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(ID_LENGTH)
-  glossaryId: string
+  @IsBoolean()
+  nonTranslatable: boolean
 
-  @IsNotEmpty()
   @IsArray()
   @ValidateNested({ each: true })
-  terms: TermToCreate[]
+  translations: Translation[]
 }
 
-class TermToUpdate {
+export class UpdateGlossaryTermDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(ID_LENGTH)
@@ -123,16 +124,6 @@ class TermToUpdate {
 
   @IsString()
   @IsNotEmpty()
-  @MaxLength(ID_LENGTH)
-  groupId: string
-
-  @IsString()
-  @MaxLength(ID_LENGTH)
-  @IsOptional()
-  languageId?: string
-
-  @IsString()
-  @IsNotEmpty()
   @MaxLength(TEXT_LENGTH)
   name: string
 
@@ -146,28 +137,18 @@ class TermToUpdate {
 
   @IsBoolean()
   caseSensitive: boolean
-}
 
-export class BatchUpdateGlossaryTermsDto {
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(ID_LENGTH)
-  glossaryId: string
+  @IsBoolean()
+  nonTranslatable: boolean
 
-  @IsNotEmpty()
   @IsArray()
   @ValidateNested({ each: true })
-  terms: TermToUpdate[]
+  translations: Translation[]
 }
 
-export class BatchDeleteGlossaryTermsDto {
+export class DeleteGlossaryTermDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(ID_LENGTH)
-  glossaryId: string
-
-  @IsArray()
-  @IsNotEmpty()
-  @ArrayMaxSize(50)
-  ids: string[]
+  id: string
 }

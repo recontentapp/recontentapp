@@ -16,14 +16,14 @@ import { PromptService } from 'src/modules/ux-writing/prompt.service'
 import { Pagination, PaginationParams } from 'src/utils/pagination'
 import { RequiredQuery } from 'src/utils/required-query'
 import {
-  BatchCreateGlossaryTermsDto,
-  BatchDeleteGlossaryTermsDto,
-  BatchUpdateGlossaryTermsDto,
   CreateGlossaryDto,
+  CreateGlossaryTermDto,
   DeleteGlossaryDto,
+  DeleteGlossaryTermDto,
   LinkGlossaryWithProjectDto,
   UnlinkGlossaryFromProjectDto,
   UpdateGlossaryDto,
+  UpdateGlossaryTermDto,
 } from '../dto/private/glossary.dto'
 import {
   CreatePromptDto,
@@ -47,11 +47,9 @@ export class Private2ApiController {
     @RequiredQuery('workspaceId') workspaceId: string,
     @AuthenticatedRequester() requester: Requester,
     @Pagination() pagination: PaginationParams,
-    @Query('projectId') projectId?: string,
   ): Promise<Paths.ListGlossaries.Responses.$200> {
     const result = await this.glossaryService.listGlossaries({
       workspaceId,
-      projectId,
       requester,
       pagination,
     })
@@ -151,13 +149,9 @@ export class Private2ApiController {
     @RequiredQuery('glossaryId') glossaryId: string,
     @AuthenticatedRequester() requester: Requester,
     @Pagination() pagination: PaginationParams,
-    @Query('languageId') languageId?: string,
-    @Query('groupId') groupId?: string,
   ): Promise<Paths.ListGlossaryTerms.Responses.$200> {
     const result = await this.glossaryService.listGlossaryTerms({
       glossaryId,
-      languageId,
-      groupId,
       requester,
       pagination,
     })
@@ -168,42 +162,69 @@ export class Private2ApiController {
     }
   }
 
-  @Post('/BatchCreateGlossaryTerms')
+  @Post('/CreateGlossaryTerm')
   async batchCreateGlossaryTerms(
-    @Body() { glossaryId, terms }: BatchCreateGlossaryTermsDto,
-    @AuthenticatedRequester() requester: Requester,
-  ): Promise<Paths.BatchCreateGlossaryTerms.Responses.$201> {
-    await this.glossaryService.batchCreateGlossaryTerm({
+    @Body()
+    {
       glossaryId,
-      terms,
+      name,
+      description,
+      forbidden,
+      nonTranslatable,
+      caseSensitive,
+      translations,
+    }: CreateGlossaryTermDto,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.CreateGlossaryTerm.Responses.$201> {
+    await this.glossaryService.createGlossaryTerm({
+      glossaryId,
       requester,
+      name,
+      description,
+      forbidden,
+      nonTranslatable,
+      caseSensitive,
+      translations,
     })
 
     return {}
   }
 
-  @Post('/BatchUpdateGlossaryTerms')
+  @Post('/UpdateGlossaryTerm')
   async batchUpdateGlossaryTerms(
-    @Body() { glossaryId, terms }: BatchUpdateGlossaryTermsDto,
+    @Body()
+    {
+      id,
+      name,
+      description,
+      forbidden,
+      nonTranslatable,
+      caseSensitive,
+      translations,
+    }: UpdateGlossaryTermDto,
     @AuthenticatedRequester() requester: Requester,
-  ): Promise<Paths.BatchUpdateGlossaryTerms.Responses.$204> {
-    await this.glossaryService.batchUpdateGlossaryTerm({
-      glossaryId,
-      terms,
+  ): Promise<Paths.UpdateGlossaryTerm.Responses.$204> {
+    await this.glossaryService.updateGlossaryTerm({
+      id,
+      name,
+      description,
+      forbidden,
+      nonTranslatable,
+      caseSensitive,
+      translations,
       requester,
     })
 
     return {}
   }
 
-  @Post('/BatchDeleteGlossaryTerms')
+  @Post('/DeleteGlossaryTerm')
   async batchDeleteGlossaryTerms(
-    @Body() { glossaryId, ids }: BatchDeleteGlossaryTermsDto,
+    @Body() { id }: DeleteGlossaryTermDto,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.BatchDeleteGlossaryTerms.Responses.$204> {
-    await this.glossaryService.batchDeleteGlossaryTerms({
-      glossaryId,
-      ids,
+    await this.glossaryService.deleteGlossaryTerm({
+      id,
       requester,
     })
 
