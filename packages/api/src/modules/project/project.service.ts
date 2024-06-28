@@ -114,11 +114,6 @@ export class ProjectService {
             id: true,
           },
         },
-        glossaries: {
-          select: {
-            id: true,
-          },
-        },
         revisions: {
           where: {
             isMaster: true,
@@ -277,11 +272,6 @@ export class ProjectService {
               id: true,
             },
           },
-          glossaries: {
-            select: {
-              id: true,
-            },
-          },
           revisions: {
             where: {
               isMaster: true,
@@ -330,11 +320,6 @@ export class ProjectService {
       },
       include: {
         prompts: {
-          select: {
-            id: true,
-          },
-        },
-        glossaries: {
           select: {
             id: true,
           },
@@ -530,11 +515,6 @@ export class ProjectService {
         include: {
           languages: true,
           prompts: {
-            select: {
-              id: true,
-            },
-          },
-          glossaries: {
             select: {
               id: true,
             },

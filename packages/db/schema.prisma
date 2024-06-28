@@ -108,6 +108,7 @@ model Workspace {
   prompts                              Prompt[]
   glossaries                           Glossary[]
   glossaryTerms                        GlossaryTerm[]
+  glossaryTermTranslations             GlossaryTermTranslation[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -179,15 +180,15 @@ model WorkspaceInvitation {
 }
 
 model Language {
-  id                 String              @id @default(uuid()) @db.VarChar()
-  workspaceId        String              @db.VarChar()
-  locale             String              @db.VarChar()
-  name               String              @db.VarChar()
-  workspace          Workspace           @relation(fields: [workspaceId], references: [id])
-  projects           Project[]           @relation("projects_languages")
-  phraseTranslations PhraseTranslation[]
-  figmaFiles         FigmaFile[]
-  glossaryTerms      GlossaryTerm[]
+  id                       String                    @id @default(uuid()) @db.VarChar()
+  workspaceId              String                    @db.VarChar()
+  locale                   String                    @db.VarChar()
+  name                     String                    @db.VarChar()
+  workspace                Workspace                 @relation(fields: [workspaceId], references: [id])
+  projects                 Project[]                 @relation("projects_languages")
+  phraseTranslations       PhraseTranslation[]
+  glossaryTermTranslations GlossaryTermTranslation[]
+  figmaFiles               FigmaFile[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -225,8 +226,8 @@ model Glossary {
   name        String         @db.VarChar()
   description String?        @db.VarChar()
   workspace   Workspace      @relation(fields: [workspaceId], references: [id])
-  projects    Project[]      @relation("projects_glossaries")
   terms       GlossaryTerm[]
+  projects    Project[]
   prompts     Prompt[]
 
   createdAt DateTime @default(now())
@@ -238,37 +239,53 @@ model Glossary {
 }
 
 model GlossaryTerm {
-  id            String    @id @default(uuid()) @db.VarChar()
-  groupId       String    @db.VarChar()
-  glossaryId    String    @db.VarChar()
-  workspaceId   String    @db.VarChar()
-  languageId    String?   @db.VarChar()
-  name          String    @db.VarChar()
-  description   String?   @db.VarChar()
-  forbidden     Boolean   @default(false)
-  caseSensitive Boolean   @default(false)
-  glossary      Glossary  @relation(fields: [glossaryId], references: [id])
-  workspace     Workspace @relation(fields: [workspaceId], references: [id])
-  language      Language? @relation(fields: [languageId], references: [id])
+  id              String                    @id @default(uuid()) @db.VarChar()
+  glossaryId      String                    @db.VarChar()
+  workspaceId     String                    @db.VarChar()
+  name            String                    @db.VarChar()
+  description     String?                   @db.VarChar()
+  forbidden       Boolean                   @default(false)
+  caseSensitive   Boolean                   @default(false)
+  nonTranslatable Boolean                   @default(false)
+  glossary        Glossary                  @relation(fields: [glossaryId], references: [id])
+  workspace       Workspace                 @relation(fields: [workspaceId], references: [id])
+  translations    GlossaryTermTranslation[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   createdBy String   @db.VarChar()
   updatedBy String?  @db.VarChar()
 
-  @@unique([groupId, languageId])
   @@map("glossary_terms")
+}
+
+model GlossaryTermTranslation {
+  id          String       @id @default(uuid()) @db.VarChar()
+  languageId  String       @db.VarChar()
+  termId      String       @db.VarChar()
+  workspaceId String       @db.VarChar()
+  content     String
+  language    Language     @relation(fields: [languageId], references: [id])
+  term        GlossaryTerm @relation(fields: [termId], references: [id])
+  workspace   Workspace    @relation(fields: [workspaceId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([termId, languageId])
+  @@map("glossary_term_translations")
 }
 
 model Project {
   id          String            @id @default(uuid()) @db.VarChar()
   workspaceId String            @db.VarChar()
+  glossaryId  String?           @db.VarChar()
   name        String            @db.VarChar()
   description String?           @db.VarChar()
   workspace   Workspace         @relation(fields: [workspaceId], references: [id])
+  glossary    Glossary?         @relation(fields: [glossaryId], references: [id])
   languages   Language[]        @relation("projects_languages")
   prompts     Prompt[]          @relation("projects_prompts")
-  glossaries  Glossary[]        @relation("projects_glossaries")
   revisions   ProjectRevision[]
   phrases     Phrase[]
   tags        Tag[]

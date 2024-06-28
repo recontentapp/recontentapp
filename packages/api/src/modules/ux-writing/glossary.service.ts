@@ -6,7 +6,6 @@ import { Requester } from '../auth/requester.object'
 
 interface ListGlossariesParams {
   workspaceId: string
-  projectId?: string
   pagination: PaginationParams
   requester: Requester
 }
@@ -18,8 +17,6 @@ interface GetGlossaryParams {
 
 interface ListGlossaryTermsParams {
   glossaryId: string
-  languageId?: string
-  groupId?: string
   pagination: PaginationParams
   requester: Requester
 }
@@ -55,36 +52,36 @@ interface DeleteGlossaryParams {
   requester: Requester
 }
 
-interface BatchCreateGlossaryTermParams {
-  glossaryId: string
-  terms: {
-    groupId: string
-    languageId?: string
-    name: string
-    description?: string
-    forbidden: boolean
-    caseSensitive: boolean
-  }[]
+interface CreateGlossaryTermParams {
   requester: Requester
+  glossaryId: string
+  name: string
+  description?: string
+  forbidden: boolean
+  nonTranslatable: boolean
+  caseSensitive: boolean
+  translations: Array<{
+    languageId: string
+    content: string
+  }>
 }
 
-interface BatchUpdateGlossaryTermParams {
-  glossaryId: string
-  terms: {
-    id: string
-    groupId: string
-    languageId?: string
-    name: string
-    description?: string
-    forbidden: boolean
-    caseSensitive: boolean
-  }[]
+interface UpdateGlossaryTermParams {
   requester: Requester
+  id: string
+  name: string
+  description?: string
+  forbidden: boolean
+  nonTranslatable: boolean
+  caseSensitive: boolean
+  translations: Array<{
+    languageId: string
+    content: string
+  }>
 }
 
-interface BatchDeleteGlossaryTermsParams {
-  glossaryId: string
-  ids: string[]
+interface DeleteGlossaryTermParams {
+  id: string
   requester: Requester
 }
 
@@ -94,7 +91,6 @@ export class GlossaryService {
 
   async listGlossaries({
     workspaceId,
-    projectId,
     pagination,
     requester,
   }: ListGlossariesParams) {
@@ -103,20 +99,8 @@ export class GlossaryService {
 
     const { limit, offset, pageSize, page } = pagination
 
-    if (projectId) {
-      const project = await this.prismaService.project.findUniqueOrThrow({
-        where: { id: projectId },
-      })
-      if (project.workspaceId !== workspaceId) {
-        throw new BadRequestException(
-          'Project does not belong to the specified workspace',
-        )
-      }
-    }
-
     const where: Prisma.GlossaryWhereInput = {
       workspaceId,
-      ...(projectId ? { projects: { some: { id: projectId } } } : {}),
     }
 
     const [glossaries, count] = await Promise.all([
@@ -158,8 +142,6 @@ export class GlossaryService {
 
   async listGlossaryTerms({
     glossaryId,
-    languageId,
-    groupId,
     pagination,
     requester,
   }: ListGlossaryTermsParams) {
@@ -171,38 +153,10 @@ export class GlossaryService {
     )
     workspaceAccess.hasAbilityOrThrow('workspace:read')
 
-    if (languageId) {
-      const language = await this.prismaService.language.findUniqueOrThrow({
-        where: { id: languageId },
-      })
-      if (language.workspaceId !== glossary.workspaceId) {
-        throw new BadRequestException('Language does not belong to workspace')
-      }
-    }
-
     const { limit, offset, pageSize, page } = pagination
 
     const where: Prisma.GlossaryTermWhereInput = {
-      AND: [
-        {
-          glossaryId,
-          ...(groupId ? { groupId } : {}),
-        },
-        ...(languageId
-          ? [
-              {
-                OR: [
-                  {
-                    languageId,
-                  },
-                  {
-                    languageId: null,
-                  },
-                ],
-              },
-            ]
-          : []),
-      ],
+      glossaryId,
     }
 
     const [terms, count] = await Promise.all([
@@ -324,14 +278,14 @@ export class GlossaryService {
     )
     workspaceAccess.hasAbilityOrThrow('glossaries:manage')
 
-    await this.prismaService.glossary.update({
-      where: { id: glossaryId },
+    if (project.glossaryId) {
+      throw new BadRequestException('Project already has a glossary linked')
+    }
+
+    await this.prismaService.project.update({
+      where: { id: projectId },
       data: {
-        projects: {
-          connect: {
-            id: projectId,
-          },
-        },
+        glossaryId,
       },
     })
   }
@@ -359,23 +313,28 @@ export class GlossaryService {
     )
     workspaceAccess.hasAbilityOrThrow('glossaries:manage')
 
-    await this.prismaService.glossary.update({
-      where: { id: glossaryId },
+    if (project.glossaryId !== glossaryId) {
+      throw new BadRequestException('Glossary is not linked to the project')
+    }
+
+    await this.prismaService.project.update({
+      where: { id: projectId },
       data: {
-        projects: {
-          disconnect: {
-            id: projectId,
-          },
-        },
+        glossaryId: null,
       },
     })
   }
 
-  async batchCreateGlossaryTerm({
+  async createGlossaryTerm({
     glossaryId,
-    terms,
     requester,
-  }: BatchCreateGlossaryTermParams) {
+    name,
+    description,
+    forbidden,
+    nonTranslatable,
+    caseSensitive,
+    translations,
+  }: CreateGlossaryTermParams) {
     const glossary = await this.prismaService.glossary.findUniqueOrThrow({
       where: { id: glossaryId },
     })
@@ -384,9 +343,7 @@ export class GlossaryService {
     )
     workspaceAccess.hasAbilityOrThrow('glossaries:manage')
 
-    const languageIds = terms
-      .map(term => term.languageId)
-      .filter((a: string | undefined): a is string => !!a)
+    const languageIds = translations.map(term => term.languageId)
     const languagesCount = await this.prismaService.language.count({
       where: {
         id: {
@@ -398,88 +355,120 @@ export class GlossaryService {
     if (languagesCount !== languageIds.length) {
       throw new BadRequestException('Invalid language IDs')
     }
+    if (nonTranslatable && translations.length > 0) {
+      throw new BadRequestException(
+        'Non-translatable terms should not have translations',
+      )
+    }
 
-    await this.prismaService.glossaryTerm.createMany({
-      data: terms.map(term => ({
-        groupId: term.groupId,
+    await this.prismaService.glossaryTerm.create({
+      data: {
         glossaryId,
-        languageId: term.languageId,
+        name,
+        description,
+        forbidden,
+        nonTranslatable,
+        caseSensitive,
         workspaceId: glossary.workspaceId,
-        name: term.name,
-        description: term.description,
-        forbidden: term.forbidden,
-        caseSensitive: term.caseSensitive,
+        translations: {
+          create: translations.map(translation => ({
+            languageId: translation.languageId,
+            content: translation.content,
+            workspaceId: glossary.workspaceId,
+          })),
+        },
         createdBy: workspaceAccess.getAccountID(),
-      })),
+      },
     })
   }
 
-  async batchUpdateGlossaryTerm({
-    glossaryId,
-    terms,
+  async updateGlossaryTerm({
     requester,
-  }: BatchUpdateGlossaryTermParams) {
-    const glossary = await this.prismaService.glossary.findUniqueOrThrow({
-      where: { id: glossaryId },
+    id,
+    name,
+    description,
+    forbidden,
+    nonTranslatable,
+    caseSensitive,
+    translations,
+  }: UpdateGlossaryTermParams) {
+    const term = await this.prismaService.glossaryTerm.findUniqueOrThrow({
+      where: { id },
     })
     const workspaceAccess = requester.getWorkspaceAccessOrThrow(
-      glossary.workspaceId,
+      term.workspaceId,
     )
     workspaceAccess.hasAbilityOrThrow('glossaries:manage')
 
-    const languageIds = terms
-      .map(term => term.languageId)
-      .filter((a: string | undefined): a is string => !!a)
+    const languageIds = translations.map(t => t.languageId)
     const languagesCount = await this.prismaService.language.count({
       where: {
         id: {
           in: languageIds,
         },
-        workspaceId: glossary.workspaceId,
+        workspaceId: term.workspaceId,
       },
     })
     if (languagesCount !== languageIds.length) {
       throw new BadRequestException('Invalid language IDs')
     }
+    if (nonTranslatable && translations.length > 0) {
+      throw new BadRequestException(
+        'Non-translatable terms should not have translations',
+      )
+    }
 
-    await this.prismaService.$transaction(
-      terms.map(term =>
-        this.prismaService.glossaryTerm.update({
-          where: { id: term.id, glossaryId },
-          data: {
-            groupId: term.groupId,
-            languageId: term.languageId,
-            name: term.name,
-            description: term.description,
-            forbidden: term.forbidden,
-            caseSensitive: term.caseSensitive,
-            updatedBy: workspaceAccess.getAccountID(),
-          },
-        }),
-      ),
-    )
+    await this.prismaService.$transaction(async t => {
+      await t.glossaryTerm.update({
+        where: { id },
+        data: {
+          name,
+          description,
+          forbidden,
+          nonTranslatable,
+          caseSensitive,
+          updatedBy: workspaceAccess.getAccountID(),
+        },
+      })
+
+      await t.glossaryTermTranslation.deleteMany({
+        where: {
+          termId: id,
+        },
+      })
+
+      await t.glossaryTermTranslation.createMany({
+        data: translations.map(translation => ({
+          termId: id,
+          languageId: translation.languageId,
+          content: translation.content,
+          workspaceId: term.workspaceId,
+        })),
+      })
+    })
   }
 
-  async batchDeleteGlossaryTerms({
-    glossaryId,
-    ids,
-    requester,
-  }: BatchDeleteGlossaryTermsParams) {
-    const glossary = await this.prismaService.glossary.findUniqueOrThrow({
-      where: { id: glossaryId },
+  async deleteGlossaryTerm({ id, requester }: DeleteGlossaryTermParams) {
+    const glossary = await this.prismaService.glossaryTerm.findUniqueOrThrow({
+      where: { id },
     })
     const workspaceAccess = requester.getWorkspaceAccessOrThrow(
       glossary.workspaceId,
     )
     workspaceAccess.hasAbilityOrThrow('glossaries:manage')
 
-    await this.prismaService.glossaryTerm.deleteMany({
-      where: {
-        glossaryId,
-        id: {
-          in: ids,
+    await this.prismaService.$transaction(async t => {
+      await t.glossaryTermTranslation.deleteMany({
+        where: {
+          termId: id,
         },
-      },
+      })
+
+      await t.glossaryTerm.deleteMany({
+        where: {
+          id,
+        },
+      })
     })
   }
 }
