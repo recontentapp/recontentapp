@@ -10,10 +10,19 @@ import { Config } from 'src/utils/config'
 import { PrismaService } from 'src/utils/prisma.service'
 import { Requester, WorkspaceAccess } from '../auth/requester.object'
 import { MeteredService } from '../cloud/billing/metered.service'
+import { LanguageLocale, getISO639LabelFromLocale } from '../workspace/locale'
 
 interface TranslatePhraseParams {
   phraseId: string
   languageId: string
+  requester: Requester
+}
+
+interface BatchTranslatePhrasesParams {
+  revisionId: string
+  phraseIds: string[]
+  sourceLanguageId: string
+  targetLanguageId: string
   requester: Requester
 }
 
@@ -23,6 +32,14 @@ interface TranslateWithProviderParams {
   }
   targetLanguage: Language
   workspaceAccess: WorkspaceAccess
+}
+
+interface RewritePhraseTranslationParams {
+  phraseTranslationId: string
+  requester: Requester
+  tone: 'formal' | 'informal'
+  length: 'shorter' | 'longer' | 'same'
+  customInstructions: string[]
 }
 
 @Injectable()
@@ -355,6 +372,7 @@ export class TranslateService {
         where: { id: phraseId },
         include: {
           translations: true,
+          taggables: { select: { tagId: true } },
         },
         data: {
           updatedAt: new Date(),
@@ -364,5 +382,257 @@ export class TranslateService {
     ])
 
     return updatedPhrase
+  }
+
+  async batchTranslatePhrases({
+    revisionId,
+    phraseIds,
+    sourceLanguageId,
+    targetLanguageId,
+    requester,
+  }: BatchTranslatePhrasesParams) {
+    const revision = await this.prismaService.projectRevision.findUniqueOrThrow(
+      {
+        where: { id: revisionId },
+      },
+    )
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      revision.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('auto_translation:use')
+
+    const [sourceLanguage, targetLanguage] = await Promise.all([
+      this.prismaService.language.findUniqueOrThrow({
+        where: { id: sourceLanguageId },
+      }),
+      this.prismaService.language.findUniqueOrThrow({
+        where: { id: targetLanguageId },
+      }),
+    ])
+    if (
+      sourceLanguage.workspaceId !== revision.workspaceId ||
+      targetLanguage.workspaceId !== revision.workspaceId
+    ) {
+      throw new BadRequestException('Languages are in different workspace')
+    }
+
+    const sourceLanguageISOLabel = getISO639LabelFromLocale(
+      sourceLanguage.locale as LanguageLocale,
+    )
+    const targetLanguageISOLabel = getISO639LabelFromLocale(
+      targetLanguage.locale as LanguageLocale,
+    )
+
+    const phrases = await this.prismaService.phrase.findMany({
+      where: {
+        id: { in: phraseIds },
+        workspaceId: revision.workspaceId,
+      },
+      select: {
+        id: true,
+        key: true,
+        translations: {
+          where: { languageId: sourceLanguageId },
+          select: {
+            content: true,
+          },
+        },
+      },
+    })
+
+    const phrasesMap = phrases.reduce<
+      Record<string, { id: string; translation: string }>
+    >((acc, phrase) => {
+      const sourceTranslation = phrase.translations[0]
+      if (sourceTranslation) {
+        acc[phrase.key] = {
+          id: phrase.id,
+          translation: sourceTranslation.content,
+        }
+      }
+      return acc
+    }, {})
+    const translationsMap = Object.entries(phrasesMap).reduce<
+      Record<string, string>
+    >((acc, [key, value]) => {
+      acc[key] = value.translation
+      return acc
+    }, {})
+
+    if (Object.keys(phrasesMap).length === 0) {
+      throw new BadRequestException('No source translations found')
+    }
+
+    const apiKey = this.configService.get('autoTranslate.openAIKey', {
+      infer: true,
+    })
+    if (!apiKey) {
+      throw new BadRequestException('OpenAI API key not set')
+    }
+
+    const client = new OpenAI({
+      apiKey,
+    })
+
+    const chatCompletion = await client.chat.completions.create({
+      messages: [
+        {
+          role: 'system',
+          content: `You are a localization assistant. You will be provided with a JSON object of key/translation pairs in ${sourceLanguageISOLabel}, your task is to translate them to ${targetLanguageISOLabel}.`,
+        },
+        {
+          role: 'user',
+          content: JSON.stringify(translationsMap),
+        },
+      ],
+      model: 'gpt-3.5-turbo',
+      response_format: { type: 'json_object' },
+      temperature: 1,
+      max_tokens: 256,
+      top_p: 1,
+      frequency_penalty: 0,
+      presence_penalty: 0,
+    })
+
+    const response = chatCompletion.choices.at(0)?.message.content
+    if (!response) {
+      return
+    }
+
+    this.meteredService.log({
+      workspaceId: workspaceAccess.getWorkspaceID(),
+      accountId: workspaceAccess.getAccountID(),
+      metric: 'token',
+      quantity: chatCompletion.usage?.total_tokens ?? 0,
+      externalId: chatCompletion.id,
+      timestamp: new Date(chatCompletion.created),
+    })
+
+    let content: Record<string, string>
+
+    try {
+      content = JSON.parse(response)
+    } catch (e) {
+      return
+    }
+
+    const translationsToInsert = Object.entries(content).reduce<
+      Record<string, string>
+    >((acc, [key, value]) => {
+      const phrase = phrasesMap[key]
+      if (!phrase) {
+        return acc
+      }
+
+      acc[phrase.id] = value
+      return acc
+    }, {})
+
+    await this.prismaService.$transaction([
+      this.prismaService.phraseTranslation.createMany({
+        data: Object.entries(translationsToInsert).map(
+          ([phraseId, content]) => ({
+            phraseId,
+            languageId: targetLanguageId,
+            revisionId,
+            workspaceId: revision.workspaceId,
+            content,
+            createdBy: workspaceAccess.getAccountID(),
+          }),
+        ),
+        skipDuplicates: true,
+      }),
+      this.prismaService.phrase.updateMany({
+        where: { id: { in: Object.keys(translationsToInsert) } },
+        data: {
+          updatedAt: new Date(),
+          updatedBy: workspaceAccess.getAccountID(),
+        },
+      }),
+    ])
+  }
+
+  async rewritePhraseTranslation({
+    phraseTranslationId,
+    requester,
+    tone,
+    length,
+    customInstructions,
+  }: RewritePhraseTranslationParams) {
+    const phraseTranslation =
+      await this.prismaService.phraseTranslation.findUniqueOrThrow({
+        where: { id: phraseTranslationId },
+        include: {
+          language: true,
+        },
+      })
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      phraseTranslation.workspaceId,
+    )
+    workspaceAccess.hasAbilityOrThrow('auto_translation:use')
+
+    const apiKey = this.configService.get('autoTranslate.openAIKey', {
+      infer: true,
+    })
+    if (!apiKey) {
+      throw new BadRequestException('OpenAI API key not set')
+    }
+
+    const client = new OpenAI({
+      apiKey,
+    })
+
+    const sourceLanguageISOLabel = getISO639LabelFromLocale(
+      phraseTranslation.language.locale as LanguageLocale,
+    )
+
+    let lengthLabel: string
+    switch (length) {
+      case 'shorter':
+        lengthLabel = 'shorter'
+        break
+      case 'longer':
+        lengthLabel = 'longer'
+        break
+      case 'same':
+        lengthLabel = 'the same length'
+        break
+    }
+
+    const chatCompletion = await client.chat.completions.create({
+      messages: [
+        {
+          role: 'system',
+          content: `You are a UX writing assistant. You will be provided with a text in ${sourceLanguageISOLabel}. Your task is to rephrase it while making it ${lengthLabel} using a ${tone} tone. Make sure to also:\n${customInstructions.join('\n')}`,
+        },
+        {
+          role: 'user',
+          content: phraseTranslation.content,
+        },
+      ],
+      model: 'gpt-3.5-turbo',
+      response_format: { type: 'text' },
+      temperature: 1,
+      max_tokens: 256,
+      top_p: 1,
+      frequency_penalty: 0,
+      presence_penalty: 0,
+    })
+
+    const response = chatCompletion.choices.at(0)?.message.content
+    if (!response) {
+      throw new BadRequestException('Could not rewrite phrase translation')
+    }
+
+    this.meteredService.log({
+      workspaceId: workspaceAccess.getWorkspaceID(),
+      accountId: workspaceAccess.getAccountID(),
+      metric: 'token',
+      quantity: chatCompletion.usage?.total_tokens ?? 0,
+      externalId: chatCompletion.id,
+      timestamp: new Date(chatCompletion.created),
+    })
+
+    return response
   }
 }

@@ -14,12 +14,12 @@ import { useCurrentWorkspace } from '../../../../../hooks/workspace'
 import routes from '../../../../../routing'
 import { useModals } from '../../../hooks/modals'
 import { FigmaFilesList } from '../components/FigmaFilesList'
-import { PhrasesTable } from '../components/PhrasesTable'
+import { PhrasesTable } from '../components/PhrasesTable/PhrasesTable'
 import { ProjectStats } from '../components/ProjectStats'
 import {
   UpdatePhraseModal,
   UpdatePhraseModalRef,
-} from '../components/UpdatePhraseModal'
+} from '../components/UpdatePhraseModal/UpdatePhraseModal'
 import { useInfiniteListPhrases } from '../hooks'
 
 export const Phrases: FC = () => {
@@ -46,7 +46,6 @@ export const Phrases: FC = () => {
   const navigate = useNavigate()
   const params = useParams<'projectId' | 'revisionId'>()
   const updatePhraseModalRef = useRef<UpdatePhraseModalRef>(null!)
-
   const revisionId = params.revisionId!
 
   const { data, fetchNextPage, hasNextPage } = useInfiniteListPhrases({

@@ -15,6 +15,8 @@ import { Sidebar } from './components/Sidebar'
 import { ModalsProvider } from './hooks/modals'
 import { Dashboard } from './screens/Dashboard'
 import { Destination } from './screens/Destination'
+import { Editor } from './screens/Editor/Editor'
+import { Glossary } from './screens/Glossary/Glossary'
 import { ImportFromFile } from './screens/ImportFromFile'
 import {
   Project,
@@ -22,13 +24,16 @@ import {
   Import as ProjectImport,
   Phrases as ProjectPhrases,
   Settings as ProjectSettings,
+  UXWriting as ProjectUXWriting,
 } from './screens/Project'
 import { UserSettings } from './screens/UserSettings'
 import {
   Billing as WorkspaceBilling,
+  Glossaries as WorkspaceGlossaries,
   Integrations as WorkspaceIntegrations,
   Languages as WorkspaceLanguages,
   Members as WorkspaceMembers,
+  Prompts as WorkspacePrompts,
   WorkspaceSettings,
 } from './screens/WorkspaceSettings'
 
@@ -126,6 +131,26 @@ export const Workspace = () => {
                   />
 
                   <Route
+                    path="glossaries"
+                    element={
+                      <ProtectedRouteElement
+                        component={WorkspaceGlossaries}
+                        ability="glossaries:manage"
+                      />
+                    }
+                  />
+
+                  <Route
+                    path="prompts"
+                    element={
+                      <ProtectedRouteElement
+                        component={WorkspacePrompts}
+                        ability="prompts:manage"
+                      />
+                    }
+                  />
+
+                  <Route
                     path="integrations"
                     element={
                       <ProtectedRouteElement
@@ -158,6 +183,11 @@ export const Workspace = () => {
                 </Route>
 
                 <Route
+                  path="/:workspaceKey/glossaries/:glossaryId"
+                  element={<Glossary />}
+                />
+
+                <Route
                   path="/:workspaceKey/projects/:projectId/import/from-file"
                   element={<ImportFromFile />}
                 />
@@ -173,11 +203,17 @@ export const Workspace = () => {
                 />
 
                 <Route
+                  path="/:workspaceKey/projects/:projectId/phrases/:revisionId/editor"
+                  element={<Editor />}
+                />
+
+                <Route
                   path="/:workspaceKey/projects/:projectId"
                   element={<Project />}
                 >
                   <Route path="import" element={<ProjectImport />} />
                   <Route path="export" element={<ProjectExport />} />
+                  <Route path="ux-writing" element={<ProjectUXWriting />} />
                   <Route path="settings" element={<ProjectSettings />} />
                   <Route path="phrases">
                     <Route path=":revisionId" element={<ProjectPhrases />} />

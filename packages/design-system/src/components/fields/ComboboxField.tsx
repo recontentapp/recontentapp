@@ -72,6 +72,7 @@ export const globalStyles = globalCss({
     marginTop: '$space60',
     boxShadow: '$shadow100',
     animation: `${contentShow} 200ms cubic-bezier(0.16, 1, 0.3, 1)`,
+    zIndex: 100,
   },
   '[data-reach-combobox-list]': {
     maxHeight: 400,

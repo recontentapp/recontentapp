@@ -40,7 +40,7 @@ const deserializeValue = (
   return value
 }
 
-const deserializeState = <S extends State>(
+export const deserializeURLState = <S extends State>(
   queryParams: URLSearchParams,
   initialState: S,
 ): S => {
@@ -62,7 +62,7 @@ const deserializeState = <S extends State>(
   return initial
 }
 
-const serializeState = <S extends State>(
+const serializeURLState = <S extends State>(
   location: Location,
   state: S,
 ): URLSearchParams => {
@@ -91,13 +91,13 @@ export const useURLState = <S extends State>({
   const location = useLocation()
   const navigate = useNavigate()
   const [state, setState] = useState<S>(
-    deserializeState(new URLSearchParams(location.search), initialState),
+    deserializeURLState(new URLSearchParams(location.search), initialState),
   )
 
   const onChange: UpdateStateFn<S> = s => {
     const newState = typeof s === 'function' ? s(state) : s
     setState(newState)
-    const searchParams = serializeState(location, newState)
+    const searchParams = serializeURLState(location, newState)
     navigate({ pathname: location.pathname, search: searchParams.toString() })
   }
 

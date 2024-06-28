@@ -1,4 +1,5 @@
 import {
+  ArrayMaxSize,
   IsArray,
   IsBoolean,
   IsNotEmpty,
@@ -73,6 +74,47 @@ export class AutoTranslatePhraseDto {
   languageId: string
 }
 
+export class BatchAutoTranslatePhrasesDto {
+  @IsArray()
+  @IsNotEmpty()
+  @ArrayMaxSize(50)
+  phraseIds: string[]
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
+  revisionId: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
+  sourceLanguageId: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
+  targetLanguageId: string
+}
+
+export class RewritePhraseTranslationDto {
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
+  phraseTranslationId: string
+
+  @IsString()
+  @IsNotEmpty()
+  tone: 'formal' | 'informal'
+
+  @IsString()
+  @IsNotEmpty()
+  length: 'shorter' | 'longer' | 'same'
+
+  @IsArray()
+  @ArrayMaxSize(10)
+  customInstructions: string[]
+}
+
 export class DeletePhraseDto {
   @IsString()
   @IsNotEmpty()
@@ -83,6 +125,7 @@ export class DeletePhraseDto {
 export class BatchDeletePhraseDto {
   @IsArray()
   @IsNotEmpty()
+  @ArrayMaxSize(50)
   ids: string[]
 }
 

@@ -33,6 +33,7 @@ export const globalStyles = globalCss({
     display: 'block',
     minWidth: 'min-content',
     zIndex: 1000,
+    maxHeight: 300,
     outline: 'none',
     backgroundColor: '$white',
     border: '1px solid $gray7',
@@ -52,8 +53,6 @@ export const globalStyles = globalCss({
     margin: 0,
     padding: 0,
     listStyle: 'none',
-    maxHeight: 300,
-    overflowY: 'auto',
   },
 
   '[data-reach-listbox-list]:focus': {
@@ -151,16 +150,6 @@ export const globalStyles = globalCss({
   },
 })
 
-// const HeaderLabel = styled('span', {
-//   display: 'block',
-//   fontSize: '$size60',
-//   color: '$gray9',
-//   fontWeight: 500,
-//   paddingX: '$space80',
-//   paddingY: '$space60',
-//   borderBottom: '1px solid $gray4',
-// })
-
 const FooterAction = styled('button', {
   color: '$blue900',
   fontWeight: 500,
@@ -190,6 +179,7 @@ export const SelectField: FC<SelectFieldProps> = ({
   hint,
   isOptional,
   footerAction,
+  isDisabled,
   info,
   error,
 }) => {
@@ -225,7 +215,13 @@ export const SelectField: FC<SelectFieldProps> = ({
         isOptional={isOptional}
       />
 
-      <Select.Root key={key} value={value} name={name} onValueChange={onSelect}>
+      <Select.Root
+        key={key}
+        value={value}
+        name={name}
+        disabled={isDisabled}
+        onValueChange={onSelect}
+      >
         <Select.Trigger data-reach-listbox-button>
           <Select.Value onBlur={onBlur} placeholder={placeholder} />
           <Select.Icon data-reach-listbox-arrow />
@@ -236,7 +232,6 @@ export const SelectField: FC<SelectFieldProps> = ({
             position="popper"
             sideOffset={0}
             data-reach-listbox-popover
-            className="SelectContent"
           >
             <Select.Viewport className="SelectViewport">
               <Select.Group>

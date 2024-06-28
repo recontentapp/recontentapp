@@ -1,4 +1,5 @@
 import {
+  ArrayMaxSize,
   IsArray,
   IsHexColor,
   IsIn,
@@ -85,6 +86,7 @@ export class BatchApplyProjectTagDto {
 
   @IsArray()
   @IsNotEmpty()
+  @ArrayMaxSize(50)
   recordIds: string[]
 }
 

@@ -47,6 +47,8 @@ export class WorkspaceAccess {
     if (this.workspaceAccount.role === 'owner') {
       abilities.push(
         'members:manage',
+        'glossaries:manage',
+        'prompts:manage',
         'languages:manage',
         'integrations:manage',
         'projects:destinations:manage',
