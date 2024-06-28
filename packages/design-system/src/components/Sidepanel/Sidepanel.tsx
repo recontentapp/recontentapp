@@ -9,6 +9,7 @@ import {
 
 import { globalCss, keyframes, styled } from '../../stitches'
 import { Icon } from '../Icon'
+import { Tooltip } from '../Tooltip'
 
 interface SidepanelProps {
   size?: 'medium' | 'large'
@@ -70,6 +71,8 @@ export const globalStyles = globalCss({
     right: 0,
     bottom: 0,
     height: '100%',
+    maxHeight: '100%',
+    overflow: 'hidden',
     transformOrigin: 'center',
     backgroundColor: '$white',
     borderTopLeftRadius: '$radius200',
@@ -96,10 +99,11 @@ export const globalStyles = globalCss({
 const CloseButton = styled('button', {
   position: 'absolute',
   top: 18,
-  left: 24,
+  left: 18,
   cursor: 'pointer',
   width: 28,
   height: 28,
+  zIndex: 10,
   marginTop: -6,
   marginRight: -7,
   display: 'flex',
@@ -160,13 +164,15 @@ export const Sidepanel = forwardRef<SidepanelRef, SidepanelProps>(
             !visibilityState ? 'sidepanel__content--hidden' : ''
           }`}
         >
-          <CloseButton
-            onClick={onRequestClose}
-            type="button"
-            aria-label="Close"
-          >
-            <Icon src="double_arrow" color="$gray10" size={20} />
-          </CloseButton>
+          <Tooltip position="right" title="Close panel">
+            <CloseButton
+              onClick={onRequestClose}
+              type="button"
+              aria-label="Close"
+            >
+              <Icon src="double_arrow" color="$gray10" size={20} />
+            </CloseButton>
+          </Tooltip>
 
           {children}
         </DialogContent>

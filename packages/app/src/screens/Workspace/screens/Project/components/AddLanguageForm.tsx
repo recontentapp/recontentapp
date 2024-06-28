@@ -58,7 +58,7 @@ export const AddLanguageForm: FC<AddLanguageFormProps> = ({ project }) => {
     mutateAsync({
       body: {
         projectId: project.id,
-        languageIds: languages.map(language => language.id),
+        languageIds: selectableLanguages.map(language => language.id),
       },
     })
       .then(() => {

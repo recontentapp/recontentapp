@@ -137,15 +137,15 @@ const Content: FC<ContentProps> = ({
 
   return (
     <Stack width="100%" height="100%" direction="row">
-      <Stack
+      <Box
         flexGrow={1}
-        direction="column"
-        alignItems="center"
+        height="100%"
         paddingX="$space100"
-        paddingTop="$space500"
+        paddingBottom="$space500"
+        overflowY="auto"
       >
-        <Box width="100%" maxWidth={700} display="block">
-          <Stack direction="column" spacing="$space100">
+        <Box margin="0 auto" width="100%" maxWidth={700} display="block">
+          <Stack direction="column" spacing="$space100" paddingY="$space500">
             <Heading size="$size100" color="$gray14" renderAs="h2">
               {phrase?.key}
             </Heading>
@@ -183,7 +183,7 @@ const Content: FC<ContentProps> = ({
             </UIForm>
           </Stack>
         </Box>
-      </Stack>
+      </Box>
 
       <Sidebar project={project} phrase={phrase} />
     </Stack>

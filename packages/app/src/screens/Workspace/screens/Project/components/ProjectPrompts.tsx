@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import {
   Button,
   ConfirmationModal,
@@ -7,7 +6,6 @@ import {
   Stack,
 } from 'design-system'
 import { useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useListPrompts } from '../../../../../generated/reactQuery'
 import {
   useCurrentWorkspace,
@@ -15,17 +13,17 @@ import {
 } from '../../../../../hooks/workspace'
 import { LinkPromptModal, LinkPromptModalRef } from './LinkPromptModal'
 import { PromptCard } from './PromptCard'
+import { ShowPromptModal, ShowPromptModalRef } from './ShowPromptModal'
 
 interface Props {
   projectId: string
 }
 
 export const ProjectPrompts = ({ projectId }: Props) => {
-  const queryClient = useQueryClient()
-  const navigate = useNavigate()
   const { id: workspaceId } = useCurrentWorkspace()
   const linkPromptModalRef = useRef<LinkPromptModalRef>(null!)
   const confirmationModalRef = useRef<ConfirmationModalRef>(null!)
+  const showPromptModalRef = useRef<ShowPromptModalRef>(null!)
   const canManagePrompts = useHasAbility('prompts:manage')
   const { data } = useListPrompts({
     queryParams: {
@@ -58,12 +56,18 @@ export const ProjectPrompts = ({ projectId }: Props) => {
       {(data?.items ?? []).length > 0 && (
         <Stack direction="row" flexWrap="wrap" spacing="$space40">
           {data?.items.map(prompt => (
-            <PromptCard key={prompt.id} prompt={prompt} />
+            <PromptCard
+              key={prompt.id}
+              prompt={prompt}
+              onAction={() => showPromptModalRef.current.open(prompt)}
+            />
           ))}
         </Stack>
       )}
 
       <LinkPromptModal ref={linkPromptModalRef} />
+
+      <ShowPromptModal ref={showPromptModalRef} />
 
       <ConfirmationModal
         ref={confirmationModalRef}

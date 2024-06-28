@@ -1,5 +1,6 @@
 import { FC, forwardRef, useImperativeHandle, useRef, useState } from 'react'
 
+import { useQueryClient } from '@tanstack/react-query'
 import {
   Box,
   Modal,
@@ -8,11 +9,14 @@ import {
   TextField,
   toast,
 } from 'design-system'
-import { useUpdatePhraseKey } from '../../../../../generated/reactQuery'
+import {
+  getGetPhraseQueryKey,
+  useUpdatePhraseKey,
+} from '../../../../../generated/reactQuery'
 import { Components } from '../../../../../generated/typeDefinitions'
 
 interface OpenProps {
-  phrase: Components.Schemas.PhraseItem
+  phrase: Pick<Components.Schemas.PhraseItem, 'id' | 'key'>
 }
 
 export interface EditPhraseKeyModalRef {
@@ -24,8 +28,17 @@ interface ContentProps extends OpenProps {
 }
 
 const Content: FC<ContentProps> = ({ onUpdate, phrase }) => {
+  const queryClient = useQueryClient()
   const [key, setKey] = useState(phrase.key)
-  const { mutateAsync, isPending } = useUpdatePhraseKey()
+  const { mutateAsync, isPending } = useUpdatePhraseKey({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: getGetPhraseQueryKey({
+          queryParams: { phraseId: phrase.id },
+        }),
+      })
+    },
+  })
 
   const onSubmit = () => {
     mutateAsync({

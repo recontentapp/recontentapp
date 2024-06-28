@@ -80,7 +80,12 @@ export class PrivateFormatter {
   }
 
   static formatPhrase(
-    phrase: Phrase & { translations: PhraseTranslation[] },
+    phrase: Phrase & {
+      translations: PhraseTranslation[]
+      taggables: {
+        tagId: string
+      }[]
+    },
   ): Components.Schemas.Phrase {
     return {
       id: phrase.id,
@@ -88,6 +93,7 @@ export class PrivateFormatter {
       revisionId: phrase.revisionId,
       projectId: phrase.projectId,
       workspaceId: phrase.workspaceId,
+      tags: phrase.taggables.map(t => t.tagId),
       translations: phrase.translations.map(t => ({
         id: t.id,
         languageId: t.languageId,
@@ -155,7 +161,12 @@ export class PrivateFormatter {
   }
 
   static formatProject(
-    project: Project & { languages: Language[]; revisions: ProjectRevision[] },
+    project: Project & {
+      languages: Language[]
+      revisions: ProjectRevision[]
+      glossaries: Pick<Glossary, 'id'>[]
+      prompts: Pick<Prompt, 'id'>[]
+    },
   ): Components.Schemas.Project {
     return {
       id: project.id,
@@ -164,6 +175,8 @@ export class PrivateFormatter {
       masterRevisionId: project.revisions.find(r => r.isMaster)?.id ?? '',
       name: project.name,
       description: project.description,
+      prompts: project.prompts.map(item => item.id),
+      glossaries: project.glossaries.map(item => item.id),
       createdAt: project.createdAt.toISOString(),
       updatedAt: project.updatedAt.toISOString(),
       createdBy: project.createdBy,

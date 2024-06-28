@@ -2963,6 +2963,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Language'
+        prompts:
+          type: array
+          items:
+            type: string
+        glossaries:
+          type: array
+          items:
+            type: string
         createdAt:
           type: string
           format: date-time
@@ -2981,6 +2989,8 @@ components:
         - masterRevisionId
         - name
         - description
+        - prompts
+        - glossaries
         - languages
         - createdAt
         - updatedAt
@@ -3316,6 +3326,10 @@ components:
               updatedBy:
                 type: string
                 nullable: true
+        tags:
+          type: array
+          items:
+            type: string
         createdAt:
           type: string
           format: date-time
@@ -3335,6 +3349,7 @@ components:
         - projectId
         - workspaceId
         - translations
+        - tags
         - createdAt
         - updatedAt
         - createdBy

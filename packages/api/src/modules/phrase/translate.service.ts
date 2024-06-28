@@ -372,6 +372,7 @@ export class TranslateService {
         where: { id: phraseId },
         include: {
           translations: true,
+          taggables: { select: { tagId: true } },
         },
         data: {
           updatedAt: new Date(),

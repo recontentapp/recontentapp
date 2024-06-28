@@ -5,6 +5,7 @@ import { styled } from '../../../../../theme'
 
 export interface PromptCardProps {
   prompt: Components.Schemas.Prompt
+  onAction: () => void
 }
 
 const Container = styled('div', {
@@ -52,12 +53,12 @@ const Container = styled('div', {
   },
 })
 
-export const PromptCard: FC<PromptCardProps> = ({ prompt }) => {
+export const PromptCard: FC<PromptCardProps> = ({ prompt, onAction }) => {
   return (
     <Container
       role="button"
       tabIndex={0}
-      onClick={() => {}}
+      onClick={onAction}
       variation="secondary"
     >
       <Stack

@@ -1,6 +1,9 @@
 import { Box, Tabs } from 'design-system'
+import { useState } from 'react'
 import { Components } from '../../../../../../../generated/typeDefinitions'
 import { styled } from '../../../../../../../theme'
+import { Glossary } from './Glossary'
+import { Properties } from './Properties'
 
 const Container = styled('div', {
   width: 280,
@@ -17,7 +20,12 @@ interface Props {
   phrase?: Components.Schemas.Phrase
 }
 
+type Tab = 'properties' | 'glossary'
+
 export const Sidebar = ({ project, phrase }: Props) => {
+  const [currentTab, setCurrentTab] = useState<Tab>('properties')
+  const glossaryId = project?.glossaries.at(0)
+
   return (
     <Container>
       {!project || !phrase ? null : (
@@ -29,17 +37,22 @@ export const Sidebar = ({ project, phrase }: Props) => {
             paddingX="$space80"
             paddingTop="$space60"
           >
-            <Tabs
+            <Tabs<Tab>
               label="Tabs"
-              tabs={[{ label: 'Glossary', value: 'glossary' }]}
-              currentTab="glossary"
-              onSelect={() => {}}
+              tabs={[
+                { label: 'Properties', value: 'properties' },
+                ...(glossaryId
+                  ? [{ label: 'Glossary', value: 'glossary' } as const]
+                  : []),
+              ]}
+              currentTab={currentTab}
+              onSelect={setCurrentTab}
             />
           </Box>
-          <pre>{JSON.stringify(project, null, 2)}</pre>
-          <pre>{JSON.stringify(phrase, null, 2)}</pre>
-          <pre>{JSON.stringify(phrase, null, 2)}</pre>
-          <pre>{JSON.stringify(phrase, null, 2)}</pre>
+
+          {currentTab === 'properties' && <Properties phrase={phrase} />}
+
+          {currentTab === 'glossary' && <Glossary />}
         </>
       )}
     </Container>
