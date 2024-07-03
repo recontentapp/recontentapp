@@ -148,9 +148,23 @@ export class PhraseService {
     const where: Prisma.PhraseWhereInput = {
       revisionId,
       ...(key && {
-        key: {
-          contains: key,
-        },
+        OR: [
+          {
+            key: {
+              contains: key,
+            },
+          },
+          {
+            translations: {
+              some: {
+                content: {
+                  search: key,
+                  mode: 'insensitive',
+                },
+              },
+            },
+          },
+        ],
       }),
       ...(tags && {
         taggables: {

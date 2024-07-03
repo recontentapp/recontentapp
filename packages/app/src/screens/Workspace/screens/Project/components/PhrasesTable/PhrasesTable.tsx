@@ -140,7 +140,6 @@ export const PhrasesTable: FC<PhrasesTableProps> = ({
   const search = useMemo(
     () => ({
       initialValue: initialKey,
-      placeholder: 'Search key...',
       onSearch: (query: string) => setLocalKey(query),
       onClear: () => {
         setState(state => ({

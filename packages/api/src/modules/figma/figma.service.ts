@@ -337,6 +337,7 @@ export class FigmaService {
                 languageId: file.languageId,
                 content: {
                   search: query,
+                  mode: 'insensitive',
                 },
               },
             },
