@@ -16,7 +16,7 @@
     "@aws-sdk/client-cloudwatch-logs": "3.569.0",
     "@aws-sdk/client-s3": "3.569.0",
     "@aws-sdk/client-sqs": "3.569.0",
-    "@aws-sdk/client-translate": "3.569.0",
+    "@aws-sdk/client-translate": "3.609.0",
     "@google-cloud/storage": "7.9.0",
     "@nestjs/common": "10.3.7",
     "@nestjs/config": "3.2.2",
