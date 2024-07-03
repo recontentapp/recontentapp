@@ -24,7 +24,7 @@ type Tab = 'properties' | 'glossary'
 
 export const Sidebar = ({ project, phrase }: Props) => {
   const [currentTab, setCurrentTab] = useState<Tab>('properties')
-  const glossaryId = project?.glossaries.at(0)
+  const glossaryId = project?.glossaryId
 
   return (
     <Container>
@@ -52,7 +52,9 @@ export const Sidebar = ({ project, phrase }: Props) => {
 
           {currentTab === 'properties' && <Properties phrase={phrase} />}
 
-          {currentTab === 'glossary' && <Glossary />}
+          {currentTab === 'glossary' && glossaryId && (
+            <Glossary project={project} glossaryId={glossaryId} />
+          )}
         </>
       )}
     </Container>

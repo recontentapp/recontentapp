@@ -17,7 +17,6 @@ interface PageProps {
   description?: string | ReactNode
   tabs?: PageTab[]
   children: ReactNode
-  panel?: ReactNode
 }
 
 const CustomLinkContainer = styled('div', {
@@ -77,18 +76,6 @@ const CustomLink: FC<LinkProps> = ({ children, to, ...props }) => {
 }
 
 const CONTENT_MAX_WIDTH = 1060
-const PANEL_WIDTH = 400
-
-const PanelContainer = styled('div', {
-  position: 'fixed',
-  top: 0,
-  right: 0,
-  bottom: 0,
-  width: PANEL_WIDTH,
-  height: '100vh',
-  borderLeft: '1px solid $gray5',
-  overflowY: 'auto',
-})
 
 export const Page: FC<PageProps> = ({
   title,
@@ -96,7 +83,6 @@ export const Page: FC<PageProps> = ({
   description,
   subtitle,
   tabs,
-  panel,
   children,
 }) => {
   return (
@@ -196,13 +182,6 @@ export const Page: FC<PageProps> = ({
           </Box>
         </Stack>
       </Box>
-
-      {panel && (
-        <>
-          <Box width={PANEL_WIDTH} />
-          <PanelContainer>{panel}</PanelContainer>
-        </>
-      )}
     </Stack>
   )
 }

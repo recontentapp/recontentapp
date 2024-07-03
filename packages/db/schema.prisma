@@ -109,6 +109,7 @@ model Workspace {
   glossaries                           Glossary[]
   glossaryTerms                        GlossaryTerm[]
   glossaryTermTranslations             GlossaryTermTranslation[]
+  aiUsageEvents                        AIUsageEvent[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -140,16 +141,17 @@ model WorkspaceBillingSettings {
 }
 
 model WorkspaceAccount {
-  id          String               @id @default(uuid()) @db.VarChar()
-  workspaceId String               @db.VarChar()
-  type        WorkspaceAccountType
-  role        WorkspaceAccountRole
-  userId      String?              @db.VarChar()
-  serviceId   String?              @db.VarChar()
-  apiKey      String?              @db.VarChar()
-  user        User?                @relation(fields: [userId], references: [id])
-  service     Service?             @relation(fields: [serviceId], references: [id])
-  workspace   Workspace            @relation(fields: [workspaceId], references: [id])
+  id            String               @id @default(uuid()) @db.VarChar()
+  workspaceId   String               @db.VarChar()
+  type          WorkspaceAccountType
+  role          WorkspaceAccountRole
+  userId        String?              @db.VarChar()
+  serviceId     String?              @db.VarChar()
+  apiKey        String?              @db.VarChar()
+  user          User?                @relation(fields: [userId], references: [id])
+  service       Service?             @relation(fields: [serviceId], references: [id])
+  workspace     Workspace            @relation(fields: [workspaceId], references: [id])
+  aiUsageEvents AIUsageEvent[]
 
   invitedBy String?   @db.VarChar()
   blockedBy String?   @db.VarChar()
@@ -568,4 +570,19 @@ model FigmaText {
 
   @@index([fileId, pageNodeId])
   @@map("figma_texts")
+}
+
+model AIUsageEvent {
+  id                String           @id @default(uuid()) @db.VarChar()
+  workspaceId       String           @db.VarChar()
+  accountId         String           @db.VarChar()
+  inputTokensCount  Int
+  outputTokensCount Int
+  account           WorkspaceAccount @relation(fields: [accountId], references: [id])
+  workspace         Workspace        @relation(fields: [workspaceId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@map("ai_usage_events")
 }

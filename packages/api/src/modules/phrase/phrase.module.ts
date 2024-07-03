@@ -3,6 +3,7 @@ import { PrismaService } from 'src/utils/prisma.service'
 
 import { MeteredService } from '../cloud/billing/metered.service'
 import { GitHubAppSyncService } from '../cloud/github-app/sync.service'
+import { AIService } from '../ux-writing/ai.service'
 import { ProducerService } from '../worker/producer.service'
 import { DestinationSyncService } from './destination-sync.service'
 import { DestinationService } from './destination.service'
@@ -19,6 +20,7 @@ import { TranslateService } from './translate.service'
     TranslateService,
     MeteredService,
     ProducerService,
+    AIService,
   ],
   exports: [PhraseService, TranslateService, DestinationService],
 })

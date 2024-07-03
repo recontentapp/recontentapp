@@ -338,8 +338,10 @@ export class PhraseService {
         t => t.languageId === languageId,
       )
 
-      if (content.length === 0 && index !== -1) {
-        toDelete.push(existingTranslations[index].id)
+      if (content.length === 0) {
+        if (index !== -1) {
+          toDelete.push(existingTranslations[index].id)
+        }
         continue
       }
 

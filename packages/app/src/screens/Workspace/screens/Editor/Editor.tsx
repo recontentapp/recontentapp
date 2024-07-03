@@ -3,11 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 import { FullpageSpinner } from '../../../../components/FullpageSpinner'
 import { Head } from '../../../../components/Head'
-import {
-  useGetPhrase,
-  useGetProject,
-  useTranslatePhrase,
-} from '../../../../generated/reactQuery'
+import { useGetPhrase, useGetProject } from '../../../../generated/reactQuery'
 import { useURLState } from '../../../../hooks/urlState'
 import { useCurrentWorkspace } from '../../../../hooks/workspace'
 import routes from '../../../../routing'
@@ -48,7 +44,7 @@ export const Editor = () => {
   })
   const [currentPhraseId, setCurrentPhraseId] = useState<string | null>(null)
 
-  const { data, fetchNextPage, hasNextPage } = useInfiniteListPhrases({
+  const { data } = useInfiniteListPhrases({
     revisionId: params.revisionId!,
     key: state.key,
     translated: state.translated,
@@ -93,7 +89,7 @@ export const Editor = () => {
     }
   }, [project, params.revisionId, setProjectContext])
 
-  const { data: phrase, isLoading: isLoadingPhrase } = useGetPhrase(
+  const { data: phrase } = useGetPhrase(
     {
       queryParams: {
         phraseId: String(currentPhraseId),
@@ -101,8 +97,6 @@ export const Editor = () => {
     },
     { enabled: !!currentPhraseId },
   )
-  const { mutateAsync: translate, isPending: isTranslating } =
-    useTranslatePhrase()
 
   if (!project || !phrase) {
     return <FullpageSpinner />

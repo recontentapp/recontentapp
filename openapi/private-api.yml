@@ -1040,30 +1040,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Phrase'
-  /AutoTranslatePhrase:
-    post:
-      operationId: autoTranslatePhrase
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                phraseId:
-                  type: string
-                languageId:
-                  type: string
-              additionalProperties: false
-              required:
-                - phraseId
-                - languageId
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Phrase'
   /BatchAutoTranslatePhrases:
     post:
       operationId: batchAutoTranslatePhrases
@@ -1103,27 +1079,12 @@ paths:
               properties:
                 phraseTranslationId:
                   type: string
-                tone:
+                promptId:
                   type: string
-                  enum:
-                    - formal
-                    - informal
-                length:
-                  type: string
-                  enum:
-                    - shorter
-                    - longer
-                    - same
-                customInstructions:
-                  type: array
-                  items:
-                    type: string
               additionalProperties: false
               required:
                 - phraseTranslationId
-                - tone
-                - length
-                - customInstructions
+                - promptId
       responses:
         '200':
           description: OK

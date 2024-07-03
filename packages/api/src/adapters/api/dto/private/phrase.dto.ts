@@ -62,18 +62,6 @@ export class TranslatePhraseDto {
   translations: Translation[]
 }
 
-export class AutoTranslatePhraseDto {
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(ID_LENGTH)
-  phraseId: string
-
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(ID_LENGTH)
-  languageId: string
-}
-
 export class BatchAutoTranslatePhrasesDto {
   @IsArray()
   @IsNotEmpty()
@@ -104,15 +92,8 @@ export class RewritePhraseTranslationDto {
 
   @IsString()
   @IsNotEmpty()
-  tone: 'formal' | 'informal'
-
-  @IsString()
-  @IsNotEmpty()
-  length: 'shorter' | 'longer' | 'same'
-
-  @IsArray()
-  @ArrayMaxSize(10)
-  customInstructions: string[]
+  @MaxLength(ID_LENGTH)
+  promptId: string
 }
 
 export class DeletePhraseDto {

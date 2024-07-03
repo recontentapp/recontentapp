@@ -55,9 +55,12 @@ interface UnlinkPromptFromProjectParams {
 export class PromptService {
   constructor(private prismaService: PrismaService) {}
 
-  async listPrompts(
-    { workspaceId, projectId, pagination, requester }: ListPromptsParams,
-  ) {
+  async listPrompts({
+    workspaceId,
+    projectId,
+    pagination,
+    requester,
+  }: ListPromptsParams) {
     const workspaceAccess = requester.getWorkspaceAccessOrThrow(workspaceId)
     workspaceAccess.hasAbilityOrThrow('workspace:read')
 
@@ -103,18 +106,16 @@ export class PromptService {
     }
   }
 
-  async createPrompt(
-    {
-      name,
-      description,
-      glossaryId,
-      tone,
-      length,
-      customInstructions,
-      workspaceId,
-      requester,
-    }: CreatePromptParams,
-  ) {
+  async createPrompt({
+    name,
+    description,
+    glossaryId,
+    tone,
+    length,
+    customInstructions,
+    workspaceId,
+    requester,
+  }: CreatePromptParams) {
     const workspaceAccess = requester.getWorkspaceAccessOrThrow(workspaceId)
     workspaceAccess.hasAbilityOrThrow('prompts:manage')
 
@@ -146,18 +147,16 @@ export class PromptService {
     return prompt
   }
 
-  async updatePrompt(
-    {
-      id,
-      name,
-      glossaryId,
-      description,
-      tone,
-      length,
-      customInstructions,
-      requester,
-    }: UpdatePromptParams,
-  ) {
+  async updatePrompt({
+    id,
+    name,
+    glossaryId,
+    description,
+    tone,
+    length,
+    customInstructions,
+    requester,
+  }: UpdatePromptParams) {
     const prompt = await this.prismaService.prompt.findUniqueOrThrow({
       where: { id },
     })
@@ -210,9 +209,11 @@ export class PromptService {
     })
   }
 
-  async linkPromptWithProject(
-    { promptId, projectId, requester }: LinkPromptWithProjectParams,
-  ) {
+  async linkPromptWithProject({
+    promptId,
+    projectId,
+    requester,
+  }: LinkPromptWithProjectParams) {
     const prompt = await this.prismaService.prompt.findUniqueOrThrow({
       where: { id: promptId },
     })
@@ -243,9 +244,11 @@ export class PromptService {
     })
   }
 
-  async unlinkPromptFromProject(
-    { promptId, projectId, requester }: UnlinkPromptFromProjectParams,
-  ) {
+  async unlinkPromptFromProject({
+    promptId,
+    projectId,
+    requester,
+  }: UnlinkPromptFromProjectParams) {
     const prompt = await this.prismaService.prompt.findUniqueOrThrow({
       where: { id: promptId },
     })

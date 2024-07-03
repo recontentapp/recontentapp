@@ -6,5 +6,5 @@ interface Props {
 }
 
 export const Glossary = (props: Props) => {
-  return <div>Glossary</div>
+  return <div>Glossary {props.glossaryId}</div>
 }

@@ -12,7 +12,7 @@ import {
 import { useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  getListGlossariesQueryKey,
+  getGetProjectQueryKey,
   useUnlinkGlossaryFromProject,
 } from '../../../../../generated/reactQuery'
 import {
@@ -31,7 +31,7 @@ interface Props {
 export const ProjectGlossary = ({ projectId, glossaryId }: Props) => {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
-  const { id: workspaceId, key: workspaceKey } = useCurrentWorkspace()
+  const { key: workspaceKey } = useCurrentWorkspace()
   const confirmationModalRef = useRef<ConfirmationModalRef>(null!)
   const canManageGlossaries = useHasAbility('glossaries:manage')
   const { languageId, setLanguageId, languages } =
@@ -40,10 +40,9 @@ export const ProjectGlossary = ({ projectId, glossaryId }: Props) => {
     useUnlinkGlossaryFromProject({
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: getListGlossariesQueryKey({
+          queryKey: getGetProjectQueryKey({
             queryParams: {
-              workspaceId,
-              projectId,
+              id: projectId,
             },
           }),
         })
@@ -51,14 +50,10 @@ export const ProjectGlossary = ({ projectId, glossaryId }: Props) => {
     })
 
   const { data, fetchNextPage, hasNextPage, isPending } =
-    useInfiniteListGlossaryTerms(
-      {
-        glossaryId: glossaryId,
-        languageId: String(languageId),
-        pageSize: 100,
-      },
-      { enabled: !!languageId },
-    )
+    useInfiniteListGlossaryTerms({
+      glossaryId,
+      pageSize: 100,
+    })
 
   const terms = useMemo(() => {
     return data?.pages.flatMap(page => page.items) ?? []

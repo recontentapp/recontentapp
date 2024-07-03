@@ -63,7 +63,6 @@ import {
 import { SendFeedbackDto } from '../dto/private/feedback.dto'
 import { DeleteFigmaFileDto } from '../dto/private/figma.dto'
 import {
-  AutoTranslatePhraseDto,
   BatchAutoTranslatePhrasesDto,
   BatchDeletePhraseDto,
   CreatePhraseDto,
@@ -750,20 +749,6 @@ export class PrivateApiController {
     return PrivateFormatter.formatPhrase(phrase)
   }
 
-  @Post('/AutoTranslatePhrase')
-  async autoTranslatePhrase(
-    @Body() { phraseId, languageId }: AutoTranslatePhraseDto,
-    @AuthenticatedRequester() requester: Requester,
-  ): Promise<Paths.AutoTranslatePhrase.Responses.$200> {
-    const phrase = await this.translateService.translatePhrase({
-      phraseId,
-      languageId,
-      requester,
-    })
-
-    return PrivateFormatter.formatPhrase(phrase)
-  }
-
   @Post('/BatchAutoTranslatePhrases')
   async batchAutoTranslatePhrases(
     @Body()
@@ -789,19 +774,12 @@ export class PrivateApiController {
   @Post('/RewritePhraseTranslation')
   async rewritePhraseTranslation(
     @Body()
-    {
-      phraseTranslationId,
-      tone,
-      length,
-      customInstructions,
-    }: RewritePhraseTranslationDto,
+    { phraseTranslationId, promptId }: RewritePhraseTranslationDto,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.RewritePhraseTranslation.Responses.$200> {
     const suggestion = await this.translateService.rewritePhraseTranslation({
       phraseTranslationId,
-      tone,
-      length,
-      customInstructions,
+      promptId,
       requester,
     })
 

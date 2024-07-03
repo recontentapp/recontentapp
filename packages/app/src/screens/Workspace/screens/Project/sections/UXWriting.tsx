@@ -16,7 +16,7 @@ export const UXWriting = () => {
     return <HorizontalSpinner />
   }
 
-  const glossaryId = data.glossaries.at(0) ?? null
+  const glossaryId = data.glossaryId
 
   return (
     <Stack direction="column" spacing="$space300">

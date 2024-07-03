@@ -2,6 +2,7 @@ import { Stack } from 'design-system'
 import { Components } from '../../../../../generated/typeDefinitions'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
 import routes from '../../../../../routing'
+import { formatRelative } from '../../../../../utils/dates'
 import { AddCard } from '../../../components/AddCard'
 import { Card } from '../../../components/Card'
 import { useModals } from '../../../hooks/modals'
@@ -28,7 +29,7 @@ export const ProjectsList = ({ projects }: ProjectsListProps) => {
             })}
             id={project.id}
             title={project.name}
-            date={new Date(project.updatedAt)}
+            description={`Updated ${formatRelative(new Date(project.updatedAt))}`}
           />
         </li>
       ))}

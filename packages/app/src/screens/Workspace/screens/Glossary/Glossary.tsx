@@ -1,24 +1,28 @@
-import { FC, useEffect, useMemo, useState } from 'react'
+import { FC, useEffect, useMemo, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { Box, Button, SelectField } from 'design-system'
+import { Stack } from 'design-system'
 import { FullpageSpinner } from '../../../../components/FullpageSpinner'
 import { Head } from '../../../../components/Head'
 import { useGetGlossary } from '../../../../generated/reactQuery'
-import { useCurrentWorkspace } from '../../../../hooks/workspace'
+import { useCurrentWorkspace, useHasAbility } from '../../../../hooks/workspace'
 import routes from '../../../../routing'
+import { AddCard } from '../../components/AddCard'
+import { Card } from '../../components/Card'
 import { Page } from '../../components/Page'
 import { ScreenWrapper } from '../../components/ScreenWrapper'
-import { useLanguagesSelector } from '../../hooks/languages'
-import { AddPanel } from './components/AddPanel'
+import {
+  UpsertGlossaryTermModal,
+  UpsertGlossaryTermModalRef,
+} from './components/UpsertGlossaryTermModal'
 import { useInfiniteListGlossaryTerms } from './hooks'
 
 export const Glossary: FC = () => {
   const params = useParams<'glossaryId'>()
   const navigate = useNavigate()
   const { key: workspaceKey, name: workspaceName } = useCurrentWorkspace()
-  const [isAdding, setIsAdding] = useState(false)
-  const { languageId, setLanguageId, languages } = useLanguagesSelector()
+  const canManageGlossaries = useHasAbility('glossaries:manage')
+  const upsertGlossaryTermModalRef = useRef<UpsertGlossaryTermModalRef>(null!)
   const {
     data: glossary,
     isLoading: glossaryLoading,
@@ -28,14 +32,10 @@ export const Glossary: FC = () => {
       id: params.glossaryId!,
     },
   })
-  const { data } = useInfiniteListGlossaryTerms(
-    {
-      glossaryId: params.glossaryId!,
-      languageId: String(languageId),
-      pageSize: 100,
-    },
-    { enabled: !!languageId },
-  )
+  const { data } = useInfiniteListGlossaryTerms({
+    glossaryId: params.glossaryId!,
+    pageSize: 100,
+  })
 
   const terms = useMemo(() => {
     return data?.pages.flatMap(page => page.items) ?? []
@@ -60,6 +60,11 @@ export const Glossary: FC = () => {
         },
         {
           label: 'Glossaries',
+          path: canManageGlossaries
+            ? routes.workspaceSettingsGlossaries.url({
+                pathParams: { workspaceKey },
+              })
+            : undefined,
         },
         {
           label: glossary.name,
@@ -76,38 +81,30 @@ export const Glossary: FC = () => {
       <Page
         title={glossary.name}
         description={glossary.description ? glossary.description : undefined}
-        panel={
-          isAdding && languageId ? (
-            <AddPanel glossaryId={params.glossaryId!} languageId={languageId} />
-          ) : undefined
-        }
       >
-        <SelectField
-          label="Language"
-          placeholder="Language"
-          value={languageId ?? undefined}
-          onChange={option => {
-            if (!option) {
-              return
+        <Stack renderAs="ul" direction="row" spacing="$space100">
+          {terms.map(term => (
+            <li key={term.id}>
+              <Card
+                onAction={() =>
+                  upsertGlossaryTermModalRef.current.open(glossary, term)
+                }
+                id={term.id}
+                title={term.name}
+                description={term.description ?? ''}
+              />
+            </li>
+          ))}
+          <AddCard
+            title="Create a term"
+            description="It can be something specific to your business, mobile app or a feature."
+            onAction={() =>
+              upsertGlossaryTermModalRef.current.open(glossary, null)
             }
+          />
+        </Stack>
 
-            setLanguageId(option.value)
-          }}
-          options={languages.map(l => ({
-            label: l.name,
-            value: l.id,
-          }))}
-        />
-
-        {terms.map(term => (
-          <p>{term.name}</p>
-        ))}
-
-        <Box display="block">
-          <Button onAction={() => setIsAdding(true)} variation="primary">
-            Add term
-          </Button>
-        </Box>
+        <UpsertGlossaryTermModal ref={upsertGlossaryTermModalRef} />
       </Page>
     </ScreenWrapper>
   )

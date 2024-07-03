@@ -10,20 +10,6 @@ const requiredEnvVars = [
   'API_URL',
 ]
 
-const getAutoTranslateProvider = (): 'aws' | 'openai' | null => {
-  const requestedProvider = process.env.AUTO_TRANSLATE_PROVIDER
-
-  if (requestedProvider === 'aws') {
-    return 'aws'
-  }
-
-  if (requestedProvider === 'openai' && process.env.OPENAI_API_KEY) {
-    return 'openai'
-  }
-
-  return null
-}
-
 const getDistribution = (): 'cloud' | 'self-hosted' => {
   if (process.env.APP_DISTRIBUTION === 'cloud') {
     return 'cloud'
@@ -95,9 +81,9 @@ const getConfig = () => {
       bucketName: String(process.env.S3_BUCKET_NAME),
       bucketUrl: String(process.env.S3_BUCKET_URL),
     },
-    autoTranslate: {
-      provider: getAutoTranslateProvider(),
-      openAIKey: process.env.OPENAI_API_KEY,
+    ai: {
+      available: !!process.env.GOOGLE_GEMINI_API_KEY,
+      googleGeminiApiKey: process.env.GOOGLE_GEMINI_API_KEY,
     },
     worker: {
       available: !!process.env.SQS_QUEUE_URL,

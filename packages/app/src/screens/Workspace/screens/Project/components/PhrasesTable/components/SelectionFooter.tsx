@@ -12,6 +12,7 @@ import {
 import { useRef } from 'react'
 import { useBatchDeletePhrase } from '../../../../../../../generated/reactQuery'
 import { Components } from '../../../../../../../generated/typeDefinitions'
+import { useHasAbility } from '../../../../../../../hooks/workspace'
 import { ApplyTagsModal, ApplyTagsModalRef } from '../../ApplyTagsModal'
 import {
   BatchTranslateModal,
@@ -37,6 +38,7 @@ export const SelectionFooter = ({
   const confirmationModalRef = useRef<ConfirmationModalRef>(null!)
   const applyTagsModalRef = useRef<ApplyTagsModalRef>(null!)
   const batchTranslateModalRef = useRef<BatchTranslateModalRef>(null!)
+  const canAutotranslate = useHasAbility('auto_translation:use')
 
   const { mutateAsync: batchDeletePhrases } = useBatchDeletePhrase({
     onSuccess: () => {
@@ -96,7 +98,7 @@ export const SelectionFooter = ({
               variation="primary"
               icon="translate"
               size="xsmall"
-              isDisabled={!canBatch}
+              isDisabled={!canBatch || !canAutotranslate}
               isLoading={false}
               onAction={() =>
                 batchTranslateModalRef.current.open(

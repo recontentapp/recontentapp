@@ -1,23 +1,36 @@
 import { FC } from 'react'
 import { Link } from 'react-router-dom'
 
-import { Avatar, Heading, Stack, Text } from 'design-system'
+import { Avatar, Heading, Stack } from 'design-system'
 import { styled } from '../../../theme'
-import { formatRelative } from '../../../utils/dates'
 
-interface CardProps {
+interface LinkCardProps {
   id: string
   title: string
-  date: Date
+  description: string
   to: string
   type?: string
 }
 
+interface ButtonCardProps {
+  id: string
+  title: string
+  description: string
+  onAction: () => void
+  type?: string
+}
+
+type CardProps = LinkCardProps | ButtonCardProps
+
 const Container = styled('div', {
   width: 200,
-  a: {
+  'a, button': {
+    width: '100%',
     display: 'flex',
+    cursor: 'pointer',
+    appearance: 'none',
     flexDirection: 'column',
+    alignItems: 'flex-start',
     justifyContent: 'flex-end',
     height: 194,
     outline: 'none',
@@ -33,25 +46,45 @@ const Container = styled('div', {
   },
 })
 
-export const Card: FC<CardProps> = ({ title, id, date, to, type }) => {
+const Description = styled('p', {
+  fontSize: '$size60',
+  lineHeight: '$lineHeight200',
+  color: '$gray11',
+  textAlign: 'left',
+  display: '-webkit-box',
+  overflow: 'hidden',
+  lineClamp: 2,
+  '-webkit-line-clamp': 2,
+  '-webkit-box-orient': 'vertical',
+})
+
+export const Card: FC<CardProps> = ({
+  title,
+  id,
+  description,
+  type,
+  ...rest
+}) => {
+  const InnerContainer = 'to' in rest ? Link : 'button'
+  const props = 'to' in rest ? { to: rest.to } : { onClick: rest.onAction }
+
   return (
     <Container>
-      <Link to={to}>
-        <Stack direction="column" spacing="$space80">
+      {/* @ts-expect-error */}
+      <InnerContainer {...props}>
+        <Stack width="100%" direction="column" spacing="$space80">
           <Stack direction="column" spacing="$space60">
             <Avatar name={id} variation="marble" size={20} />
-            <Heading renderAs="h2" size="$size100">
+            <Heading textAlign="left" renderAs="h2" size="$size100">
               {title}
             </Heading>
           </Stack>
 
           {type && <span>{type}</span>}
 
-          <Text size="$size60" color="$gray11" lineHeight="$lineHeight200">
-            Updated {formatRelative(new Date(date))}
-          </Text>
+          <Description>{description}</Description>
         </Stack>
-      </Link>
+      </InnerContainer>
     </Container>
   )
 }

@@ -55,7 +55,7 @@ export class WorkspaceAccess {
       )
     }
 
-    if (this.systemConfig.autoTranslate.provider !== null) {
+    if (this.systemConfig.ai.available) {
       if (this.systemConfig.app.distribution === 'self-hosted') {
         abilities.push('auto_translation:use')
       }
@@ -94,7 +94,7 @@ export class WorkspaceAccess {
   }
 
   constructor(
-    private systemConfig: Pick<Config, 'autoTranslate' | 'app'>,
+    private systemConfig: Pick<Config, 'ai' | 'app'>,
     private workspaceAccount: PrismaWorkspaceAccount,
     private workspace: PrismaWorkspace,
     private workspaceBillingSettings: PrismaWorkspaceBillingSettings,

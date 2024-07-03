@@ -24,6 +24,7 @@ export const LinkGlossary = ({ projectId }: Props) => {
     <Stack direction="column">
       <Button
         variation="primary"
+        icon="link"
         onAction={() => linkGlossaryModalRef.current.open(projectId)}
       >
         Link glossary

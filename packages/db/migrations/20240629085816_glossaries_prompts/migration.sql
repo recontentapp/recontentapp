@@ -65,6 +65,18 @@ CREATE TABLE "glossary_term_translations" (
 );
 
 -- CreateTable
+CREATE TABLE "ai_usage_events" (
+    "id" VARCHAR NOT NULL,
+    "workspaceId" VARCHAR NOT NULL,
+    "accountId" VARCHAR NOT NULL,
+    "inputTokensCount" INTEGER NOT NULL,
+    "outputTokensCount" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "ai_usage_events_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "_projects_prompts" (
     "A" VARCHAR NOT NULL,
     "B" VARCHAR NOT NULL
@@ -72,6 +84,9 @@ CREATE TABLE "_projects_prompts" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "glossary_term_translations_termId_languageId_key" ON "glossary_term_translations"("termId", "languageId");
+
+-- CreateIndex
+CREATE INDEX "ai_usage_events_createdAt_idx" ON "ai_usage_events"("createdAt");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_projects_prompts_AB_unique" ON "_projects_prompts"("A", "B");
@@ -105,6 +120,12 @@ ALTER TABLE "glossary_term_translations" ADD CONSTRAINT "glossary_term_translati
 
 -- AddForeignKey
 ALTER TABLE "projects" ADD CONSTRAINT "projects_glossaryId_fkey" FOREIGN KEY ("glossaryId") REFERENCES "glossaries"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ai_usage_events" ADD CONSTRAINT "ai_usage_events_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "workspace_accounts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ai_usage_events" ADD CONSTRAINT "ai_usage_events_workspaceId_fkey" FOREIGN KEY ("workspaceId") REFERENCES "workspaces"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_projects_prompts" ADD CONSTRAINT "_projects_prompts_A_fkey" FOREIGN KEY ("A") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE;

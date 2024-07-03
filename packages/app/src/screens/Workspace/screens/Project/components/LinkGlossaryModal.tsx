@@ -3,19 +3,23 @@ import { FC, forwardRef, useImperativeHandle, useRef, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import {
   Box,
+  LinkWrapper,
   Modal,
   ModalContent,
   ModalRef,
   SelectField,
   Stack,
+  Text,
   toast,
 } from 'design-system'
+import { Link } from 'react-router-dom'
 import {
-  getListGlossariesQueryKey,
+  getGetProjectQueryKey,
   useLinkGlossaryWithProject,
   useListGlossaries,
 } from '../../../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
+import routes from '../../../../../routing'
 
 export interface LinkGlossaryModalRef {
   open: (projectId: string) => void
@@ -29,15 +33,14 @@ interface ContentProps {
 
 const Content: FC<ContentProps> = ({ projectId, onRequestClose }) => {
   const queryClient = useQueryClient()
-  const { id: workspaceId } = useCurrentWorkspace()
+  const { key: workspaceKey, id: workspaceId } = useCurrentWorkspace()
   const [glossaryId, setGlossaryId] = useState<string | null>(null)
   const { mutateAsync, isPending: isLinking } = useLinkGlossaryWithProject({
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: getListGlossariesQueryKey({
+        queryKey: getGetProjectQueryKey({
           queryParams: {
-            workspaceId,
-            projectId,
+            id: projectId,
           },
         }),
       })
@@ -76,6 +79,8 @@ const Content: FC<ContentProps> = ({ projectId, onRequestClose }) => {
       })
   }
 
+  const glossaries = data?.items ?? []
+
   return (
     <ModalContent
       asForm
@@ -88,25 +93,41 @@ const Content: FC<ContentProps> = ({ projectId, onRequestClose }) => {
       }}
     >
       <Box width="100%" paddingBottom="$space200" minHeight={122}>
-        <Stack width="100%" direction="column" spacing="$space100">
-          <SelectField
-            label="Glossary"
-            options={
-              data?.items.map(glossary => ({
-                label: glossary.name,
-                value: glossary.id,
-              })) ?? []
-            }
-            placeholder="Choose a glossary"
-            value={glossaryId ?? undefined}
-            onChange={option => {
-              if (!option) {
-                return
+        {glossaries.length === 0 ? (
+          <Text size="$size100" color="$gray14">
+            No glossaries available yet. You can create one in your{' '}
+            <LinkWrapper>
+              <Link
+                to={routes.workspaceSettingsGlossaries.url({
+                  pathParams: { workspaceKey },
+                })}
+              >
+                Workspace settings
+              </Link>
+            </LinkWrapper>
+            .
+          </Text>
+        ) : (
+          <Stack width="100%" direction="column" spacing="$space100">
+            <SelectField
+              label="Glossary"
+              options={
+                glossaries.map(glossary => ({
+                  label: glossary.name,
+                  value: glossary.id,
+                })) ?? []
               }
-              setGlossaryId(option.value)
-            }}
-          />
-        </Stack>
+              placeholder="Choose a glossary"
+              value={glossaryId ?? undefined}
+              onChange={option => {
+                if (!option) {
+                  return
+                }
+                setGlossaryId(option.value)
+              }}
+            />
+          </Stack>
+        )}
       </Box>
     </ModalContent>
   )

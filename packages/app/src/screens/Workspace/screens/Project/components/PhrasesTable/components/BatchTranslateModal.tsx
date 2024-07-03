@@ -1,6 +1,5 @@
 import { FC, forwardRef, useImperativeHandle, useRef, useState } from 'react'
 
-import { useQueryClient } from '@tanstack/react-query'
 import {
   Modal,
   ModalContent,
@@ -36,7 +35,6 @@ const Content: FC<ContentProps> = ({
   phraseIds,
   onApply,
 }) => {
-  const queryClient = useQueryClient()
   const [sourceLanguageId, setSourceLanguageId] = useState<string | undefined>()
   const [targetLanguageId, setTargetLanguageId] = useState<string | undefined>()
   const { data: project } = useGetProject({ queryParams: { id: projectId } })

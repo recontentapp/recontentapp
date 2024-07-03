@@ -1,6 +1,6 @@
 import dotenv from 'dotenv'
 import Stripe from 'stripe'
-import { Plan } from '../src/modules/billing/plan'
+import { Components } from '../src/generated/typeDefinitions'
 
 dotenv.config()
 
@@ -62,7 +62,7 @@ const upsertSubscriptionProduct = async (stripe: Stripe) => {
     name: 'Pro - Subscription',
     metadata: {
       id: 'pro_subscription_1',
-      plan: 'pro' as Plan,
+      plan: 'pro' as Components.Schemas.WorkspaceBillingPlan,
       type: 'subscription',
     },
   })
@@ -95,7 +95,7 @@ const upsertSubscriptionPrice = async (
     },
     metadata: {
       id: 'pro_subscription_monthly_1',
-      plan: 'pro' as Plan,
+      plan: 'pro' as Components.Schemas.WorkspaceBillingPlan,
       type: 'subscription',
     },
   })
@@ -117,7 +117,7 @@ const upsertPhrasesUsageProduct = async (stripe: Stripe) => {
     unit_label: 'phrase',
     metadata: {
       id: 'pro_phrases_usage_1',
-      plan: 'pro' as Plan,
+      plan: 'pro' as Components.Schemas.WorkspaceBillingPlan,
       type: 'phrases_usage',
     },
   })
@@ -157,7 +157,7 @@ const upsertPhrasesUsagePrice = async (
     },
     metadata: {
       id: 'pro_phrases_usage_monthly_1',
-      plan: 'pro' as Plan,
+      plan: 'pro' as Components.Schemas.WorkspaceBillingPlan,
       type: 'phrases_usage',
     },
   })
@@ -179,7 +179,7 @@ const upsertAutotranslationUsageProduct = async (stripe: Stripe) => {
     unit_label: 'token',
     metadata: {
       id: 'pro_autotranslation_usage_1',
-      plan: 'pro' as Plan,
+      plan: 'pro' as Components.Schemas.WorkspaceBillingPlan,
       type: 'autotranslation_usage',
     },
   })
@@ -219,7 +219,7 @@ const upsertAutotranslationUsagePrice = async (
     },
     metadata: {
       id: 'pro_autotranslation_usage_monthly_1',
-      plan: 'pro' as Plan,
+      plan: 'pro' as Components.Schemas.WorkspaceBillingPlan,
       type: 'autotranslation_usage',
     },
   })
