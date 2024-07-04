@@ -218,11 +218,11 @@ export class Private2ApiController {
     return {}
   }
 
-  @Post('/DeleteGlossaryTerm')
+  @Delete('/DeleteGlossaryTerm')
   async batchDeleteGlossaryTerms(
     @Body() { id }: DeleteGlossaryTermDto,
     @AuthenticatedRequester() requester: Requester,
-  ): Promise<Paths.BatchDeleteGlossaryTerms.Responses.$204> {
+  ): Promise<Paths.DeleteGlossaryTerm.Responses.$204> {
     await this.glossaryService.deleteGlossaryTerm({
       id,
       requester,

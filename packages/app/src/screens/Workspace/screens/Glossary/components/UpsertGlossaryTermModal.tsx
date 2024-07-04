@@ -9,6 +9,7 @@ import {
   useState,
 } from 'react'
 
+import { useQueryClient } from '@tanstack/react-query'
 import {
   Heading,
   Modal,
@@ -20,7 +21,9 @@ import {
   toast,
 } from 'design-system'
 import {
+  getListGlossaryTermsQueryKey,
   useCreateGlossaryTerm,
+  useDeleteGlossaryTerm,
   useListWorkspaceLanguages,
   useUpdateGlossaryTerm,
 } from '../../../../../generated/reactQuery'
@@ -53,6 +56,7 @@ interface State {
 }
 
 const Content: FC<ContentProps> = ({ glossary, term, close }) => {
+  const queryClient = useQueryClient()
   const { data } = useListWorkspaceLanguages({
     queryParams: {
       workspaceId: glossary.workspaceId,
@@ -113,9 +117,56 @@ const Content: FC<ContentProps> = ({ glossary, term, close }) => {
     ((state.nonTranslatable && !containsTranslations) ||
       (!state.nonTranslatable && containsTranslations))
 
-  const { mutateAsync: create, isPending: isCreating } = useCreateGlossaryTerm()
-  const { mutateAsync: update, isPending: isUpdating } = useUpdateGlossaryTerm()
-  const isLoading = isCreating || isUpdating
+  const { mutateAsync: create, isPending: isCreating } = useCreateGlossaryTerm({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: getListGlossaryTermsQueryKey({
+          queryParams: {
+            glossaryId: glossary.id,
+          },
+        }),
+      })
+    },
+  })
+  const { mutateAsync: update, isPending: isUpdating } = useUpdateGlossaryTerm({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: getListGlossaryTermsQueryKey({
+          queryParams: {
+            glossaryId: glossary.id,
+          },
+        }),
+      })
+    },
+  })
+  const { mutateAsync: deleteTerm, isPending: isDeleting } =
+    useDeleteGlossaryTerm({
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: getListGlossaryTermsQueryKey({
+            queryParams: {
+              glossaryId: glossary.id,
+            },
+          }),
+        })
+      },
+    })
+  const isLoading = isCreating || isUpdating || isDeleting
+
+  const requestDelete = () => {
+    if (!term) {
+      return
+    }
+
+    deleteTerm({ body: { id: term.id } })
+      .then(() => {
+        close()
+        toast('success', { title: 'Glossary term deleted' })
+      })
+      .catch(() => {
+        toast('error', { title: 'Failed to delete glossary term' })
+      })
+  }
 
   const onSubmit = () => {
     if (!isStateValid || isLoading) {
@@ -183,6 +234,16 @@ const Content: FC<ContentProps> = ({ glossary, term, close }) => {
         onAction: onSubmit,
         isDisabled: !isStateValid,
       }}
+      secondaryAction={
+        term
+          ? {
+              label: 'Delete term',
+              variation: 'danger',
+              isLoading: isDeleting,
+              onAction: requestDelete,
+            }
+          : undefined
+      }
     >
       <Stack direction="column" spacing="$space100" paddingBottom="$space300">
         <TextField

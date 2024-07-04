@@ -246,12 +246,18 @@ export class GlossaryService {
     workspaceAccess.hasAbilityOrThrow('glossaries:manage')
 
     await this.prismaService.$transaction(async t => {
+      await t.glossaryTermTranslation.deleteMany({
+        where: {
+          term: {
+            glossaryId: id,
+          },
+        },
+      })
       await t.glossaryTerm.deleteMany({
         where: {
           glossaryId: id,
         },
       })
-
       await t.glossary.delete({
         where: { id },
       })

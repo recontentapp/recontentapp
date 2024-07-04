@@ -2469,7 +2469,7 @@ paths:
           description: OK
   /DeleteGlossaryTerm:
     delete:
-      operationId: batchDeleteGlossaryTerms
+      operationId: deleteGlossaryTerm
       requestBody:
         content:
           application/json:
