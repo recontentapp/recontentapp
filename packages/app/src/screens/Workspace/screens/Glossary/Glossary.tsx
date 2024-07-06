@@ -1,10 +1,11 @@
-import { FC, useEffect, useMemo, useRef } from 'react'
+import { FC, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { Stack } from 'design-system'
+import { Button, Stack, TextField } from 'design-system'
 import { FullpageSpinner } from '../../../../components/FullpageSpinner'
 import { Head } from '../../../../components/Head'
 import { useGetGlossary } from '../../../../generated/reactQuery'
+import { useDebouncedValue } from '../../../../hooks/debouncedEffect'
 import { useCurrentWorkspace, useHasAbility } from '../../../../hooks/workspace'
 import routes from '../../../../routing'
 import { AddCard } from '../../components/AddCard'
@@ -23,6 +24,8 @@ export const Glossary: FC = () => {
   const { key: workspaceKey, name: workspaceName } = useCurrentWorkspace()
   const canManageGlossaries = useHasAbility('glossaries:manage')
   const upsertGlossaryTermModalRef = useRef<UpsertGlossaryTermModalRef>(null!)
+  const [searchTerm, setSearchTerm] = useState<string>('')
+  const [debouncedSearchTerm] = useDebouncedValue(searchTerm, 500)
   const {
     data: glossary,
     isLoading: glossaryLoading,
@@ -32,9 +35,10 @@ export const Glossary: FC = () => {
       id: params.glossaryId!,
     },
   })
-  const { data } = useInfiniteListGlossaryTerms({
+  const { data, hasNextPage, fetchNextPage } = useInfiniteListGlossaryTerms({
     glossaryId: params.glossaryId!,
-    pageSize: 100,
+    query: debouncedSearchTerm.length > 0 ? debouncedSearchTerm : undefined,
+    pageSize: 25,
   })
 
   const terms = useMemo(() => {
@@ -82,26 +86,48 @@ export const Glossary: FC = () => {
         title={glossary.name}
         description={glossary.description ? glossary.description : undefined}
       >
-        <Stack renderAs="ul" direction="row" spacing="$space100">
-          {terms.map(term => (
-            <li key={term.id}>
-              <Card
-                onAction={() =>
-                  upsertGlossaryTermModalRef.current.open(glossary, term)
-                }
-                id={term.id}
-                title={term.name}
-                description={term.description ?? ''}
+        <Stack direction="column" spacing="$space300">
+          <Stack direction="row" spacing="$space100">
+            <TextField
+              label="Search term"
+              placeholder="Search term..."
+              hideLabel
+              value={searchTerm}
+              onChange={setSearchTerm}
+            />
+            <Button
+              variation="primary"
+              icon="add"
+              onAction={() =>
+                upsertGlossaryTermModalRef.current.open(glossary, null)
+              }
+            >
+              Add term
+            </Button>
+          </Stack>
+
+          <Stack renderAs="ul" direction="row" spacing="$space100">
+            {terms.map(term => (
+              <li key={term.id}>
+                <Card
+                  onAction={() =>
+                    upsertGlossaryTermModalRef.current.open(glossary, term)
+                  }
+                  id={term.id}
+                  title={term.name}
+                  description={term.description ?? ''}
+                />
+              </li>
+            ))}
+
+            {hasNextPage && (
+              <AddCard
+                title="Load more"
+                icon="chevron_right"
+                onAction={fetchNextPage}
               />
-            </li>
-          ))}
-          <AddCard
-            title="Create a term"
-            description="It can be something specific to your business, mobile app or a feature."
-            onAction={() =>
-              upsertGlossaryTermModalRef.current.open(glossary, null)
-            }
-          />
+            )}
+          </Stack>
         </Stack>
 
         <UpsertGlossaryTermModal ref={upsertGlossaryTermModalRef} />

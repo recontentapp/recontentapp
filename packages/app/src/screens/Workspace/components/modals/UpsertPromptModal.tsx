@@ -170,7 +170,6 @@ const Content: FC<ContentProps> = ({ prompt, onRequestClose }) => {
           />
 
           <TextField
-            autoFocus
             label="Description"
             isOptional
             value={state.description ?? ''}

@@ -1,19 +1,22 @@
 import { FC } from 'react'
 
-import { Heading, Icon, Stack, Text } from 'design-system'
+import { Heading, Icon, IconName, Stack, Text } from 'design-system'
 import { styled } from '../../../theme'
 
 interface AddCardProps {
   title: string
-  description: string
+  description?: string
+  icon?: IconName
   onAction: () => void
 }
 
 const Container = styled('button', {
   height: 194,
+  minWidth: 200,
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
+  justifyContent: 'center',
   outline: 'none',
   cursor: 'pointer',
   border: '1px dashed $gray7',
@@ -27,23 +30,30 @@ const Container = styled('button', {
   },
 })
 
-export const AddCard: FC<AddCardProps> = ({ title, description, onAction }) => {
+export const AddCard: FC<AddCardProps> = ({
+  title,
+  description,
+  icon = 'add_circle',
+  onAction,
+}) => {
   return (
     <Container onClick={onAction}>
       <Stack direction="column" spacing="$space100" alignItems="center">
-        <Icon src="add_circle" size={24} color="$blue900" />
+        <Icon src={icon} size={24} color="$blue900" />
         <Stack direction="column" spacing="$space40" alignItems="center">
           <Heading renderAs="span" size="$size100">
             {title}
           </Heading>
-          <Text
-            size="$size60"
-            lineHeight="$lineHeight200"
-            color="$gray11"
-            maxWidth={200}
-          >
-            {description}
-          </Text>
+          {description && (
+            <Text
+              size="$size60"
+              lineHeight="$lineHeight200"
+              color="$gray11"
+              maxWidth={200}
+            >
+              {description}
+            </Text>
+          )}
         </Stack>
       </Stack>
     </Container>

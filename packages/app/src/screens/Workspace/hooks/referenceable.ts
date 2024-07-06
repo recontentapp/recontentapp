@@ -6,12 +6,12 @@ import {
 } from '../../../generated/reactQuery'
 import { useCurrentWorkspace } from '../../../hooks/workspace'
 
-export const useReferenceableTags = (projectId: string) => {
+export const useReferenceableTags = (projectId: string | undefined) => {
   const { data } = useGetReferenceableTags(
     {
-      queryParams: { projectId },
+      queryParams: { projectId: String(projectId) },
     },
-    { staleTime: Infinity },
+    { staleTime: Infinity, enabled: !!projectId },
   )
 
   const get = useCallback(

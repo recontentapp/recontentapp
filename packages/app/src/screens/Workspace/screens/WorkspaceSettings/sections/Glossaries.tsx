@@ -128,8 +128,8 @@ export const Glossaries: FC = () => {
         ]}
       />
       <ConfirmationModal
-        title="Are you sure about deleting this destination"
-        description="Once deleted, a destination can not be recovered."
+        title="Are you sure about deleting this glossary?"
+        description="Once deleted, a glossary can not be recovered."
         variation="danger"
         ref={confirmationModalRef}
       />

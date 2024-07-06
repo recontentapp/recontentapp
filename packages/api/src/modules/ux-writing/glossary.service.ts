@@ -17,6 +17,7 @@ interface GetGlossaryParams {
 
 interface ListGlossaryTermsParams {
   glossaryId: string
+  query?: string
   pagination: PaginationParams
   requester: Requester
 }
@@ -142,6 +143,7 @@ export class GlossaryService {
 
   async listGlossaryTerms({
     glossaryId,
+    query,
     pagination,
     requester,
   }: ListGlossaryTermsParams) {
@@ -157,6 +159,28 @@ export class GlossaryService {
 
     const where: Prisma.GlossaryTermWhereInput = {
       glossaryId,
+      ...(query
+        ? {
+            OR: [
+              {
+                name: {
+                  search: query,
+                  mode: 'insensitive',
+                },
+              },
+              {
+                translations: {
+                  some: {
+                    content: {
+                      search: query,
+                      mode: 'insensitive',
+                    },
+                  },
+                },
+              },
+            ],
+          }
+        : {}),
     }
 
     const [terms, count] = await Promise.all([

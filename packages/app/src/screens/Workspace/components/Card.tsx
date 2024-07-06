@@ -1,7 +1,7 @@
 import { FC } from 'react'
 import { Link } from 'react-router-dom'
 
-import { Avatar, Heading, Stack } from 'design-system'
+import { Avatar, Stack } from 'design-system'
 import { styled } from '../../../theme'
 
 interface LinkCardProps {
@@ -26,6 +26,7 @@ const Container = styled('div', {
   width: 200,
   'a, button': {
     width: '100%',
+    overflow: 'hidden',
     display: 'flex',
     cursor: 'pointer',
     appearance: 'none',
@@ -44,6 +45,17 @@ const Container = styled('div', {
       boxShadow: '$shadow200',
     },
   },
+})
+
+const Title = styled('h2', {
+  fontSize: '$size100',
+  color: '$gray14',
+  textAlign: 'left',
+  display: '-webkit-box',
+  overflow: 'hidden',
+  lineClamp: 3,
+  '-webkit-line-clamp': 3,
+  '-webkit-box-orient': 'vertical',
 })
 
 const Description = styled('p', {
@@ -75,9 +87,7 @@ export const Card: FC<CardProps> = ({
         <Stack width="100%" direction="column" spacing="$space80">
           <Stack direction="column" spacing="$space60">
             <Avatar name={id} variation="marble" size={20} />
-            <Heading textAlign="left" renderAs="h2" size="$size100">
-              {title}
-            </Heading>
+            <Title>{title}</Title>
           </Stack>
 
           {type && <span>{type}</span>}

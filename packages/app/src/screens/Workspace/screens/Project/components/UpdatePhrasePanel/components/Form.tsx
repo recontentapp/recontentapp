@@ -33,7 +33,6 @@ export const Form = ({
         testId={index === 0 ? 'phrase-modal-first-field' : undefined}
       >
         <PhraseEditor
-          autoFocus={index === 0}
           width="100%"
           direction={isRTL ? 'rtl' : 'ltr'}
           label={language.name}

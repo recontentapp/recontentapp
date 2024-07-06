@@ -149,9 +149,11 @@ export class Private2ApiController {
     @RequiredQuery('glossaryId') glossaryId: string,
     @AuthenticatedRequester() requester: Requester,
     @Pagination() pagination: PaginationParams,
+    @Query('query') query?: string,
   ): Promise<Paths.ListGlossaryTerms.Responses.$200> {
     const result = await this.glossaryService.listGlossaryTerms({
       glossaryId,
+      query,
       requester,
       pagination,
     })

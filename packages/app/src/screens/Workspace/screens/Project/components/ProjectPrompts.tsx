@@ -43,11 +43,11 @@ export const ProjectPrompts = ({ projectId }: Props) => {
           {canManagePrompts && (
             <Button
               variation="secondary"
-              icon="add"
+              icon="link"
               size="xsmall"
               onAction={() => linkPromptModalRef.current.open(projectId)}
             >
-              Add
+              Link to project
             </Button>
           )}
         </Stack>

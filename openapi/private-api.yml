@@ -2345,6 +2345,11 @@ paths:
           required: true
           schema:
             type: string
+        - name: query
+          in: query
+          required: false
+          schema:
+            type: string
         - name: page
           in: query
           required: false
@@ -3190,6 +3195,7 @@ components:
         - forbidden
         - caseSensitive
         - nonTranslatable
+        - translations
         - createdAt
         - updatedAt
         - createdBy

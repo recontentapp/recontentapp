@@ -1,25 +1,26 @@
-import { useRef } from 'react'
-
-import { MinimalButton, Stack, Tag, Text } from 'design-system'
+import { Box, Spinner, Stack, Tag, Text } from 'design-system'
 import { Components } from '../../../../../../../generated/typeDefinitions'
 import { formatRelative } from '../../../../../../../utils/dates'
 import {
   useReferenceableAccounts,
   useReferenceableTags,
 } from '../../../../../hooks/referenceable'
-import {
-  EditPhraseKeyModal,
-  EditPhraseKeyModalRef,
-} from '../../EditPhraseKeyModal'
 
 interface Props {
-  phrase: Components.Schemas.Phrase
+  phrase?: Components.Schemas.Phrase
 }
 
 export const Properties = ({ phrase }: Props) => {
-  const editPhraseKeyModalRef = useRef<EditPhraseKeyModalRef>(null)
   const { getName } = useReferenceableAccounts()
-  const { get } = useReferenceableTags(phrase.projectId)
+  const { get } = useReferenceableTags(phrase?.projectId)
+
+  if (!phrase) {
+    return (
+      <Box paddingX="$space80" paddingY="$space200">
+        <Spinner size={16} color="$gray11" />
+      </Box>
+    )
+  }
 
   return (
     <Stack
@@ -29,23 +30,7 @@ export const Properties = ({ phrase }: Props) => {
       spacing="$space200"
     >
       <Stack direction="column" spacing="$space60">
-        <Text size="$size100" variation="bold" color="$gray14">
-          {phrase.key}
-        </Text>
-
-        <div>
-          <MinimalButton
-            icon="edit"
-            variation="primary"
-            onAction={() => editPhraseKeyModalRef.current?.open({ phrase })}
-          >
-            Edit
-          </MinimalButton>
-        </div>
-      </Stack>
-
-      <Stack direction="column" spacing="$space60">
-        <Text size="$size100" variation="bold" color="$gray14">
+        <Text size="$size80" variation="bold" color="$gray14">
           Tags
         </Text>
 
@@ -53,6 +38,12 @@ export const Properties = ({ phrase }: Props) => {
           {phrase.tags.map(tag => (
             <Tag key={tag} size="small" {...get(tag)} />
           ))}
+
+          {phrase.tags.length === 0 && (
+            <Text size="$size60" color="$gray11">
+              n/a
+            </Text>
+          )}
         </Stack>
       </Stack>
 
@@ -75,8 +66,6 @@ export const Properties = ({ phrase }: Props) => {
           {formatRelative(new Date(phrase.createdAt))}
         </Text>
       </Stack>
-
-      <EditPhraseKeyModal ref={editPhraseKeyModalRef} />
     </Stack>
   )
 }
