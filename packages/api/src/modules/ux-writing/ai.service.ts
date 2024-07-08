@@ -3,7 +3,11 @@ import { ConfigService } from '@nestjs/config'
 import { Config } from 'src/utils/config'
 import { PrismaService } from 'src/utils/prisma.service'
 import { LanguageLocale, getISO639LabelFromLocale } from '../workspace/locale'
-import { getBatchTranslatePrompt, getRephrasePrompt } from './config/prompts'
+import {
+  getBatchTranslatePrompt,
+  getRephrasePrompt,
+  getTranslatePrompt,
+} from './config/prompts'
 import { GeminiAIProvider } from './config/providers/gemini'
 import { AIProvider } from './config/providers/types'
 
@@ -22,7 +26,22 @@ interface BatchTranslateParams {
   workspaceId: string
 }
 
-interface RephraseParams {
+interface TranslateParams {
+  content: string
+  sourceLanguage: {
+    id: string
+    locale: string
+  }
+  targetLanguage: {
+    id: string
+    locale: string
+  }
+  glossaryId?: string
+  accountId: string
+  workspaceId: string
+}
+
+interface RewriteParams {
   content: string
   promptId: string
   accountId: string
@@ -45,18 +64,11 @@ export class AIService {
     }
   }
 
-  async batchTranslate({
-    translationsMap,
-    sourceLanguage,
-    targetLanguage,
-    glossaryId,
-    accountId,
-    workspaceId,
-  }: BatchTranslateParams) {
-    if (!this.aiProvider) {
-      throw new BadRequestException('AI provider is not configured')
-    }
-
+  private async getCustomTranslationsAndNonTranslatableTerms(
+    glossaryId: string | undefined,
+    sourceLanguageId: string,
+    targetLanguageId: string,
+  ) {
     let nonTranslatableTerms: string[] = []
     let customTranslations: Record<string, string> = {}
 
@@ -68,7 +80,7 @@ export class AIService {
             include: {
               translations: {
                 where: {
-                  languageId: { in: [sourceLanguage.id, targetLanguage.id] },
+                  languageId: { in: [sourceLanguageId, targetLanguageId] },
                 },
               },
             },
@@ -85,10 +97,10 @@ export class AIService {
         })
         .reduce<Record<string, string>>((acc, term) => {
           const sourceTranslation = term.translations.find(
-            translation => translation.languageId === sourceLanguage.id,
+            translation => translation.languageId === sourceLanguageId,
           )
           const targetTranslation = term.translations.find(
-            translation => translation.languageId === targetLanguage.id,
+            translation => translation.languageId === targetLanguageId,
           )
 
           if (!sourceTranslation || !targetTranslation) {
@@ -99,6 +111,28 @@ export class AIService {
           return acc
         }, {})
     }
+
+    return { nonTranslatableTerms, customTranslations }
+  }
+
+  async batchTranslate({
+    translationsMap,
+    sourceLanguage,
+    targetLanguage,
+    glossaryId,
+    accountId,
+    workspaceId,
+  }: BatchTranslateParams) {
+    if (!this.aiProvider) {
+      throw new BadRequestException('AI provider is not configured')
+    }
+
+    const { nonTranslatableTerms, customTranslations } =
+      await this.getCustomTranslationsAndNonTranslatableTerms(
+        glossaryId,
+        sourceLanguage.id,
+        targetLanguage.id,
+      )
 
     const response = await this.aiProvider.process({
       prompt: getBatchTranslatePrompt({
@@ -135,12 +169,53 @@ export class AIService {
     return result
   }
 
-  async rephrase({
+  async translate({
     content,
-    promptId,
+    sourceLanguage,
+    targetLanguage,
+    glossaryId,
     accountId,
     workspaceId,
-  }: RephraseParams) {
+  }: TranslateParams) {
+    if (!this.aiProvider) {
+      throw new BadRequestException('AI provider is not configured')
+    }
+
+    const { nonTranslatableTerms, customTranslations } =
+      await this.getCustomTranslationsAndNonTranslatableTerms(
+        glossaryId,
+        sourceLanguage.id,
+        targetLanguage.id,
+      )
+
+    const response = await this.aiProvider.process({
+      prompt: getTranslatePrompt({
+        sourceLanguageLabel: getISO639LabelFromLocale(
+          sourceLanguage.locale as LanguageLocale,
+        ),
+        targetLanguageLabel: getISO639LabelFromLocale(
+          targetLanguage.locale as LanguageLocale,
+        ),
+        nonTranslatableTerms,
+        customTranslations,
+      }),
+      query: content,
+      resultFormat: 'text',
+    })
+
+    await this.prismaService.aIUsageEvent.create({
+      data: {
+        inputTokensCount: response.usage.inputTokensCount,
+        outputTokensCount: response.usage.outputTokensCount,
+        accountId,
+        workspaceId,
+      },
+    })
+
+    return response.result
+  }
+
+  async rewrite({ content, promptId, accountId, workspaceId }: RewriteParams) {
     if (!this.aiProvider) {
       throw new BadRequestException('AI provider is not configured')
     }

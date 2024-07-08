@@ -11,9 +11,18 @@ interface BatchTranslatePhrasesParams {
   requester: Requester
 }
 
-interface RewritePhraseTranslationParams {
-  phraseTranslationId: string
+interface TranslateParams {
+  content: string
+  workspaceId: string
+  sourceLanguageId: string
+  targetLanguageId: string
   requester: Requester
+}
+
+interface RewritePhraseTranslationParams {
+  requester: Requester
+  workspaceId: string
+  content: string
   promptId: string
 }
 
@@ -140,28 +149,56 @@ export class TranslateService {
     ])
   }
 
+  async translate({
+    content,
+    workspaceId,
+    sourceLanguageId,
+    targetLanguageId,
+    requester,
+  }: TranslateParams) {
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(workspaceId)
+    workspaceAccess.hasAbilityOrThrow('auto_translation:use')
+
+    const [sourceLanguage, targetLanguage] = await Promise.all([
+      this.prismaService.language.findUniqueOrThrow({
+        where: { id: sourceLanguageId },
+      }),
+      this.prismaService.language.findUniqueOrThrow({
+        where: { id: targetLanguageId },
+      }),
+    ])
+    if (
+      sourceLanguage.workspaceId !== workspaceId ||
+      targetLanguage.workspaceId !== workspaceId
+    ) {
+      throw new BadRequestException('Languages are in different workspace')
+    }
+
+    const result = await this.aiService.translate({
+      content,
+      sourceLanguage,
+      targetLanguage,
+      accountId: workspaceAccess.getAccountID(),
+      workspaceId,
+    })
+
+    return result
+  }
+
   async rewritePhraseTranslation({
-    phraseTranslationId,
+    content,
+    workspaceId,
     requester,
     promptId,
   }: RewritePhraseTranslationParams) {
-    const phraseTranslation =
-      await this.prismaService.phraseTranslation.findUniqueOrThrow({
-        where: { id: phraseTranslationId },
-        include: {
-          language: true,
-        },
-      })
-    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
-      phraseTranslation.workspaceId,
-    )
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(workspaceId)
     workspaceAccess.hasAbilityOrThrow('auto_translation:use')
 
-    const response = await this.aiService.rephrase({
-      content: phraseTranslation.content,
+    const response = await this.aiService.rewrite({
+      content,
       promptId,
+      workspaceId,
       accountId: workspaceAccess.getAccountID(),
-      workspaceId: phraseTranslation.workspaceId,
     })
 
     return response

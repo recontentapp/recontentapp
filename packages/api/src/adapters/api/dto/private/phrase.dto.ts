@@ -84,11 +84,36 @@ export class BatchAutoTranslatePhrasesDto {
   targetLanguageId: string
 }
 
-export class RewritePhraseTranslationDto {
+export class AutotranslateDto {
+  @IsString()
+  @IsNotEmpty()
+  content: string
+
   @IsString()
   @IsNotEmpty()
   @MaxLength(ID_LENGTH)
-  phraseTranslationId: string
+  workspaceId: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
+  sourceLanguageId: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
+  targetLanguageId: string
+}
+
+export class RewritePhraseTranslationDto {
+  @IsString()
+  @IsNotEmpty()
+  content: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
+  workspaceId: string
 
   @IsString()
   @IsNotEmpty()

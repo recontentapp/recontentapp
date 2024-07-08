@@ -2,11 +2,11 @@ import { FC, forwardRef, useImperativeHandle, useRef } from 'react'
 
 import { Sidepanel, Stack } from 'design-system'
 import { SidepanelRef } from 'design-system/dist/components/Sidepanel'
+import { useHotkeys } from 'react-hotkeys-hook'
 import {
   useGetPhrase,
   useGetProject,
 } from '../../../../../../generated/reactQuery'
-import { styled } from '../../../../../../theme'
 import { Main } from './components/Main'
 import { Sidebar } from './components/Sidebar'
 
@@ -33,29 +33,6 @@ interface ContentProps {
   onNext: () => void
   onPrevious: () => void
 }
-
-const Scroller = styled('div', {
-  width: '100%',
-  height: '100%',
-  paddingX: '$space100',
-  overflowY: 'auto',
-  overflowX: 'hidden',
-})
-
-const Footer = styled('div', {
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  position: 'absolute',
-  bottom: 0,
-  left: 0,
-  width: '100%',
-  backgroundColor: '$white',
-  borderTop: '1px solid $gray7',
-  paddingX: '$space200',
-  paddingY: '$space80',
-})
 
 const Content: FC<ContentProps> = ({
   projectId,
@@ -111,6 +88,19 @@ export const UpdatePhrasePanel = forwardRef<
         sidepanelRef.current.open()
       },
     }))
+
+    useHotkeys(
+      'esc',
+      () => {
+        sidepanelRef.current.close()
+      },
+      [],
+      {
+        preventDefault: true,
+        enableOnFormTags: true,
+        enableOnContentEditable: true,
+      },
+    )
 
     return (
       <Sidepanel ref={sidepanelRef} onClose={onClose}>

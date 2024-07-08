@@ -127,6 +127,40 @@ export const Main = ({
     [onSubmit],
   )
 
+  useHotkeys(
+    'ArrowDown',
+    () => {
+      if (currentIndex < totalCount - 1) {
+        onNext()
+      }
+    },
+    [currentIndex, totalCount],
+    {
+      preventDefault: true,
+      enableOnFormTags: false,
+      enableOnContentEditable: false,
+    },
+  )
+
+  useHotkeys(
+    'ArrowUp',
+    () => {
+      if (currentIndex > 0) {
+        onPrevious()
+      }
+    },
+    [currentIndex],
+    {
+      preventDefault: true,
+      enableOnFormTags: false,
+      enableOnContentEditable: false,
+    },
+  )
+
+  if (!project) {
+    return null
+  }
+
   return (
     <>
       <EditPhraseKeyModal ref={editPhraseKeyModalRef} />
@@ -160,17 +194,25 @@ export const Main = ({
                 spacing="$space200"
                 paddingBottom="$space300"
               >
-                {(project?.languages ?? []).map((language, index) => (
+                {(project.languages ?? []).map((language, index) => (
                   <Form
                     key={index}
-                    initialValue={initialState[language.id] ?? ''}
-                    index={index}
-                    onChange={value =>
+                    projectId={project.id}
+                    initialState={initialState}
+                    state={state}
+                    onChange={(value, options) => {
                       setState(state => ({
                         ...state,
                         [language.id]: value,
                       }))
-                    }
+
+                      if (options.resetInitialState) {
+                        setInitialState(state => ({
+                          ...state,
+                          [language.id]: value,
+                        }))
+                      }
+                    }}
                     language={language}
                     isLoading={!phrase}
                   />
@@ -202,7 +244,12 @@ export const Main = ({
             </Text>
           </Stack>
 
-          <Button variation="primary" type="submit" isLoading={isTranslating}>
+          <Button
+            variation="primary"
+            type="submit"
+            isLoading={isTranslating}
+            onAction={onSubmit}
+          >
             Save translations
           </Button>
         </Footer>

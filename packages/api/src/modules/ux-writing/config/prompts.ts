@@ -38,6 +38,46 @@ export const getBatchTranslatePrompt = ({
   return sections.join('\n\n')
 }
 
+interface GetTranslatePromptParams {
+  sourceLanguageLabel: string
+  targetLanguageLabel: string
+  customTranslations?: Record<string, string>
+  nonTranslatableTerms?: string[]
+}
+
+export const getTranslatePrompt = ({
+  sourceLanguageLabel,
+  targetLanguageLabel,
+  customTranslations,
+  nonTranslatableTerms,
+}: GetTranslatePromptParams) => {
+  const sections: string[] = [
+    'You are a localization assistant designed to help create clear and user-friendly copy for digital products and services.',
+    'Your goals are to:',
+    `Use a source text in ${sourceLanguageLabel} & translate it to ${targetLanguageLabel}`,
+  ]
+
+  if (customTranslations && Object.keys(customTranslations).length > 0) {
+    sections.push(
+      [
+        'Use the following custom translations when needed:',
+        JSON.stringify(customTranslations, null, 2),
+      ].join('\n'),
+    )
+  }
+
+  if (nonTranslatableTerms && nonTranslatableTerms.length > 0) {
+    sections.push(
+      [
+        'If you encounter the following non-translatable keywords, keep them in the original language:',
+        nonTranslatableTerms.map(term => `- "${term}"`).join('\n'),
+      ].join('\n'),
+    )
+  }
+
+  return sections.join('\n\n')
+}
+
 interface GetRephrasePromptParams {
   forbiddenTerms?: string[]
   customInstructions?: string[]

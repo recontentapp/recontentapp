@@ -1068,6 +1068,42 @@ paths:
       responses:
         '204':
           description: OK
+  /AutoTranslate:
+    post:
+      operationId: autotranslate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                workspaceId:
+                  type: string
+                sourceLanguageId:
+                  type: string
+                targetLanguageId:
+                  type: string
+              additionalProperties: false
+              required:
+                - content
+                - workspaceId
+                - sourceLanguageId
+                - targetLanguageId
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  suggestion:
+                    type: string
+                additionalProperties: false
+                required:
+                  - suggestion
   /RewritePhraseTranslation:
     post:
       operationId: rewritePhraseTranslation
@@ -1077,13 +1113,16 @@ paths:
             schema:
               type: object
               properties:
-                phraseTranslationId:
+                content:
+                  type: string
+                workspaceId:
                   type: string
                 promptId:
                   type: string
               additionalProperties: false
               required:
-                - phraseTranslationId
+                - content
+                - workspaceId
                 - promptId
       responses:
         '200':
