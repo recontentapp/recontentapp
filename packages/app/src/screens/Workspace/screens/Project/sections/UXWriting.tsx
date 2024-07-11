@@ -19,7 +19,7 @@ export const UXWriting = () => {
   const glossaryId = data.glossaryId
 
   return (
-    <Stack direction="column" spacing="$space300">
+    <Stack width="100%" direction="column" spacing="$space300">
       <ProjectPrompts projectId={params.projectId!} />
 
       {glossaryId ? (

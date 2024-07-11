@@ -6,6 +6,7 @@ import { styled } from '../../../theme'
 interface AddCardProps {
   title: string
   description?: string
+  maxWidth?: number
   icon?: IconName
   onAction: () => void
 }
@@ -33,11 +34,12 @@ const Container = styled('button', {
 export const AddCard: FC<AddCardProps> = ({
   title,
   description,
+  maxWidth,
   icon = 'add_circle',
   onAction,
 }) => {
   return (
-    <Container onClick={onAction}>
+    <Container onClick={onAction} css={{ maxWidth }}>
       <Stack direction="column" spacing="$space100" alignItems="center">
         <Icon src={icon} size={24} color="$blue900" />
         <Stack direction="column" spacing="$space40" alignItems="center">
@@ -49,7 +51,7 @@ export const AddCard: FC<AddCardProps> = ({
               size="$size60"
               lineHeight="$lineHeight200"
               color="$gray11"
-              maxWidth={200}
+              maxWidth={350}
             >
               {description}
             </Text>

@@ -2,6 +2,7 @@ import { Popover } from '@reach/popover'
 import {
   Box,
   Button,
+  Icon,
   MinimalButton,
   Spinner,
   Stack,
@@ -19,6 +20,7 @@ import {
   useHasAbility,
 } from '../../../../../../../hooks/workspace'
 import { styled } from '../../../../../../../theme'
+import { ShowPromptModal, ShowPromptModalRef } from '../../ShowPromptModal'
 
 interface Props {
   projectId: string
@@ -40,11 +42,10 @@ const PopoverContent = styled('div', {
 })
 
 const Prompt = styled('button', {
-  display: 'block',
-  width: '180px',
+  flexGrow: 1,
   textAlign: 'left',
   cursor: 'pointer',
-  color: '$gray14',
+  minWidth: 0,
   fontSize: '$size60',
   paddingX: '$space40',
   fontWeight: 500,
@@ -53,9 +54,30 @@ const Prompt = styled('button', {
   textOverflow: 'ellipsis',
   paddingY: '$space40',
   transition: 'background-color 0.2s ease-in-out',
-  borderRadius: '$radius100',
+  backgroundColor: '$gray1',
+  borderRadius: '$radius200',
+  boxShadow: '$shadow200',
+  border: '1px solid $gray6',
+  color: '$gray14',
+  '&:hover,&:focus': {
+    backgroundColor: '$gray2',
+  },
+  '&:active': {
+    backgroundColor: '$gray3',
+  },
+})
+
+const SettingsButton = styled('button', {
+  width: 24,
+  height: 24,
+  borderRadius: '$radius200',
+  cursor: 'pointer',
+  flexShrink: 0,
   '&:hover': {
     backgroundColor: '$gray3',
+  },
+  '&:active': {
+    backgroundColor: '$gray4',
   },
 })
 
@@ -102,6 +124,7 @@ export const RewriteButton = ({ projectId, content, onChange }: Props) => {
   const canAutotranslate = useHasAbility('auto_translation:use')
   const containerRef = useRef<HTMLDivElement>(null!)
   const contentRef = useRef<HTMLDivElement>(null!)
+  const showPromptModalRef = useRef<ShowPromptModalRef>(null!)
   const { id: workspaceId } = useCurrentWorkspace()
   const [isVisible, setIsVisible] = useState(false)
   const [selectedPromptId, setSelectedPromptId] = useState<string | null>(null)
@@ -183,7 +206,7 @@ export const RewriteButton = ({ projectId, content, onChange }: Props) => {
       <Popover
         hidden={!isVisible}
         style={{
-          zIndex: 100,
+          zIndex: 4,
           width: status === 'suggestion' ? '400px' : '200px',
         }}
         targetRef={containerRef}
@@ -248,7 +271,15 @@ export const RewriteButton = ({ projectId, content, onChange }: Props) => {
 
               <Stack renderAs="ul" direction="column" spacing="$space40">
                 {data?.items.map(prompt => (
-                  <li>
+                  <Stack
+                    renderAs="li"
+                    direction="row"
+                    flexWrap="nowrap"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    spacing="$space40"
+                    maxWidth={184}
+                  >
                     <Prompt
                       onClick={() => {
                         setSelectedPromptId(prompt.id)
@@ -257,13 +288,23 @@ export const RewriteButton = ({ projectId, content, onChange }: Props) => {
                     >
                       {prompt.name}
                     </Prompt>
-                  </li>
+
+                    <SettingsButton
+                      onClick={() => {
+                        showPromptModalRef.current.open(prompt)
+                      }}
+                    >
+                      <Icon src="settings" size={12} color="$gray14" />
+                    </SettingsButton>
+                  </Stack>
                 ))}
               </Stack>
             </Stack>
           )}
         </PopoverContent>
       </Popover>
+
+      <ShowPromptModal ref={showPromptModalRef} />
     </>
   )
 }

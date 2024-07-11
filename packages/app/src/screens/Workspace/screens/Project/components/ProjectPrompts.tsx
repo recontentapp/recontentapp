@@ -32,6 +32,8 @@ export const ProjectPrompts = ({ projectId }: Props) => {
     },
   })
 
+  const prompts = data?.items ?? []
+
   return (
     <Stack direction="column" spacing="$space80">
       <Stack direction="row" alignItems="center" spacing="$space60">
@@ -45,6 +47,7 @@ export const ProjectPrompts = ({ projectId }: Props) => {
               variation="secondary"
               icon="link"
               size="xsmall"
+              isDisabled={prompts.length >= 5}
               onAction={() => linkPromptModalRef.current.open(projectId)}
             >
               Link to project
@@ -53,9 +56,9 @@ export const ProjectPrompts = ({ projectId }: Props) => {
         </Stack>
       </Stack>
 
-      {(data?.items ?? []).length > 0 && (
+      {prompts.length > 0 && (
         <Stack direction="row" flexWrap="wrap" spacing="$space40">
-          {data?.items.map(prompt => (
+          {prompts.map(prompt => (
             <PromptCard
               key={prompt.id}
               prompt={prompt}

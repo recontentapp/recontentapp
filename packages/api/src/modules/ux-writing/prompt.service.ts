@@ -219,6 +219,11 @@ export class PromptService {
     })
     const project = await this.prismaService.project.findUniqueOrThrow({
       where: { id: projectId },
+      include: {
+        _count: {
+          select: { prompts: true },
+        },
+      },
     })
 
     if (prompt.workspaceId !== project.workspaceId) {
@@ -231,6 +236,10 @@ export class PromptService {
       prompt.workspaceId,
     )
     workspaceAccess.hasAbilityOrThrow('prompts:manage')
+
+    if (project._count.prompts >= 5) {
+      throw new BadRequestException('Project already has 5 prompts')
+    }
 
     await this.prismaService.prompt.update({
       where: { id: promptId },

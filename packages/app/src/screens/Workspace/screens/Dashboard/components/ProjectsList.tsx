@@ -37,6 +37,7 @@ export const ProjectsList = ({ projects }: ProjectsListProps) => {
         title="Create a project"
         description="It can be a website, mobile app or a specific feature handled by a team"
         onAction={() => openCreateProject()}
+        maxWidth={240}
       />
     </Stack>
   )

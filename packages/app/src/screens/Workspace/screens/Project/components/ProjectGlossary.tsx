@@ -5,16 +5,19 @@ import {
   ConfirmationModalRef,
   Heading,
   Stack,
+  TextField,
   toast,
 } from 'design-system'
-import { useMemo, useRef } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { FullpageSpinner } from '../../../../../components/FullpageSpinner'
 import {
   getGetProjectQueryKey,
   useGetGlossary,
   useUnlinkGlossaryFromProject,
 } from '../../../../../generated/reactQuery'
+import { useDebouncedValue } from '../../../../../hooks/debouncedEffect'
 import { useHasAbility } from '../../../../../hooks/workspace'
+import { AddCard } from '../../../components/AddCard'
 import { Card } from '../../../components/Card'
 import { useInfiniteListGlossaryTerms } from '../../Glossary/hooks'
 import {
@@ -44,15 +47,17 @@ export const ProjectGlossary = ({ projectId, glossaryId }: Props) => {
         })
       },
     })
-
+  const [searchTerm, setSearchTerm] = useState<string>('')
+  const [debouncedSearchTerm] = useDebouncedValue(searchTerm, 500)
   const { data: glossary } = useGetGlossary({
     queryParams: {
       id: glossaryId,
     },
   })
-  const { data } = useInfiniteListGlossaryTerms({
+  const { data, hasNextPage, fetchNextPage } = useInfiniteListGlossaryTerms({
     glossaryId,
-    pageSize: 100,
+    query: debouncedSearchTerm.length > 0 ? debouncedSearchTerm : undefined,
+    pageSize: 25,
   })
 
   const terms = useMemo(() => {
@@ -64,44 +69,59 @@ export const ProjectGlossary = ({ projectId, glossaryId }: Props) => {
   }
 
   return (
-    <Stack direction="column" spacing="$space80">
-      <Stack direction="row" alignItems="center" spacing="$space60">
-        <Heading size="$size100" color="$gray14" renderAs="h2">
-          Glossary
-        </Heading>
-
+    <Stack width="100%" direction="column" spacing="$space80">
+      <Stack
+        width="100%"
+        direction="row"
+        alignItems="center"
+        spacing="$space200"
+      >
         <ShowGlossaryTermModal ref={showGlossaryTermModalRef} />
 
         <Stack direction="row" alignItems="center" spacing="$space60">
-          {canManageGlossaries && (
-            <Button
-              variation="secondary"
-              icon="unlink"
-              size="xsmall"
-              isLoading={isUnlinking}
-              onAction={() => {
-                confirmationModalRef.current.confirm().then(result => {
-                  if (!result) {
-                    return
-                  }
+          <Heading size="$size100" color="$gray14" renderAs="h2">
+            Glossary
+          </Heading>
 
-                  unlink({
-                    body: {
-                      projectId,
-                      glossaryId,
-                    },
-                  }).then(() => {
-                    toast('success', {
-                      title: 'Glossary successfully unlinked',
+          <Stack direction="row" alignItems="center" spacing="$space60">
+            {canManageGlossaries && (
+              <Button
+                variation="secondary"
+                icon="unlink"
+                size="xsmall"
+                isLoading={isUnlinking}
+                onAction={() => {
+                  confirmationModalRef.current.confirm().then(result => {
+                    if (!result) {
+                      return
+                    }
+
+                    unlink({
+                      body: {
+                        projectId,
+                        glossaryId,
+                      },
+                    }).then(() => {
+                      toast('success', {
+                        title: 'Glossary successfully unlinked',
+                      })
                     })
                   })
-                })
-              }}
-            >
-              Unlink from project
-            </Button>
-          )}
+                }}
+              >
+                Unlink
+              </Button>
+            )}
+          </Stack>
         </Stack>
+
+        <TextField
+          label="Search term"
+          placeholder="Search term..."
+          hideLabel
+          value={searchTerm}
+          onChange={setSearchTerm}
+        />
       </Stack>
 
       <Stack renderAs="ul" direction="row" spacing="$space100">
@@ -117,12 +137,20 @@ export const ProjectGlossary = ({ projectId, glossaryId }: Props) => {
             />
           </li>
         ))}
+
+        {hasNextPage && (
+          <AddCard
+            title="Load more"
+            icon="chevron_right"
+            onAction={fetchNextPage}
+          />
+        )}
       </Stack>
 
       <ConfirmationModal
         ref={confirmationModalRef}
         variation="danger"
-        title="Are you sure about unlinking this glossary?"
+        title="Are you sure about unlinking this glossary from this project?"
         description="You can always link it again in the future."
       />
     </Stack>

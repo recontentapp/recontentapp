@@ -3,6 +3,7 @@ import { FC, forwardRef, useImperativeHandle, useRef, useState } from 'react'
 import { Box, Metadata, Modal, ModalContent, ModalRef } from 'design-system'
 import { Components } from '../../../../../generated/typeDefinitions'
 import { formatRelative } from '../../../../../utils/dates'
+import { capitalizeFirstLetter } from '../../../../../utils/text'
 import { useReferenceableAccounts } from '../../../hooks/referenceable'
 
 export interface ShowPromptModalRef {
@@ -32,15 +33,18 @@ const Content: FC<ContentProps> = ({ prompt }) => {
             },
             {
               label: 'Tone',
-              value: String(prompt.tone),
+              value: capitalizeFirstLetter(String(prompt.tone)),
             },
             {
               label: 'Length',
-              value: String(prompt.length),
+              value: capitalizeFirstLetter(String(prompt.length)),
             },
             {
               label: 'Custom instructions',
-              value: prompt.customInstructions.join('\n'),
+              value:
+                prompt.customInstructions.length === 0
+                  ? 'n/a'
+                  : prompt.customInstructions.join('\n'),
             },
             {
               label: 'Created at',

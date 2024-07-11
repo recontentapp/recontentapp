@@ -42,6 +42,7 @@ const List = ({ glossaryId, searchTerm }: ListProps) => {
             <Button
               size="small"
               variation="secondary"
+              isFullwidth
               onAction={() => {
                 if (!glossary) {
                   return
