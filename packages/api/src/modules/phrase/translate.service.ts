@@ -1,7 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
+import { GlossaryTerm, Prompt } from '@prisma/client'
 import { PrismaService } from 'src/utils/prisma.service'
 import { Requester } from '../auth/requester.object'
 import { AIService } from '../ux-writing/ai.service'
+import { isValidPromptTone } from '../ux-writing/prompt'
 
 interface BatchTranslatePhrasesParams {
   revisionId: string
@@ -21,7 +23,7 @@ interface TranslateParams {
 
 interface RewritePhraseTranslationParams {
   requester: Requester
-  workspaceId: string
+  sourceLanguageId: string
   content: string
   promptId: string
 }
@@ -187,18 +189,43 @@ export class TranslateService {
 
   async rewritePhraseTranslation({
     content,
-    workspaceId,
+    sourceLanguageId,
     requester,
     promptId,
   }: RewritePhraseTranslationParams) {
-    const workspaceAccess = requester.getWorkspaceAccessOrThrow(workspaceId)
+    const language = await this.prismaService.language.findUniqueOrThrow({
+      where: { id: sourceLanguageId },
+    })
+    const workspaceAccess = requester.getWorkspaceAccessOrThrow(
+      language.workspaceId,
+    )
     workspaceAccess.hasAbilityOrThrow('auto_translation:use')
+
+    let prompt:
+      | (Prompt & { glossary: { terms: GlossaryTerm[] } | null })
+      | null = null
+
+    if (!isValidPromptTone(promptId)) {
+      prompt = await this.prismaService.prompt.findUniqueOrThrow({
+        where: { id: promptId },
+        include: { glossary: { include: { terms: true } } },
+      })
+
+      if (prompt.workspaceId !== language.workspaceId) {
+        throw new BadRequestException('Prompt is in different workspace')
+      }
+    }
 
     const response = await this.aiService.rewrite({
       content,
-      promptId,
-      workspaceId,
+      prompt,
+      defaultPromptTone: isValidPromptTone(promptId) ? promptId : null,
+      workspaceId: language.workspaceId,
       accountId: workspaceAccess.getAccountID(),
+      sourceLanguage: {
+        id: sourceLanguageId,
+        locale: language.locale,
+      },
     })
 
     return response

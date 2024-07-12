@@ -1,5 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
+import { GlossaryTerm, Prompt } from '@prisma/client'
+import { Components } from 'src/generated/typeDefinitions'
 import { Config } from 'src/utils/config'
 import { PrismaService } from 'src/utils/prisma.service'
 import { LanguageLocale, getISO639LabelFromLocale } from '../workspace/locale'
@@ -43,9 +45,14 @@ interface TranslateParams {
 
 interface RewriteParams {
   content: string
-  promptId: string
+  prompt: (Prompt & { glossary: { terms: GlossaryTerm[] } | null }) | null
+  defaultPromptTone: Components.Schemas.PromptTone | null
   accountId: string
   workspaceId: string
+  sourceLanguage: {
+    id: string
+    locale: string
+  }
 }
 
 @Injectable()
@@ -147,6 +154,7 @@ export class AIService {
       }),
       query: JSON.stringify(translationsMap, null, 2),
       resultFormat: 'json',
+      mode: 'strict',
     })
 
     await this.prismaService.aIUsageEvent.create({
@@ -201,6 +209,7 @@ export class AIService {
       }),
       query: content,
       resultFormat: 'text',
+      mode: 'strict',
     })
 
     await this.prismaService.aIUsageEvent.create({
@@ -215,33 +224,57 @@ export class AIService {
     return response.result
   }
 
-  async rewrite({ content, promptId, accountId, workspaceId }: RewriteParams) {
+  async rewrite({
+    content,
+    prompt,
+    defaultPromptTone,
+    accountId,
+    workspaceId,
+    sourceLanguage,
+  }: RewriteParams) {
     if (!this.aiProvider) {
       throw new BadRequestException('AI provider is not configured')
     }
 
-    const prompt = await this.prismaService.prompt.findUniqueOrThrow({
-      where: { id: promptId },
-      include: {
-        glossary: {
-          include: {
-            terms: true,
-          },
-        },
-      },
-    })
+    let aiPrompt: string | null = null
 
-    const forbiddenTerms = prompt.glossary?.terms
-      .filter(term => term.forbidden)
-      .map(term => term.name)
+    if (prompt) {
+      const forbiddenTerms = prompt.glossary?.terms
+        .filter(term => term.forbidden)
+        .map(term => term.name)
 
-    const response = await this.aiProvider.process({
-      prompt: getRephrasePrompt({
+      aiPrompt = getRephrasePrompt({
         forbiddenTerms,
         customInstructions: prompt.customInstructions,
-      }),
+        tone: prompt.tone as Components.Schemas.PromptTone | null,
+        length: prompt.length as Components.Schemas.PromptLength | null,
+        sourceLanguageLabel: getISO639LabelFromLocale(
+          sourceLanguage.locale as LanguageLocale,
+        ),
+      })
+    }
+
+    if (defaultPromptTone) {
+      aiPrompt = getRephrasePrompt({
+        forbiddenTerms: [],
+        customInstructions: [],
+        tone: defaultPromptTone,
+        length: 'same',
+        sourceLanguageLabel: getISO639LabelFromLocale(
+          sourceLanguage.locale as LanguageLocale,
+        ),
+      })
+    }
+
+    if (!aiPrompt) {
+      throw new BadRequestException('Could not generate AI prompt')
+    }
+
+    const response = await this.aiProvider.process({
+      prompt: aiPrompt,
       query: content,
       resultFormat: 'text',
+      mode: 'creative',
     })
 
     await this.prismaService.aIUsageEvent.create({

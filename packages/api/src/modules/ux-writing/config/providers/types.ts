@@ -10,6 +10,7 @@ export interface ProcessParams {
   prompt: string
   query: string
   resultFormat: 'text' | 'json'
+  mode: 'strict' | 'creative'
 }
 
 export interface AIProvider {

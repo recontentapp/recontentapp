@@ -1,3 +1,5 @@
+import { Components } from 'src/generated/typeDefinitions'
+
 interface GetBatchTranslatePromptParams {
   sourceLanguageLabel: string
   targetLanguageLabel: string
@@ -55,6 +57,7 @@ export const getTranslatePrompt = ({
     'You are a localization assistant designed to help create clear and user-friendly copy for digital products and services.',
     'Your goals are to:',
     `Use a source text in ${sourceLanguageLabel} & translate it to ${targetLanguageLabel}`,
+    'ONLY return one suggestion',
   ]
 
   if (customTranslations && Object.keys(customTranslations).length > 0) {
@@ -78,24 +81,61 @@ export const getTranslatePrompt = ({
   return sections.join('\n\n')
 }
 
+export const getTonePrompt = (
+  tone: Components.Schemas.PromptTone | null,
+): string => {
+  switch (tone) {
+    case 'casual':
+      return 'Maintain a casual tone: friendly, respectful, informal'
+    case 'conversational':
+      return 'Maintain a conversational tone: positive, helpful, & engaging'
+    case 'playful':
+      return 'Maintain a playful tone: warm, a bit funny and informal'
+    case 'professional':
+      return 'Maintain a professional tone: formal, respectful, & without jargon'
+    default:
+      return ''
+  }
+}
+
+export const getLengthPrompt = (
+  length: Components.Schemas.PromptLength | null,
+): string => {
+  switch (length) {
+    case 'shorter':
+      return 'Make the content shorter'
+    case 'longer':
+      return 'Make the content longer'
+    case 'same':
+      return 'Maintain the same length of content'
+    default:
+      return ''
+  }
+}
+
 interface GetRephrasePromptParams {
   forbiddenTerms?: string[]
   customInstructions?: string[]
+  tone: Components.Schemas.PromptTone | null
+  length: Components.Schemas.PromptLength | null
+  sourceLanguageLabel: string
 }
 
 export const getRephrasePrompt = ({
   forbiddenTerms,
   customInstructions,
+  sourceLanguageLabel,
+  tone,
+  length,
 }: GetRephrasePromptParams) => {
   const sections: string[] = [
     'You are a UX writing assistant designed to help create clear and user-friendly copy for digital products and services.',
     'Your goals are to:',
-    'Rephrase content: Focus on writing that is easy to understand, guides users effectively, and helps them achieve their goals.',
-    // TODO: Adapt based on tone & length from prompt in DB
-    'Maintain a conversational tone: without jargon, being personal & friendly.',
-    'Maintain the source language in your output',
-    'Maintain the same length of content',
-  ]
+    'Rephrase content',
+    getTonePrompt(tone),
+    `Maintain the source language in your output: ${sourceLanguageLabel}`,
+    getLengthPrompt(length),
+  ].filter(Boolean)
 
   if (customInstructions && customInstructions.length > 0) {
     sections.push(

@@ -1115,14 +1115,14 @@ paths:
               properties:
                 content:
                   type: string
-                workspaceId:
+                sourceLanguageId:
                   type: string
                 promptId:
                   type: string
               additionalProperties: false
               required:
                 - content
-                - workspaceId
+                - sourceLanguageId
                 - promptId
       responses:
         '200':
@@ -3061,34 +3061,10 @@ components:
     PromptTone:
       type: string
       enum:
-        - apologetic
-        - casual
-        - catchy
-        - confident
-        - conversational
-        - convincing
-        - crisp
-        - empathetic
-        - engaging
-        - enthusiastic
-        - exciting
-        - formal
-        - friendly
-        - funny
-        - happy
-        - helpful
-        - inclusive
-        - informative
-        - intelligent
-        - inviting
-        - kind
-        - playful
-        - polite
-        - positive
         - professional
-        - upbeat
-        - warm
-        - witty
+        - casual
+        - playful
+        - conversational
     PromptLength:
       type: string
       enum:

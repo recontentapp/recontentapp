@@ -113,7 +113,7 @@ export class RewritePhraseTranslationDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(ID_LENGTH)
-  workspaceId: string
+  sourceLanguageId: string
 
   @IsString()
   @IsNotEmpty()

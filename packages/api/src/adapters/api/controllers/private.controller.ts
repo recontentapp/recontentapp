@@ -797,12 +797,12 @@ export class PrivateApiController {
   @Post('/RewritePhraseTranslation')
   async rewritePhraseTranslation(
     @Body()
-    { content, workspaceId, promptId }: RewritePhraseTranslationDto,
+    { content, sourceLanguageId, promptId }: RewritePhraseTranslationDto,
     @AuthenticatedRequester() requester: Requester,
   ): Promise<Paths.RewritePhraseTranslation.Responses.$200> {
     const suggestion = await this.translateService.rewritePhraseTranslation({
       content,
-      workspaceId,
+      sourceLanguageId,
       promptId,
       requester,
     })

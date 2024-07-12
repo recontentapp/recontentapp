@@ -58,6 +58,7 @@ export const Form = ({
         <RewriteButton
           projectId={projectId}
           content={state[language.id] ?? ''}
+          languageId={language.id}
           onChange={content => onChange(content, { resetInitialState: true })}
         />
       </Stack>

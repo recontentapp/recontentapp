@@ -20,9 +20,12 @@ export class GeminiAIProvider implements AIProvider {
 
     const chatSession = model.startChat({
       generationConfig: {
-        temperature: 0.2,
-        topP: 0.95,
-        topK: 64,
+        ...(params.mode === 'strict' && {
+          temperature: 0.2,
+        }),
+        ...(params.mode === 'creative' && {
+          temperature: 2,
+        }),
         responseMimeType,
       },
       safetySettings: [

@@ -11,6 +11,7 @@ import {
   useOutsideClick,
 } from 'design-system'
 import { useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   useListPrompts,
   useRewritePhraseTranslation,
@@ -19,10 +20,13 @@ import {
   useCurrentWorkspace,
   useHasAbility,
 } from '../../../../../../../hooks/workspace'
+import routes from '../../../../../../../routing'
 import { styled } from '../../../../../../../theme'
+import { promptToneOptions } from '../../../../../../../utils/prompts'
 import { ShowPromptModal, ShowPromptModalRef } from '../../ShowPromptModal'
 
 interface Props {
+  languageId: string
   projectId: string
   content: string
   onChange: (content: string) => void
@@ -67,6 +71,24 @@ const Prompt = styled('button', {
   },
 })
 
+const AddMore = styled('button', {
+  textAlign: 'left',
+  cursor: 'pointer',
+  minWidth: 0,
+  fontSize: '$size60',
+  paddingX: '$space40',
+  fontWeight: 500,
+  paddingY: '$space40',
+  color: '$blue900',
+  display: 'flex',
+  alignItems: 'center',
+  gap: '$space20',
+  transition: 'color 0.2s ease-in-out',
+  '&:hover,&:focus': {
+    color: '$blue700',
+  },
+})
+
 const SettingsButton = styled('button', {
   width: 24,
   height: 24,
@@ -84,26 +106,13 @@ const SettingsButton = styled('button', {
 interface GetDisabledStatus {
   hasAbility: boolean
   content: string
-  promptsCount: number
 }
 
-const getDisabledStatus = ({
-  hasAbility,
-  content,
-  promptsCount,
-}: GetDisabledStatus) => {
+const getDisabledStatus = ({ hasAbility, content }: GetDisabledStatus) => {
   if (!hasAbility) {
     return {
       isDisabled: true,
       message: 'You do not yet have access to AI features.',
-    }
-  }
-
-  if (promptsCount === 0) {
-    return {
-      isDisabled: true,
-      message:
-        'Make sure to link AI prompts to this project to rewrite content in the "UX Writing" section.',
     }
   }
 
@@ -120,12 +129,19 @@ const getDisabledStatus = ({
   }
 }
 
-export const RewriteButton = ({ projectId, content, onChange }: Props) => {
+export const RewriteButton = ({
+  projectId,
+  content,
+  onChange,
+  languageId,
+}: Props) => {
+  const navigate = useNavigate()
   const canAutotranslate = useHasAbility('auto_translation:use')
+  const canManagePrompts = useHasAbility('prompts:manage')
   const containerRef = useRef<HTMLDivElement>(null!)
   const contentRef = useRef<HTMLDivElement>(null!)
   const showPromptModalRef = useRef<ShowPromptModalRef>(null!)
-  const { id: workspaceId } = useCurrentWorkspace()
+  const { id: workspaceId, key: workspaceKey } = useCurrentWorkspace()
   const [isVisible, setIsVisible] = useState(false)
   const [selectedPromptId, setSelectedPromptId] = useState<string | null>(null)
   const { data } = useListPrompts(
@@ -157,7 +173,6 @@ export const RewriteButton = ({ projectId, content, onChange }: Props) => {
   const { isDisabled, message } = getDisabledStatus({
     hasAbility: canAutotranslate,
     content,
-    promptsCount: data?.items.length ?? 0,
   })
 
   const onRequestRewrite = (promptId: string) => {
@@ -166,7 +181,7 @@ export const RewriteButton = ({ projectId, content, onChange }: Props) => {
     }
 
     rewrite({
-      body: { promptId, content, workspaceId },
+      body: { promptId, content, sourceLanguageId: languageId },
     })
   }
 
@@ -181,6 +196,7 @@ export const RewriteButton = ({ projectId, content, onChange }: Props) => {
     setSelectedPromptId(null)
   }
 
+  const customPrompts = data?.items ?? []
   const status = isRewriting
     ? 'loading'
     : suggestion !== null
@@ -207,7 +223,7 @@ export const RewriteButton = ({ projectId, content, onChange }: Props) => {
         hidden={!isVisible}
         style={{
           zIndex: 4,
-          width: status === 'suggestion' ? '400px' : '200px',
+          width: status === 'suggestion' ? '400px' : '300px',
         }}
         targetRef={containerRef}
       >
@@ -249,11 +265,7 @@ export const RewriteButton = ({ projectId, content, onChange }: Props) => {
                     icon="refresh"
                     isDisabled={!selectedPromptId}
                     onAction={() => {
-                      if (!selectedPromptId) {
-                        return
-                      }
-
-                      onRequestRewrite(selectedPromptId)
+                      setSuggestion(null)
                     }}
                   >
                     Try again
@@ -269,15 +281,19 @@ export const RewriteButton = ({ projectId, content, onChange }: Props) => {
                 Choose a prompt to rewrite
               </Text>
 
-              <Stack renderAs="ul" direction="column" spacing="$space40">
-                {data?.items.map(prompt => (
+              <Stack
+                renderAs="ul"
+                direction="row"
+                flexWrap="wrap"
+                spacing="$space60"
+              >
+                {customPrompts.map(prompt => (
                   <Stack
                     renderAs="li"
                     direction="row"
                     flexWrap="nowrap"
                     justifyContent="space-between"
                     alignItems="center"
-                    spacing="$space40"
                     maxWidth={184}
                   >
                     <Prompt
@@ -298,6 +314,53 @@ export const RewriteButton = ({ projectId, content, onChange }: Props) => {
                     </SettingsButton>
                   </Stack>
                 ))}
+
+                {customPrompts.length === 0 &&
+                  promptToneOptions.map(option => (
+                    <Stack
+                      renderAs="li"
+                      direction="row"
+                      flexWrap="nowrap"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      maxWidth={184}
+                    >
+                      <Prompt
+                        onClick={() => {
+                          setSelectedPromptId(option.value)
+                          onRequestRewrite(option.value)
+                        }}
+                      >
+                        {option.label}
+                      </Prompt>
+                    </Stack>
+                  ))}
+
+                {customPrompts.length === 0 && canManagePrompts && (
+                  <Stack
+                    renderAs="li"
+                    direction="row"
+                    flexWrap="nowrap"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    maxWidth={184}
+                  >
+                    <AddMore
+                      onClick={() => {
+                        navigate(
+                          routes.workspaceSettingsPrompts.url({
+                            pathParams: {
+                              workspaceKey,
+                            },
+                          }),
+                        )
+                      }}
+                    >
+                      <Icon src="add" size={12} color="$blue900" /> Create
+                      custom ones
+                    </AddMore>
+                  </Stack>
+                )}
               </Stack>
             </Stack>
           )}
