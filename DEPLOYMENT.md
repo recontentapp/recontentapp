@@ -40,40 +40,39 @@ docker run -p 127.0.0.1:8080:8080/tcp --env DATABASE_URL="postgres://postgres:po
 
 Here's the full list of environment variables that need to be passed to the application container to run successfully.
 
-| Name                              | Description                                              | Required |
-| --------------------------------- | -------------------------------------------------------- | -------- |
-| `WORKSPACE_INVITE_ONLY`           | Disable sign up after first registration                 | `false`  |
-| `PORT`                            | Port on which app runs                                   | `true`   |
-| `DATABASE_URL`                    | Postgres connection string                               | `true`   |
-| `DATABASE_LOG_QUERIES`            | Log SQL queries                                          | `false`  |
-| `JWT_SECRET`                      | [JWT](https://jwt.io/) for authentication                | `true`   |
-| `ENCRYPTION_KEY`                  | Encrypt/decrypt credentials stored in database           | `true`   |
-| `SQS_QUEUE_URL`                   | AWS SQS queue to use for jobs                            | `false`  |
-| `GOOGLE_OAUTH_CLIENT_ID`          | Google OAuth2 application config for Google sign-in      | `false`  |
-| `GOOGLE_OAUTH_CLIENT_SECRET`      | Google OAuth2 application config for Google sign-in      | `false`  |
-| `GOOGLE_OAUTH_REDIRECT_URL`       | Google OAuth2 application config for Google sign-in      | `false`  |
-| `MAILER_HOST`                     | Mailer config                                            | `true`   |
-| `MAILER_PORT`                     | Mailer config                                            | `true`   |
-| `MAILER_SECURE`                   | Mailer config                                            | `false`  |
-| `MAILER_USER`                     | Mailer config                                            | `false`  |
-| `MAILER_PASSWORD`                 | Mailer config                                            | `false`  |
-| `MAILER_FROM_EMAIL`               | Email address used to send emails                        | `true`   |
-| `SERVE_STATIC_FILES`              | Wether or not web app should be served                   | `false`  |
-| `APP_URL`                         | Base URL for webapp                                      | `true`   |
-| `API_URL`                         | Base URL for API                                         | `true`   |
-| `S3_REGION`                       | Region for S3-compatible object storage                  | `false`  |
-| `S3_ENDPOINT`                     | Endpoint URL for S3-compatible object storage            | `false`  |
-| `S3_ACCESS_KEY_ID`                | Credentials for S3-compatible object storage             | `false`  |
-| `S3_SECRET_ACCESS_KEY`            | Credentials for S3-compatible object storage             | `false`  |
-| `S3_BUCKET_NAME`                  | Bucket name in which CDN assets are stored               | `false`  |
-| `S3_BUCKET_URL`                   | Public base URL for bucket objects                       | `false`  |
-| `AUTO_TRANSLATE_PROVIDER`         | Service used for machine translations. `aws` or `openai` | `false`  |
-| `OPENAI_API_KEY`                  | OpenAI API key for ChatGPT completions                   | `false`  |
-| `AWS_ACCESS_KEY_ID`               | AWS credentials if AWS Translate is used                 | `false`  |
-| `AWS_SECRET_ACCESS_KEY`           | AWS credentials if AWS Translate is used                 | `false`  |
-| `AWS_REGION`                      | AWS setting if AWS Translate is used                     | `false`  |
-| `SLACK_NOTIFICATIONS_WEBHOOK_URL` | Slack webhook to receive notifications                   | `false`  |
-| `SLACK_FEEDBACKS_WEBHOOK_URL`     | Slack webhook to receive notifications                   | `false`  |
+| Name                              | Description                                         | Required |
+| --------------------------------- | --------------------------------------------------- | -------- |
+| `WORKSPACE_INVITE_ONLY`           | Disable sign up after first registration            | `false`  |
+| `PORT`                            | Port on which app runs                              | `true`   |
+| `DATABASE_URL`                    | Postgres connection string                          | `true`   |
+| `DATABASE_LOG_QUERIES`            | Log SQL queries                                     | `false`  |
+| `JWT_SECRET`                      | [JWT](https://jwt.io/) for authentication           | `true`   |
+| `ENCRYPTION_KEY`                  | Encrypt/decrypt credentials stored in database      | `true`   |
+| `SQS_QUEUE_URL`                   | AWS SQS queue to use for jobs                       | `false`  |
+| `GOOGLE_OAUTH_CLIENT_ID`          | Google OAuth2 application config for Google sign-in | `false`  |
+| `GOOGLE_OAUTH_CLIENT_SECRET`      | Google OAuth2 application config for Google sign-in | `false`  |
+| `GOOGLE_OAUTH_REDIRECT_URL`       | Google OAuth2 application config for Google sign-in | `false`  |
+| `MAILER_HOST`                     | Mailer config                                       | `true`   |
+| `MAILER_PORT`                     | Mailer config                                       | `true`   |
+| `MAILER_SECURE`                   | Mailer config                                       | `false`  |
+| `MAILER_USER`                     | Mailer config                                       | `false`  |
+| `MAILER_PASSWORD`                 | Mailer config                                       | `false`  |
+| `MAILER_FROM_EMAIL`               | Email address used to send emails                   | `true`   |
+| `SERVE_STATIC_FILES`              | Wether or not web app should be served              | `false`  |
+| `APP_URL`                         | Base URL for webapp                                 | `true`   |
+| `API_URL`                         | Base URL for API                                    | `true`   |
+| `S3_REGION`                       | Region for S3-compatible object storage             | `false`  |
+| `S3_ENDPOINT`                     | Endpoint URL for S3-compatible object storage       | `false`  |
+| `S3_ACCESS_KEY_ID`                | Credentials for S3-compatible object storage        | `false`  |
+| `S3_SECRET_ACCESS_KEY`            | Credentials for S3-compatible object storage        | `false`  |
+| `S3_BUCKET_NAME`                  | Bucket name in which CDN assets are stored          | `false`  |
+| `S3_BUCKET_URL`                   | Public base URL for bucket objects                  | `false`  |
+| `GOOGLE_GEMINI_API_KEY`           | Google Gemini API key for AI features               | `false`  |
+| `AWS_ACCESS_KEY_ID`               | AWS credentials if AWS Translate is used            | `false`  |
+| `AWS_SECRET_ACCESS_KEY`           | AWS credentials if AWS Translate is used            | `false`  |
+| `AWS_REGION`                      | AWS setting if AWS Translate is used                | `false`  |
+| `SLACK_NOTIFICATIONS_WEBHOOK_URL` | Slack webhook to receive notifications              | `false`  |
+| `SLACK_FEEDBACKS_WEBHOOK_URL`     | Slack webhook to receive notifications              | `false`  |
 
 `APP_URL` & `API_URL` are usually the same. For example, if Recontent.app is hosted at `recontent.my-app.com`, `https://recontent.my-app.com` can be used for both environment variables.
 
@@ -100,9 +99,9 @@ To set it up, follow the next steps:
     - `https://recontent.my-app.com/sign-in`
 - Copy the generated client ID, client secret & redirect URI to pass them as environment variables
 
-### Auto translation with AWS Translate or OpenAI
+### Auto translation with Google Gemini Pro
 
-Recontent.app supports auto-translating phrases once a translation is available in at least one language for a given phrase. Auto translation can either be powered by [AWS Translate](https://aws.amazon.com/translate/) or [OpenAI](https://platform.openai.com/).
+Recontent.app supports auto-translating & rephrasing phrases once a translation is available in at least one language for a given phrase. AI features are powered by [Google Gemini Pro](https://deepmind.google/technologies/gemini/pro/).
 
 ### Worker with AWS SQS queue
 
@@ -110,40 +109,9 @@ Recontent.app sometimes needs to perform tasks (eg. daily destinations sync) on 
 
 You can set up this worker by using the `SQS_QUEUE_URL` environment variable.
 
-#### Using AWS Translate
+#### Using Google Gemini Pro
 
-The AWS Translate SDK is initialized using [standard AWS credentials retrieval mechanisms](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-credentials-node.html).
-
-Make sure `AUTO_TRANSLATE_PROVIDER` is set to `aws` & credentials are provided in one of the listed ways & that the AWS managed policy `TranslateReadOnly` or the following policy is used:
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": [
-        "translate:TranslateText",
-        "translate:TranslateDocument",
-        "translate:GetTerminology",
-        "translate:ListTerminologies",
-        "translate:ListTextTranslationJobs",
-        "translate:DescribeTextTranslationJob",
-        "translate:GetParallelData",
-        "translate:ListParallelData",
-        "comprehend:DetectDominantLanguage",
-        "cloudwatch:GetMetricStatistics",
-        "cloudwatch:ListMetrics"
-      ],
-      "Effect": "Allow",
-      "Resource": "*"
-    }
-  ]
-}
-```
-
-#### Using OpenAI
-
-OpenAI ChatGPT requests are authenticated using a standard API key. Make sure to pass the `OPENAI_API_KEY` environment variable & set `AUTO_TRANSLATE_PROVIDER` to `openai`.
+Google Gemini Pro requests are authenticated using a standard API key. Make sure to pass the `GOOGLE_GEMINI_API_KEY` environment variable. To get one, check out [this documentation page](https://ai.google.dev/gemini-api/docs/api-key) from Google AI.
 
 ### CDN with S3-compatible object storage
 
