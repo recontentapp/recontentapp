@@ -52,7 +52,7 @@ export class ScheduleService {
 
     for (const workspace of workspacesWhichShouldReportUsage) {
       this.producerService.sendMessage({
-        type: 'autotranslation-usage',
+        type: 'ai-usage',
         workspaceId: workspace.workspaceId,
       })
     }

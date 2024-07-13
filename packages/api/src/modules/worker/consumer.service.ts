@@ -74,8 +74,8 @@ export class ConsumerService implements BeforeApplicationShutdown {
     }
 
     switch (message.type) {
-      case 'autotranslation-usage': {
-        await this.meteredService.reportDailyAutotranslationUsage({
+      case 'ai-usage': {
+        await this.meteredService.reportDailyAIUsage({
           workspaceId: message.workspaceId,
         })
         break

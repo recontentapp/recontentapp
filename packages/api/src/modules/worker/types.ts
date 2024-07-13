@@ -7,8 +7,8 @@ export interface PhraseUsageMessage extends BaseMessage {
   workspaceId: string
 }
 
-export interface AutotranslationUsageMessage extends BaseMessage {
-  type: 'autotranslation-usage'
+export interface AIUsageMessage extends BaseMessage {
+  type: 'ai-usage'
   workspaceId: string
 }
 
@@ -19,5 +19,5 @@ export interface DestinationSyncRequestMessage extends BaseMessage {
 
 export type Message =
   | PhraseUsageMessage
-  | AutotranslationUsageMessage
+  | AIUsageMessage
   | DestinationSyncRequestMessage

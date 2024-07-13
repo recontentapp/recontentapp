@@ -93,8 +93,6 @@ const getConfig = () => {
       stripeKey: process.env.STRIPE_API_KEY,
       stripeWebhookSigningSecret: process.env.STRIPE_WEBHOOK_SIGNING_SECRET,
       stripeTestClockId: process.env.STRIPE_TEST_CLOCK_ID,
-      cloudWatchLogsGroupName: process.env.CLOUDWATCH_LOGS_BILLING_GROUP_NAME,
-      cloudWatchLogsStreamName: process.env.CLOUDWATCH_LOGS_BILLING_STREAM_NAME,
     },
     slack: {
       notificationsWebhookUrl: process.env.SLACK_NOTIFICATIONS_WEBHOOK_URL,

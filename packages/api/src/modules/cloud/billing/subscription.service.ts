@@ -122,44 +122,6 @@ export class SubscriptionService {
     })
   }
 
-  private async resolvePrices() {
-    if (!this.stripe) {
-      throw new BadRequestException(SubscriptionService.notAvailableMessage)
-    }
-
-    // TODO: Make dynamic once multiple plans are introduced
-    const [subscriptionPrice, phrasesUsagePrice, autotranslationUsagePrice] =
-      await Promise.all([
-        this.stripe.prices.search({
-          query: 'metadata["id"]:"pro_subscription_monthly_1"',
-        }),
-        this.stripe.prices.search({
-          query: 'metadata["id"]:"pro_phrases_usage_monthly_1"',
-        }),
-        this.stripe.prices.search({
-          query: 'metadata["id"]:"pro_autotranslation_usage_monthly_1"',
-        }),
-      ])
-
-    if (
-      subscriptionPrice.data.length === 0 ||
-      phrasesUsagePrice.data.length === 0 ||
-      autotranslationUsagePrice.data.length === 0
-    ) {
-      throw new BadRequestException('Prices not found')
-    }
-
-    const subscriptionId = subscriptionPrice.data[0].id
-    const phrasesUsageId = phrasesUsagePrice.data[0].id
-    const autotranslationUsageId = autotranslationUsagePrice.data[0].id
-
-    return [
-      { price: subscriptionId },
-      { price: phrasesUsageId },
-      { price: autotranslationUsageId },
-    ]
-  }
-
   async subscribe({ workspaceId, plan, requester }: SubscribeParams) {
     if (!this.stripe) {
       throw new BadRequestException(SubscriptionService.notAvailableMessage)
@@ -203,7 +165,19 @@ export class SubscriptionService {
       throw new BadRequestException('Default source needs to be set up first')
     }
 
-    const priceItems = await this.resolvePrices()
+    // TODO: Adapt based on selected plan if multiple available
+    const prices = await this.stripe.prices.list({
+      lookup_keys: [
+        'pro_subscription_monthly',
+        'pro_phrases_usage_monthly',
+        'pro_input_tokens_usage_monthly',
+        'pro_output_tokens_usage_monthly',
+      ],
+    })
+
+    if (prices.data.length !== 4) {
+      throw new BadRequestException('Prices not found')
+    }
 
     const metadata: SubscriptionMetadata = {
       plan,
@@ -214,7 +188,7 @@ export class SubscriptionService {
       customer: config.stripeCustomerId,
       collection_method: 'charge_automatically',
       metadata,
-      items: priceItems,
+      items: prices.data.map(price => ({ price: price.id })),
     })
 
     await this.prismaService.workspaceBillingSettings.update({

@@ -300,12 +300,3 @@ const run = async () => {
 }
 
 void run()
-
-// const prices = await stripe.prices.list({
-//   lookup_keys: [
-//     'pro_subscription_monthly',
-//     'pro_phrases_usage_monthly',
-//     'pro_input_tokens_usage_monthly',
-//     'pro_output_tokens_usage_monthly',
-//   ],
-// })
