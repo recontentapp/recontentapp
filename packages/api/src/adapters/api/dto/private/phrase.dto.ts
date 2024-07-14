@@ -92,6 +92,7 @@ export class BatchAutoTranslatePhrasesDto {
 export class AutotranslateDto {
   @IsString()
   @IsNotEmpty()
+  @MaxLength(LONG_TEXT_LENGTH)
   content: string
 
   @IsString()
@@ -113,6 +114,7 @@ export class AutotranslateDto {
 export class RewritePhraseTranslationDto {
   @IsString()
   @IsNotEmpty()
+  @MaxLength(LONG_TEXT_LENGTH)
   content: string
 
   @IsString()

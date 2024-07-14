@@ -40,6 +40,8 @@ export class CreatePromptDto {
   length?: Components.Schemas.PromptLength
 
   @IsArray()
+  @IsString({ each: true })
+  @MaxLength(TEXT_LENGTH, { each: true })
   customInstructions: string[]
 }
 
@@ -73,6 +75,8 @@ export class UpdatePromptDto {
   length?: Components.Schemas.PromptLength
 
   @IsArray()
+  @IsString({ each: true })
+  @MaxLength(TEXT_LENGTH, { each: true })
   customInstructions: string[]
 }
 
