@@ -1,57 +1,35 @@
 import dotenv from 'dotenv'
 import Stripe from 'stripe'
-import { Plan } from '../src/modules/billing/plan'
 
 dotenv.config()
 
-/**
- * Meters cannot be searched by metadata nor completely deleted.
- */
-const upsertMeters = async (stripe: Stripe) => {
-  const existingMeters = await stripe.billing.meters.list({ status: 'active' })
+const getMeters = async (stripe: Stripe) => {
+  const meters = await stripe.billing.meters.list({
+    status: 'active',
+  })
 
-  let phrasesUsageMeterId: string | undefined = undefined
-  let autotranslationUsageMeterId: string | undefined = undefined
+  const phrasesMeterId = meters.data.find(m => m.event_name === 'phrases')?.id
+  const inputTokensMeterId = meters.data.find(
+    m => m.event_name === 'input_tokens',
+  )?.id
+  const outputTokensMeterId = meters.data.find(
+    m => m.event_name === 'output_tokens',
+  )?.id
 
-  for (const meter of existingMeters.data) {
-    if (meter.event_name === 'phrases_usage_1') {
-      phrasesUsageMeterId = meter.id
-    } else if (meter.event_name === 'autotranslation_usage_1') {
-      autotranslationUsageMeterId = meter.id
-    }
+  if (!phrasesMeterId || !inputTokensMeterId || !outputTokensMeterId) {
+    throw new Error('Meters not found')
   }
 
-  if (!phrasesUsageMeterId) {
-    const meter = await stripe.billing.meters.create({
-      display_name: 'Phrases usage v1',
-      event_name: 'phrases_usage_1',
-      default_aggregation: {
-        formula: 'sum',
-      },
-    })
-
-    phrasesUsageMeterId = meter.id
+  return {
+    phrasesMeterId,
+    inputTokensMeterId,
+    outputTokensMeterId,
   }
-
-  if (!autotranslationUsageMeterId) {
-    const meter = await stripe.billing.meters.create({
-      display_name: 'Autotranslation usage v1',
-      event_name: 'autotranslation_usage_1',
-      event_time_window: 'day',
-      default_aggregation: {
-        formula: 'sum',
-      },
-    })
-
-    autotranslationUsageMeterId = meter.id
-  }
-
-  return { phrasesUsageMeterId, autotranslationUsageMeterId }
 }
 
 const upsertSubscriptionProduct = async (stripe: Stripe) => {
   const existingSubscriptionProduct = await stripe.products.search({
-    query: 'metadata["id"]:"pro_subscription_1"',
+    query: 'metadata["plan"]:"pro" AND metadata["type"]:"subscription"',
   })
 
   if (existingSubscriptionProduct.data.length === 1) {
@@ -61,8 +39,7 @@ const upsertSubscriptionProduct = async (stripe: Stripe) => {
   const subscriptionProduct = await stripe.products.create({
     name: 'Pro - Subscription',
     metadata: {
-      id: 'pro_subscription_1',
-      plan: 'pro' as Plan,
+      plan: 'pro',
       type: 'subscription',
     },
   })
@@ -75,7 +52,7 @@ const upsertSubscriptionPrice = async (
   subscriptionProductId: string,
 ) => {
   const existingSubscriptionPrice = await stripe.prices.search({
-    query: 'metadata["id"]:"pro_subscription_monthly_1"',
+    query: 'metadata["plan"]:"pro" AND metadata["type"]:"subscription"',
   })
 
   if (existingSubscriptionPrice.data.length === 1) {
@@ -88,14 +65,14 @@ const upsertSubscriptionPrice = async (
     tax_behavior: 'exclusive',
     unit_amount: 4900,
     currency: 'USD',
+    lookup_key: 'pro_subscription_monthly',
     recurring: {
       interval: 'month',
       interval_count: 1,
       usage_type: 'licensed',
     },
     metadata: {
-      id: 'pro_subscription_monthly_1',
-      plan: 'pro' as Plan,
+      plan: 'pro',
       type: 'subscription',
     },
   })
@@ -105,7 +82,7 @@ const upsertSubscriptionPrice = async (
 
 const upsertPhrasesUsageProduct = async (stripe: Stripe) => {
   const existingPhrasesUsageProduct = await stripe.products.search({
-    query: 'metadata["id"]:"pro_phrases_usage_1"',
+    query: 'metadata["plan"]:"pro" AND metadata["type"]:"phrases_usage"',
   })
 
   if (existingPhrasesUsageProduct.data.length === 1) {
@@ -116,8 +93,7 @@ const upsertPhrasesUsageProduct = async (stripe: Stripe) => {
     name: 'Pro - Phrases usage',
     unit_label: 'phrase',
     metadata: {
-      id: 'pro_phrases_usage_1',
-      plan: 'pro' as Plan,
+      plan: 'pro',
       type: 'phrases_usage',
     },
   })
@@ -131,7 +107,7 @@ const upsertPhrasesUsagePrice = async (
   meterId: string,
 ) => {
   const existingPhrasesUsagePrice = await stripe.prices.search({
-    query: 'metadata["id"]:"pro_phrases_usage_monthly_1"',
+    query: 'metadata["plan"]:"pro" AND metadata["type"]:"phrases_usage"',
   })
 
   if (existingPhrasesUsagePrice.data.length === 1) {
@@ -145,6 +121,7 @@ const upsertPhrasesUsagePrice = async (
     currency: 'USD',
     tiers_mode: 'graduated',
     billing_scheme: 'tiered',
+    lookup_key: 'pro_phrases_usage_monthly',
     tiers: [
       { up_to: 5000, unit_amount_decimal: '0' },
       { up_to: 'inf', unit_amount_decimal: '0.1' },
@@ -156,8 +133,7 @@ const upsertPhrasesUsagePrice = async (
       meter: meterId,
     },
     metadata: {
-      id: 'pro_phrases_usage_monthly_1',
-      plan: 'pro' as Plan,
+      plan: 'pro',
       type: 'phrases_usage',
     },
   })
@@ -165,50 +141,111 @@ const upsertPhrasesUsagePrice = async (
   return phrasesUsagePrice.id
 }
 
-const upsertAutotranslationUsageProduct = async (stripe: Stripe) => {
-  const existingAutotranslationUsageProduct = await stripe.products.search({
-    query: 'metadata["id"]:"pro_autotranslation_usage_1"',
+const upsertInputTokensUsageProduct = async (stripe: Stripe) => {
+  const existingInputTokensUsageProduct = await stripe.products.search({
+    query: 'metadata["plan"]:"pro" AND metadata["type"]:"input_tokens_usage"',
   })
 
-  if (existingAutotranslationUsageProduct.data.length === 1) {
-    return existingAutotranslationUsageProduct.data[0].id
+  if (existingInputTokensUsageProduct.data.length === 1) {
+    return existingInputTokensUsageProduct.data[0].id
   }
 
-  const autotranslationUsageProduct = await stripe.products.create({
-    name: 'Pro - Autotranslation usage',
-    unit_label: 'token',
+  const inputTokensUsageProduct = await stripe.products.create({
+    name: 'Pro - Input tokens usage',
+    unit_label: 'input token',
     metadata: {
-      id: 'pro_autotranslation_usage_1',
-      plan: 'pro' as Plan,
-      type: 'autotranslation_usage',
+      plan: 'pro',
+      type: 'input_tokens_usage',
     },
   })
 
-  return autotranslationUsageProduct.id
+  return inputTokensUsageProduct.id
 }
 
-const upsertAutotranslationUsagePrice = async (
+const upsertInputTokensUsagePrice = async (
   stripe: Stripe,
-  autotranslationUsageProductId: string,
+  inputTokensUsageProductId: string,
   meterId: string,
 ) => {
-  const existingAutotranslationUsagePrice = await stripe.prices.search({
-    query: 'metadata["id"]:"pro_autotranslation_usage_monthly_1"',
+  const existingInputTokensUsagePrice = await stripe.prices.search({
+    query: 'metadata["plan"]:"pro" AND metadata["type"]:"input_tokens_usage"',
   })
 
-  if (existingAutotranslationUsagePrice.data.length === 1) {
-    return existingAutotranslationUsagePrice.data[0].id
+  if (existingInputTokensUsagePrice.data.length === 1) {
+    return existingInputTokensUsagePrice.data[0].id
   }
 
-  const autotranslationUsagePrice = await stripe.prices.create({
-    product: autotranslationUsageProductId,
-    nickname: 'Monthly Pro Autotranslation Usage',
+  const inputTokensUsagePrice = await stripe.prices.create({
+    product: inputTokensUsageProductId,
+    nickname: 'Monthly Pro Input tokens Usage',
     tax_behavior: 'exclusive',
     billing_scheme: 'tiered',
     tiers_mode: 'graduated',
     tiers: [
-      { up_to: 1000000, unit_amount_decimal: '0' },
-      { up_to: 'inf', unit_amount_decimal: '0.0015' },
+      { up_to: 500000, unit_amount_decimal: '0' },
+      { up_to: 'inf', unit_amount_decimal: '0.00001' },
+    ],
+    currency: 'USD',
+    lookup_key: 'pro_input_tokens_usage_monthly',
+    recurring: {
+      interval: 'month',
+      interval_count: 1,
+      usage_type: 'metered',
+      meter: meterId,
+    },
+    metadata: {
+      plan: 'pro',
+      type: 'input_tokens_usage',
+    },
+  })
+
+  return inputTokensUsagePrice.id
+}
+
+const upsertOutputTokensUsageProduct = async (stripe: Stripe) => {
+  const existingOutputTokensUsageProduct = await stripe.products.search({
+    query: 'metadata["plan"]:"pro" AND metadata["type"]:"output_tokens_usage"',
+  })
+
+  if (existingOutputTokensUsageProduct.data.length === 1) {
+    return existingOutputTokensUsageProduct.data[0].id
+  }
+
+  const outputTokensUsageProduct = await stripe.products.create({
+    name: 'Pro - Output tokens usage',
+    unit_label: 'output token',
+    metadata: {
+      plan: 'pro',
+      type: 'output_tokens_usage',
+    },
+  })
+
+  return outputTokensUsageProduct.id
+}
+
+const upsertOutputTokensUsagePrice = async (
+  stripe: Stripe,
+  outputTokensUsageProductId: string,
+  meterId: string,
+) => {
+  const existingOutputTokensUsagePrice = await stripe.prices.search({
+    query: 'metadata["plan"]:"pro" AND metadata["type"]:"output_tokens_usage"',
+  })
+
+  if (existingOutputTokensUsagePrice.data.length === 1) {
+    return existingOutputTokensUsagePrice.data[0].id
+  }
+
+  const outputTokensUsagePrice = await stripe.prices.create({
+    product: outputTokensUsageProductId,
+    nickname: 'Monthly Pro Output tokens Usage',
+    tax_behavior: 'exclusive',
+    billing_scheme: 'tiered',
+    tiers_mode: 'graduated',
+    lookup_key: 'pro_output_tokens_usage_monthly',
+    tiers: [
+      { up_to: 500000, unit_amount_decimal: '0' },
+      { up_to: 'inf', unit_amount_decimal: '0.00002' },
     ],
     currency: 'USD',
     recurring: {
@@ -218,13 +255,12 @@ const upsertAutotranslationUsagePrice = async (
       meter: meterId,
     },
     metadata: {
-      id: 'pro_autotranslation_usage_monthly_1',
-      plan: 'pro' as Plan,
-      type: 'autotranslation_usage',
+      plan: 'pro',
+      type: 'output_tokens_usage',
     },
   })
 
-  return autotranslationUsagePrice.id
+  return outputTokensUsagePrice.id
 }
 
 const run = async () => {
@@ -242,21 +278,24 @@ const run = async () => {
   const subscriptionProductId = await upsertSubscriptionProduct(stripe)
   await upsertSubscriptionPrice(stripe, subscriptionProductId)
 
-  const { autotranslationUsageMeterId, phrasesUsageMeterId } =
-    await upsertMeters(stripe)
+  const { phrasesMeterId, inputTokensMeterId, outputTokensMeterId } =
+    await getMeters(stripe)
 
   const phrasesUsageProductId = await upsertPhrasesUsageProduct(stripe)
-  await upsertPhrasesUsagePrice(
+  await upsertPhrasesUsagePrice(stripe, phrasesUsageProductId, phrasesMeterId)
+
+  const inputTokensProductId = await upsertInputTokensUsageProduct(stripe)
+  await upsertInputTokensUsagePrice(
     stripe,
-    phrasesUsageProductId,
-    phrasesUsageMeterId,
+    inputTokensProductId,
+    inputTokensMeterId,
   )
 
-  const atUsageProductId = await upsertAutotranslationUsageProduct(stripe)
-  await upsertAutotranslationUsagePrice(
+  const outputTokensProductId = await upsertOutputTokensUsageProduct(stripe)
+  await upsertOutputTokensUsagePrice(
     stripe,
-    atUsageProductId,
-    autotranslationUsageMeterId,
+    outputTokensProductId,
+    outputTokensMeterId,
   )
 }
 

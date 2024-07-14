@@ -7,8 +7,12 @@
     "deploy": "prisma migrate deploy",
     "migrate": "prisma migrate dev --create-only",
     "reset": "prisma migrate reset",
+    "seed": "prisma db seed",
     "studio": "prisma studio",
     "generate": "prisma generate"
+  },
+  "prisma": {
+    "seed": "ts-node ./seed.ts"
   },
   "dependencies": {
     "@prisma/client": "5.12.1",

@@ -82,6 +82,15 @@ export const Project: FC = () => {
             }),
           },
           {
+            label: 'UX writing',
+            to: routes.projectUXWriting.url({
+              pathParams: {
+                workspaceKey,
+                projectId: project.id,
+              },
+            }),
+          },
+          {
             label: 'Import',
             to: routes.projectImport.url({
               pathParams: {

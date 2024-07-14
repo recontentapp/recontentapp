@@ -14,12 +14,12 @@ import { useCurrentWorkspace } from '../../../../../hooks/workspace'
 import routes from '../../../../../routing'
 import { useModals } from '../../../hooks/modals'
 import { FigmaFilesList } from '../components/FigmaFilesList'
-import { PhrasesTable } from '../components/PhrasesTable'
+import { PhrasesTable } from '../components/PhrasesTable/PhrasesTable'
 import { ProjectStats } from '../components/ProjectStats'
 import {
-  UpdatePhraseModal,
-  UpdatePhraseModalRef,
-} from '../components/UpdatePhraseModal'
+  UpdatePhrasePanel,
+  UpdatePhrasePanelRef,
+} from '../components/UpdatePhrasePanel/UpdatePhrasePanel'
 import { useInfiniteListPhrases } from '../hooks'
 
 export const Phrases: FC = () => {
@@ -45,8 +45,7 @@ export const Phrases: FC = () => {
 
   const navigate = useNavigate()
   const params = useParams<'projectId' | 'revisionId'>()
-  const updatePhraseModalRef = useRef<UpdatePhraseModalRef>(null!)
-
+  const updatePhraseModalRef = useRef<UpdatePhrasePanelRef>(null!)
   const revisionId = params.revisionId!
 
   const { data, fetchNextPage, hasNextPage } = useInfiniteListPhrases({
@@ -106,13 +105,13 @@ export const Phrases: FC = () => {
   return (
     <Box width="100%" paddingBottom="$space700">
       {editingPhraseIndex !== undefined && (
-        <UpdatePhraseModal
+        <UpdatePhrasePanel
           ref={updatePhraseModalRef}
           projectId={project.id}
           revisionId={revisionId}
           phraseId={phrases[editingPhraseIndex].id}
-          hasNext={editingPhraseIndex < phrases.length - 1}
-          hasPrevious={editingPhraseIndex > 0}
+          currentIndex={editingPhraseIndex}
+          totalCount={phrases.length}
           onNext={() => setEditingPhraseIndex(index => index! + 1)}
           onPrevious={() => setEditingPhraseIndex(index => index! - 1)}
           onClose={() => {

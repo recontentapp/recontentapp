@@ -47,15 +47,17 @@ export class WorkspaceAccess {
     if (this.workspaceAccount.role === 'owner') {
       abilities.push(
         'members:manage',
+        'glossaries:manage',
+        'prompts:manage',
         'languages:manage',
         'integrations:manage',
         'projects:destinations:manage',
       )
     }
 
-    if (this.systemConfig.autoTranslate.provider !== null) {
+    if (this.systemConfig.ai.available) {
       if (this.systemConfig.app.distribution === 'self-hosted') {
-        abilities.push('auto_translation:use')
+        abilities.push('ai:use')
       }
 
       if (
@@ -63,7 +65,7 @@ export class WorkspaceAccess {
         this.workspaceBillingSettings.plan === 'pro' &&
         this.workspaceBillingSettings.status === 'active'
       ) {
-        abilities.push('auto_translation:use')
+        abilities.push('ai:use')
       }
     }
 
@@ -92,7 +94,7 @@ export class WorkspaceAccess {
   }
 
   constructor(
-    private systemConfig: Pick<Config, 'autoTranslate' | 'app'>,
+    private systemConfig: Pick<Config, 'ai' | 'app'>,
     private workspaceAccount: PrismaWorkspaceAccount,
     private workspace: PrismaWorkspace,
     private workspaceBillingSettings: PrismaWorkspaceBillingSettings,

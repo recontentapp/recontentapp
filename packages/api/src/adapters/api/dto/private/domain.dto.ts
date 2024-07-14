@@ -5,6 +5,10 @@ import {
 } from 'class-validator'
 import { isValidPlan } from 'src/modules/cloud/billing/plan'
 import { isValidDestinationSyncFrequency } from 'src/modules/phrase/destinations'
+import {
+  isValidPromptLength,
+  isValidPromptTone,
+} from 'src/modules/ux-writing/prompt'
 import { isValidLanguageLocale } from 'src/modules/workspace/locale'
 
 @ValidatorConstraint({ name: 'languageLocale', async: false })
@@ -52,5 +56,27 @@ export class DestinationSyncFrequencyValidator
 
   defaultMessage() {
     return 'Destination sync frequency "$value" is not valid'
+  }
+}
+
+@ValidatorConstraint({ name: 'promptTone', async: false })
+export class PromptToneValidator implements ValidatorConstraintInterface {
+  validate(tone: string) {
+    return isValidPromptTone(tone)
+  }
+
+  defaultMessage() {
+    return 'Prompt tone "$value" is not valid'
+  }
+}
+
+@ValidatorConstraint({ name: 'promptLength', async: false })
+export class PromptLengthValidator implements ValidatorConstraintInterface {
+  validate(length: string) {
+    return isValidPromptLength(length)
+  }
+
+  defaultMessage() {
+    return 'Prompt length "$value" is not valid'
   }
 }

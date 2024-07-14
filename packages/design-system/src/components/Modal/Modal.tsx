@@ -52,7 +52,7 @@ export const globalStyles = globalCss({
     right: 0,
     bottom: 0,
     left: 0,
-    zIndex: 4,
+    zIndex: 5,
     backgroundColor: 'rgba(53, 52, 49, 0.3)',
     display: 'flex',
     alignItems: 'flex-start',

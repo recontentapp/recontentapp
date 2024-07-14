@@ -75,7 +75,7 @@ const CustomLink: FC<LinkProps> = ({ children, to, ...props }) => {
   )
 }
 
-const MAX_WIDTH = 1060
+const CONTENT_MAX_WIDTH = 1060
 
 export const Page: FC<PageProps> = ({
   title,
@@ -86,96 +86,102 @@ export const Page: FC<PageProps> = ({
   children,
 }) => {
   return (
-    <Box position="relative" paddingTop="$space400">
-      <Stack direction="column" spacing="$space300" width="100%">
-        {title && (
+    <Stack width="100%" direction="row" spacing="$space200">
+      <Box flexGrow={1} position="relative" paddingTop="$space400">
+        <Stack direction="column" spacing="$space300" width="100%">
+          {title && (
+            <Box
+              width="100%"
+              maxWidth={CONTENT_MAX_WIDTH}
+              margin="0 auto"
+              paddingX="$space400"
+            >
+              <Stack direction="column" spacing="$space60">
+                {subtitle && (
+                  <Text size="$size100" color="$gray11">
+                    {subtitle}
+                  </Text>
+                )}
+                <Stack
+                  direction="column"
+                  spacing={
+                    typeof description === 'string' ? '$space80' : '$space200'
+                  }
+                >
+                  <Stack
+                    direction="row"
+                    spacing="$space100"
+                    alignItems="center"
+                  >
+                    <Heading
+                      renderAs="h1"
+                      size="$size500"
+                      lineHeight="$lineHeight100"
+                    >
+                      {title}
+                    </Heading>
+
+                    {titleRightContent && <Box>{titleRightContent}</Box>}
+                  </Stack>
+
+                  {description && typeof description === 'string' ? (
+                    <Text
+                      size="$size100"
+                      color="$gray11"
+                      maxWidth={600}
+                      lineHeight="$lineHeight300"
+                    >
+                      {description}
+                    </Text>
+                  ) : (
+                    description
+                  )}
+                </Stack>
+              </Stack>
+            </Box>
+          )}
+
+          {tabs && (
+            <Stack direction="column" spacing="$space0">
+              {tabs.length > 0 && (
+                <Box
+                  width="100%"
+                  renderAs="nav"
+                  maxWidth={CONTENT_MAX_WIDTH}
+                  margin="0 auto"
+                  paddingX="$space400"
+                >
+                  <Stack
+                    renderAs="ul"
+                    direction="row"
+                    alignItems="center"
+                    spacing="$space200"
+                  >
+                    {tabs.map((tab, index) => (
+                      <li key={index}>
+                        <CustomLink to={tab.to}>
+                          {tab.label}
+                          {tab.badge && <span>{tab.badge}</span>}
+                        </CustomLink>
+                      </li>
+                    ))}
+                  </Stack>
+                </Box>
+              )}
+            </Stack>
+          )}
+
           <Box
             width="100%"
-            maxWidth={MAX_WIDTH}
+            maxWidth={CONTENT_MAX_WIDTH}
             margin="0 auto"
             paddingX="$space400"
+            paddingBottom="$space700"
           >
-            <Stack direction="column" spacing="$space60">
-              {subtitle && (
-                <Text size="$size100" color="$gray11">
-                  {subtitle}
-                </Text>
-              )}
-              <Stack
-                direction="column"
-                spacing={
-                  typeof description === 'string' ? '$space80' : '$space200'
-                }
-              >
-                <Stack direction="row" spacing="$space100" alignItems="center">
-                  <Heading
-                    renderAs="h1"
-                    size="$size500"
-                    lineHeight="$lineHeight100"
-                  >
-                    {title}
-                  </Heading>
-
-                  {titleRightContent && <Box>{titleRightContent}</Box>}
-                </Stack>
-
-                {description && typeof description === 'string' ? (
-                  <Text
-                    size="$size100"
-                    color="$gray11"
-                    maxWidth={600}
-                    lineHeight="$lineHeight300"
-                  >
-                    {description}
-                  </Text>
-                ) : (
-                  description
-                )}
-              </Stack>
-            </Stack>
+            {children}
           </Box>
-        )}
-
-        {tabs && (
-          <Stack direction="column" spacing="$space0">
-            {tabs.length > 0 && (
-              <Box
-                width="100%"
-                renderAs="nav"
-                maxWidth={MAX_WIDTH}
-                margin="0 auto"
-                paddingX="$space400"
-              >
-                <Stack
-                  renderAs="ul"
-                  direction="row"
-                  alignItems="center"
-                  spacing="$space200"
-                >
-                  {tabs.map((tab, index) => (
-                    <li key={index}>
-                      <CustomLink to={tab.to}>
-                        {tab.label}
-                        {tab.badge && <span>{tab.badge}</span>}
-                      </CustomLink>
-                    </li>
-                  ))}
-                </Stack>
-              </Box>
-            )}
-          </Stack>
-        )}
-
-        <Box
-          width="100%"
-          maxWidth={MAX_WIDTH}
-          margin="0 auto"
-          paddingX="$space400"
-          paddingBottom="$space700"
-        >
-          {children}
-        </Box>
-      </Stack>
-    </Box>
+        </Stack>
+      </Box>
+    </Stack>
   )
 }

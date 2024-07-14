@@ -2,6 +2,7 @@ import { Stack } from 'design-system'
 import { Components } from '../../../../../generated/typeDefinitions'
 import { useCurrentWorkspace } from '../../../../../hooks/workspace'
 import routes from '../../../../../routing'
+import { formatRelative } from '../../../../../utils/dates'
 import { AddCard } from '../../../components/AddCard'
 import { Card } from '../../../components/Card'
 import { useModals } from '../../../hooks/modals'
@@ -28,7 +29,7 @@ export const ProjectsList = ({ projects }: ProjectsListProps) => {
             })}
             id={project.id}
             title={project.name}
-            date={new Date(project.updatedAt)}
+            description={`Updated ${formatRelative(new Date(project.updatedAt))}`}
           />
         </li>
       ))}
@@ -36,6 +37,7 @@ export const ProjectsList = ({ projects }: ProjectsListProps) => {
         title="Create a project"
         description="It can be a website, mobile app or a specific feature handled by a team"
         onAction={() => openCreateProject()}
+        maxWidth={240}
       />
     </Stack>
   )

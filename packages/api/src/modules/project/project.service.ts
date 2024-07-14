@@ -109,6 +109,11 @@ export class ProjectService {
       },
       include: {
         languages: true,
+        prompts: {
+          select: {
+            id: true,
+          },
+        },
         revisions: {
           where: {
             isMaster: true,
@@ -262,6 +267,11 @@ export class ProjectService {
         },
         include: {
           languages: true,
+          prompts: {
+            select: {
+              id: true,
+            },
+          },
           revisions: {
             where: {
               isMaster: true,
@@ -309,6 +319,11 @@ export class ProjectService {
         updatedBy: workspaceAccess.getAccountID(),
       },
       include: {
+        prompts: {
+          select: {
+            id: true,
+          },
+        },
         revisions: {
           where: {
             isMaster: true,
@@ -499,6 +514,11 @@ export class ProjectService {
         },
         include: {
           languages: true,
+          prompts: {
+            select: {
+              id: true,
+            },
+          },
           revisions: {
             where: {
               isMaster: true,

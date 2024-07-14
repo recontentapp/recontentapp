@@ -52,6 +52,26 @@ export interface WorkspacesettingslanguagesParams {
   }
 }
 
+export interface WorkspacesettingsglossariesParams {
+  pathParams: {
+    workspaceKey: string
+    [k: string]: string | undefined
+  }
+  queryParams?: {
+    [k: string]: string | undefined
+  }
+}
+
+export interface WorkspacesettingspromptsParams {
+  pathParams: {
+    workspaceKey: string
+    [k: string]: string | undefined
+  }
+  queryParams?: {
+    [k: string]: string | undefined
+  }
+}
+
 export interface WorkspacesettingsintegrationsParams {
   pathParams: {
     workspaceKey: string
@@ -94,6 +114,19 @@ export interface ProjectphrasesParams {
   }
 }
 
+export interface ProjectphraseseditorParams {
+  pathParams: {
+    workspaceKey: string
+    projectId: string
+    revisionId: string
+    [k: string]: string | undefined
+  }
+  queryParams: {
+    phraseId: string
+    [k: string]: string | undefined
+  }
+}
+
 export interface ProjectsettingsParams {
   pathParams: {
     workspaceKey: string
@@ -106,6 +139,17 @@ export interface ProjectsettingsParams {
 }
 
 export interface ProjectimportParams {
+  pathParams: {
+    workspaceKey: string
+    projectId: string
+    [k: string]: string | undefined
+  }
+  queryParams?: {
+    [k: string]: string | undefined
+  }
+}
+
+export interface ProjectuxwritingParams {
   pathParams: {
     workspaceKey: string
     projectId: string
@@ -143,6 +187,17 @@ export interface ProjectdestinationParams {
     workspaceKey: string
     projectId: string
     destinationId: string
+    [k: string]: string | undefined
+  }
+  queryParams?: {
+    [k: string]: string | undefined
+  }
+}
+
+export interface GlossaryParams {
+  pathParams: {
+    workspaceKey: string
+    glossaryId: string
     [k: string]: string | undefined
   }
   queryParams?: {
@@ -272,6 +327,34 @@ const routes = {
     path: '/:workspaceKey/settings/languages',
     metadata: {},
   },
+  workspaceSettingsGlossaries: {
+    url: (params: WorkspacesettingsglossariesParams) => {
+      const path = generatePath(
+        '/:workspaceKey/settings/glossaries',
+        params.pathParams,
+      )
+      const queryParams = params.queryParams
+        ? QueryString.stringify(params.queryParams)
+        : undefined
+      return queryParams ? `${path}?${queryParams}` : path
+    },
+    path: '/:workspaceKey/settings/glossaries',
+    metadata: {},
+  },
+  workspaceSettingsPrompts: {
+    url: (params: WorkspacesettingspromptsParams) => {
+      const path = generatePath(
+        '/:workspaceKey/settings/prompts',
+        params.pathParams,
+      )
+      const queryParams = params.queryParams
+        ? QueryString.stringify(params.queryParams)
+        : undefined
+      return queryParams ? `${path}?${queryParams}` : path
+    },
+    path: '/:workspaceKey/settings/prompts',
+    metadata: {},
+  },
   workspaceSettingsIntegrations: {
     url: (params: WorkspacesettingsintegrationsParams) => {
       const path = generatePath(
@@ -328,6 +411,20 @@ const routes = {
     path: '/:workspaceKey/projects/:projectId/phrases/:revisionId',
     metadata: {},
   },
+  projectPhrasesEditor: {
+    url: (params: ProjectphraseseditorParams) => {
+      const path = generatePath(
+        '/:workspaceKey/projects/:projectId/phrases/:revisionId/editor',
+        params.pathParams,
+      )
+      const queryParams = params.queryParams
+        ? QueryString.stringify(params.queryParams)
+        : undefined
+      return queryParams ? `${path}?${queryParams}` : path
+    },
+    path: '/:workspaceKey/projects/:projectId/phrases/:revisionId/editor',
+    metadata: {},
+  },
   projectSettings: {
     url: (params: ProjectsettingsParams) => {
       const path = generatePath(
@@ -354,6 +451,20 @@ const routes = {
       return queryParams ? `${path}?${queryParams}` : path
     },
     path: '/:workspaceKey/projects/:projectId/import',
+    metadata: {},
+  },
+  projectUXWriting: {
+    url: (params: ProjectuxwritingParams) => {
+      const path = generatePath(
+        '/:workspaceKey/projects/:projectId/ux-writing',
+        params.pathParams,
+      )
+      const queryParams = params.queryParams
+        ? QueryString.stringify(params.queryParams)
+        : undefined
+      return queryParams ? `${path}?${queryParams}` : path
+    },
+    path: '/:workspaceKey/projects/:projectId/ux-writing',
     metadata: {},
   },
   projectImportFromFile: {
@@ -396,6 +507,20 @@ const routes = {
       return queryParams ? `${path}?${queryParams}` : path
     },
     path: '/:workspaceKey/projects/:projectId/destinations/:destinationId',
+    metadata: {},
+  },
+  glossary: {
+    url: (params: GlossaryParams) => {
+      const path = generatePath(
+        '/:workspaceKey/glossaries/:glossaryId',
+        params.pathParams,
+      )
+      const queryParams = params.queryParams
+        ? QueryString.stringify(params.queryParams)
+        : undefined
+      return queryParams ? `${path}?${queryParams}` : path
+    },
+    path: '/:workspaceKey/glossaries/:glossaryId',
     metadata: {},
   },
   signIn: {

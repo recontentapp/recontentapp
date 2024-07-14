@@ -63,9 +63,9 @@ describe('WorkspaceAccess', () => {
       const access = new WorkspaceAccess(
         {
           app: selfHostedAppConfig,
-          autoTranslate: {
-            provider: null,
-            openAIKey: undefined,
+          ai: {
+            available: false,
+            googleGeminiApiKey: undefined,
           },
         },
         getWorkspaceAccount({
@@ -85,9 +85,9 @@ describe('WorkspaceAccess', () => {
       const access = new WorkspaceAccess(
         {
           app: selfHostedAppConfig,
-          autoTranslate: {
-            provider: null,
-            openAIKey: undefined,
+          ai: {
+            available: false,
+            googleGeminiApiKey: undefined,
           },
         },
         getWorkspaceAccount({ role: 'biller' }),
@@ -95,16 +95,16 @@ describe('WorkspaceAccess', () => {
         getWorkspaceBillingSettings(),
       )
 
-      expect(access.getAbilities()).not.toContain('auto_translation:use')
+      expect(access.getAbilities()).not.toContain('ai:use')
     })
 
     it('allows auto translation if a provider is defined', () => {
       const access = new WorkspaceAccess(
         {
           app: selfHostedAppConfig,
-          autoTranslate: {
-            provider: 'aws',
-            openAIKey: undefined,
+          ai: {
+            available: true,
+            googleGeminiApiKey: '123456',
           },
         },
         getWorkspaceAccount({ role: 'biller' }),
@@ -112,7 +112,7 @@ describe('WorkspaceAccess', () => {
         getWorkspaceBillingSettings(),
       )
 
-      expect(access.getAbilities()).toContain('auto_translation:use')
+      expect(access.getAbilities()).toContain('ai:use')
     })
   })
 
@@ -128,9 +128,9 @@ describe('WorkspaceAccess', () => {
       const access = new WorkspaceAccess(
         {
           app: cloudAppConfig,
-          autoTranslate: {
-            provider: 'aws',
-            openAIKey: undefined,
+          ai: {
+            available: true,
+            googleGeminiApiKey: '123456',
           },
         },
         getWorkspaceAccount({ role: 'biller' }),
@@ -138,16 +138,16 @@ describe('WorkspaceAccess', () => {
         getWorkspaceBillingSettings({ plan: 'free' }),
       )
 
-      expect(access.getAbilities()).not.toContain('auto_translation:use')
+      expect(access.getAbilities()).not.toContain('ai:use')
     })
 
     it('allows auto translation on pro plan', () => {
       const access = new WorkspaceAccess(
         {
           app: cloudAppConfig,
-          autoTranslate: {
-            provider: 'aws',
-            openAIKey: undefined,
+          ai: {
+            available: true,
+            googleGeminiApiKey: '123456',
           },
         },
         getWorkspaceAccount({ role: 'biller' }),
@@ -155,7 +155,7 @@ describe('WorkspaceAccess', () => {
         getWorkspaceBillingSettings({ plan: 'pro' }),
       )
 
-      expect(access.getAbilities()).toContain('auto_translation:use')
+      expect(access.getAbilities()).toContain('ai:use')
     })
   })
 })

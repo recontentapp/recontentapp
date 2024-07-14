@@ -1040,30 +1040,103 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Phrase'
-  /AutoTranslatePhrase:
+  /BatchAutoTranslatePhrases:
     post:
-      operationId: autoTranslatePhrase
+      operationId: batchAutoTranslatePhrases
       requestBody:
         content:
           application/json:
             schema:
               type: object
               properties:
-                phraseId:
+                revisionId:
                   type: string
-                languageId:
+                phraseIds:
+                  type: array
+                  items:
+                    type: string
+                sourceLanguageId:
+                  type: string
+                targetLanguageId:
                   type: string
               additionalProperties: false
               required:
-                - phraseId
-                - languageId
+                - revisionId
+                - phraseIds
+                - sourceLanguageId
+                - targetLanguageId
+      responses:
+        '204':
+          description: OK
+  /AutoTranslate:
+    post:
+      operationId: autotranslate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                workspaceId:
+                  type: string
+                sourceLanguageId:
+                  type: string
+                targetLanguageId:
+                  type: string
+              additionalProperties: false
+              required:
+                - content
+                - workspaceId
+                - sourceLanguageId
+                - targetLanguageId
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Phrase'
+                type: object
+                properties:
+                  suggestion:
+                    type: string
+                additionalProperties: false
+                required:
+                  - suggestion
+  /RewritePhraseTranslation:
+    post:
+      operationId: rewritePhraseTranslation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                sourceLanguageId:
+                  type: string
+                promptId:
+                  type: string
+              additionalProperties: false
+              required:
+                - content
+                - sourceLanguageId
+                - promptId
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  suggestion:
+                    type: string
+                additionalProperties: false
+                required:
+                  - suggestion
   /ListProjectTags:
     get:
       operationId: listProjectTags
@@ -2136,6 +2209,518 @@ paths:
       responses:
         '204':
           description: OK
+  /ListGlossaries:
+    get:
+      operationId: listGlossaries
+      parameters:
+        - name: workspaceId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Glossary'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                additionalProperties: false
+                required:
+                  - items
+                  - pagination
+  /GetGlossary:
+    get:
+      operationId: getGlossary
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Glossary'
+  /CreateGlossary:
+    post:
+      operationId: createGlossary
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                workspaceId:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+              additionalProperties: false
+              required:
+                - workspaceId
+                - name
+                - description
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Glossary'
+  /UpdateGlossary:
+    post:
+      operationId: updateGlossary
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+              additionalProperties: false
+              required:
+                - id
+                - name
+                - description
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Glossary'
+  /DeleteGlossary:
+    delete:
+      operationId: deleteGlossary
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                glossaryId:
+                  type: string
+              additionalProperties: false
+              required:
+                - glossaryId
+      responses:
+        '204':
+          description: OK
+  /LinkGlossaryWithProject:
+    post:
+      operationId: linkGlossaryWithProject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                glossaryId:
+                  type: string
+                projectId:
+                  type: string
+              additionalProperties: false
+              required:
+                - glossaryId
+                - projectId
+      responses:
+        '204':
+          description: OK
+  /UnlinkGlossaryFromProject:
+    post:
+      operationId: unlinkGlossaryFromProject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                glossaryId:
+                  type: string
+                projectId:
+                  type: string
+              additionalProperties: false
+              required:
+                - glossaryId
+                - projectId
+      responses:
+        '204':
+          description: OK
+  /ListGlossaryTerms:
+    get:
+      operationId: listGlossaryTerms
+      parameters:
+        - name: glossaryId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: query
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/GlossaryTerm'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                additionalProperties: false
+                required:
+                  - items
+                  - pagination
+  /CreateGlossaryTerm:
+    post:
+      operationId: createGlossaryTerm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                glossaryId:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                forbidden:
+                  type: boolean
+                caseSensitive:
+                  type: boolean
+                nonTranslatable:
+                  type: boolean
+                translations:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    required:
+                      - languageId
+                      - content
+                    properties:
+                      languageId:
+                        type: string
+                      content:
+                        type: string
+              additionalProperties: false
+              required:
+                - glossaryId
+                - name
+                - description
+                - forbidden
+                - caseSensitive
+                - nonTranslatable
+                - translations
+      responses:
+        '201':
+          description: OK
+  /UpdateGlossaryTerm:
+    post:
+      operationId: updateGlossaryTerm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                forbidden:
+                  type: boolean
+                caseSensitive:
+                  type: boolean
+                nonTranslatable:
+                  type: boolean
+                translations:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    required:
+                      - languageId
+                      - content
+                    properties:
+                      languageId:
+                        type: string
+                      content:
+                        type: string
+              additionalProperties: false
+              required:
+                - id
+                - name
+                - description
+                - forbidden
+                - caseSensitive
+                - nonTranslatable
+                - translations
+      responses:
+        '204':
+          description: OK
+  /DeleteGlossaryTerm:
+    delete:
+      operationId: deleteGlossaryTerm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+              additionalProperties: false
+              required:
+                - id
+      responses:
+        '204':
+          description: OK
+  /ListPrompts:
+    get:
+      operationId: listPrompts
+      parameters:
+        - name: workspaceId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: projectId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Prompt'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                additionalProperties: false
+                required:
+                  - items
+                  - pagination
+  /CreatePrompt:
+    post:
+      operationId: createPrompt
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                workspaceId:
+                  type: string
+                glossaryId:
+                  type: string
+                  nullable: true
+                name:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                tone:
+                  oneOf:
+                    - $ref: '#/components/schemas/PromptTone'
+                    - $ref: '#/components/schemas/Empty'
+                length:
+                  oneOf:
+                    - $ref: '#/components/schemas/PromptLength'
+                    - $ref: '#/components/schemas/Empty'
+                customInstructions:
+                  type: array
+                  items:
+                    type: string
+              additionalProperties: false
+              required:
+                - workspaceId
+                - glossaryId
+                - name
+                - description
+                - tone
+                - length
+                - customInstructions
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prompt'
+  /UpdatePrompt:
+    post:
+      operationId: updatePrompt
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                glossaryId:
+                  type: string
+                  nullable: true
+                name:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                tone:
+                  oneOf:
+                    - $ref: '#/components/schemas/PromptTone'
+                    - $ref: '#/components/schemas/Empty'
+                length:
+                  oneOf:
+                    - $ref: '#/components/schemas/PromptLength'
+                    - $ref: '#/components/schemas/Empty'
+                customInstructions:
+                  type: array
+                  items:
+                    type: string
+              additionalProperties: false
+              required:
+                - id
+                - name
+                - glossaryId
+                - description
+                - tone
+                - length
+                - customInstructions
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prompt'
+  /DeletePrompt:
+    delete:
+      operationId: deletePrompt
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                promptId:
+                  type: string
+              additionalProperties: false
+              required:
+                - promptId
+      responses:
+        '204':
+          description: OK
+  /LinkPromptWithProject:
+    post:
+      operationId: linkPromptWithProject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                promptId:
+                  type: string
+                projectId:
+                  type: string
+              additionalProperties: false
+              required:
+                - promptId
+                - projectId
+      responses:
+        '204':
+          description: OK
+  /UnlinkPromptFromProject:
+    post:
+      operationId: unlinkPromptFromProject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                promptId:
+                  type: string
+                projectId:
+                  type: string
+              additionalProperties: false
+              required:
+                - promptId
+                - projectId
+      responses:
+        '204':
+          description: OK
 components:
   schemas:
     Empty:
@@ -2319,8 +2904,10 @@ components:
         - 'billing:manage'
         - 'members:manage'
         - 'languages:manage'
+        - 'glossaries:manage'
+        - 'prompts:manage'
         - 'integrations:manage'
-        - 'auto_translation:use'
+        - 'ai:use'
         - 'projects:destinations:manage'
     WorkspaceAccountType:
       type: string
@@ -2351,6 +2938,9 @@ components:
           type: string
         workspaceId:
           type: string
+        glossaryId:
+          type: string
+          nullable: true
         name:
           type: string
         description:
@@ -2362,6 +2952,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Language'
+        prompts:
+          type: array
+          items:
+            type: string
         createdAt:
           type: string
           format: date-time
@@ -2377,9 +2971,11 @@ components:
       required:
         - id
         - workspaceId
+        - glossaryId
         - masterRevisionId
         - name
         - description
+        - prompts
         - languages
         - createdAt
         - updatedAt
@@ -2458,6 +3054,163 @@ components:
         - workspaceId
         - locale
         - name
+        - createdAt
+        - updatedAt
+        - createdBy
+        - updatedBy
+    PromptTone:
+      type: string
+      enum:
+        - professional
+        - casual
+        - playful
+        - conversational
+    PromptLength:
+      type: string
+      enum:
+        - shorter
+        - longer
+        - same
+    Prompt:
+      type: object
+      properties:
+        id:
+          type: string
+        workspaceId:
+          type: string
+        glossaryId:
+          type: string
+          nullable: true
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        tone:
+          oneOf:
+            - $ref: '#/components/schemas/PromptTone'
+            - $ref: '#/components/schemas/Empty'
+        length:
+          oneOf:
+            - $ref: '#/components/schemas/PromptLength'
+            - $ref: '#/components/schemas/Empty'
+        customInstructions:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+        updatedBy:
+          type: string
+          nullable: true
+      additionalProperties: false
+      required:
+        - id
+        - workspaceId
+        - glossaryId
+        - name
+        - description
+        - tone
+        - length
+        - customInstructions
+        - createdAt
+        - updatedAt
+        - createdBy
+        - updatedBy
+    Glossary:
+      type: object
+      properties:
+        id:
+          type: string
+        workspaceId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+        updatedBy:
+          type: string
+          nullable: true
+      additionalProperties: false
+      required:
+        - id
+        - workspaceId
+        - name
+        - description
+        - createdAt
+        - updatedAt
+        - createdBy
+        - updatedBy
+    GlossaryTerm:
+      type: object
+      properties:
+        id:
+          type: string
+        workspaceId:
+          type: string
+        glossaryId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        forbidden:
+          type: boolean
+        caseSensitive:
+          type: boolean
+        nonTranslatable:
+          type: boolean
+        translations:
+          type: array
+          items:
+            type: object
+            required:
+              - languageId
+              - content
+            additionalProperties: false
+            properties:
+              languageId:
+                type: string
+              content:
+                type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+        updatedBy:
+          type: string
+          nullable: true
+      additionalProperties: false
+      required:
+        - id
+        - workspaceId
+        - glossaryId
+        - name
+        - description
+        - forbidden
+        - caseSensitive
+        - nonTranslatable
+        - translations
         - createdAt
         - updatedAt
         - createdBy
@@ -2545,6 +3298,10 @@ components:
               updatedBy:
                 type: string
                 nullable: true
+        tags:
+          type: array
+          items:
+            type: string
         createdAt:
           type: string
           format: date-time
@@ -2564,6 +3321,7 @@ components:
         - projectId
         - workspaceId
         - translations
+        - tags
         - createdAt
         - updatedAt
         - createdBy

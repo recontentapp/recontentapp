@@ -105,6 +105,11 @@ model Workspace {
   taggables                            Taggable[]
   figmaFiles                           FigmaFile[]
   figmaTexts                           FigmaText[]
+  prompts                              Prompt[]
+  glossaries                           Glossary[]
+  glossaryTerms                        GlossaryTerm[]
+  glossaryTermTranslations             GlossaryTermTranslation[]
+  aiUsageEvents                        AIUsageEvent[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -136,16 +141,17 @@ model WorkspaceBillingSettings {
 }
 
 model WorkspaceAccount {
-  id          String               @id @default(uuid()) @db.VarChar()
-  workspaceId String               @db.VarChar()
-  type        WorkspaceAccountType
-  role        WorkspaceAccountRole
-  userId      String?              @db.VarChar()
-  serviceId   String?              @db.VarChar()
-  apiKey      String?              @db.VarChar()
-  user        User?                @relation(fields: [userId], references: [id])
-  service     Service?             @relation(fields: [serviceId], references: [id])
-  workspace   Workspace            @relation(fields: [workspaceId], references: [id])
+  id            String               @id @default(uuid()) @db.VarChar()
+  workspaceId   String               @db.VarChar()
+  type          WorkspaceAccountType
+  role          WorkspaceAccountRole
+  userId        String?              @db.VarChar()
+  serviceId     String?              @db.VarChar()
+  apiKey        String?              @db.VarChar()
+  user          User?                @relation(fields: [userId], references: [id])
+  service       Service?             @relation(fields: [serviceId], references: [id])
+  workspace     Workspace            @relation(fields: [workspaceId], references: [id])
+  aiUsageEvents AIUsageEvent[]
 
   invitedBy String?   @db.VarChar()
   blockedBy String?   @db.VarChar()
@@ -176,14 +182,15 @@ model WorkspaceInvitation {
 }
 
 model Language {
-  id                 String              @id @default(uuid()) @db.VarChar()
-  workspaceId        String              @db.VarChar()
-  locale             String              @db.VarChar()
-  name               String              @db.VarChar()
-  workspace          Workspace           @relation(fields: [workspaceId], references: [id])
-  projects           Project[]           @relation("projects_languages")
-  phraseTranslations PhraseTranslation[]
-  figmaFiles         FigmaFile[]
+  id                       String                    @id @default(uuid()) @db.VarChar()
+  workspaceId              String                    @db.VarChar()
+  locale                   String                    @db.VarChar()
+  name                     String                    @db.VarChar()
+  workspace                Workspace                 @relation(fields: [workspaceId], references: [id])
+  projects                 Project[]                 @relation("projects_languages")
+  phraseTranslations       PhraseTranslation[]
+  glossaryTermTranslations GlossaryTermTranslation[]
+  figmaFiles               FigmaFile[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -194,13 +201,93 @@ model Language {
   @@map("languages")
 }
 
+model Prompt {
+  id                 String    @id @default(uuid()) @db.VarChar()
+  workspaceId        String    @db.VarChar()
+  glossaryId         String?   @db.VarChar()
+  name               String    @db.VarChar()
+  description        String?   @db.VarChar()
+  tone               String?   @db.VarChar()
+  length             String?   @db.VarChar()
+  customInstructions String[]
+  workspace          Workspace @relation(fields: [workspaceId], references: [id])
+  glossary           Glossary? @relation(fields: [glossaryId], references: [id])
+  projects           Project[] @relation("projects_prompts")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String   @db.VarChar()
+  updatedBy String?  @db.VarChar()
+
+  @@map("prompts")
+}
+
+model Glossary {
+  id          String         @id @default(uuid()) @db.VarChar()
+  workspaceId String         @db.VarChar()
+  name        String         @db.VarChar()
+  description String?        @db.VarChar()
+  workspace   Workspace      @relation(fields: [workspaceId], references: [id])
+  terms       GlossaryTerm[]
+  projects    Project[]
+  prompts     Prompt[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String   @db.VarChar()
+  updatedBy String?  @db.VarChar()
+
+  @@map("glossaries")
+}
+
+model GlossaryTerm {
+  id              String                    @id @default(uuid()) @db.VarChar()
+  glossaryId      String                    @db.VarChar()
+  workspaceId     String                    @db.VarChar()
+  name            String                    @db.VarChar()
+  description     String?                   @db.VarChar()
+  forbidden       Boolean                   @default(false)
+  caseSensitive   Boolean                   @default(false)
+  nonTranslatable Boolean                   @default(false)
+  glossary        Glossary                  @relation(fields: [glossaryId], references: [id])
+  workspace       Workspace                 @relation(fields: [workspaceId], references: [id])
+  translations    GlossaryTermTranslation[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String   @db.VarChar()
+  updatedBy String?  @db.VarChar()
+
+  @@map("glossary_terms")
+}
+
+model GlossaryTermTranslation {
+  id          String       @id @default(uuid()) @db.VarChar()
+  languageId  String       @db.VarChar()
+  termId      String       @db.VarChar()
+  workspaceId String       @db.VarChar()
+  content     String
+  language    Language     @relation(fields: [languageId], references: [id])
+  term        GlossaryTerm @relation(fields: [termId], references: [id])
+  workspace   Workspace    @relation(fields: [workspaceId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([termId, languageId])
+  @@map("glossary_term_translations")
+}
+
 model Project {
   id          String            @id @default(uuid()) @db.VarChar()
   workspaceId String            @db.VarChar()
+  glossaryId  String?           @db.VarChar()
   name        String            @db.VarChar()
   description String?           @db.VarChar()
   workspace   Workspace         @relation(fields: [workspaceId], references: [id])
+  glossary    Glossary?         @relation(fields: [glossaryId], references: [id])
   languages   Language[]        @relation("projects_languages")
+  prompts     Prompt[]          @relation("projects_prompts")
   revisions   ProjectRevision[]
   phrases     Phrase[]
   tags        Tag[]
@@ -483,4 +570,19 @@ model FigmaText {
 
   @@index([fileId, pageNodeId])
   @@map("figma_texts")
+}
+
+model AIUsageEvent {
+  id                String           @id @default(uuid()) @db.VarChar()
+  workspaceId       String           @db.VarChar()
+  accountId         String           @db.VarChar()
+  inputTokensCount  Int
+  outputTokensCount Int
+  account           WorkspaceAccount @relation(fields: [accountId], references: [id])
+  workspace         Workspace        @relation(fields: [workspaceId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@map("ai_usage_events")
 }

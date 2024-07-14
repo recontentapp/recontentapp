@@ -1,4 +1,5 @@
 import {
+  ArrayMaxSize,
   IsArray,
   IsBoolean,
   IsNotEmpty,
@@ -11,7 +12,12 @@ import {
 } from 'class-validator'
 import { Components } from 'src/generated/typeDefinitions'
 import { IsNullable } from 'src/utils/class-validator'
-import { ID_LENGTH, LONG_TEXT_LENGTH, TEXT_LENGTH } from '../constants'
+import {
+  BATCH_SIZE,
+  ID_LENGTH,
+  LONG_TEXT_LENGTH,
+  TEXT_LENGTH,
+} from '../constants'
 import { FileFormatValidator } from './domain.dto'
 
 export class CreatePhraseDto {
@@ -61,16 +67,65 @@ export class TranslatePhraseDto {
   translations: Translation[]
 }
 
-export class AutoTranslatePhraseDto {
-  @IsString()
+export class BatchAutoTranslatePhrasesDto {
+  @IsArray()
   @IsNotEmpty()
-  @MaxLength(ID_LENGTH)
-  phraseId: string
+  @ArrayMaxSize(BATCH_SIZE)
+  phraseIds: string[]
 
   @IsString()
   @IsNotEmpty()
   @MaxLength(ID_LENGTH)
-  languageId: string
+  revisionId: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
+  sourceLanguageId: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
+  targetLanguageId: string
+}
+
+export class AutotranslateDto {
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(LONG_TEXT_LENGTH)
+  content: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
+  workspaceId: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
+  sourceLanguageId: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
+  targetLanguageId: string
+}
+
+export class RewritePhraseTranslationDto {
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(LONG_TEXT_LENGTH)
+  content: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
+  sourceLanguageId: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
+  promptId: string
 }
 
 export class DeletePhraseDto {
@@ -83,6 +138,7 @@ export class DeletePhraseDto {
 export class BatchDeletePhraseDto {
   @IsArray()
   @IsNotEmpty()
+  @ArrayMaxSize(BATCH_SIZE)
   ids: string[]
 }
 

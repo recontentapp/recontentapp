@@ -148,9 +148,23 @@ export class PhraseService {
     const where: Prisma.PhraseWhereInput = {
       revisionId,
       ...(key && {
-        key: {
-          contains: key,
-        },
+        OR: [
+          {
+            key: {
+              contains: key,
+            },
+          },
+          {
+            translations: {
+              some: {
+                content: {
+                  search: key,
+                  mode: 'insensitive',
+                },
+              },
+            },
+          },
+        ],
       }),
       ...(tags && {
         taggables: {
@@ -237,7 +251,7 @@ export class PhraseService {
         workspaceId: revision.workspaceId,
         createdBy: workspaceAccess.getAccountID(),
       },
-      include: { translations: true },
+      include: { translations: true, taggables: { select: { tagId: true } } },
     })
 
     return phrase
@@ -248,6 +262,7 @@ export class PhraseService {
       where: { id: phraseId },
       include: {
         translations: true,
+        taggables: { select: { tagId: true } },
       },
     })
 
@@ -277,6 +292,7 @@ export class PhraseService {
       },
       include: {
         translations: true,
+        taggables: { select: { tagId: true } },
       },
     })
 
@@ -336,8 +352,10 @@ export class PhraseService {
         t => t.languageId === languageId,
       )
 
-      if (content.length === 0 && index !== -1) {
-        toDelete.push(existingTranslations[index].id)
+      if (content.length === 0) {
+        if (index !== -1) {
+          toDelete.push(existingTranslations[index].id)
+        }
         continue
       }
 
@@ -401,6 +419,7 @@ export class PhraseService {
         id: phraseId,
       },
       include: {
+        taggables: { select: { tagId: true } },
         translations: true,
       },
     })
@@ -441,6 +460,10 @@ export class PhraseService {
   }
 
   async batchDeletePhrases({ ids, requester }: BatchDeletePhrasesParams) {
+    if (ids.length === 0 || ids.length > 50) {
+      throw new BadRequestException('Invalid number of phrases to delete')
+    }
+
     const phrases = await this.prismaService.phrase.findMany({
       where: {
         id: {

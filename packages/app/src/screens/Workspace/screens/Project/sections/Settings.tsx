@@ -26,7 +26,10 @@ import {
   useListWorkspaceLanguages,
   useUpdateProject,
 } from '../../../../../generated/reactQuery'
-import { useCurrentWorkspace } from '../../../../../hooks/workspace'
+import {
+  useCurrentWorkspace,
+  useHasAbility,
+} from '../../../../../hooks/workspace'
 import routes from '../../../../../routing'
 import { formatRelative } from '../../../../../utils/dates'
 import { SettingsSection } from '../../../components/SettingsSection'
@@ -70,6 +73,7 @@ export const Settings: FC = () => {
       },
     })
   const confirmationModalRef = useRef<ConfirmationModalRef>(null!)
+  const canManageLanguage = useHasAbility('languages:manage')
 
   useEffect(() => {
     if (!project) {
@@ -216,20 +220,22 @@ export const Settings: FC = () => {
           <AddLanguageForm project={project} />
         )}
 
-        <Box paddingTop="$space60">
-          <Text size="$size80" color="$gray14" lineHeight="$lineHeight200">
-            Want to use more languages? Add them in your{' '}
-            <LinkWrapper size="$size80">
-              <Link
-                to={routes.workspaceSettingsLanguages.url({
-                  pathParams: { workspaceKey },
-                })}
-              >
-                workspace settings
-              </Link>
-            </LinkWrapper>
-          </Text>
-        </Box>
+        {canManageLanguage && (
+          <Box paddingTop="$space60">
+            <Text size="$size80" color="$gray14" lineHeight="$lineHeight200">
+              Want to use more languages? Add them in your{' '}
+              <LinkWrapper size="$size80">
+                <Link
+                  to={routes.workspaceSettingsLanguages.url({
+                    pathParams: { workspaceKey },
+                  })}
+                >
+                  workspace settings
+                </Link>
+              </LinkWrapper>
+            </Text>
+          </Box>
+        )}
       </SettingsSection>
 
       <Box width="100%" maxWidth={400}>

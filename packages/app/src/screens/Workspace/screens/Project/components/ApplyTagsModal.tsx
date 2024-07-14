@@ -9,6 +9,7 @@ import {
 
 import { useQueryClient } from '@tanstack/react-query'
 import {
+  Banner,
   Modal,
   ModalContent,
   ModalRef,
@@ -71,7 +72,7 @@ const Content: FC<ContentProps> = ({ projectId, phraseIds, onApply }) => {
       contextTitle={project?.name}
       title="Apply tags"
       primaryAction={{
-        label: 'Save changes',
+        label: `Apply tags to ${phraseIds.length} phrases`,
         onAction: () =>
           mutateAsync({
             body: {
@@ -89,6 +90,14 @@ const Content: FC<ContentProps> = ({ projectId, phraseIds, onApply }) => {
         paddingTop="$space100"
         paddingBottom="$space200"
       >
+        {options.length === 0 && (
+          <Banner
+            variation="info"
+            title="No tags found"
+            description="Start by adding some tags to your project."
+          />
+        )}
+
         <Text color="$gray14" size="$size80">
           Tags will be applied to selected phrases. Existing tags will be
           replaced.

@@ -57,7 +57,9 @@ export const Billing: FC = () => {
 
   const { mutateAsync: subscribe, isPending: isSubscribing } =
     useSubscribeToBillingPlan({
-      onSuccess: invalidateCache,
+      onSuccess: () => {
+        window.location.reload()
+      },
     })
   const { mutateAsync: generatePortalSession } =
     useGenerateBillingPortalSession()

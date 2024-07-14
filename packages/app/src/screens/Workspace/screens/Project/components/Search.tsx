@@ -25,7 +25,7 @@ export const Search = ({
 
   return (
     <TextField
-      placeholder="Search key..."
+      placeholder="Search..."
       label="Search"
       value={value}
       hideLabel
