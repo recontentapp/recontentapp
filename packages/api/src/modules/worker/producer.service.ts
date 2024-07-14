@@ -10,9 +10,12 @@ export class ProducerService {
   queueUrl: string | null
 
   constructor(private readonly configService: ConfigService<Config, true>) {
-    this.sqsClient = new SQSClient()
     const workerConfig = this.configService.get('worker', {
       infer: true,
+    })
+
+    this.sqsClient = new SQSClient({
+      endpoint: workerConfig.sqsEndpoint || undefined,
     })
 
     if (workerConfig.available) {

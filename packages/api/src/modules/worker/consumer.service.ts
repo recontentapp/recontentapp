@@ -38,7 +38,7 @@ export class ConsumerService implements BeforeApplicationShutdown {
 
     this.sqsConsumer.on('message_processed', message => {
       this.logger.log('Message processed', {
-        service: 'worker',
+        service: 'worker-consumer',
         statusCode: 200,
         messageId: message.MessageId,
         messageBody: message.Body,
@@ -47,7 +47,7 @@ export class ConsumerService implements BeforeApplicationShutdown {
 
     this.sqsConsumer.on('processing_error', (error, message) => {
       this.logger.error('Message processed', {
-        service: 'worker',
+        service: 'worker-consumer',
         statusCode: 500,
         messageId: message.MessageId,
         errorMessage: error.message,

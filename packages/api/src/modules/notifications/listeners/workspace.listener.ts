@@ -2,14 +2,11 @@ import { Injectable } from '@nestjs/common'
 import { OnEvent } from '@nestjs/event-emitter'
 
 import { WorkspaceInvitationCreatedEvent } from 'src/modules/workspace/events/invitation-created.event'
-import { MyLogger } from 'src/utils/logger'
 import { PrismaService } from 'src/utils/prisma.service'
 import { MailerService } from '../mailer.service'
 
 @Injectable()
 export class WorkspaceListener {
-  private readonly logger = new MyLogger()
-
   constructor(
     private prismaService: PrismaService,
     private mailerService: MailerService,

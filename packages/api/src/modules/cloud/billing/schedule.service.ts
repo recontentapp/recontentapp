@@ -3,11 +3,13 @@ import { ConfigService } from '@nestjs/config'
 import { Cron } from '@nestjs/schedule'
 import { ProducerService } from 'src/modules/worker/producer.service'
 import { Config } from 'src/utils/config'
+import { MyLogger } from 'src/utils/logger'
 import { PrismaService } from 'src/utils/prisma.service'
 
 @Injectable()
 export class ScheduleService {
   private active: boolean
+  private readonly logger = new MyLogger()
 
   constructor(
     private readonly configService: ConfigService<Config, true>,
@@ -30,6 +32,10 @@ export class ScheduleService {
     if (!this.active) {
       return
     }
+
+    this.logger.log('Triggering daily AI usage reporting', {
+      service: 'worker-producer',
+    })
 
     const workspacesWhichShouldReportUsage =
       await this.prismaService.workspaceBillingSettings.findMany({

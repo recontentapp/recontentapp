@@ -18,16 +18,12 @@ interface ReportDailyAIUsageParams {
   workspaceId: string
 }
 
-type BuildIdentifierParams =
-  | {
-      id: string
-      start: Date
-      end: Date
-    }
-  | {
-      id: string
-      date: Date
-    }
+interface BuildIdentifierParams {
+  id: string
+  eventName: 'phrases' | 'input_tokens' | 'output_tokens'
+  start: Date
+  end: Date
+}
 
 @Injectable()
 export class MeteredService {
@@ -84,16 +80,16 @@ export class MeteredService {
       },
     })
 
-    return result._sum
+    return {
+      inputTokensCount: result._sum.inputTokensCount ?? 0,
+      outputTokensCount: result._sum.outputTokensCount ?? 0,
+    }
   }
 
   private buildIdentifier(params: BuildIdentifierParams) {
-    if ('date' in params) {
-      return [params.id, params.date.toISOString().split('T')[0]].join('_')
-    }
-
     return [
       params.id,
+      params.eventName,
       params.start.toISOString().split('T')[0],
       params.end.toISOString().split('T')[0],
     ].join('_')
@@ -150,15 +146,21 @@ export class MeteredService {
         },
         identifier: this.buildIdentifier({
           id: billingSettings.stripeSubscriptionId,
+          eventName: 'input_tokens',
           start: startTime,
           end: endTime,
         }),
       })
       .catch(e => {
-        // Ignore invalid request errors due to duplicate events
-        if (e.type !== 'StripeInvalidRequestError') {
+        if (!(e instanceof Stripe.errors.StripeInvalidRequestError)) {
           throw e
         }
+
+        if (!e.message.includes('event already exists')) {
+          throw e
+        }
+
+        // Ignore duplicate event errors
       })
 
     await this.stripe.billing.meterEvents
@@ -170,15 +172,21 @@ export class MeteredService {
         },
         identifier: this.buildIdentifier({
           id: billingSettings.stripeSubscriptionId,
+          eventName: 'output_tokens',
           start: startTime,
           end: endTime,
         }),
       })
       .catch(e => {
-        // Ignore invalid request errors due to duplicate events
-        if (e.type !== 'StripeInvalidRequestError') {
+        if (!(e instanceof Stripe.errors.StripeInvalidRequestError)) {
           throw e
         }
+
+        if (!e.message.includes('event already exists')) {
+          throw e
+        }
+
+        // Ignore duplicate event errors
       })
   }
 
@@ -218,6 +226,7 @@ export class MeteredService {
         },
         identifier: this.buildIdentifier({
           id: billingSettings.stripeSubscriptionId,
+          eventName: 'phrases',
           start: new Date(subscription.current_period_start * 1000),
           end: new Date(subscription.current_period_end * 1000),
         }),

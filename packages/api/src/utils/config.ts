@@ -87,6 +87,7 @@ const getConfig = () => {
     },
     worker: {
       available: !!process.env.SQS_QUEUE_URL,
+      sqsEndpoint: process.env.SQS_ENDPOINT,
       sqsQueueUrl: String(process.env.SQS_QUEUE_URL),
     },
     billing: {
