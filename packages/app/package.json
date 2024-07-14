@@ -12,7 +12,7 @@
     "visualize": "vite-bundle-visualizer --open"
   },
   "dependencies": {
-    "@hookform/resolvers": "2.9.10",
+    "@hookform/resolvers": "3.9.0",
     "@monaco-editor/loader": "1.4.0",
     "@reach/menu-button": "0.18.0",
     "@reach/popover": "0.18.0",
