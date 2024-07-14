@@ -50,7 +50,7 @@ FROM node:20-alpine As production
 WORKDIR /usr/src/app
 
 ENV NODE_ENV=production
-ENV APP_VERSION=0.4.3
+ENV APP_VERSION=0.5.0
 ENV APP_DISTRIBUTION=self-hosted
 ENV SERVE_STATIC_FILES=true
 

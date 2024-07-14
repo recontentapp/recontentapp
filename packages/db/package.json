@@ -11,9 +11,6 @@
     "studio": "prisma studio",
     "generate": "prisma generate"
   },
-  "prisma": {
-    "seed": "ts-node ./seed.ts"
-  },
   "dependencies": {
     "@prisma/client": "5.12.1",
     "prisma": "5.12.1"
