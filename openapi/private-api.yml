@@ -2907,7 +2907,7 @@ components:
         - 'glossaries:manage'
         - 'prompts:manage'
         - 'integrations:manage'
-        - 'auto_translation:use'
+        - 'ai:use'
         - 'projects:destinations:manage'
     WorkspaceAccountType:
       type: string

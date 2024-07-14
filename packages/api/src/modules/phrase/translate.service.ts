@@ -50,7 +50,7 @@ export class TranslateService {
     const workspaceAccess = requester.getWorkspaceAccessOrThrow(
       revision.workspaceId,
     )
-    workspaceAccess.hasAbilityOrThrow('auto_translation:use')
+    workspaceAccess.hasAbilityOrThrow('ai:use')
 
     const [sourceLanguage, targetLanguage] = await Promise.all([
       this.prismaService.language.findUniqueOrThrow({
@@ -159,7 +159,7 @@ export class TranslateService {
     requester,
   }: TranslateParams) {
     const workspaceAccess = requester.getWorkspaceAccessOrThrow(workspaceId)
-    workspaceAccess.hasAbilityOrThrow('auto_translation:use')
+    workspaceAccess.hasAbilityOrThrow('ai:use')
 
     const [sourceLanguage, targetLanguage] = await Promise.all([
       this.prismaService.language.findUniqueOrThrow({
@@ -199,7 +199,7 @@ export class TranslateService {
     const workspaceAccess = requester.getWorkspaceAccessOrThrow(
       language.workspaceId,
     )
-    workspaceAccess.hasAbilityOrThrow('auto_translation:use')
+    workspaceAccess.hasAbilityOrThrow('ai:use')
 
     let prompt:
       | (Prompt & { glossary: { terms: GlossaryTerm[] } | null })

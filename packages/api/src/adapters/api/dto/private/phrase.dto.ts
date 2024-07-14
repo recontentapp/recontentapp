@@ -12,7 +12,12 @@ import {
 } from 'class-validator'
 import { Components } from 'src/generated/typeDefinitions'
 import { IsNullable } from 'src/utils/class-validator'
-import { ID_LENGTH, LONG_TEXT_LENGTH, TEXT_LENGTH } from '../constants'
+import {
+  BATCH_SIZE,
+  ID_LENGTH,
+  LONG_TEXT_LENGTH,
+  TEXT_LENGTH,
+} from '../constants'
 import { FileFormatValidator } from './domain.dto'
 
 export class CreatePhraseDto {
@@ -65,7 +70,7 @@ export class TranslatePhraseDto {
 export class BatchAutoTranslatePhrasesDto {
   @IsArray()
   @IsNotEmpty()
-  @ArrayMaxSize(50)
+  @ArrayMaxSize(BATCH_SIZE)
   phraseIds: string[]
 
   @IsString()
@@ -131,7 +136,7 @@ export class DeletePhraseDto {
 export class BatchDeletePhraseDto {
   @IsArray()
   @IsNotEmpty()
-  @ArrayMaxSize(50)
+  @ArrayMaxSize(BATCH_SIZE)
   ids: string[]
 }
 

@@ -38,7 +38,7 @@ export const SelectionFooter = ({
   const confirmationModalRef = useRef<ConfirmationModalRef>(null!)
   const applyTagsModalRef = useRef<ApplyTagsModalRef>(null!)
   const batchTranslateModalRef = useRef<BatchTranslateModalRef>(null!)
-  const canAutotranslate = useHasAbility('auto_translation:use')
+  const canAutotranslate = useHasAbility('ai:use')
 
   const { mutateAsync: batchDeletePhrases } = useBatchDeletePhrase({
     onSuccess: () => {

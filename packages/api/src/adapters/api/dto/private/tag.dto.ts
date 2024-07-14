@@ -8,7 +8,12 @@ import {
   IsString,
   MaxLength,
 } from 'class-validator'
-import { ID_LENGTH, KEY_LENGTH, LONG_TEXT_LENGTH } from '../constants'
+import {
+  BATCH_SIZE,
+  ID_LENGTH,
+  KEY_LENGTH,
+  LONG_TEXT_LENGTH,
+} from '../constants'
 
 export class CreateProjectTagDto {
   @IsString()
@@ -86,7 +91,7 @@ export class BatchApplyProjectTagDto {
 
   @IsArray()
   @IsNotEmpty()
-  @ArrayMaxSize(50)
+  @ArrayMaxSize(BATCH_SIZE)
   recordIds: string[]
 }
 

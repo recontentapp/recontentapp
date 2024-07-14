@@ -57,7 +57,7 @@ export class WorkspaceAccess {
 
     if (this.systemConfig.ai.available) {
       if (this.systemConfig.app.distribution === 'self-hosted') {
-        abilities.push('auto_translation:use')
+        abilities.push('ai:use')
       }
 
       if (
@@ -65,7 +65,7 @@ export class WorkspaceAccess {
         this.workspaceBillingSettings.plan === 'pro' &&
         this.workspaceBillingSettings.status === 'active'
       ) {
-        abilities.push('auto_translation:use')
+        abilities.push('ai:use')
       }
     }
 

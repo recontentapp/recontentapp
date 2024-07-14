@@ -136,7 +136,7 @@ export const RewriteButton = ({
   languageId,
 }: Props) => {
   const navigate = useNavigate()
-  const canAutotranslate = useHasAbility('auto_translation:use')
+  const canAutotranslate = useHasAbility('ai:use')
   const canManagePrompts = useHasAbility('prompts:manage')
   const containerRef = useRef<HTMLDivElement>(null!)
   const contentRef = useRef<HTMLDivElement>(null!)

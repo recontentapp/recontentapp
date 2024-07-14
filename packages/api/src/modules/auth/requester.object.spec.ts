@@ -95,7 +95,7 @@ describe('WorkspaceAccess', () => {
         getWorkspaceBillingSettings(),
       )
 
-      expect(access.getAbilities()).not.toContain('auto_translation:use')
+      expect(access.getAbilities()).not.toContain('ai:use')
     })
 
     it('allows auto translation if a provider is defined', () => {
@@ -112,7 +112,7 @@ describe('WorkspaceAccess', () => {
         getWorkspaceBillingSettings(),
       )
 
-      expect(access.getAbilities()).toContain('auto_translation:use')
+      expect(access.getAbilities()).toContain('ai:use')
     })
   })
 
@@ -138,7 +138,7 @@ describe('WorkspaceAccess', () => {
         getWorkspaceBillingSettings({ plan: 'free' }),
       )
 
-      expect(access.getAbilities()).not.toContain('auto_translation:use')
+      expect(access.getAbilities()).not.toContain('ai:use')
     })
 
     it('allows auto translation on pro plan', () => {
@@ -155,7 +155,7 @@ describe('WorkspaceAccess', () => {
         getWorkspaceBillingSettings({ plan: 'pro' }),
       )
 
-      expect(access.getAbilities()).toContain('auto_translation:use')
+      expect(access.getAbilities()).toContain('ai:use')
     })
   })
 })

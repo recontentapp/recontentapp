@@ -77,7 +77,7 @@ export const AutotranslateButton = ({
   currentValue,
   languages,
 }: Props) => {
-  const canAutotranslate = useHasAbility('auto_translation:use')
+  const canAutotranslate = useHasAbility('ai:use')
   const containerRef = useRef<HTMLDivElement>(null!)
   const contentRef = useRef<HTMLDivElement>(null!)
   const { id: workspaceId } = useCurrentWorkspace()
