@@ -94,3 +94,42 @@ export class UpdateFigmaFileDto {
   @MaxLength(ID_LENGTH)
   languageId: string
 }
+
+export class TranslateDto {
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(LONG_TEXT_LENGTH)
+  content: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
+  workspaceId: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
+  sourceLanguageId: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
+  targetLanguageId: string
+}
+
+export class RewriteDto {
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(LONG_TEXT_LENGTH)
+  content: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
+  sourceLanguageId: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(ID_LENGTH)
+  promptId: string
+}

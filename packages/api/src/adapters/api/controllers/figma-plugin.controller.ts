@@ -23,6 +23,9 @@ import { APIKeyGuard } from 'src/modules/auth/api-key.guard'
 import { AuthenticatedRequester } from 'src/modules/auth/requester.decorator'
 import { Requester } from 'src/modules/auth/requester.object'
 import { FigmaService } from 'src/modules/figma/figma.service'
+import { TranslateService } from 'src/modules/phrase/translate.service'
+import { promptTones } from 'src/modules/ux-writing/prompt'
+import { PromptService } from 'src/modules/ux-writing/prompt.service'
 import { Config } from 'src/utils/config'
 import { Pagination, PaginationParams } from 'src/utils/pagination'
 import { PrismaService } from 'src/utils/prisma.service'
@@ -30,6 +33,8 @@ import { RequiredQuery } from 'src/utils/required-query'
 import {
   CreateFigmaFileDto,
   CreateFigmaTextDto,
+  RewriteDto,
+  TranslateDto,
   UpdateFigmaFileDto,
   UpdateFigmaTextDto,
 } from '../dto/figma-plugin/figma.dto'
@@ -40,6 +45,8 @@ export class FigmaPluginController {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly figmaService: FigmaService,
+    private readonly promptService: PromptService,
+    private readonly translateService: TranslateService,
     private readonly configService: ConfigService<Config, true>,
   ) {}
 
@@ -350,5 +357,100 @@ export class FigmaPluginController {
     })
 
     return FigmaPluginController.formatFigmaFileText(text)
+  }
+
+  @Get('/figma-files/:id/prompts')
+  async listPrompts(
+    @AuthenticatedRequester() requester: Requester,
+    @Param('id') fileId: string,
+  ): Promise<Paths.ListFigmaFilePrompts.Responses.$200> {
+    const file = await this.prismaService.figmaFile.findUniqueOrThrow({
+      where: { id: fileId },
+    })
+    const result = await this.promptService.listPrompts({
+      workspaceId: file.workspaceId,
+      projectId: file.projectId,
+      requester,
+      pagination: {
+        page: 1,
+        pageSize: 20,
+        limit: 20,
+        offset: 0,
+      },
+    })
+
+    const prompts = result.items
+      .map(
+        ({
+          id,
+          workspaceId,
+          glossaryId,
+          name,
+          description,
+          tone,
+          length,
+          customInstructions,
+        }) => ({
+          id,
+          workspaceId,
+          default: false,
+          glossaryId,
+          name,
+          description,
+          tone: tone as Components.Schemas.PromptTone,
+          length: length as Components.Schemas.PromptLength,
+          customInstructions,
+        }),
+      )
+      .concat(
+        promptTones.map(tone => ({
+          id: tone,
+          workspaceId: file.workspaceId,
+          default: true,
+          glossaryId: null,
+          name: tone,
+          description: null,
+          tone,
+          length: 'same',
+          customInstructions: [],
+        })),
+      )
+
+    return {
+      items: prompts,
+    }
+  }
+
+  @Post('/ai/translate')
+  async translate(
+    @Body()
+    { content, workspaceId, sourceLanguageId, targetLanguageId }: TranslateDto,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.Translate.Responses.$200> {
+    const suggestion = await this.translateService.translate({
+      content,
+      workspaceId,
+      sourceLanguageId,
+      targetLanguageId,
+      requester,
+    })
+
+    return { suggestion }
+  }
+
+  @Post('/ai/rewrite')
+  async rewrite(
+    @Body()
+    { content, sourceLanguageId, promptId }: RewriteDto,
+    @AuthenticatedRequester() requester: Requester,
+  ): Promise<Paths.Rewrite.Responses.$200> {
+    const suggestion = await this.translateService.rewritePhraseTranslation({
+      content,
+      sourceLanguageId,
+      promptId,
+      requester,
+    })
+
+    return { suggestion }
   }
 }

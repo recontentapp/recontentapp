@@ -348,8 +348,107 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FigmaText'
+  '/figma-files/{id}/prompts':
+    get:
+      operationId: listFigmaFilePrompts
+      parameters:
+        - name: id
+          in: path
+          description: Figma file ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Prompt'
+                additionalProperties: false
+                required:
+                  - items
+  /ai/translate:
+    post:
+      operationId: translate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                workspaceId:
+                  type: string
+                sourceLanguageId:
+                  type: string
+                targetLanguageId:
+                  type: string
+              additionalProperties: false
+              required:
+                - content
+                - workspaceId
+                - sourceLanguageId
+                - targetLanguageId
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  suggestion:
+                    type: string
+                additionalProperties: false
+                required:
+                  - suggestion
+  /ai/rewrite:
+    post:
+      operationId: rewrite
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                sourceLanguageId:
+                  type: string
+                promptId:
+                  type: string
+              additionalProperties: false
+              required:
+                - content
+                - sourceLanguageId
+                - promptId
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  suggestion:
+                    type: string
+                additionalProperties: false
+                required:
+                  - suggestion
 components:
   schemas:
+    Empty:
+      type: string
+      enum:
+        - null
+      nullable: true
     Pagination:
       type: object
       properties:
@@ -560,3 +659,56 @@ components:
         - phraseId
         - textNodeId
         - pageNodeId
+    PromptTone:
+      type: string
+      enum:
+        - professional
+        - casual
+        - playful
+        - conversational
+    PromptLength:
+      type: string
+      enum:
+        - shorter
+        - longer
+        - same
+    Prompt:
+      type: object
+      properties:
+        id:
+          type: string
+        default:
+          type: boolean
+        workspaceId:
+          type: string
+        glossaryId:
+          type: string
+          nullable: true
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        tone:
+          oneOf:
+            - $ref: '#/components/schemas/PromptTone'
+            - $ref: '#/components/schemas/Empty'
+        length:
+          oneOf:
+            - $ref: '#/components/schemas/PromptLength'
+            - $ref: '#/components/schemas/Empty'
+        customInstructions:
+          type: array
+          items:
+            type: string
+      additionalProperties: false
+      required:
+        - id
+        - default
+        - workspaceId
+        - glossaryId
+        - name
+        - description
+        - tone
+        - length
+        - customInstructions
