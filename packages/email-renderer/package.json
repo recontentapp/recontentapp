@@ -13,12 +13,19 @@
     "build": "rm -rf dist && yarn build:src && yarn build:types",
     "test": "jest"
   },
-  "dependencies": {},
+  "dependencies": {
+    "mjml-browser": "4.15.3",
+    "mustache": "4.2.0"
+  },
   "devDependencies": {
     "@types/jest": "29.5.12",
+    "@types/mjml-browser": "4.15.0",
+    "@types/mustache": "4.2.5",
     "@types/node": "20.12.7",
     "esbuild": "0.20.2",
     "jest": "29.7.0",
+    "jest-environment-jsdom": "29.7.0",
+    "prettier": "3.3.2",
     "ts-jest": "29.1.2",
     "typescript": "5.4.3"
   }
