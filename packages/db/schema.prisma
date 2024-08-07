@@ -599,6 +599,7 @@ model EmailLayout {
   workspaceId String          @db.VarChar()
   projectId   String          @db.VarChar()
   key         String          @db.VarChar()
+  description String?         @db.VarChar()
   content     String
   project     Project         @relation(fields: [projectId], references: [id])
   workspace   Workspace       @relation(fields: [workspaceId], references: [id])
@@ -646,11 +647,6 @@ model EmailVariable {
   template       EmailTemplate?             @relation(fields: [templateId], references: [id])
   translations   EmailVariableTranslation[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  createdBy String   @db.VarChar()
-  updatedBy String?  @db.VarChar()
-
   @@unique([layoutId, templateId, key])
   @@map("email_variables")
 }
@@ -664,11 +660,6 @@ model EmailVariableTranslation {
   language    Language      @relation(fields: [languageId], references: [id])
   variable    EmailVariable @relation(fields: [variableId], references: [id])
   workspace   Workspace     @relation(fields: [workspaceId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  createdBy String   @db.VarChar()
-  updatedBy String?  @db.VarChar()
 
   @@unique([variableId, languageId])
   @@map("email_variable_translations")

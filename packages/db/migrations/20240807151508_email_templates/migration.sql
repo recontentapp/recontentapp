@@ -4,6 +4,7 @@ CREATE TABLE "email_layouts" (
     "workspaceId" VARCHAR NOT NULL,
     "projectId" VARCHAR NOT NULL,
     "key" VARCHAR NOT NULL,
+    "description" VARCHAR,
     "content" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -38,10 +39,6 @@ CREATE TABLE "email_variables" (
     "templateId" VARCHAR,
     "key" VARCHAR NOT NULL,
     "defaultContent" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "createdBy" VARCHAR NOT NULL,
-    "updatedBy" VARCHAR,
 
     CONSTRAINT "email_variables_pkey" PRIMARY KEY ("id")
 );
@@ -53,10 +50,6 @@ CREATE TABLE "email_variable_translations" (
     "workspaceId" VARCHAR NOT NULL,
     "variableId" VARCHAR NOT NULL,
     "content" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "createdBy" VARCHAR NOT NULL,
-    "updatedBy" VARCHAR,
 
     CONSTRAINT "email_variable_translations_pkey" PRIMARY KEY ("id")
 );
