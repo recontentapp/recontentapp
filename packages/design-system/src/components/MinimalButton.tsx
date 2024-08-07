@@ -69,7 +69,7 @@ const Container = styled('button', {
     },
     hasIcon: {
       true: {
-        paddingLeft: '$space60',
+        paddingX: '$space60',
       },
     },
     disabled: {
@@ -102,7 +102,11 @@ export const MinimalButton: FC<MinimalButtonProps> = ({
   onAction,
   children,
 }) => {
-  const color = isDisabled ? '$gray10' : iconColorMap[variation]
+  const color = isDisabled
+    ? '$gray10'
+    : isActive
+      ? '$blue900'
+      : iconColorMap[variation]
 
   return (
     <Container

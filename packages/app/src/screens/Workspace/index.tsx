@@ -16,6 +16,7 @@ import { ModalsProvider } from './hooks/modals'
 import { Dashboard } from './screens/Dashboard'
 import { Destination } from './screens/Destination'
 import { Editor } from './screens/Editor/Editor'
+import { EmailEditor } from './screens/EmailEditor/EmailEditor'
 import { Glossary } from './screens/Glossary/Glossary'
 import { ImportFromFile } from './screens/ImportFromFile'
 import {
@@ -205,6 +206,11 @@ export const Workspace = () => {
                 <Route
                   path="/:workspaceKey/projects/:projectId/phrases/:revisionId/editor"
                   element={<Editor />}
+                />
+
+                <Route
+                  path="/:workspaceKey/projects/:projectId/email-editor"
+                  element={<EmailEditor />}
                 />
 
                 <Route

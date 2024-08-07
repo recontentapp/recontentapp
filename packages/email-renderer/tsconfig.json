@@ -1,13 +1,15 @@
 {
+  "include": ["src"],
   "compilerOptions": {
-    "outDir": "dist",
-    "lib": ["es2021", "dom"],
-    "module": "node16",
-    "target": "es2021",
+    "module": "esnext",
+    "target": "esnext",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "declaration": true,
     "strict": true,
-    "esModuleInterop": true,
+    "moduleResolution": "node",
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node16"
+    "esModuleInterop": true,
+    "outDir": "dist",
+    "rootDir": "src"
   }
 }

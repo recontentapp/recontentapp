@@ -10,6 +10,7 @@ import { Message } from './components/Message'
 import { FieldProps, Option } from './types'
 
 interface SelectFieldProps extends FieldProps, Pick<CSSProperties, 'width'> {
+  size?: 'medium' | 'small' | 'xsmall'
   value?: string
   options: Option[]
   portal?: boolean
@@ -93,7 +94,15 @@ export const globalStyles = globalCss({
       },
     },
   },
-
+  '[data-reach-listbox-button-size="xsmall"]': {
+    minHeight: 22,
+  },
+  '[data-reach-listbox-button-size="small"]': {
+    minHeight: 30,
+  },
+  '[data-reach-listbox-button-size="medium"]': {
+    minHeight: 35,
+  },
   '[data-reach-listbox-button]': {
     display: 'flex',
     flexDirection: 'row',
@@ -102,11 +111,9 @@ export const globalStyles = globalCss({
     cursor: 'pointer',
     backgroundColor: '$white',
     width: '100%',
-    minHeight: 35,
     border: '1px solid $gray7',
     borderRadius: '$radius200',
     paddingX: '$space80',
-    paddingY: '$space60',
     fontSize: '$size80',
     boxShadow: '$shadow100',
     transition: 'all 0.06s ease-in-out',
@@ -119,7 +126,6 @@ export const globalStyles = globalCss({
       outlineStyle: 'auto',
       outlineWidth: 2,
     },
-
     '&[data-error="true"]': {
       outlineColor: theme.colors.red200,
       outlineOffset: -0.6,
@@ -128,7 +134,6 @@ export const globalStyles = globalCss({
       boxShadow:
         'rgba(47, 78, 178, 0.9) 0px 0px 0px 1px, rgba(47, 78, 178, 0.3) 0px 0px 0px 2px',
     },
-
     '&[aria-expanded="true"]': {
       boxShadow:
         'rgba(47, 78, 178, 0.9) 0px 0px 0px 1px, rgba(47, 78, 178, 0.3) 0px 0px 0px 2px',
@@ -168,6 +173,7 @@ const FooterAction = styled('button', {
 export const SelectField: FC<SelectFieldProps> = ({
   label,
   hideLabel = false,
+  size = 'medium',
   width,
   placeholder,
   onChange,
@@ -222,7 +228,10 @@ export const SelectField: FC<SelectFieldProps> = ({
         disabled={isDisabled}
         onValueChange={onSelect}
       >
-        <Select.Trigger data-reach-listbox-button>
+        <Select.Trigger
+          data-reach-listbox-button
+          data-reach-listbox-button-size={size}
+        >
           <Select.Value onBlur={onBlur} placeholder={placeholder} />
           <Select.Icon data-reach-listbox-arrow />
         </Select.Trigger>

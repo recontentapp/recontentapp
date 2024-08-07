@@ -83,9 +83,8 @@ describe('renderHTML', () => {
     const renderedTemplate = renderTemplate({ layout, template, variables })
     assert(renderedTemplate)
 
-    const result = renderHTML(renderedTemplate)
-    assert(result)
+    const { html } = renderHTML(renderedTemplate)
 
-    expect(result.toString()).toMatchSnapshot()
+    expect(String(html)).toMatchSnapshot()
   })
 })

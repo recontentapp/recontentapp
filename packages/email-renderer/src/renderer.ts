@@ -1,7 +1,7 @@
 import mjml from 'mjml-browser'
 import { render as mustacheRender } from 'mustache'
 import { CLOSING_TAG, OPENING_TAG } from './constants'
-import { Variables } from './types'
+import { HTMLRenderResult, Variables } from './types'
 
 /**
  * Check if a layout is valid by checking if it contains
@@ -17,17 +17,22 @@ export const isLayoutValid = (layout: string) => {
  * Render a mustache template with potential
  * variables enclosed between `{{{ variable }}}`
  */
-const render = (template: string, variables: Variables = {}) =>
-  mustacheRender(
-    template,
-    variables,
-    {},
-    {
-      // Disable HTML escaping
-      escape: val => val,
-      tags: [OPENING_TAG, CLOSING_TAG],
-    },
-  )
+const render = (template: string, variables: Variables = {}) => {
+  try {
+    return mustacheRender(
+      template,
+      variables,
+      {},
+      {
+        // Disable HTML escaping
+        escape: val => val,
+        tags: [OPENING_TAG, CLOSING_TAG],
+      },
+    )
+  } catch (error) {
+    return null
+  }
+}
 
 interface RenderTemplateParams {
   layout?: string
@@ -49,7 +54,7 @@ export const renderTemplate = ({
 
   const renderedTemplate = render(template, variablesBag)
 
-  if (!layout || !isLayoutValid(layout)) {
+  if (!layout || !isLayoutValid(layout) || !renderedTemplate) {
     return renderedTemplate
   }
 
@@ -61,18 +66,37 @@ export const renderTemplate = ({
   return render(layout, layoutVariablesBag)
 }
 
+type MJMLParseError = ReturnType<typeof mjml>['errors'][0]
+
+const formatErrors = (errors: MJMLParseError[]): string[] => {
+  const set = new Set<string>()
+
+  errors.forEach(error => {
+    set.add(error.message)
+  })
+
+  return Array.from(set)
+}
+
 /**
  * Render a MJML template into plain HTML,
  * used for preview or to export as HTML
  *
  * If invalid, return null
  */
-export const renderHTML = (mjmlTemplate: string): string | null => {
-  const { html, errors } = mjml(mjmlTemplate)
-
-  if (errors.length > 0 || !html) {
-    return null
+export const renderHTML = (mjmlTemplate: string): HTMLRenderResult => {
+  try {
+    const { html, errors } = mjml(mjmlTemplate)
+    return {
+      html,
+      level: errors.length > 0 ? 'warning' : 'info',
+      errors: formatErrors(errors),
+    }
+  } catch (error) {
+    return {
+      html: null,
+      errors: ['Error while rendering HTML'],
+      level: 'error',
+    }
   }
-
-  return html
 }
