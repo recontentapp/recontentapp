@@ -55,6 +55,12 @@ CREATE TABLE "email_variable_translations" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "email_layouts_projectId_key_key" ON "email_layouts"("projectId", "key");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "email_templates_projectId_key_key" ON "email_templates"("projectId", "key");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "email_variables_layoutId_templateId_key_key" ON "email_variables"("layoutId", "templateId", "key");
 
 -- CreateIndex

@@ -611,6 +611,7 @@ model EmailLayout {
   createdBy String   @db.VarChar()
   updatedBy String?  @db.VarChar()
 
+  @@unique([projectId, key])
   @@map("email_layouts")
 }
 
@@ -632,6 +633,7 @@ model EmailTemplate {
   createdBy String   @db.VarChar()
   updatedBy String?  @db.VarChar()
 
+  @@unique([projectId, key])
   @@map("email_templates")
 }
 
