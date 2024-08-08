@@ -30,7 +30,6 @@ export const PreviewPanel = ({
   const [value, setValue] = useState(EMPTY_VALUE)
   const iframeRef = useRef<ElementRef<'iframe'>>(null)
   const onResize = useDebouncedCallback(() => {
-    console.log('COUCOU')
     iframeRef.current?.contentWindow?.location.reload()
   }, 100)
 
@@ -143,8 +142,13 @@ export const PreviewPanel = ({
                 spacing="$space60"
                 alignItems="center"
               >
-                <Icon src="error" size={32} color="$orange400" />
-                <Heading textAlign="center" renderAs="h2" size="$size100">
+                <Icon src="error" size={32} color="$gray11" />
+                <Heading
+                  textAlign="center"
+                  renderAs="h2"
+                  size="$size100"
+                  color="$gray14"
+                >
                   Preview not available
                 </Heading>
                 <Text

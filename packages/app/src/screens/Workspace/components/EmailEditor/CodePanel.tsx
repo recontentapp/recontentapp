@@ -18,6 +18,7 @@ interface Props {
   setVariables: Dispatch<SetStateAction<Variable[]>>
   layoutVariables?: Variable[]
   errors: HTMLRenderResult['errors']
+  onRequestSubmit: () => void
 }
 
 export const CodePanel = ({
@@ -27,6 +28,7 @@ export const CodePanel = ({
   variables,
   setVariables,
   errors,
+  onRequestSubmit,
 }: Props) => {
   const variablesConfigModalRef = useRef<VariablesConfigModalRef>(null)
   const monacoEditorRef = useRef<MonacoEditorRef>(null)
@@ -85,7 +87,7 @@ export const CodePanel = ({
             loadingState={<div />}
             initialValue={value}
             onChange={setValue}
-            onSave={() => {}}
+            onSave={onRequestSubmit}
           />
 
           <VariablesConfigModal

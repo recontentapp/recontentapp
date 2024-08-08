@@ -164,11 +164,7 @@ export const useEmailLayoutPreview = ({
         layout: undefined,
         layoutVariables: undefined,
         template: value,
-        variables: {
-          ...formattedVariables,
-          content:
-            '<mj-text align="center">Template content will appear here</mj-text>',
-        },
+        variables: formattedVariables,
       })
 
       if (!renderedTemplate) {

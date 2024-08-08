@@ -1,6 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { MinimalButton, Stack, toast } from 'design-system'
 import { useMemo, useRef, useState } from 'react'
+import { useHotkeys } from 'react-hotkeys-hook'
 import { PanelGroup } from 'react-resizable-panels'
 import { useParams } from 'react-router-dom'
 import { FullpageSpinner } from '../../../../components/FullpageSpinner'
@@ -141,6 +142,17 @@ export const EmailTemplateEditor = () => {
       })
   }
 
+  useHotkeys(
+    ['metaKey+s', 'ctrl+s'],
+    () => {
+      onSubmit()
+    },
+    {
+      preventDefault: true,
+    },
+    [onSubmit],
+  )
+
   if (!template) {
     return <FullpageSpinner />
   }
@@ -182,6 +194,7 @@ export const EmailTemplateEditor = () => {
             variables={variables}
             setVariables={setVariables}
             errors={preview?.errors ?? null}
+            onRequestSubmit={onSubmit}
           />
         )}
 

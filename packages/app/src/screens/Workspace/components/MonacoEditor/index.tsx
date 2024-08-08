@@ -85,8 +85,7 @@ const Editor = forwardRef<MonacoEditorRef, EditorProps>(
       })
 
       editorRef.current.addCommand(
-        // @ts-expect-error
-        monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S,
+        monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS,
         () => {
           setOnSaveCount(value => value + 1)
         },

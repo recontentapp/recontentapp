@@ -649,7 +649,8 @@ model EmailVariable {
   template       EmailTemplate?             @relation(fields: [templateId], references: [id])
   translations   EmailVariableTranslation[]
 
-  @@unique([layoutId, templateId, key])
+  @@unique([layoutId, key])
+  @@unique([templateId, key])
   @@map("email_variables")
 }
 

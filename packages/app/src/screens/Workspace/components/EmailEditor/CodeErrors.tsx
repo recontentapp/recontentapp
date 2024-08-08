@@ -22,7 +22,7 @@ const Code = styled('code', {
   backgroundColor: '$gray3',
   width: '100%',
   borderRadius: '$radius100',
-  lineHeight: '$lineHeight200',
+  lineHeight: '$lineHeight300',
   padding: '$space100',
   fontSize: '$size80',
   marginBottom: '$space300',

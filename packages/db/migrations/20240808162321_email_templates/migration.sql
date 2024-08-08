@@ -61,7 +61,10 @@ CREATE UNIQUE INDEX "email_layouts_projectId_key_key" ON "email_layouts"("projec
 CREATE UNIQUE INDEX "email_templates_projectId_key_key" ON "email_templates"("projectId", "key");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "email_variables_layoutId_templateId_key_key" ON "email_variables"("layoutId", "templateId", "key");
+CREATE UNIQUE INDEX "email_variables_layoutId_key_key" ON "email_variables"("layoutId", "key");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "email_variables_templateId_key_key" ON "email_variables"("templateId", "key");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "email_variable_translations_variableId_languageId_key" ON "email_variable_translations"("variableId", "languageId");
