@@ -91,6 +91,24 @@ export const Project: FC = () => {
             }),
           },
           {
+            label: 'Email layouts',
+            to: routes.projectEmailLayouts.url({
+              pathParams: {
+                workspaceKey,
+                projectId: project.id,
+              },
+            }),
+          },
+          {
+            label: 'Email templates',
+            to: routes.projectEmailTemplates.url({
+              pathParams: {
+                workspaceKey,
+                projectId: project.id,
+              },
+            }),
+          },
+          {
             label: 'Import',
             to: routes.projectImport.url({
               pathParams: {

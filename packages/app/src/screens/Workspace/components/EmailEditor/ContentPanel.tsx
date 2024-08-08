@@ -1,9 +1,9 @@
 import { Box, Heading, Stack, Text } from 'design-system'
 import { Dispatch, SetStateAction, useMemo } from 'react'
 import { Panel, PanelResizeHandle } from 'react-resizable-panels'
-import { PhraseEditor } from '../../../../../components/PhraseEditor'
-import { Variable } from '../types'
-import { SubToolbar } from './Toolbars'
+import { PhraseEditor } from '../../../../components/PhraseEditor'
+import { SubToolbar } from './SubToolbar'
+import { Variable } from './types'
 
 interface Props {
   variables: Variable[]

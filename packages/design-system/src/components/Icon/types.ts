@@ -11,6 +11,8 @@ export type IconName =
   | 'help'
   | 'fullscreen'
   | 'warning'
+  | 'layers'
+  | 'article'
   | 'database'
   | 'desktop'
   | 'mobile'

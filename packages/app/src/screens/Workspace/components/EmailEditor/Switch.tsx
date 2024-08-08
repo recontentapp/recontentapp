@@ -1,6 +1,6 @@
 import { Icon, Tooltip } from 'design-system'
 import { FC } from 'react'
-import { styled } from '../../../../../theme'
+import { styled } from '../../../../theme'
 
 export type Mode = 'code' | 'content'
 

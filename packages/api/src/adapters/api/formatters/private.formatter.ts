@@ -3,6 +3,10 @@ import {
   DestinationConfigAWSS3,
   DestinationConfigCDN,
   DestinationConfigGoogleCloudStorage,
+  EmailLayout,
+  EmailTemplate,
+  EmailVariable,
+  EmailVariableTranslation,
   FigmaFile,
   GithubInstallation,
   Glossary,
@@ -360,6 +364,106 @@ export class PrivateFormatter {
       updatedAt: prompt.updatedAt.toISOString(),
       createdBy: prompt.createdBy,
       updatedBy: prompt.updatedBy,
+    }
+  }
+
+  static formatEmailLayout(
+    layout: EmailLayout,
+  ): Components.Schemas.EmailLayout {
+    return {
+      id: layout.id,
+      projectId: layout.projectId,
+      key: layout.key,
+      description: layout.description,
+      content: layout.content,
+      workspaceId: layout.workspaceId,
+      createdAt: layout.createdAt.toISOString(),
+      updatedAt: layout.updatedAt.toISOString(),
+      createdBy: layout.createdBy,
+      updatedBy: layout.updatedBy,
+    }
+  }
+
+  static formatEmailLayoutWithVariables(
+    layout: EmailLayout & {
+      variables: Array<
+        EmailVariable & {
+          translations: EmailVariableTranslation[]
+        }
+      >
+    },
+  ): Components.Schemas.EmailLayoutWithVariables {
+    return {
+      id: layout.id,
+      projectId: layout.projectId,
+      key: layout.key,
+      description: layout.description,
+      content: layout.content,
+      workspaceId: layout.workspaceId,
+      variables: layout.variables.map(variable => ({
+        id: variable.id,
+        key: variable.key,
+        defaultContent: variable.defaultContent,
+        translations: variable.translations.map(t => ({
+          languageId: t.languageId,
+          content: t.content,
+        })),
+      })),
+      createdAt: layout.createdAt.toISOString(),
+      updatedAt: layout.updatedAt.toISOString(),
+      createdBy: layout.createdBy,
+      updatedBy: layout.updatedBy,
+    }
+  }
+
+  static formatEmailTemplate(
+    template: EmailTemplate,
+  ): Components.Schemas.EmailTemplate {
+    return {
+      id: template.id,
+      projectId: template.projectId,
+      layoutId: template.layoutId,
+      key: template.key,
+      description: template.description,
+      content: template.content,
+      workspaceId: template.workspaceId,
+      createdAt: template.createdAt.toISOString(),
+      updatedAt: template.updatedAt.toISOString(),
+      createdBy: template.createdBy,
+      updatedBy: template.updatedBy,
+    }
+  }
+
+  static formatEmailTemplateWithVariables(
+    template: EmailTemplate & {
+      variables: Array<
+        EmailVariable & {
+          translations: EmailVariableTranslation[]
+        }
+      >
+    },
+  ): Components.Schemas.EmailTemplateWithVariables {
+    return {
+      id: template.id,
+      projectId: template.projectId,
+      layoutId: template.layoutId,
+      key: template.key,
+      description: template.description,
+      content: template.content,
+      workspaceId: template.workspaceId,
+      variables: template.variables.map(variable => ({
+        id: variable.id,
+        key: variable.key,
+        defaultContent: variable.defaultContent,
+        translations: variable.translations.map(t => ({
+          languageId: t.languageId,
+          content: t.content,
+        })),
+      })),
+      createdAt: template.createdAt.toISOString(),
+      updatedAt: template.updatedAt.toISOString(),
+      createdBy: template.createdBy,
+      updatedBy: template.updatedBy,
     }
   }
 }

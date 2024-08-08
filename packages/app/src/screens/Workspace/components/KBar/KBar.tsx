@@ -175,6 +175,8 @@ export const KBar = () => {
     openCreateTag,
     openCreateProject,
     openCreateDestination,
+    openCreateEmailLayout,
+    openCreateEmailTemplate,
   } = useModals()
   const canManageLanguages = useHasAbility('languages:manage')
   const canManageMembers = useHasAbility('members:manage')
@@ -271,6 +273,18 @@ export const KBar = () => {
               openCreateTag(project)
             },
           },
+          {
+            label: 'Create an email layout',
+            onSelect: () => {
+              openCreateEmailLayout(project)
+            },
+          },
+          {
+            label: 'Create an email template',
+            onSelect: () => {
+              openCreateEmailTemplate(project)
+            },
+          },
           ...(canManageProjectDestination
             ? [
                 {
@@ -299,6 +313,8 @@ export const KBar = () => {
     openCreatePhrase,
     openCreateTag,
     openCreateDestination,
+    openCreateEmailLayout,
+    openCreateEmailTemplate,
     canManageProjectDestination,
   ])
 

@@ -1,20 +1,23 @@
 import { MinimalButton, Stack, Text } from 'design-system'
+import { HTMLRenderResult } from 'email-renderer'
 import { Dispatch, SetStateAction, useRef } from 'react'
 import { Panel, PanelResizeHandle } from 'react-resizable-panels'
-import { MonacoEditor, MonacoEditorRef } from '../../../components/MonacoEditor'
-import { Variable } from '../types'
-import { SubToolbar } from './Toolbars'
+import { MonacoEditor, MonacoEditorRef } from '../MonacoEditor'
+import { CodeErrors } from './CodeErrors'
+import { SubToolbar } from './SubToolbar'
 import {
   VariablesConfigModal,
   VariablesConfigModalRef,
 } from './VariablesConfigModal/VariablesConfigModal'
+import { Variable } from './types'
 
 interface Props {
   value: string
   setValue: (value: string) => void
-  layoutVariables: Variable[]
   variables: Variable[]
   setVariables: Dispatch<SetStateAction<Variable[]>>
+  layoutVariables?: Variable[]
+  errors: HTMLRenderResult['errors']
 }
 
 export const CodePanel = ({
@@ -23,6 +26,7 @@ export const CodePanel = ({
   setValue,
   variables,
   setVariables,
+  errors,
 }: Props) => {
   const variablesConfigModalRef = useRef<VariablesConfigModalRef>(null)
   const monacoEditorRef = useRef<MonacoEditorRef>(null)
@@ -50,9 +54,21 @@ export const CodePanel = ({
                 >
                   Variables
                 </MinimalButton>
+
+                <MinimalButton
+                  size="xsmall"
+                  icon="article"
+                  onAction={() =>
+                    window.open('https://documentation.mjml.io/', '_blank')
+                  }
+                >
+                  MJML docs
+                </MinimalButton>
               </Stack>
 
               <Stack direction="row" spacing="$space60" alignItems="center">
+                <CodeErrors errors={errors} />
+
                 <MinimalButton
                   size="xsmall"
                   icon="code"

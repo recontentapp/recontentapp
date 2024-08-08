@@ -58,12 +58,10 @@ export const renderTemplate = ({
     return renderedTemplate
   }
 
-  const layoutVariablesBag: Variables = {
-    ...layoutVariables,
+  return render(layout, {
+    ...variablesBag,
     content: renderedTemplate,
-  }
-
-  return render(layout, layoutVariablesBag)
+  })
 }
 
 type MJMLParseError = ReturnType<typeof mjml>['errors'][0]
@@ -89,14 +87,21 @@ export const renderHTML = (mjmlTemplate: string): HTMLRenderResult => {
     const { html, errors } = mjml(mjmlTemplate)
     return {
       html,
-      level: errors.length > 0 ? 'warning' : 'info',
-      errors: formatErrors(errors),
+      errors:
+        errors.length > 0
+          ? {
+              level: 'warning',
+              messages: formatErrors(errors),
+            }
+          : null,
     }
   } catch (error) {
     return {
       html: null,
-      errors: ['Error while rendering HTML'],
-      level: 'error',
+      errors: {
+        level: 'error',
+        messages: ['Error while rendering HTML'],
+      },
     }
   }
 }

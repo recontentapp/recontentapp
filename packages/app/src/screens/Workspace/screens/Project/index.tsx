@@ -1,4 +1,6 @@
 export { Project } from './Project'
+export { EmailLayouts } from './sections/EmailLayouts'
+export { EmailTemplates } from './sections/EmailTemplates'
 export { Export } from './sections/Export'
 export { Import } from './sections/Import'
 export { Phrases } from './sections/Phrases'

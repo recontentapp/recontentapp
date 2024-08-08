@@ -10,8 +10,8 @@ import {
 import { HTMLRenderResult } from 'email-renderer'
 import { ElementRef, useCallback, useMemo, useRef, useState } from 'react'
 import { Panel } from 'react-resizable-panels'
-import useDebouncedCallback from '../../../../../hooks/debouncedCallback'
-import { SubToolbar } from './Toolbars'
+import useDebouncedCallback from '../../../../hooks/debouncedCallback'
+import { SubToolbar } from './SubToolbar'
 
 interface Props {
   preview: HTMLRenderResult | null

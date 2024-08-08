@@ -2,7 +2,13 @@ import { FC, Suspense, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { useQueryClient } from '@tanstack/react-query'
-import { Banner, Box, Stack } from 'design-system'
+import {
+  Banner,
+  Box,
+  ConfirmationModal,
+  ConfirmationModalRef,
+  Stack,
+} from 'design-system'
 import { HorizontalSpinner } from '../../../../../components/HorizontalSpinner'
 import {
   getListPhrasesQueryKey,
@@ -46,6 +52,7 @@ export const Phrases: FC = () => {
   const navigate = useNavigate()
   const params = useParams<'projectId' | 'revisionId'>()
   const updatePhraseModalRef = useRef<UpdatePhrasePanelRef>(null!)
+  const confirmationModalRef = useRef<ConfirmationModalRef>(null!)
   const revisionId = params.revisionId!
 
   const { data, fetchNextPage, hasNextPage } = useInfiniteListPhrases({
@@ -163,14 +170,27 @@ export const Phrases: FC = () => {
               requestAnimationFrame(() => updatePhraseModalRef.current?.open())
             }}
             onRequestDelete={phraseId => {
-              setEditingPhraseIndex(undefined)
-              deletePhrase({ body: { phraseId } })
+              confirmationModalRef.current.confirm().then(res => {
+                if (!res) {
+                  return
+                }
+
+                setEditingPhraseIndex(undefined)
+                deletePhrase({ body: { phraseId } })
+              })
             }}
             onLoadMore={hasNextPage ? fetchNextPage : undefined}
             onRequestAdd={() => openCreatePhrase(project, revisionId)}
           />
         </Suspense>
       </Stack>
+
+      <ConfirmationModal
+        variation="danger"
+        title="Are you sure about deleting this phrase?"
+        description="Once a phrase is deleted, its content cannot be recovered."
+        ref={confirmationModalRef}
+      />
     </Box>
   )
 }

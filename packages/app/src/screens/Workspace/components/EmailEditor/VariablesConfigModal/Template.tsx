@@ -1,6 +1,6 @@
 import { Box, Button, IconButton, Stack, TextField } from 'design-system'
 import { Dispatch, SetStateAction } from 'react'
-import { Variable } from '../../types'
+import { Variable } from '../types'
 
 interface Props {
   variables: Variable[]

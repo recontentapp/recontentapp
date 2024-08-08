@@ -9,7 +9,7 @@ import {
   Stack,
   Tabs,
 } from 'design-system'
-import { Variable } from '../../types'
+import { Variable } from '../types'
 import { Layout } from './Layout'
 import { Tag } from './Tag'
 import { Template } from './Template'
@@ -20,7 +20,7 @@ export interface VariablesConfigModalRef {
 }
 
 interface ContentProps {
-  layoutVariables: Variable[]
+  layoutVariables?: Variable[]
   variables: Variable[]
   onChange: (variables: Variable[]) => void
   onRequestClose: () => void
@@ -78,15 +78,17 @@ const Content: FC<ContentProps> = ({
           />
 
           <Stack direction="column" spacing="$space60">
-            <Tabs<Tab>
-              label="Tabs"
-              currentTab={currentTab}
-              onSelect={setCurrentTab}
-              tabs={[
-                { label: 'Local variables', value: 'template' },
-                { label: 'Layout variables', value: 'layout' },
-              ]}
-            />
+            {layoutVariables !== undefined && (
+              <Tabs<Tab>
+                label="Tabs"
+                currentTab={currentTab}
+                onSelect={setCurrentTab}
+                tabs={[
+                  { label: 'Local variables', value: 'template' },
+                  { label: 'Layout variables', value: 'layout' },
+                ]}
+              />
+            )}
 
             {currentTab === 'template' && (
               <Template
@@ -96,7 +98,9 @@ const Content: FC<ContentProps> = ({
               />
             )}
 
-            {currentTab === 'layout' && <Layout variables={layoutVariables} />}
+            {currentTab === 'layout' && layoutVariables !== undefined && (
+              <Layout variables={layoutVariables} />
+            )}
           </Stack>
         </Stack>
       </Box>

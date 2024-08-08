@@ -1,6 +1,6 @@
 import { Stack, Text } from 'design-system'
-import { styled } from '../../../../../../theme'
-import { Variable } from '../../types'
+import { styled } from '../../../../../theme'
+import { Variable } from '../types'
 import { Tag } from './Tag'
 
 interface Props {

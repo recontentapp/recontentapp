@@ -2721,6 +2721,364 @@ paths:
       responses:
         '204':
           description: OK
+  /ListEmailLayouts:
+    get:
+      operationId: listEmailLayouts
+      parameters:
+        - name: projectId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: key
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EmailLayout'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                additionalProperties: false
+                required:
+                  - items
+                  - pagination
+  /GetEmailLayout:
+    get:
+      operationId: getEmailLayout
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailLayoutWithVariables'
+  /CreateEmailLayout:
+    post:
+      operationId: createEmailLayout
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                projectId:
+                  type: string
+                key:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                content:
+                  type: string
+                variables:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    required:
+                      - key
+                      - defaultContent
+                      - translations
+                    properties:
+                      key:
+                        type: string
+                      defaultContent:
+                        type: string
+                      translations:
+                        type: object
+                        additionalProperties:
+                          type: string
+              additionalProperties: false
+              required:
+                - projectId
+                - key
+                - description
+                - content
+                - variables
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailLayout'
+  /UpdateEmailLayout:
+    post:
+      operationId: updateEmailLayout
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                key:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                content:
+                  type: string
+                variables:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    required:
+                      - key
+                      - defaultContent
+                      - translations
+                    properties:
+                      key:
+                        type: string
+                      defaultContent:
+                        type: string
+                      translations:
+                        type: object
+                        additionalProperties:
+                          type: string
+              additionalProperties: false
+              required:
+                - id
+                - key
+                - description
+                - content
+                - variables
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailLayout'
+  /DeleteEmailLayout:
+    delete:
+      operationId: deleteEmailLayout
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+              additionalProperties: false
+              required:
+                - id
+      responses:
+        '204':
+          description: OK
+  /ListEmailTemplates:
+    get:
+      operationId: listEmailTemplates
+      parameters:
+        - name: projectId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: key
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EmailTemplate'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                additionalProperties: false
+                required:
+                  - items
+                  - pagination
+  /GetEmailTemplate:
+    get:
+      operationId: getEmailTemplate
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailTemplateWithVariables'
+  /CreateEmailTemplate:
+    post:
+      operationId: createEmailTemplate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                projectId:
+                  type: string
+                layoutId:
+                  type: string
+                  nullable: true
+                key:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                content:
+                  type: string
+                variables:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    required:
+                      - key
+                      - defaultContent
+                      - translations
+                    properties:
+                      key:
+                        type: string
+                      defaultContent:
+                        type: string
+                      translations:
+                        type: object
+                        additionalProperties:
+                          type: string
+              additionalProperties: false
+              required:
+                - projectId
+                - layoutId
+                - key
+                - description
+                - content
+                - variables
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailTemplate'
+  /UpdateEmailTemplate:
+    post:
+      operationId: updateEmailTemplate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                layoutId:
+                  type: string
+                  nullable: true
+                key:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                content:
+                  type: string
+                variables:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    required:
+                      - key
+                      - defaultContent
+                      - translations
+                    properties:
+                      key:
+                        type: string
+                      defaultContent:
+                        type: string
+                      translations:
+                        type: object
+                        additionalProperties:
+                          type: string
+              additionalProperties: false
+              required:
+                - id
+                - layoutId
+                - key
+                - description
+                - content
+                - variables
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailTemplate'
+  /DeleteEmailTemplate:
+    delete:
+      operationId: deleteEmailTemplate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+              additionalProperties: false
+              required:
+                - id
+      responses:
+        '204':
+          description: OK
 components:
   schemas:
     Empty:
@@ -3653,3 +4011,137 @@ components:
         - updatedAt
         - createdBy
         - updatedBy
+    EmailLayout:
+      type: object
+      properties:
+        id:
+          type: string
+        workspaceId:
+          type: string
+        projectId:
+          type: string
+        key:
+          type: string
+        description:
+          type: string
+          nullable: true
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+        updatedBy:
+          type: string
+          nullable: true
+      additionalProperties: false
+      required:
+        - id
+        - workspaceId
+        - projectId
+        - key
+        - description
+        - content
+        - createdAt
+        - updatedAt
+        - createdBy
+        - updatedBy
+    EmailLayoutWithVariables:
+      allOf:
+        - $ref: '#/components/schemas/EmailLayout'
+        - type: object
+          properties:
+            variables:
+              type: array
+              items:
+                $ref: '#/components/schemas/EmailVariable'
+          additionalProperties: false
+          required:
+            - variables
+    EmailTemplate:
+      type: object
+      properties:
+        id:
+          type: string
+        workspaceId:
+          type: string
+        projectId:
+          type: string
+        layoutId:
+          type: string
+          nullable: true
+        key:
+          type: string
+        description:
+          type: string
+          nullable: true
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+        updatedBy:
+          type: string
+          nullable: true
+      additionalProperties: false
+      required:
+        - id
+        - workspaceId
+        - projectId
+        - layoutId
+        - key
+        - description
+        - content
+        - createdAt
+        - updatedAt
+        - createdBy
+        - updatedBy
+    EmailTemplateWithVariables:
+      allOf:
+        - $ref: '#/components/schemas/EmailTemplate'
+        - type: object
+          properties:
+            variables:
+              type: array
+              items:
+                $ref: '#/components/schemas/EmailVariable'
+          additionalProperties: false
+          required:
+            - variables
+    EmailVariable:
+      type: object
+      properties:
+        id:
+          type: string
+        key:
+          type: string
+        defaultContent:
+          type: string
+        translations:
+          type: array
+          items:
+            type: object
+            required:
+              - languageId
+              - content
+            additionalProperties: false
+            properties:
+              languageId:
+                type: string
+              content:
+                type: string
+      additionalProperties: false
+      required:
+        - id
+        - key
+        - defaultContent
+        - translations
