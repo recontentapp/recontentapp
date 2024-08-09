@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { Language } from '@prisma/client'
-import { renderHTML, renderTemplate } from 'email-renderer'
+import { getVariableFallback, renderHTML, renderTemplate } from 'email-renderer'
 import mjml2html from 'mjml'
 import { PrismaService } from 'src/utils/prisma.service'
 import { Requester } from '../auth/requester.object'
@@ -83,16 +83,15 @@ export class EmailRenderService {
       layoutVariables: template.layout?.variables.reduce<
         Record<string, string>
       >((acc, variable) => {
-        const fallback = `{{{ ${variable.key} }}}`
-        acc[variable.key] = variable.defaultContent || fallback
+        acc[variable.key] =
+          variable.defaultContent || getVariableFallback(variable.key)
         return acc
       }, {}),
       template: template.content,
       variables: template.variables.reduce<Record<string, string>>(
         (acc, variable) => {
-          const fallback = `{{{ ${variable.key} }}}`
-
-          acc[variable.key] = variable.defaultContent || fallback
+          acc[variable.key] =
+            variable.defaultContent || getVariableFallback(variable.key)
           return acc
         },
         {},
@@ -117,9 +116,10 @@ export class EmailRenderService {
           const translation = variable.translations.find(
             t => t.languageId === languageId,
           )
-          const fallback = `{{{ ${variable.key} }}}`
           acc[variable.key] =
-            translation?.content || variable.defaultContent || fallback
+            translation?.content ||
+            variable.defaultContent ||
+            getVariableFallback(variable.key)
           return acc
         }, {}),
         template: template.content,
@@ -128,9 +128,10 @@ export class EmailRenderService {
             const translation = variable.translations.find(
               t => t.languageId === languageId,
             )
-            const fallback = `{{{ ${variable.key} }}}`
             acc[variable.key] =
-              translation?.content || variable.defaultContent || fallback
+              translation?.content ||
+              variable.defaultContent ||
+              getVariableFallback(variable.key)
             return acc
           },
           {},

@@ -1,8 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
+import { uniq } from 'src/utils/arrays'
 import { PaginationParams } from 'src/utils/pagination'
 import { PrismaService } from 'src/utils/prisma.service'
 import { Requester } from '../auth/requester.object'
+import { DEFAULT_TEMPLATE } from './examples'
 
 interface ListTemplatesParams {
   projectId: string
@@ -142,9 +144,9 @@ export class EmailTemplateService {
     )
     workspaceAccess.hasAbilityOrThrow('workspace:write')
 
-    const requestedLanguageIds = variables
-      .map(v => Object.keys(v.translations))
-      .flat()
+    const requestedLanguageIds = uniq(
+      variables.map(v => Object.keys(v.translations)).flat(),
+    )
 
     if (requestedLanguageIds.length > 0) {
       const matchingLanguagesCount = await this.prismaService.language.count({
@@ -179,7 +181,7 @@ export class EmailTemplateService {
           layoutId,
           key,
           description,
-          content,
+          content: content || DEFAULT_TEMPLATE,
           workspaceId: project.workspaceId,
           createdBy: workspaceAccess.getAccountID(),
         },
@@ -233,9 +235,9 @@ export class EmailTemplateService {
     )
     workspaceAccess.hasAbilityOrThrow('workspace:write')
 
-    const requestedLanguageIds = variables
-      .map(v => Object.keys(v.translations))
-      .flat()
+    const requestedLanguageIds = uniq(
+      variables.map(v => Object.keys(v.translations)).flat(),
+    )
 
     if (requestedLanguageIds.length > 0) {
       const matchingLanguagesCount = await this.prismaService.language.count({

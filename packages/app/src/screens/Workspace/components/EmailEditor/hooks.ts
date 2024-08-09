@@ -1,4 +1,5 @@
 import {
+  getVariableFallback,
   HTMLRenderResult,
   isLayoutValid,
   renderHTML,
@@ -48,13 +49,13 @@ export const useEmailTemplatePreview = ({
         layout,
         layoutVariables: layoutVariables.reduce<Record<string, string>>(
           (acc, variable) => {
-            const fallback = `{{{ ${variable.key} }}}`
-
             if (currentPreviewOption) {
               acc[variable.key] =
-                variable.translations[currentPreviewOption] || fallback
+                variable.translations[currentPreviewOption] ||
+                getVariableFallback(variable.key)
             } else {
-              acc[variable.key] = variable.defaultContent || fallback
+              acc[variable.key] =
+                variable.defaultContent || getVariableFallback(variable.key)
             }
             return acc
           },
@@ -62,13 +63,13 @@ export const useEmailTemplatePreview = ({
         ),
         template: value,
         variables: variables.reduce<Record<string, string>>((acc, variable) => {
-          const fallback = `{{{ ${variable.key} }}}`
-
           if (currentPreviewOption) {
             acc[variable.key] =
-              variable.translations[currentPreviewOption] || fallback
+              variable.translations[currentPreviewOption] ||
+              getVariableFallback(variable.key)
           } else {
-            acc[variable.key] = variable.defaultContent || fallback
+            acc[variable.key] =
+              variable.defaultContent || getVariableFallback(variable.key)
           }
           return acc
         }, {}),
@@ -148,13 +149,13 @@ export const useEmailLayoutPreview = ({
     ) => {
       const formattedVariables = variables.reduce<Record<string, string>>(
         (acc, variable) => {
-          const fallback = `{{{ ${variable.key} }}}`
-
           if (currentPreviewOption) {
             acc[variable.key] =
-              variable.translations[currentPreviewOption] || fallback
+              variable.translations[currentPreviewOption] ||
+              getVariableFallback(variable.key)
           } else {
-            acc[variable.key] = variable.defaultContent || fallback
+            acc[variable.key] =
+              variable.defaultContent || getVariableFallback(variable.key)
           }
           return acc
         },
@@ -187,7 +188,9 @@ export const useEmailLayoutPreview = ({
             level: 'warning',
           }
         }
-        result.errors.messages.push('Template does not include {{{ content }}}')
+        result.errors.messages.push(
+          `Template does not include ${getVariableFallback('content')}`,
+        )
       }
 
       setPreview(result)

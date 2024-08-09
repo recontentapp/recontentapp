@@ -335,6 +335,24 @@ export const KBar = () => {
         }),
       },
       {
+        label: 'Go to Project UX writing',
+        path: routes.projectUXWriting.url({
+          pathParams: { workspaceKey, projectId: project.id },
+        }),
+      },
+      {
+        label: 'Go to Project email layouts',
+        path: routes.projectEmailLayouts.url({
+          pathParams: { workspaceKey, projectId: project.id },
+        }),
+      },
+      {
+        label: 'Go to Project email templates',
+        path: routes.projectEmailTemplates.url({
+          pathParams: { workspaceKey, projectId: project.id },
+        }),
+      },
+      {
         label: 'Go to Project Import',
         path: routes.projectImport.url({
           pathParams: { workspaceKey, projectId: project.id },

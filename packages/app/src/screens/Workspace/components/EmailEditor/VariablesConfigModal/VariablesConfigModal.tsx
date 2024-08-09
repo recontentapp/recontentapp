@@ -9,6 +9,7 @@ import {
   Stack,
   Tabs,
 } from 'design-system'
+import { getVariableFallback } from 'email-renderer'
 import { Variable } from '../types'
 import { Layout } from './Layout'
 import { Tag } from './Tag'
@@ -72,7 +73,8 @@ const Content: FC<ContentProps> = ({
               <span>
                 Variables allow you to localize an email template by making
                 product copy editable. Replace hardcoded content by{' '}
-                <Tag>{`{{{ title }}}`}</Tag> tags & start localizing.
+                <Tag>{getVariableFallback('title')}</Tag> tags & start
+                localizing.
               </span>
             }
           />

@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
+import { uniq } from 'src/utils/arrays'
 import { PaginationParams } from 'src/utils/pagination'
 import { PrismaService } from 'src/utils/prisma.service'
 import { Requester } from '../auth/requester.object'
@@ -139,9 +140,9 @@ export class EmailLayoutService {
     )
     workspaceAccess.hasAbilityOrThrow('workspace:write')
 
-    const requestedLanguageIds = variables
-      .map(v => Object.keys(v.translations))
-      .flat()
+    const requestedLanguageIds = uniq(
+      variables.map(v => Object.keys(v.translations)).flat(),
+    )
 
     if (requestedLanguageIds.length > 0) {
       const matchingLanguagesCount = await this.prismaService.language.count({
@@ -219,9 +220,9 @@ export class EmailLayoutService {
     )
     workspaceAccess.hasAbilityOrThrow('workspace:write')
 
-    const requestedLanguageIds = variables
-      .map(v => Object.keys(v.translations))
-      .flat()
+    const requestedLanguageIds = uniq(
+      variables.map(v => Object.keys(v.translations)).flat(),
+    )
 
     if (requestedLanguageIds.length > 0) {
       const matchingLanguagesCount = await this.prismaService.language.count({

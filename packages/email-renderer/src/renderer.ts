@@ -106,3 +106,5 @@ export const renderHTML = (
     }
   }
 }
+
+export const getVariableFallback = (key: string) => `{{{ ${key} }}}`

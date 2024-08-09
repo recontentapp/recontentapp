@@ -34,7 +34,7 @@ const Content: FC<ContentProps> = ({ onSubmit, layout }) => {
   return (
     <ModalContent
       asForm
-      title="Edit email template"
+      title="Edit email layout"
       contextTitle={layout.key}
       primaryAction={{
         label: 'Save changes',
