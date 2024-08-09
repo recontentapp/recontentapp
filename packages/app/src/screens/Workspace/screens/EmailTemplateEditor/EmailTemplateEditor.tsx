@@ -195,6 +195,7 @@ export const EmailTemplateEditor = () => {
             variables={variables}
             setVariables={setVariables}
             errors={preview?.errors ?? null}
+            layoutVariables={initialLayoutVariables}
             onRequestSubmit={onSubmit}
           />
         )}
