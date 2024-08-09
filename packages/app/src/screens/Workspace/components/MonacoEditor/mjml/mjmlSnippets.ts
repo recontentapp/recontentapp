@@ -3,73 +3,42 @@ interface MJMLSnippet {
   value: string
 }
 
-export const snippets: MJMLSnippet[] = [
-  {
-    label: 'mjml',
-    value: '<mjml>${0}</mjml>',
-  },
-  {
-    label: 'mjhead',
-    value: '<mj-head>${0}</mj-head>',
-  },
-  {
-    label: 'mjbody',
-    value: '<mj-body>${0}</mj-body>',
-  },
-  {
-    label: 'mjstyle',
-    value: '<mj-style>${0}</mj-style>',
-  },
-  {
-    label: 'mjattributes',
-    value: '<mj-attributes>${0}</mj-attributes>',
-  },
-  {
-    label: 'mjtitle',
-    value: '<mj-title>${0}</mj-title>',
-  },
-  {
-    label: 'mjpreview',
-    value: '<mj-preview>${0}</mj-preview>',
-  },
-  {
-    label: 'mjfont',
-    value: '<mj-font name="$1" href="$2" />',
-  },
-  {
-    label: 'mjbutton',
-    value: '<mj-button>${0}</mj-button>',
-  },
-  {
-    label: 'mjsection',
-    value: '<mj-section>${0}</mj-section>',
-  },
-  {
-    label: 'mjcolumn',
-    value: '<mj-column>${0}</mj-column>',
-  },
-  {
-    label: 'mjdivider',
-    value: '<mj-divider>${0}</mj-divider>',
-  },
-  {
-    label: 'mjgroup',
-    value: '<mj-group>${0}</mj-group>',
-  },
-  {
-    label: 'mjhero',
-    value: '<mj-hero>${0}</mj-hero>',
-  },
-  {
-    label: 'mjtext',
-    value: '<mj-text>${0}</mj-text>',
-  },
-  {
-    label: 'mjwrapper',
-    value: '<mj-wrapper>${0}</mj-wrapper>',
-  },
-  {
-    label: 'mjimage',
-    value: '<mj-image src="$1" alt="$2" />',
-  },
+const tags = [
+  'mjml',
+  'mj-head',
+  'mj-body',
+  'mj-include',
+  'mj-attributes',
+  'mj-breakpoint',
+  'mj-font',
+  'mj-html-attributes',
+  'mj-preview',
+  'mj-style',
+  'mj-title',
+  'mj-accordion',
+  'mj-accordion-element',
+  'mj-accordion-title',
+  'mj-accordion-text',
+  'mj-button',
+  'mj-carousel',
+  'mj-carousel-image',
+  'mj-column',
+  'mj-divider',
+  'mj-group',
+  'mj-hero',
+  'mj-image',
+  'mj-navbar',
+  'mj-navbar-link',
+  'mj-raw',
+  'mj-section',
+  'mj-social',
+  'mj-spacer',
+  'mj-table',
+  'mj-text',
+  'mj-wrapper',
 ]
+
+export const snippets: MJMLSnippet[] = tags.map(t => ({
+  label: t,
+  value: `<${t}>$0</${t}>`,
+}))

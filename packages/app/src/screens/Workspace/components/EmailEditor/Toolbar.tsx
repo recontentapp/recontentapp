@@ -1,5 +1,5 @@
-import { Button, Stack, Text } from 'design-system'
-import { ReactNode } from 'react'
+import { Button, MinimalButton, Stack, Text } from 'design-system'
+import { ReactNode, useEffect, useState } from 'react'
 import { styled } from '../../../../theme'
 import { Switch } from './Switch'
 import { Mode } from './types'
@@ -15,11 +15,47 @@ const Container = styled('header', {
   alignItems: 'center',
 })
 
+interface CopyPasteProps {
+  content: string
+}
+
+export const CopyPaste = ({ content }: CopyPasteProps) => {
+  const [copied, setIsCopied] = useState(false)
+
+  const onCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(content)
+      setIsCopied(true)
+    } catch {
+      // Only work on secured origins
+    }
+  }
+
+  useEffect(() => {
+    if (!copied) {
+      return () => {}
+    }
+
+    const timeout = setTimeout(() => {
+      setIsCopied(false)
+    }, 2000)
+
+    return () => clearTimeout(timeout)
+  }, [copied])
+
+  return (
+    <MinimalButton size="small" icon="copy" onAction={onCopy}>
+      {copied ? 'Copied!' : 'Copy HTML'}
+    </MinimalButton>
+  )
+}
+
 interface Props {
   title: string
   mode: Mode
   updateMode: (mode: Mode) => void
   children?: ReactNode
+  htmlPreview?: string
   primaryAction: {
     label: string
     isLoading?: boolean
@@ -33,6 +69,7 @@ export const Toolbar = ({
   children,
   mode,
   updateMode,
+  htmlPreview,
   primaryAction,
 }: Props) => {
   return (
@@ -52,6 +89,8 @@ export const Toolbar = ({
         </Stack>
 
         <Stack direction="row" alignItems="center" spacing="$space100">
+          {htmlPreview && <CopyPaste content={htmlPreview} />}
+
           <Switch value={mode} onChange={updateMode} />
 
           <Button

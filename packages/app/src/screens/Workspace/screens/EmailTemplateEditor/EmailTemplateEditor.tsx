@@ -163,6 +163,7 @@ export const EmailTemplateEditor = () => {
         title={template.key}
         mode={mode}
         updateMode={setMode}
+        htmlPreview={preview?.html ?? ''}
         primaryAction={{
           label: 'Save email template',
           onAction: onSubmit,
