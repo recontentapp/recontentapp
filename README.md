@@ -7,7 +7,7 @@
 <h3 align="center">Open source Product copy & Email templates localization for product teams</h3>
 <p align="center">Recontent.app is a free & open source alternative to translation management systems (TMS) like Lokalise & PhraseApp.</p>
 
-![Recontent.app](https://recontent.app/assets/app.jpg)
+![Recontent.app](https://github.com/recontentapp/recontentapp/blob/master/image.png?raw=true)
 
 ---
 
