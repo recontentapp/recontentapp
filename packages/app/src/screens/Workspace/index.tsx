@@ -15,11 +15,15 @@ import { Sidebar } from './components/Sidebar'
 import { ModalsProvider } from './hooks/modals'
 import { Dashboard } from './screens/Dashboard'
 import { Destination } from './screens/Destination'
-import { Editor } from './screens/Editor/Editor'
+import { EmailLayoutEditor } from './screens/EmailLayoutEditor/EmailLayoutEditor'
+import { EmailTemplateEditor } from './screens/EmailTemplateEditor/EmailTemplateEditor'
 import { Glossary } from './screens/Glossary/Glossary'
 import { ImportFromFile } from './screens/ImportFromFile'
+import { Editor } from './screens/PhraseEditor/Editor'
 import {
   Project,
+  EmailLayouts as ProjectEmailLayouts,
+  EmailTemplates as ProjectEmailTemplates,
   Export as ProjectExport,
   Import as ProjectImport,
   Phrases as ProjectPhrases,
@@ -208,12 +212,30 @@ export const Workspace = () => {
                 />
 
                 <Route
+                  path="/:workspaceKey/projects/:projectId/email-layouts/:layoutId/editor"
+                  element={<EmailLayoutEditor />}
+                />
+
+                <Route
+                  path="/:workspaceKey/projects/:projectId/email-templates/:templateId/editor"
+                  element={<EmailTemplateEditor />}
+                />
+
+                <Route
                   path="/:workspaceKey/projects/:projectId"
                   element={<Project />}
                 >
                   <Route path="import" element={<ProjectImport />} />
                   <Route path="export" element={<ProjectExport />} />
                   <Route path="ux-writing" element={<ProjectUXWriting />} />
+                  <Route
+                    path="email-layouts"
+                    element={<ProjectEmailLayouts />}
+                  />
+                  <Route
+                    path="email-templates"
+                    element={<ProjectEmailTemplates />}
+                  />
                   <Route path="settings" element={<ProjectSettings />} />
                   <Route path="phrases">
                     <Route path=":revisionId" element={<ProjectPhrases />} />

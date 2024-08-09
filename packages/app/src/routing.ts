@@ -138,6 +138,52 @@ export interface ProjectsettingsParams {
   }
 }
 
+export interface ProjectemaillayoutsParams {
+  pathParams: {
+    workspaceKey: string
+    projectId: string
+    [k: string]: string | undefined
+  }
+  queryParams?: {
+    [k: string]: string | undefined
+  }
+}
+
+export interface ProjectemailtemplatesParams {
+  pathParams: {
+    workspaceKey: string
+    projectId: string
+    [k: string]: string | undefined
+  }
+  queryParams?: {
+    [k: string]: string | undefined
+  }
+}
+
+export interface ProjectemaillayouteditorParams {
+  pathParams: {
+    workspaceKey: string
+    projectId: string
+    layoutId: string
+    [k: string]: string | undefined
+  }
+  queryParams?: {
+    [k: string]: string | undefined
+  }
+}
+
+export interface ProjectemailtemplateeditorParams {
+  pathParams: {
+    workspaceKey: string
+    projectId: string
+    templateId: string
+    [k: string]: string | undefined
+  }
+  queryParams?: {
+    [k: string]: string | undefined
+  }
+}
+
 export interface ProjectimportParams {
   pathParams: {
     workspaceKey: string
@@ -437,6 +483,62 @@ const routes = {
       return queryParams ? `${path}?${queryParams}` : path
     },
     path: '/:workspaceKey/projects/:projectId/settings',
+    metadata: {},
+  },
+  projectEmailLayouts: {
+    url: (params: ProjectemaillayoutsParams) => {
+      const path = generatePath(
+        '/:workspaceKey/projects/:projectId/email-layouts',
+        params.pathParams,
+      )
+      const queryParams = params.queryParams
+        ? QueryString.stringify(params.queryParams)
+        : undefined
+      return queryParams ? `${path}?${queryParams}` : path
+    },
+    path: '/:workspaceKey/projects/:projectId/email-layouts',
+    metadata: {},
+  },
+  projectEmailTemplates: {
+    url: (params: ProjectemailtemplatesParams) => {
+      const path = generatePath(
+        '/:workspaceKey/projects/:projectId/email-templates',
+        params.pathParams,
+      )
+      const queryParams = params.queryParams
+        ? QueryString.stringify(params.queryParams)
+        : undefined
+      return queryParams ? `${path}?${queryParams}` : path
+    },
+    path: '/:workspaceKey/projects/:projectId/email-templates',
+    metadata: {},
+  },
+  projectEmailLayoutEditor: {
+    url: (params: ProjectemaillayouteditorParams) => {
+      const path = generatePath(
+        '/:workspaceKey/projects/:projectId/email-layouts/:layoutId/editor',
+        params.pathParams,
+      )
+      const queryParams = params.queryParams
+        ? QueryString.stringify(params.queryParams)
+        : undefined
+      return queryParams ? `${path}?${queryParams}` : path
+    },
+    path: '/:workspaceKey/projects/:projectId/email-layouts/:layoutId/editor',
+    metadata: {},
+  },
+  projectEmailTemplateEditor: {
+    url: (params: ProjectemailtemplateeditorParams) => {
+      const path = generatePath(
+        '/:workspaceKey/projects/:projectId/email-templates/:templateId/editor',
+        params.pathParams,
+      )
+      const queryParams = params.queryParams
+        ? QueryString.stringify(params.queryParams)
+        : undefined
+      return queryParams ? `${path}?${queryParams}` : path
+    },
+    path: '/:workspaceKey/projects/:projectId/email-templates/:templateId/editor',
     metadata: {},
   },
   projectImport: {

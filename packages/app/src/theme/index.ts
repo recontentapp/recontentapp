@@ -77,4 +77,31 @@ export const normalize = globalCss({
     backgroundColor: 'transparent',
     padding: 0,
   },
+  '[data-resize-handle]': {
+    position: 'relative',
+    backgroundColor: 'transparent',
+    '&:hover': {
+      '&::after': {
+        backgroundColor: '$gray8',
+      },
+    },
+    '&[data-resize-handle-state="drag"]': {
+      '&::after': {
+        backgroundColor: '$gray9',
+      },
+    },
+    '&::after': {
+      content: '""',
+      display: 'block',
+      position: 'absolute',
+      width: 2,
+      height: '100%',
+      top: 0,
+      bottom: 0,
+      left: '50%',
+      backgroundColor: '$gray7',
+      transition: 'background-color 0.3s',
+      opacity: 0.5,
+    },
+  },
 })

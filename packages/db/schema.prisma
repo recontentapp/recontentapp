@@ -110,6 +110,10 @@ model Workspace {
   glossaryTerms                        GlossaryTerm[]
   glossaryTermTranslations             GlossaryTermTranslation[]
   aiUsageEvents                        AIUsageEvent[]
+  emailLayouts                         EmailLayout[]
+  emailTemplates                       EmailTemplate[]
+  emailVariables                       EmailVariable[]
+  emailVariableTranslations            EmailVariableTranslation[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -182,15 +186,16 @@ model WorkspaceInvitation {
 }
 
 model Language {
-  id                       String                    @id @default(uuid()) @db.VarChar()
-  workspaceId              String                    @db.VarChar()
-  locale                   String                    @db.VarChar()
-  name                     String                    @db.VarChar()
-  workspace                Workspace                 @relation(fields: [workspaceId], references: [id])
-  projects                 Project[]                 @relation("projects_languages")
-  phraseTranslations       PhraseTranslation[]
-  glossaryTermTranslations GlossaryTermTranslation[]
-  figmaFiles               FigmaFile[]
+  id                        String                     @id @default(uuid()) @db.VarChar()
+  workspaceId               String                     @db.VarChar()
+  locale                    String                     @db.VarChar()
+  name                      String                     @db.VarChar()
+  workspace                 Workspace                  @relation(fields: [workspaceId], references: [id])
+  projects                  Project[]                  @relation("projects_languages")
+  phraseTranslations        PhraseTranslation[]
+  glossaryTermTranslations  GlossaryTermTranslation[]
+  emailVariableTranslations EmailVariableTranslation[]
+  figmaFiles                FigmaFile[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -279,19 +284,21 @@ model GlossaryTermTranslation {
 }
 
 model Project {
-  id          String            @id @default(uuid()) @db.VarChar()
-  workspaceId String            @db.VarChar()
-  glossaryId  String?           @db.VarChar()
-  name        String            @db.VarChar()
-  description String?           @db.VarChar()
-  workspace   Workspace         @relation(fields: [workspaceId], references: [id])
-  glossary    Glossary?         @relation(fields: [glossaryId], references: [id])
-  languages   Language[]        @relation("projects_languages")
-  prompts     Prompt[]          @relation("projects_prompts")
-  revisions   ProjectRevision[]
-  phrases     Phrase[]
-  tags        Tag[]
-  figmaFiles  FigmaFile[]
+  id             String            @id @default(uuid()) @db.VarChar()
+  workspaceId    String            @db.VarChar()
+  glossaryId     String?           @db.VarChar()
+  name           String            @db.VarChar()
+  description    String?           @db.VarChar()
+  workspace      Workspace         @relation(fields: [workspaceId], references: [id])
+  glossary       Glossary?         @relation(fields: [glossaryId], references: [id])
+  languages      Language[]        @relation("projects_languages")
+  prompts        Prompt[]          @relation("projects_prompts")
+  revisions      ProjectRevision[]
+  phrases        Phrase[]
+  tags           Tag[]
+  figmaFiles     FigmaFile[]
+  emailLayouts   EmailLayout[]
+  emailTemplates EmailTemplate[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -585,4 +592,78 @@ model AIUsageEvent {
 
   @@index([createdAt])
   @@map("ai_usage_events")
+}
+
+model EmailLayout {
+  id          String          @id @default(uuid()) @db.VarChar()
+  workspaceId String          @db.VarChar()
+  projectId   String          @db.VarChar()
+  key         String          @db.VarChar()
+  description String?         @db.VarChar()
+  content     String
+  project     Project         @relation(fields: [projectId], references: [id])
+  workspace   Workspace       @relation(fields: [workspaceId], references: [id])
+  templates   EmailTemplate[]
+  variables   EmailVariable[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String   @db.VarChar()
+  updatedBy String?  @db.VarChar()
+
+  @@unique([projectId, key])
+  @@map("email_layouts")
+}
+
+model EmailTemplate {
+  id          String          @id @default(uuid()) @db.VarChar()
+  workspaceId String          @db.VarChar()
+  projectId   String          @db.VarChar()
+  layoutId    String?         @db.VarChar()
+  key         String          @db.VarChar()
+  description String?         @db.VarChar()
+  content     String
+  workspace   Workspace       @relation(fields: [workspaceId], references: [id])
+  project     Project         @relation(fields: [projectId], references: [id])
+  layout      EmailLayout?    @relation(fields: [layoutId], references: [id])
+  variables   EmailVariable[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String   @db.VarChar()
+  updatedBy String?  @db.VarChar()
+
+  @@unique([projectId, key])
+  @@map("email_templates")
+}
+
+model EmailVariable {
+  id             String                     @id @default(uuid()) @db.VarChar()
+  workspaceId    String                     @db.VarChar()
+  layoutId       String?                    @db.VarChar()
+  templateId     String?                    @db.VarChar()
+  key            String                     @db.VarChar()
+  defaultContent String
+  workspace      Workspace                  @relation(fields: [workspaceId], references: [id])
+  layout         EmailLayout?               @relation(fields: [layoutId], references: [id])
+  template       EmailTemplate?             @relation(fields: [templateId], references: [id])
+  translations   EmailVariableTranslation[]
+
+  @@unique([layoutId, key])
+  @@unique([templateId, key])
+  @@map("email_variables")
+}
+
+model EmailVariableTranslation {
+  id          String        @id @default(uuid()) @db.VarChar()
+  languageId  String        @db.VarChar()
+  workspaceId String        @db.VarChar()
+  variableId  String        @db.VarChar()
+  content     String
+  language    Language      @relation(fields: [languageId], references: [id])
+  variable    EmailVariable @relation(fields: [variableId], references: [id])
+  workspace   Workspace     @relation(fields: [workspaceId], references: [id])
+
+  @@unique([variableId, languageId])
+  @@map("email_variable_translations")
 }

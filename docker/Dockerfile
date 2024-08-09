@@ -10,6 +10,7 @@ COPY --chown=node:node ./packages/db/schema.prisma ./packages/db/schema.prisma
 COPY --chown=node:node ./packages/email-templates/package.json ./packages/email-templates/package.json
 COPY --chown=node:node ./packages/design-system/package.json ./packages/design-system/package.json
 COPY --chown=node:node ./packages/file-formats/package.json ./packages/file-formats/package.json
+COPY --chown=node:node ./packages/email-renderer/package.json ./packages/email-renderer/package.json
 COPY --chown=node:node ./packages/app/package.json ./packages/app/package.json
 
 RUN yarn install --frozen-lockfile
@@ -34,6 +35,7 @@ COPY --chown=node:node --from=development /usr/src/app/packages/api/node_modules
 COPY --chown=node:node --from=development /usr/src/app/packages/email-templates/node_modules ./packages/email-templates/node_modules
 COPY --chown=node:node --from=development /usr/src/app/packages/design-system/node_modules ./packages/design-system/node_modules
 COPY --chown=node:node --from=development /usr/src/app/packages/file-formats/node_modules ./packages/file-formats/node_modules
+COPY --chown=node:node --from=development /usr/src/app/packages/email-renderer/node_modules ./packages/email-renderer/node_modules
 COPY --chown=node:node --from=development /usr/src/app/packages/db/node_modules ./packages/db/node_modules
 
 COPY --chown=node:node . .
@@ -57,6 +59,7 @@ ENV SERVE_STATIC_FILES=true
 COPY --chown=node:node package.json yarn.lock ./
 COPY --chown=node:node ./packages/api/package.json ./packages/api/package.json
 COPY --chown=node:node ./packages/file-formats/package.json ./packages/file-formats/package.json
+COPY --chown=node:node ./packages/email-renderer/package.json ./packages/email-renderer/package.json
 COPY --chown=node:node ./packages/db/package.json ./packages/db/package.json
 COPY --chown=node:node ./packages/db/schema.prisma ./packages/db/schema.prisma
 
@@ -69,6 +72,7 @@ USER node
 COPY --chown=node:node --from=build /usr/src/app/packages/api/dist ./packages/api/dist
 COPY --chown=node:node --from=build /usr/src/app/packages/app/dist ./packages/app/dist
 COPY --chown=node:node --from=build /usr/src/app/packages/email-templates/dist ./packages/email-templates/dist
+COPY --chown=node:node --from=build /usr/src/app/packages/email-renderer/dist ./packages/email-renderer/dist
 COPY --chown=node:node --from=build /usr/src/app/packages/file-formats/dist ./packages/file-formats/dist
 COPY --chown=node:node --from=build /usr/src/app/packages/db ./packages/db
 

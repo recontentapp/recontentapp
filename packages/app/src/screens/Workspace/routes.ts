@@ -46,6 +46,18 @@ const routes: RoutesCollection = {
   '/:workspaceKey/projects/:projectId/settings': {
     name: 'projectSettings',
   },
+  '/:workspaceKey/projects/:projectId/email-layouts': {
+    name: 'projectEmailLayouts',
+  },
+  '/:workspaceKey/projects/:projectId/email-templates': {
+    name: 'projectEmailTemplates',
+  },
+  '/:workspaceKey/projects/:projectId/email-layouts/:layoutId/editor': {
+    name: 'projectEmailLayoutEditor',
+  },
+  '/:workspaceKey/projects/:projectId/email-templates/:templateId/editor': {
+    name: 'projectEmailTemplateEditor',
+  },
   '/:workspaceKey/projects/:projectId/import': {
     name: 'projectImport',
   },

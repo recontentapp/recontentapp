@@ -12,11 +12,14 @@ import { Paths } from 'src/generated/public/typeDefinitions'
 import { APIKeyGuard } from 'src/modules/auth/api-key.guard'
 import { AuthenticatedRequester } from 'src/modules/auth/requester.decorator'
 import { Requester } from 'src/modules/auth/requester.object'
+import { EmailRenderService } from 'src/modules/email-template/email-render.service'
+import { EmailTemplateService } from 'src/modules/email-template/email-template.service'
 import { PhraseService } from 'src/modules/phrase/phrase.service'
 import { possibleLocales } from 'src/modules/workspace/locale'
 import { Pagination, PaginationParams } from 'src/utils/pagination'
 import { PrismaService } from 'src/utils/prisma.service'
 import { RequiredQuery } from 'src/utils/required-query'
+import { CreateEmailTemplateExportDto } from '../dto/public/email-template.dto'
 import { CreatePhraseExportDto } from '../dto/public/phrase.dto'
 import { PublicFormatter } from '../formatters/public.formatter'
 
@@ -27,6 +30,8 @@ export class PublicApiController {
   constructor(
     private readonly phraseService: PhraseService,
     private readonly prismaService: PrismaService,
+    private readonly emailTemplateService: EmailTemplateService,
+    private readonly emailRenderService: EmailRenderService,
   ) {}
 
   @Get('/workspaces/me')
@@ -200,6 +205,11 @@ export class PublicApiController {
     const workspaceAccess = requester.getWorkspaceAccessOrThrow(workspaceId)
     workspaceAccess.hasAbilityOrThrow('workspace:read')
 
+    const language = await this.prismaService.language.findUniqueOrThrow({
+      where: {
+        id: languageId,
+      },
+    })
     const phrases = await this.prismaService.phrase.findMany({
       where: {
         revisionId,
@@ -227,6 +237,11 @@ export class PublicApiController {
     })
 
     return {
+      language: {
+        id: language.id,
+        name: language.name,
+        locale: language.locale,
+      },
       data: phrases.reduce(
         (acc, phrase) => {
           acc[phrase.key] = phrase.translations.at(0)?.content ?? ''
@@ -235,5 +250,36 @@ export class PublicApiController {
         {} as Record<string, string>,
       ),
     }
+  }
+
+  @Get('/email-templates')
+  async getEmailTemplates(
+    @AuthenticatedRequester() requester: Requester,
+    @Pagination() pagination: PaginationParams,
+    @RequiredQuery('projectId') projectId: string,
+  ): Promise<Paths.ListEmailTemplates.Responses.$200> {
+    const result = await this.emailTemplateService.listTemplates({
+      projectId,
+      requester,
+      pagination,
+    })
+
+    return {
+      items: result.items.map(PublicFormatter.formatEmailTemplate),
+      pagination: result.pagination,
+    }
+  }
+
+  @Post('/email-template-exports')
+  async createEmailTemplateExport(
+    @AuthenticatedRequester() requester: Requester,
+    @Body() { id, languageIds, format }: CreateEmailTemplateExportDto,
+  ): Promise<Paths.ExportEmailTemplates.Responses.$200> {
+    return this.emailRenderService.render({
+      id,
+      languageIds: languageIds ?? [],
+      format,
+      requester,
+    })
   }
 }

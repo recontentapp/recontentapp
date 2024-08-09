@@ -34,7 +34,7 @@ const Tab = styled('li', {
     marginLeft: '$space60',
     borderRadius: 0,
     margin: 0,
-    paddingY: '$space40',
+    paddingY: '$space60',
     paddingX: '$space60',
     fontSize: '$size80',
     textAlign: 'center',
@@ -71,6 +71,7 @@ export const Tabs = <T extends string>({
           <button
             onClick={() => onSelect(tab.value)}
             role="tab"
+            type="button"
             aria-selected={tab.value === currentTab}
           >
             {tab.label}

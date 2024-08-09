@@ -1,4 +1,5 @@
 import {
+  EmailTemplate,
   Language,
   Phrase,
   PhraseTranslation,
@@ -76,6 +77,20 @@ export class PublicFormatter {
       description: project.description,
       createdAt: project.createdAt.toISOString(),
       updatedAt: project.updatedAt.toISOString(),
+    }
+  }
+
+  static formatEmailTemplate(
+    template: EmailTemplate,
+  ): Components.Schemas.EmailTemplate {
+    return {
+      id: template.id,
+      projectId: template.projectId,
+      workspaceId: template.workspaceId,
+      key: template.key,
+      description: template.description,
+      createdAt: template.createdAt.toISOString(),
+      updatedAt: template.updatedAt.toISOString(),
     }
   }
 }

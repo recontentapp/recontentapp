@@ -15,6 +15,14 @@ import {
   CreateDestinationModalRef,
 } from '../components/modals/CreateDestinationModal'
 import {
+  CreateEmailLayoutModal,
+  CreateEmailLayoutModalRef,
+} from '../components/modals/CreateEmailLayoutModal'
+import {
+  CreateEmailTemplateModal,
+  CreateEmailTemplateModalRef,
+} from '../components/modals/CreateEmailTemplateModal'
+import {
   CreateGlossaryModal,
   CreateGlossaryModalRef,
 } from '../components/modals/CreateGlossaryModal'
@@ -42,6 +50,8 @@ interface ModalsContext {
   openCreateDestination: CreateDestinationModalRef['open']
   openCreateGlossary: CreateGlossaryModalRef['open']
   openUpsertPrompt: UpsertPromptModalRef['open']
+  openCreateEmailLayout: CreateEmailLayoutModalRef['open']
+  openCreateEmailTemplate: CreateEmailTemplateModalRef['open']
   closeAll: () => void
 }
 
@@ -57,6 +67,8 @@ export const ModalsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const createDestinationModalRef = useRef<CreateDestinationModalRef>(null!)
   const createTagModalRef = useRef<CreateTagModalRef>(null!)
   const upsertPromptModalRef = useRef<UpsertPromptModalRef>(null!)
+  const createEmailLayoutModalRef = useRef<CreateEmailLayoutModalRef>(null!)
+  const createEmailTemplateModalRef = useRef<CreateEmailTemplateModalRef>(null!)
 
   const openCreateProject: CreateProjectModalRef['open'] = useCallback(() => {
     createProjectModalRef.current?.open()
@@ -85,6 +97,16 @@ export const ModalsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     },
     [],
   )
+  const openCreateEmailLayout: CreateEmailLayoutModalRef['open'] = useCallback(
+    (...props) => {
+      createEmailLayoutModalRef.current?.open(...props)
+    },
+    [],
+  )
+  const openCreateEmailTemplate: CreateEmailTemplateModalRef['open'] =
+    useCallback((...props) => {
+      createEmailTemplateModalRef.current?.open(...props)
+    }, [])
 
   const closeAll = useCallback(() => {
     createProjectModalRef.current.close()
@@ -93,6 +115,8 @@ export const ModalsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     createTagModalRef.current.close()
     createGlossaryModalRef.current.close()
     upsertPromptModalRef.current.close()
+    createEmailLayoutModalRef.current.close()
+    createEmailTemplateModalRef.current.close()
   }, [])
 
   useEffect(() => {
@@ -107,6 +131,8 @@ export const ModalsProvider: FC<{ children: ReactNode }> = ({ children }) => {
       openCreateTag,
       openCreateGlossary,
       openUpsertPrompt,
+      openCreateEmailLayout,
+      openCreateEmailTemplate,
       closeAll,
     }),
     [
@@ -117,6 +143,8 @@ export const ModalsProvider: FC<{ children: ReactNode }> = ({ children }) => {
       openCreatePhrase,
       openCreateDestination,
       openUpsertPrompt,
+      openCreateEmailLayout,
+      openCreateEmailTemplate,
     ],
   )
 
@@ -128,6 +156,8 @@ export const ModalsProvider: FC<{ children: ReactNode }> = ({ children }) => {
       <CreateTagModal ref={createTagModalRef} />
       <CreateGlossaryModal ref={createGlossaryModalRef} />
       <UpsertPromptModal ref={upsertPromptModalRef} />
+      <CreateEmailLayoutModal ref={createEmailLayoutModalRef} />
+      <CreateEmailTemplateModal ref={createEmailTemplateModalRef} />
 
       {children}
     </modalsContext.Provider>

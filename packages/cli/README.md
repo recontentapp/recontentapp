@@ -29,6 +29,9 @@ recontentapp get languages
 
 # List languages within a project
 recontentapp get languages -p <project_id>
+
+# List email templates within a project
+recontentapp get email-templates -p <project_id>
 ```
 
 ```sh
@@ -37,8 +40,11 @@ recontentapp get languages -p <project_id>
 recontentapp export phrases -p <project_id> -f json
 
 # Export phrases & translations for a specific language within a revision
-recontentapp export phrases -p <project_id> -l <language_id>
+recontentapp export phrases -p <project_id> -l <language_id>,<language_id>
 
 # Export phrases & translations in all languages in a custom directory
-recontentapp export phrases -p <project_id> -f json -o translations
+recontentapp export phrases -p <project_id> -f json -o './translations/{{ languageName }}{{ fileExtension }}'
+
+# Export an email template
+recontentapp export email-templates <email_template_id> -f html -o './{{ key }}/{{ languageName }}{{ fileExtension }}'
 ```
