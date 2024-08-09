@@ -17,7 +17,7 @@ services:
       - S3_BUCKET_URL=
       - DATABASE_URL=postgresql://postgres:postgres@localhost:5432/recontentapp
       - WORKSPACE_INVITE_ONLY=false
-      - APP_VERSION=0.5.0
+      - APP_VERSION=0.6.0
       - S3_ENDPOINT=
       - API_URL=
       - MAILER_USER=
