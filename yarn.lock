@@ -4401,6 +4401,13 @@
   resolved "https://registry.yarnpkg.com/@types/mjml-core/-/mjml-core-4.15.0.tgz#02dc55f1c61c01116df3cb0a411089c3d691b254"
   integrity sha512-jSRWTOpwRS/uHIBfGdvLl0a7MaoBZZYHKI+HhsFYChrUOKVJTnjSYsuV6wx0snv6ZaX3TUo5OP/gNsz/uzZz1A==
 
+"@types/mjml@4.7.4":
+  version "4.7.4"
+  resolved "https://registry.yarnpkg.com/@types/mjml/-/mjml-4.7.4.tgz#f486c9e39dd1e5cf52e13e64bdc762be116e957d"
+  integrity sha512-vyi1vzWgMzFMwZY7GSZYX0GU0dmtC8vLHwpgk+NWmwbwRSrlieVyJ9sn5elodwUfklJM7yGl0zQeet1brKTWaQ==
+  dependencies:
+    "@types/mjml-core" "*"
+
 "@types/multer@1.4.11":
   version "1.4.11"
   resolved "https://registry.yarnpkg.com/@types/multer/-/multer-1.4.11.tgz#c70792670513b4af1159a2b60bf48cc932af55c5"

@@ -1,6 +1,6 @@
-import mjml from 'mjml-browser'
 import { render as mustacheRender } from 'mustache'
 import { CLOSING_TAG, OPENING_TAG } from './constants'
+import { MJMLFunction, MJMLParseError } from './mjml-types'
 import { HTMLRenderResult, Variables } from './types'
 
 /**
@@ -64,8 +64,6 @@ export const renderTemplate = ({
   })
 }
 
-type MJMLParseError = ReturnType<typeof mjml>['errors'][0]
-
 const formatErrors = (errors: MJMLParseError[]): string[] => {
   const set = new Set<string>()
 
@@ -82,7 +80,10 @@ const formatErrors = (errors: MJMLParseError[]): string[] => {
  *
  * If invalid, return null
  */
-export const renderHTML = (mjmlTemplate: string): HTMLRenderResult => {
+export const renderHTML = (
+  mjmlTemplate: string,
+  mjml: MJMLFunction,
+): HTMLRenderResult => {
   try {
     const { html, errors } = mjml(mjmlTemplate)
     return {

@@ -242,6 +242,106 @@ paths:
                 additionalProperties: false
                 required:
                   - items
+  /email-templates:
+    get:
+      operationId: listEmailTemplates
+      summary: List email templates by project
+      parameters:
+        - name: projectId
+          in: query
+          description: Project ID
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+        - name: pageSize
+          in: query
+          description: Page size
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of email templates
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EmailTemplate'
+                additionalProperties: false
+                required:
+                  - pagination
+                  - items
+  /email-template-exports:
+    post:
+      operationId: exportEmailTemplates
+      summary: Export email templates
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                templateId:
+                  type: string
+                languageIds:
+                  type: array
+                  items:
+                    type: string
+                format:
+                  type: string
+                  enum:
+                    - mjml
+                    - html
+              additionalProperties: false
+              required:
+                - templateId
+                - format
+      responses:
+        '200':
+          description: Exported email template
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  default:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      content:
+                        nullable: true
+                        type: string
+                    required:
+                      - content
+                  translations:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - languageId
+                        - content
+                      properties:
+                        languageId:
+                          type: string
+                        content:
+                          nullable: true
+                          type: string
+                required:
+                  - default
+                  - translations
 components:
   schemas:
     Pagination:
@@ -415,6 +515,35 @@ components:
         - projectId
         - workspaceId
         - translations
+        - createdAt
+        - updatedAt
+    EmailTemplate:
+      type: object
+      properties:
+        id:
+          type: string
+        projectId:
+          type: string
+        workspaceId:
+          type: string
+        key:
+          type: string
+        description:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      additionalProperties: false
+      required:
+        - id
+        - projectId
+        - workspaceId
+        - key
+        - description
         - createdAt
         - updatedAt
   securitySchemes:

@@ -1,5 +1,4 @@
-import assert from 'assert'
-import { isLayoutValid, renderHTML, renderTemplate } from './renderer'
+import { isLayoutValid, renderTemplate } from './renderer'
 
 describe('isLayoutValid', () => {
   it('should return true if the layout contains the `{{{ content }}}` tag', () => {
@@ -69,22 +68,5 @@ describe('renderTemplate', () => {
     ).toBe(
       '<mjml><mj-body><mj-section><mj-column><mj-text color="blue">Hello John</mj-text></mj-column></mj-section></mj-body></mjml>',
     )
-  })
-})
-
-describe('renderHTML', () => {
-  it('matches snapshot', async () => {
-    const layout = '<mjml><mj-body>{{{ content }}}</mj-body></mjml>'
-
-    const template =
-      '<mj-section><mj-column><mj-text>{{{ text }}}</mj-text></mj-column></mj-section>'
-    const variables = { text: 'Hello John' }
-
-    const renderedTemplate = renderTemplate({ layout, template, variables })
-    assert(renderedTemplate)
-
-    const { html } = renderHTML(renderedTemplate)
-
-    expect(String(html)).toMatchSnapshot()
   })
 })

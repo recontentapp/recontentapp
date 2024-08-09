@@ -4,6 +4,7 @@ import {
   renderHTML,
   renderTemplate,
 } from 'email-renderer'
+import mjml2html from 'mjml-browser'
 import { useEffect, useState } from 'react'
 import useDebouncedCallback from '../../../../hooks/debouncedCallback'
 import { Variable } from './types'
@@ -84,7 +85,7 @@ export const useEmailTemplatePreview = ({
         return
       }
 
-      setPreview(renderHTML(renderedTemplate))
+      setPreview(renderHTML(renderedTemplate, mjml2html))
     },
     250,
   )
@@ -178,7 +179,7 @@ export const useEmailLayoutPreview = ({
         return
       }
 
-      const result = renderHTML(renderedTemplate)
+      const result = renderHTML(renderedTemplate, mjml2html)
       if (!isLayoutValid(value)) {
         if (!result.errors) {
           result.errors = {

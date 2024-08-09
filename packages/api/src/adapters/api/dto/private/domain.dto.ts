@@ -80,3 +80,16 @@ export class PromptLengthValidator implements ValidatorConstraintInterface {
     return 'Prompt length "$value" is not valid'
   }
 }
+
+@ValidatorConstraint({ name: 'emailTemplateExportType', async: false })
+export class EmailTemplateExportTypeValidator
+  implements ValidatorConstraintInterface
+{
+  validate(type: string) {
+    return ['mjml', 'html'].includes(type)
+  }
+
+  defaultMessage() {
+    return 'Email template export type "$value" is not valid'
+  }
+}
