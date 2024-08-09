@@ -6,10 +6,12 @@ interface Flags {
   project?: string
 }
 
-type Resource = 'projects' | 'languages' | 'workspace'
+type Resource = 'projects' | 'languages' | 'workspace' | 'email-templates'
 
 const isValidResource = (resource: string): resource is Resource => {
-  return ['projects', 'languages', 'workspace'].includes(resource)
+  return ['projects', 'languages', 'workspace', 'email-templates'].includes(
+    resource,
+  )
 }
 
 const getCommand = new Command('get')
@@ -24,6 +26,10 @@ const getCommand = new Command('get')
       command.error(
         'Invalid resource, please use projects, languages or workspace.',
       )
+    }
+
+    if (resource === 'email-templates' && !flags.project) {
+      command.error('A project must be specified to get email-templates.')
     }
 
     const apiClient = getApiClient(command)
@@ -51,6 +57,20 @@ const getCommand = new Command('get')
         }
         res.data.items.forEach(project => {
           items.push({ id: project.id, label: project.name })
+        })
+        break
+      }
+      case 'email-templates': {
+        const res = await apiClient.listEmailTemplates({
+          queryParams: {
+            projectId: flags.project!,
+          },
+        })
+        if (!res.ok) {
+          command.error('Failed to fetch email-templates.')
+        }
+        res.data.items.forEach(project => {
+          items.push({ id: project.id, label: project.key })
         })
         break
       }

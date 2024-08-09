@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
+import { Language } from '@prisma/client'
 import { renderHTML, renderTemplate } from 'email-renderer'
 import mjml2html from 'mjml'
 import { PrismaService } from 'src/utils/prisma.service'
@@ -53,7 +54,7 @@ export class EmailRenderService {
     )
     workspaceAccess.hasAbilityOrThrow('workspace:read')
 
-    const languageIdsInProjectCount = await this.prismaService.language.count({
+    const languages = await this.prismaService.language.findMany({
       where: {
         id: {
           in: languageIds,
@@ -65,9 +66,17 @@ export class EmailRenderService {
         },
       },
     })
-    if (languageIdsInProjectCount !== languageIds.length) {
+    if (languages.length !== languageIds.length) {
       throw new BadRequestException('Some languages are not in the project')
     }
+
+    const languagesMap = languages.reduce<Record<string, Language>>(
+      (acc, l) => {
+        acc[l.id] = l
+        return acc
+      },
+      {},
+    )
 
     const defaultRenderedTemplate = renderTemplate({
       layout: template.layout?.content,
@@ -90,8 +99,14 @@ export class EmailRenderService {
       ),
     })
 
-    const translations: Array<{ languageId: string; content: string | null }> =
-      []
+    const translations: Array<{
+      language: {
+        id: string
+        locale: string
+        name: string
+      }
+      content: string | null
+    }> = []
 
     languageIds.forEach(languageId => {
       const renderedTemplate = renderTemplate({
@@ -123,7 +138,11 @@ export class EmailRenderService {
       })
 
       translations.push({
-        languageId,
+        language: {
+          id: languageId,
+          locale: languagesMap[languageId].locale,
+          name: languagesMap[languageId].name,
+        },
         content: renderedTemplate
           ? format === 'mjml'
             ? renderedTemplate
@@ -133,6 +152,7 @@ export class EmailRenderService {
     })
 
     return {
+      key: template.key,
       default: {
         content: defaultRenderedTemplate
           ? format === 'mjml'

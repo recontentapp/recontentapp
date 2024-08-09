@@ -204,6 +204,20 @@ paths:
               schema:
                 type: object
                 properties:
+                  language:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      locale:
+                        type: string
+                    required:
+                      - id
+                      - name
+                      - locale
                   data:
                     type: object
                     example:
@@ -214,6 +228,7 @@ paths:
                 additionalProperties: false
                 required:
                   - data
+                  - language
   /possible-locales:
     get:
       operationId: listPossibleLocales
@@ -294,7 +309,7 @@ paths:
             schema:
               type: object
               properties:
-                templateId:
+                id:
                   type: string
                 languageIds:
                   type: array
@@ -307,7 +322,7 @@ paths:
                     - html
               additionalProperties: false
               required:
-                - templateId
+                - id
                 - format
       responses:
         '200':
@@ -317,6 +332,8 @@ paths:
               schema:
                 type: object
                 properties:
+                  key:
+                    type: string
                   default:
                     type: object
                     additionalProperties: false
@@ -331,15 +348,28 @@ paths:
                     items:
                       type: object
                       required:
-                        - languageId
+                        - language
                         - content
                       properties:
-                        languageId:
-                          type: string
+                        language:
+                          type: object
+                          additionalProperties: false
+                          properties:
+                            id:
+                              type: string
+                            name:
+                              type: string
+                            locale:
+                              type: string
+                          required:
+                            - id
+                            - name
+                            - locale
                         content:
                           nullable: true
                           type: string
                 required:
+                  - key
                   - default
                   - translations
 components:

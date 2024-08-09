@@ -1,4 +1,5 @@
 import {
+  ArrayMaxSize,
   IsArray,
   IsNotEmpty,
   IsOptional,
@@ -6,14 +7,14 @@ import {
   MaxLength,
   Validate,
 } from 'class-validator'
-import { ID_LENGTH } from '../constants'
+import { BATCH_SIZE, ID_LENGTH } from '../constants'
 import { EmailTemplateExportTypeValidator } from '../private/domain.dto'
 
 export class CreateEmailTemplateExportDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(ID_LENGTH)
-  templateId: string
+  id: string
 
   @Validate(EmailTemplateExportTypeValidator)
   @IsNotEmpty()
@@ -21,5 +22,6 @@ export class CreateEmailTemplateExportDto {
 
   @IsArray()
   @IsOptional()
+  @ArrayMaxSize(BATCH_SIZE)
   languageIds: string[] | undefined
 }

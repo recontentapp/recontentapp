@@ -205,6 +205,11 @@ export class PublicApiController {
     const workspaceAccess = requester.getWorkspaceAccessOrThrow(workspaceId)
     workspaceAccess.hasAbilityOrThrow('workspace:read')
 
+    const language = await this.prismaService.language.findUniqueOrThrow({
+      where: {
+        id: languageId,
+      },
+    })
     const phrases = await this.prismaService.phrase.findMany({
       where: {
         revisionId,
@@ -232,6 +237,11 @@ export class PublicApiController {
     })
 
     return {
+      language: {
+        id: language.id,
+        name: language.name,
+        locale: language.locale,
+      },
       data: phrases.reduce(
         (acc, phrase) => {
           acc[phrase.key] = phrase.translations.at(0)?.content ?? ''
@@ -263,10 +273,10 @@ export class PublicApiController {
   @Post('/email-template-exports')
   async createEmailTemplateExport(
     @AuthenticatedRequester() requester: Requester,
-    @Body() { templateId, languageIds, format }: CreateEmailTemplateExportDto,
+    @Body() { id, languageIds, format }: CreateEmailTemplateExportDto,
   ): Promise<Paths.ExportEmailTemplates.Responses.$200> {
     return this.emailRenderService.render({
-      id: templateId,
+      id,
       languageIds: languageIds ?? [],
       format,
       requester,
